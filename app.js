@@ -268,6 +268,8 @@ function openModal() {
   document.getElementById("submit-date").value = toDateString(new Date());
   document.getElementById("submit-msg").textContent = "";
   resetProblems();
+  // 打开模态框时自动检测今日是否已有记录
+  onDateChange();
 }
 
 function closeModal() {
@@ -582,6 +584,8 @@ function renderJournal(journal) {
       const card = document.createElement("article");
       card.className = "record";
       const takeawayHtml = log.takeaway ? renderMarkdown(log.takeaway) : "未填写";
+      const descHtml = log.description ? `<p class="record-desc">${escapeHtml(log.description)}</p>` : "";
+      const codeHtml = log.code ? `<pre class="record-code"><code>${escapeHtml(log.code)}</code></pre>` : "";
 
       card.innerHTML = `
         <div class="record-head">
@@ -590,7 +594,11 @@ function renderJournal(journal) {
         </div>
         <h3 class="record-title-clickable" onclick="this.closest('.record').classList.toggle('expanded')">${log.problem} <span class="expand-icon">▼</span></h3>
         <p class="meta">平台：${log.platform} ｜ 难度：${log.difficulty}</p>
-        <div class="record-takeaway">${takeawayHtml}</div>
+        <div class="record-takeaway">
+          ${descHtml}
+          ${takeawayHtml}
+          ${codeHtml}
+        </div>
       `;
       recordsRoot.appendChild(card);
     }

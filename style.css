@@ -233,6 +233,33 @@ select {
   color: #e2e8f0;
 }
 
+.record-desc {
+  color: var(--muted);
+  font-style: italic;
+  margin-bottom: 10px;
+}
+
+.record-code {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 14px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 10px 0 0;
+  font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.record-code code {
+  font-family: inherit;
+  background: transparent;
+  padding: 0;
+  color: inherit;
+}
+
 .footer {
   color: var(--muted);
   font-size: 13px;

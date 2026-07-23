@@ -42,8 +42,10 @@ function parseOneProblem(markdownBlock) {
   return {
     problem: sections["题目"] || sections["Problem"] || "",
     platform: sections["平台"] || sections["Platform"] || "",
+    description: sections["题目描述"] || sections["Description"] || "",
     takeaway: sections["收获"] || sections["Takeaway"] || "",
     difficulty: sections["难度"] || sections["Difficulty"] || "",
+    code: sections["代码"] || sections["Code"] || "",
   };
 }
 
@@ -92,8 +94,10 @@ function readLogs() {
           date,
           problem: parsed.problem || "未填写",
           platform: parsed.platform || "未填写",
+          description: parsed.description || "",
           takeaway: parsed.takeaway || "未填写",
           difficulty: parsed.difficulty || "未标注",
+          code: parsed.code || "",
         });
       }
     }
