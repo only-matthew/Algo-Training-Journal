@@ -742,25 +742,8 @@ async function loadJournal() {
 }
 
 function startRefreshTimer(renderFn, getCurrentMember) {
-  const timerEl = document.getElementById("refresh-timer");
-  let countdown = REFRESH_INTERVAL / 1000;
-
-  function updateTimerUI() {
-    const min = Math.floor(countdown / 60);
-    const sec = String(Math.floor(countdown % 60)).padStart(2, "0");
-    timerEl.textContent = `下次刷新: ${min}:${sec}`;
-  }
-
-  updateTimerUI();
-  setInterval(() => {
-    countdown -= 1;
-    if (countdown < 0) countdown = REFRESH_INTERVAL / 1000;
-    updateTimerUI();
-  }, 1000);
-
+  // 静默后台刷新，每 5 分钟更新一次数据
   setInterval(async () => {
-    countdown = REFRESH_INTERVAL / 1000;
-    updateTimerUI();
     await doRefresh(renderFn, getCurrentMember);
   }, REFRESH_INTERVAL);
 }

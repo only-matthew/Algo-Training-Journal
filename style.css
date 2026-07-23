@@ -468,13 +468,6 @@ textarea.form-input {
   white-space: nowrap;
 }
 
-.refresh-timer {
-  font-size: 12px;
-  color: var(--muted);
-  white-space: nowrap;
-  min-width: 90px;
-}
-
 @media (max-width: 820px) {
   .metrics,
   .stats {
