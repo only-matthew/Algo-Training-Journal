@@ -48,8 +48,16 @@ function parseOneProblem(markdownBlock) {
 }
 
 function parseProblems(markdown) {
-  // 用 --- 分隔线拆分多道题目，兼容单道题目的旧格式
-  const blocks = markdown.split(/\r?\n---+\r?\n/);
+  // 优先用 --- 分隔线拆分
+  let blocks = markdown.split(/\r?\n---+\r?\n/);
+  // 如果没有 ---，尝试用 ## 题目 作为分隔（去掉开头的 # 标题行）
+  if (blocks.length === 1) {
+    blocks = markdown.split(/\r?\n(?=## 题目\s*\r?\n)/);
+    // 首个 block 可能包含 # YYYY-MM-DD 标题，去掉它
+    if (blocks.length > 1) {
+      blocks[0] = blocks[0].replace(/^#[^\n]*\r?\n/, "").trim();
+    }
+  }
   return blocks
     .map((block) => parseOneProblem(block))
     .filter((p) => p.problem.trim());
