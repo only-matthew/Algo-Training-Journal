@@ -306,6 +306,16 @@ code {
   border-color: var(--brand);
 }
 
+.btn-danger {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+}
+
 .btn-primary:hover {
   background: #15803d;
 }

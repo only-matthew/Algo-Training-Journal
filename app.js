@@ -179,21 +179,48 @@ async function onDateChange() {
     if (!content) {
       content = await getFileContent(githubPath, token);
     }
+    const btnDelete = document.getElementById("btn-delete");
     if (content) {
       const parsed = parseMarkdownToProblems(content);
       populateProblems(parsed);
       btnSave.textContent = "更新记录";
       msgEl.textContent = "📝 加载已有记录，修改后点击「更新记录」即可覆盖";
+      btnDelete.style.display = "";
+      btnDelete.onclick = () => handleDelete(date);
     } else {
       resetProblems();
       btnSave.textContent = "提交到 GitHub";
       msgEl.textContent = "";
+      btnDelete.style.display = "none";
     }
   } catch {
     resetProblems();
     btnSave.textContent = "提交到 GitHub";
     msgEl.textContent = "";
   }
+}
+
+async function deleteFile(path, message, token, sha) {
+  const resp = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${path}`,
+    {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        message,
+        sha,
+        branch: GITHUB_BRANCH,
+      }),
+    },
+  );
+  if (!resp.ok) {
+    const err = await resp.json();
+    throw new Error(err.message || `GitHub API: ${resp.status}`);
+  }
+  return resp.json();
 }
 
 async function commitFile(path, content, message, token, sha) {
@@ -359,6 +386,45 @@ function buildMarkdown(date, problems) {
     return parts.join("\n");
   });
   return [`# ${date}`, "", blocks.join("\n\n---\n\n"), ""].join("\n");
+}
+
+async function handleDelete(date) {
+  const token = loadToken();
+  if (!token || !currentUser) {
+    alert("请先登录 GitHub");
+    return;
+  }
+  if (!confirm(`确定要删除 ${date} 的训练记录吗？此操作不可撤销。`)) return;
+
+  const member = getMemberName(currentUser.login);
+  const filename = `${date}.md`;
+  const mappedPath = `logs/${member}/${filename}`;
+  const githubPath = `logs/${currentUser.login}/${filename}`;
+
+  const msgEl = document.getElementById("submit-msg");
+  msgEl.textContent = "删除中...";
+  const btnDelete = document.getElementById("btn-delete");
+  if (btnDelete) btnDelete.disabled = true;
+
+  try {
+    let sha = await getFileSha(mappedPath, token);
+    let actualPath = mappedPath;
+    if (!sha) {
+      sha = await getFileSha(githubPath, token);
+      if (sha) actualPath = githubPath;
+    }
+    if (!sha) {
+      msgEl.textContent = "❌ 未找到该记录";
+      return;
+    }
+    await deleteFile(actualPath, `delete(${member}): remove training log for ${date}`, token, sha);
+    msgEl.textContent = "✅ 删除成功！等待自动部署（约 1 分钟）";
+    setTimeout(closeModal, 2000);
+  } catch (err) {
+    msgEl.textContent = `❌ 删除失败：${err.message}`;
+  } finally {
+    if (btnDelete) btnDelete.disabled = false;
+  }
 }
 
 async function handleSubmit() {
