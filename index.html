@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>算法训练日志</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <div>
+        <h1>队伍算法训练日志</h1>
+        <p class="subtitle">队员只需提交 Markdown 日志，页面自动展示热力图和近一个月训练情况</p>
+      </div>
+      <div class="filter">
+        <label for="member-select">查看对象</label>
+        <select id="member-select">
+          <option value="all">全队</option>
+        </select>
+      </div>
+    </header>
+
+    <section class="grid metrics">
+      <article class="card">
+        <p class="metric-label">近 30 天训练题数</p>
+        <p id="metric-total" class="metric-value">0</p>
+      </article>
+      <article class="card">
+        <p class="metric-label">近 30 天训练天数</p>
+        <p id="metric-days" class="metric-value">0</p>
+      </article>
+      <article class="card">
+        <p class="metric-label">近 30 天周均频率</p>
+        <p id="metric-weekly" class="metric-value">0</p>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>训练热力图（近 365 天）</h2>
+      <p class="hint">颜色越深表示当日记录越多</p>
+      <div id="heatmap" class="heatmap"></div>
+    </section>
+
+    <section class="grid stats">
+      <article class="card">
+        <h2>来源统计（近 30 天）</h2>
+        <div id="platform-stats"></div>
+      </article>
+      <article class="card">
+        <h2>难度统计（近 30 天，可选）</h2>
+        <div id="difficulty-stats"></div>
+      </article>
+    </section>
+
+    <section class="card">
+      <h2>训练记录</h2>
+      <p id="record-count" class="hint"></p>
+      <div id="records" class="records"></div>
+    </section>
+
+    <footer class="footer">
+      <p>提交路径：<code>logs/你的名字/YYYY-MM-DD.md</code></p>
+    </footer>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
