@@ -162,14 +162,18 @@ async function onDateChange() {
   const date = document.getElementById("submit-date").value;
   if (!date) return;
 
-  const member = getMemberName(currentUser.login);
-  const path = `logs/${member}/${date}.md`;
+  const mappedPath = `logs/${getMemberName(currentUser.login)}/${date}.md`;
+  const githubPath = `logs/${currentUser.login}/${date}.md`;
 
   const btnSave = document.getElementById("btn-save");
   const msgEl = document.getElementById("submit-msg");
 
   try {
-    const content = await getFileContent(path, token);
+    // 先查映射名路径，再查 GitHub 用户名路径
+    let content = await getFileContent(mappedPath, token);
+    if (!content) {
+      content = await getFileContent(githubPath, token);
+    }
     if (content) {
       const parsed = parseMarkdownToProblems(content);
       populateProblems(parsed);
@@ -365,16 +369,24 @@ async function handleSubmit() {
   try {
     const member = getMemberName(currentUser.login);
     const filename = `${date}.md`;
-    const path = `logs/${member}/${filename}`;
-    const markdown = buildMarkdown(date, problems);
-    const sha = await getFileSha(path, token);
+    const mappedPath = `logs/${member}/${filename}`;
+    const githubPath = `logs/${currentUser.login}/${filename}`;
+
+    // 确定实际存在的文件路径和 SHA（同时查两个目录）
+    let sha = await getFileSha(mappedPath, token);
+    let actualPath = mappedPath;
+    if (!sha) {
+      sha = await getFileSha(githubPath, token);
+      if (sha) actualPath = githubPath;
+    }
     const isEdit = !!sha;
+    const markdown = buildMarkdown(date, problems);
     const commitMsg = isEdit
       ? `feat(${member}): update training log for ${date}`
       : `feat(${member}): add training log for ${date}`;
 
     await ensureMemberDir(member, date, token);
-    await commitFile(path, markdown, commitMsg, token, sha);
+    await commitFile(actualPath, markdown, commitMsg, token, sha);
 
     msgEl.textContent = isEdit
       ? "✅ 更新成功！等待自动部署（约 1 分钟）"
@@ -497,6 +509,18 @@ function renderJournal(journal) {
     }
   }
 
+  // 动态填充队员下拉框
+  const memberSelect = document.getElementById("member-select");
+  // 保留「全队」选项，清空其他
+  while (memberSelect.options.length > 1) memberSelect.remove(1);
+  const uniqueMembers = [...new Set(members)];
+  for (const member of uniqueMembers) {
+    const option = document.createElement("option");
+    option.value = member;
+    option.textContent = member;
+    memberSelect.appendChild(option);
+  }
+
   function render(member) {
     renderStats(member);
     renderHeatmap(member);
@@ -504,7 +528,7 @@ function renderJournal(journal) {
   }
 
   render("all");
-  document.getElementById("member-select").addEventListener("change", (e) => render(e.target.value));
+  memberSelect.addEventListener("change", (e) => render(e.target.value));
 }
 
 // ============================================================
