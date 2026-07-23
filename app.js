@@ -134,7 +134,9 @@ function parseMarkdownToProblems(markdown) {
       problem: sections["题目"] || "",
       platform: sections["平台"] || "洛谷",
       difficulty: sections["难度"] || "未标注",
+      description: sections["题目描述"] || "",
       takeaway: sections["收获"] || "",
+      code: sections["代码"] || "",
     };
   });
 }
@@ -151,7 +153,9 @@ function populateProblems(parsed) {
     row.querySelector(".problem-name").value = p.problem || "";
     row.querySelector(".problem-platform").value = p.platform || "洛谷";
     row.querySelector(".problem-difficulty").value = p.difficulty || "未标注";
+    row.querySelector(".problem-description").value = p.description || "";
     row.querySelector(".problem-takeaway").value = p.takeaway || "";
+    row.querySelector(".problem-code").value = p.code || "";
     list.appendChild(row);
   });
 }
@@ -285,8 +289,16 @@ function createProblemRow(index) {
       </div>
     </div>
     <div class="form-group">
+      <label>题目描述（选填）</label>
+      <textarea class="form-input problem-description" rows="2" placeholder="简要描述题目大意..."></textarea>
+    </div>
+    <div class="form-group">
       <label>收获 / 题解</label>
       <textarea class="form-input problem-takeaway" rows="4" placeholder="今天学到的内容、踩的坑，或题解..."></textarea>
+    </div>
+    <div class="form-group">
+      <label>代码（选填，直接粘贴）</label>
+      <textarea class="form-input problem-code" rows="6" placeholder="粘贴代码即可，自动高亮显示" spellcheck="false"></textarea>
     </div>
   `;
   return div;
@@ -314,7 +326,9 @@ function collectProblems() {
       problem: name,
       platform: block.querySelector(".problem-platform").value,
       difficulty: block.querySelector(".problem-difficulty").value,
+      description: block.querySelector(".problem-description").value.trim(),
       takeaway: block.querySelector(".problem-takeaway").value.trim(),
+      code: block.querySelector(".problem-code").value.trim(),
     });
   }
   return problems;
@@ -322,7 +336,7 @@ function collectProblems() {
 
 function buildMarkdown(date, problems) {
   const blocks = problems.map((p) => {
-    return [
+    const parts = [
       `## 题目`,
       ``,
       `${p.problem}`,
@@ -334,11 +348,15 @@ function buildMarkdown(date, problems) {
       `## 难度`,
       ``,
       `${p.difficulty}`,
-      ``,
-      `## 收获`,
-      ``,
-      `${p.takeaway || "未填写"}`,
-    ].join("\n");
+    ];
+    if (p.description) {
+      parts.push(``, `## 题目描述`, ``, p.description);
+    }
+    parts.push(``, `## 收获`, ``, `${p.takeaway || "未填写"}`);
+    if (p.code) {
+      parts.push(``, `## 代码`, ``, p.code);
+    }
+    return parts.join("\n");
   });
   return [`# ${date}`, "", blocks.join("\n\n---\n\n"), ""].join("\n");
 }
