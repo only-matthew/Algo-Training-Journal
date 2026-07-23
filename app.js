@@ -11,6 +11,16 @@ const GITHUB_BRANCH = "main";
 const TOKEN_KEY = "gh_token";
 const USER_KEY = "gh_user";
 
+// GitHub 用户名 → 训练日志目录名（真实姓名）的映射
+const MEMBER_MAP = {
+  "only-matthew": "廖夏",
+  // 新队员映射在这里添加："GitHub用户名": "真实姓名"
+};
+
+function getMemberName(githubLogin) {
+  return MEMBER_MAP[githubLogin] || githubLogin;
+}
+
 function loadToken() {
   const hash = window.location.hash;
   if (hash.startsWith("#token=")) {
@@ -86,6 +96,95 @@ async function getFileSha(path, token) {
   if (!resp.ok) throw new Error(`GitHub API: ${resp.status}`);
   const data = await resp.json();
   return data.sha;
+}
+
+async function getFileContent(path, token) {
+  const resp = await fetch(
+    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,
+    { headers: { Authorization: `Bearer ${token}` } },
+  );
+  if (resp.status === 404) return null;
+  if (!resp.ok) throw new Error(`GitHub API: ${resp.status}`);
+  const data = await resp.json();
+  return decodeURIComponent(escape(atob(data.content)));
+}
+
+function parseMarkdownToProblems(markdown) {
+  const blocks = markdown.split(/\r?\n---+\r?\n/);
+  return blocks.map((block) => {
+    const lines = block.split(/\r?\n/);
+    const sections = {};
+    let currentKey = null;
+    let buffer = [];
+
+    for (const line of lines) {
+      const headingMatch = line.match(/^##\s+(.+)\s*$/);
+      if (headingMatch) {
+        if (currentKey) sections[currentKey] = buffer.join("\n").trim();
+        currentKey = headingMatch[1].trim();
+        buffer = [];
+        continue;
+      }
+      if (currentKey) buffer.push(line);
+    }
+    if (currentKey) sections[currentKey] = buffer.join("\n").trim();
+
+    return {
+      problem: sections["题目"] || "",
+      platform: sections["平台"] || "洛谷",
+      difficulty: sections["难度"] || "未标注",
+      takeaway: sections["收获"] || "",
+    };
+  });
+}
+
+function populateProblems(parsed) {
+  const list = document.getElementById("problem-list");
+  list.innerHTML = "";
+  if (!parsed.length) {
+    list.appendChild(createProblemRow(0));
+    return;
+  }
+  parsed.forEach((p, i) => {
+    const row = createProblemRow(i);
+    row.querySelector(".problem-name").value = p.problem || "";
+    row.querySelector(".problem-platform").value = p.platform || "洛谷";
+    row.querySelector(".problem-difficulty").value = p.difficulty || "未标注";
+    row.querySelector(".problem-takeaway").value = p.takeaway || "";
+    list.appendChild(row);
+  });
+}
+
+async function onDateChange() {
+  const token = loadToken();
+  if (!token || !currentUser) return;
+
+  const date = document.getElementById("submit-date").value;
+  if (!date) return;
+
+  const member = getMemberName(currentUser.login);
+  const path = `logs/${member}/${date}.md`;
+
+  const btnSave = document.getElementById("btn-save");
+  const msgEl = document.getElementById("submit-msg");
+
+  try {
+    const content = await getFileContent(path, token);
+    if (content) {
+      const parsed = parseMarkdownToProblems(content);
+      populateProblems(parsed);
+      btnSave.textContent = "更新记录";
+      msgEl.textContent = "📝 加载已有记录，修改后点击「更新记录」即可覆盖";
+    } else {
+      resetProblems();
+      btnSave.textContent = "提交到 GitHub";
+      msgEl.textContent = "";
+    }
+  } catch {
+    resetProblems();
+    btnSave.textContent = "提交到 GitHub";
+    msgEl.textContent = "";
+  }
 }
 
 async function commitFile(path, content, message, token, sha) {
@@ -264,17 +363,22 @@ async function handleSubmit() {
   btnSave.disabled = true;
 
   try {
-    const member = currentUser.login; // 用 GitHub 用户名作为队员名
+    const member = getMemberName(currentUser.login);
     const filename = `${date}.md`;
     const path = `logs/${member}/${filename}`;
     const markdown = buildMarkdown(date, problems);
     const sha = await getFileSha(path, token);
-    const commitMsg = `feat(${member}): add training log for ${date}`;
+    const isEdit = !!sha;
+    const commitMsg = isEdit
+      ? `feat(${member}): update training log for ${date}`
+      : `feat(${member}): add training log for ${date}`;
 
     await ensureMemberDir(member, date, token);
     await commitFile(path, markdown, commitMsg, token, sha);
 
-    msgEl.textContent = "✅ 提交成功！等待自动部署（约 1 分钟）";
+    msgEl.textContent = isEdit
+      ? "✅ 更新成功！等待自动部署（约 1 分钟）"
+      : "✅ 提交成功！等待自动部署（约 1 分钟）";
     setTimeout(closeModal, 2000);
   } catch (err) {
     msgEl.textContent = `❌ 提交失败：${err.message}`;
@@ -435,6 +539,7 @@ function renderJournal(journal) {
   });
   document.getElementById("btn-add-problem").addEventListener("click", addProblem);
   document.getElementById("btn-save").addEventListener("click", handleSubmit);
+  document.getElementById("submit-date").addEventListener("change", onDateChange);
   document.getElementById("problem-list").addEventListener("click", (e) => {
     if (e.target.classList.contains("btn-remove")) {
       e.target.closest(".problem-block").remove();
