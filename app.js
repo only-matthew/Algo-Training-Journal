@@ -14,6 +14,7 @@ const USER_KEY = "gh_user";
 // GitHub 用户名 → 训练日志目录名（真实姓名）的映射
 const MEMBER_MAP = {
   "only-matthew": "廖夏",
+  "wzzzzhhhhh": "王梓豪",
   // 新队员映射在这里添加："GitHub用户名": "真实姓名"
 };
 
