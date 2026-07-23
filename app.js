@@ -662,6 +662,14 @@ function renderJournal(journal) {
   if (token) {
     try {
       const user = await fetchUser(token);
+      // 白名单检查：只有已映射的队员可以登录
+      if (!MEMBER_MAP[user.login]) {
+        alert(`抱歉，${user.login} 不在队伍白名单中。\n\n如有需要请联系管理员添加。`);
+        localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(USER_KEY);
+        updateAuthUI(null);
+        return;
+      }
       saveUser(user);
       currentUser = user;
       updateAuthUI(user);
