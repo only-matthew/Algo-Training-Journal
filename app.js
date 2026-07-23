@@ -645,44 +645,47 @@ function renderJournal(journal) {
   function renderMarkdown(text) {
     if (!text) return "";
 
-    // 1. 提取特殊内容为占位符，避免被 escapeHtml 破坏
+    // 将所有"特殊片段"提取为占位符，然后再对剩余纯文本做 escapeHtml，
+    // 最后还原。这样特殊片段内部的 < > & " ' 不会被二次转义。
     const preserved = [];
 
-    // 1a. 代码块 ```...```
+    // 1. 代码块 ```...```
     let processed = text.replace(/```(\w*)\s*\n([\s\S]*?)```/g, (_, lang, code) => {
       const idx = preserved.length;
       const languageClass = lang ? `language-${lang}` : "language-text";
-      preserved.push(
-        `<pre class="line-numbers"><code class="${languageClass}">${escapeHtml(code.trim())}</code></pre>`
-      );
-      return `%%P_${idx}%%`;
+      preserved.push(`<pre class="line-numbers"><code class="${languageClass}">${escapeHtml(code.trim())}</code></pre>`);
+      return `\x00P${idx}\x00`;
     });
 
-    // 1b. 行间公式 $$...$$
+    // 2. 行间公式 $$...$$
     processed = processed.replace(/\$\$([\s\S]*?)\$\$/g, (_, formula) => {
       const idx = preserved.length;
       preserved.push(`$$${formula.trim()}$$`);
-      return `%%P_${idx}%%`;
+      return `\x00P${idx}\x00`;
     });
 
-    // 1c. 行内公式 $...$（排除 $$）
+    // 3. 行内公式 $...$（排除 $$）
     processed = processed.replace(/(?<!\$)\$(?!\$)([^$]+?)\$(?!\$)/g, (_, formula) => {
       const idx = preserved.length;
       preserved.push(`$${formula.trim()}$`);
-      return `%%P_${idx}%%`;
+      return `\x00P${idx}\x00`;
     });
 
-    // 2. 对剩余内容 escape HTML
+    // 4. 行内代码 `...` —— 必须在 escapeHtml 之前提取，否则反引号会被转义成 &#96;
+    processed = processed.replace(/`([^`]+)`/g, (_, codeContent) => {
+      const idx = preserved.length;
+      preserved.push(`<code class="language-text">${escapeHtml(codeContent)}</code>`);
+      return `\x00P${idx}\x00`;
+    });
+
+    // 5. 对剩余内容 escape HTML
     processed = escapeHtml(processed);
 
-    // 3. 还原保留内容
-    processed = processed.replace(/%%P_(\d+)%%/g, (_, idx) => preserved[parseInt(idx)]);
-
-    // 4. 行内代码 `...`
-    processed = processed.replace(/`([^`]+)`/g, '<code class="language-text">$1</code>');
-
-    // 5. 换行
+    // 6. 只给普通文本换行，避免把代码块中的换行变成 <br>
     processed = processed.replace(/\n/g, "<br>");
+
+    // 7. 还原所有保留片段
+    processed = processed.replace(/\x00P(\d+)\x00/g, (_, idx) => preserved[parseInt(idx)]);
 
     return processed;
   }
