@@ -3,8 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>算法训练日志</title>
+  <title>ICPC 算法训练日志</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
 </head>
 <body>
   <main class="container">
@@ -13,6 +16,8 @@
         <span id="auth-status">未登录</span>
       </div>
       <div class="auth-right">
+        <button id="btn-refresh" class="btn btn-outline btn-sm-refresh" title="刷新数据">🔄 刷新</button>
+        <span id="refresh-timer" class="refresh-timer"></span>
         <button id="btn-submit" class="btn btn-primary" style="display:none">📝 提交/修改记录</button>
         <button id="btn-login" class="btn btn-outline">🔐 使用 GitHub 登录</button>
         <button id="btn-logout" class="btn btn-outline" style="display:none">退出</button>
@@ -21,8 +26,8 @@
 
     <header class="header">
       <div>
-        <h1>队伍算法训练日志</h1>
-        <p class="subtitle">用 GitHub 登录后，直接在此页面填写训练记录，无需学习 Git 命令</p>
+        <h1>ICPC 算法训练日志</h1>
+        <p class="subtitle">记录每一次刷题，见证每一步前进</p>
       </div>
       <div class="filter">
         <label for="member-select">查看对象</label>
@@ -71,7 +76,7 @@
     </section>
 
     <footer class="footer">
-      <p>GitHub 登录后，点击「📝 提交/修改记录」即可添加或编辑训练日志</p>
+      <p>数据每 5 分钟自动刷新（也可手动点击 🔄 刷新） | 支持 LaTeX 数学公式（$...$ 和 $$...$$）</p>
     </footer>
 
     <!-- 提交模态框 -->
@@ -102,6 +107,10 @@
     </div>
   </main>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

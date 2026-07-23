@@ -175,7 +175,6 @@ async function onDateChange() {
   const msgEl = document.getElementById("submit-msg");
 
   try {
-    // 先查映射名路径，再查 GitHub 用户名路径
     let content = await getFileContent(mappedPath, token);
     if (!content) {
       content = await getFileContent(githubPath, token);
@@ -250,7 +249,6 @@ async function commitFile(path, content, message, token, sha) {
 }
 
 async function ensureMemberDir(member, date, token) {
-  // 确保 logs/队员名/.gitkeep 存在（创建目录）
   const gitkeepPath = `logs/${member}/.gitkeep`;
   const sha = await getFileSha(gitkeepPath, token);
   if (!sha) {
@@ -269,11 +267,33 @@ function openModal() {
   document.getElementById("submit-date").value = toDateString(new Date());
   document.getElementById("submit-msg").textContent = "";
   resetProblems();
-  // 打开模态框时自动检测今日是否已有记录
   onDateChange();
 }
 
-function closeModal() {
+function closeModal(force = false) {
+  if (!force) {
+    const problems = collectProblems();
+    const hasContent = problems.length > 0;
+    if (!hasContent) {
+      const blocks = document.querySelectorAll(".problem-block");
+      for (const block of blocks) {
+        const takeaway = block.querySelector(".problem-takeaway")?.value?.trim();
+        const code = block.querySelector(".problem-code")?.value?.trim();
+        const desc = block.querySelector(".problem-description")?.value?.trim();
+        if (takeaway || code || desc) {
+          if (confirm("表单中有未保存的数据，确定要关闭吗？")) {
+            break;
+          } else {
+            return;
+          }
+        }
+      }
+    } else {
+      if (!confirm("表单中有未保存的数据，确定要关闭吗？")) {
+        return;
+      }
+    }
+  }
   document.getElementById("submit-modal").style.display = "none";
 }
 
@@ -422,7 +442,7 @@ async function handleDelete(date) {
     }
     await deleteFile(actualPath, `delete(${member}): remove training log for ${date}`, token, sha);
     msgEl.textContent = "✅ 删除成功！等待自动部署（约 1 分钟）";
-    setTimeout(closeModal, 2000);
+    setTimeout(() => closeModal(true), 2000);
   } catch (err) {
     msgEl.textContent = `❌ 删除失败：${err.message}`;
   } finally {
@@ -460,7 +480,6 @@ async function handleSubmit() {
     const mappedPath = `logs/${member}/${filename}`;
     const githubPath = `logs/${currentUser.login}/${filename}`;
 
-    // 确定实际存在的文件路径和 SHA（同时查两个目录）
     let sha = await getFileSha(mappedPath, token);
     let actualPath = mappedPath;
     if (!sha) {
@@ -479,7 +498,7 @@ async function handleSubmit() {
     msgEl.textContent = isEdit
       ? "✅ 更新成功！等待自动部署（约 1 分钟）"
       : "✅ 提交成功！等待自动部署（约 1 分钟）";
-    setTimeout(closeModal, 2000);
+    setTimeout(() => closeModal(true), 2000);
   } catch (err) {
     msgEl.textContent = `❌ 提交失败：${err.message}`;
   } finally {
@@ -488,7 +507,7 @@ async function handleSubmit() {
 }
 
 // ============================================================
-// Journal Rendering (original logic, kept intact)
+// Journal Rendering
 // ============================================================
 
 function renderJournal(journal) {
@@ -586,7 +605,9 @@ function renderJournal(journal) {
       card.className = "record";
       const takeawayHtml = log.takeaway ? renderMarkdown(log.takeaway) : "未填写";
       const descHtml = log.description ? `<p class="record-desc">${escapeHtml(log.description)}</p>` : "";
-      const codeHtml = log.code ? `<pre class="record-code"><code>${escapeHtml(log.code)}</code></pre>` : "";
+      const codeHtml = log.code
+        ? `<pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre>`
+        : "";
 
       card.innerHTML = `
         <div class="record-head">
@@ -603,25 +624,67 @@ function renderJournal(journal) {
       `;
       recordsRoot.appendChild(card);
     }
+
+    // Prism 语法高亮
+    if (typeof Prism !== "undefined") {
+      Prism.highlightAllUnder(recordsRoot);
+    }
+    // KaTeX 数学公式渲染 ($$...$$ 和 $...$)
+    if (typeof renderMathInElement !== "undefined") {
+      renderMathInElement(recordsRoot, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false },
+        ],
+        throwOnError: false,
+      });
+    }
   }
 
-  // 轻量级 Markdown 渲染器（支持代码块和行内代码）
+  // Markdown 渲染器（支持代码块 + 行内代码 + LaTeX 公式）
   function renderMarkdown(text) {
     if (!text) return "";
-    let html = escapeHtml(text);
 
-    // 代码块 ```...```
-    html = html.replace(/```(\w*)\s*\n([\s\S]*?)```/g, (_, lang, code) => {
-      return `<pre><code class="language-${lang || 'text'}">${code.trim()}</code></pre>`;
+    // 1. 提取特殊内容为占位符，避免被 escapeHtml 破坏
+    const preserved = [];
+
+    // 1a. 代码块 ```...```
+    let processed = text.replace(/```(\w*)\s*\n([\s\S]*?)```/g, (_, lang, code) => {
+      const idx = preserved.length;
+      const languageClass = lang ? `language-${lang}` : "language-text";
+      preserved.push(
+        `<pre class="line-numbers"><code class="${languageClass}">${escapeHtml(code.trim())}</code></pre>`
+      );
+      return `%%P_${idx}%%`;
     });
 
-    // 行内代码 `...`
-    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+    // 1b. 行间公式 $$...$$
+    processed = processed.replace(/\$\$([\s\S]*?)\$\$/g, (_, formula) => {
+      const idx = preserved.length;
+      preserved.push(`$$${formula.trim()}$$`);
+      return `%%P_${idx}%%`;
+    });
 
-    // 换行转为 <br>
-    html = html.replace(/\n/g, "<br>");
+    // 1c. 行内公式 $...$（排除 $$）
+    processed = processed.replace(/(?<!\$)\$(?!\$)([^$]+?)\$(?!\$)/g, (_, formula) => {
+      const idx = preserved.length;
+      preserved.push(`$${formula.trim()}$`);
+      return `%%P_${idx}%%`;
+    });
 
-    return html;
+    // 2. 对剩余内容 escape HTML
+    processed = escapeHtml(processed);
+
+    // 3. 还原保留内容
+    processed = processed.replace(/%%P_(\d+)%%/g, (_, idx) => preserved[parseInt(idx)]);
+
+    // 4. 行内代码 `...`
+    processed = processed.replace(/`([^`]+)`/g, '<code class="language-text">$1</code>');
+
+    // 5. 换行
+    processed = processed.replace(/\n/g, "<br>");
+
+    return processed;
   }
 
   function escapeHtml(str) {
@@ -632,7 +695,6 @@ function renderJournal(journal) {
 
   // 动态填充队员下拉框
   const memberSelect = document.getElementById("member-select");
-  // 保留「全队」选项，清空其他
   while (memberSelect.options.length > 1) memberSelect.remove(1);
   const uniqueMembers = [...new Set(members)];
   for (const member of uniqueMembers) {
@@ -650,6 +712,80 @@ function renderJournal(journal) {
 
   render("all");
   memberSelect.addEventListener("change", (e) => render(e.target.value));
+
+  return { render };
+}
+
+// ============================================================
+// Data Refresh & Cache Busting
+// ============================================================
+
+const REFRESH_INTERVAL = 5 * 60 * 1000;
+let journalPromise = null;
+
+async function loadJournal() {
+  if (journalPromise) {
+    return await journalPromise;
+  }
+  journalPromise = fetch(`data.json?ts=${Date.now()}`)
+    .then((r) => {
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      return r.json();
+    })
+    .finally(() => {
+      journalPromise = null;
+    });
+  return await journalPromise;
+}
+
+function startRefreshTimer(renderFn, getCurrentMember) {
+  const timerEl = document.getElementById("refresh-timer");
+  let countdown = REFRESH_INTERVAL / 1000;
+
+  function updateTimerUI() {
+    const min = Math.floor(countdown / 60);
+    const sec = String(Math.floor(countdown % 60)).padStart(2, "0");
+    timerEl.textContent = `下次刷新: ${min}:${sec}`;
+  }
+
+  updateTimerUI();
+  setInterval(() => {
+    countdown -= 1;
+    if (countdown < 0) countdown = REFRESH_INTERVAL / 1000;
+    updateTimerUI();
+  }, 1000);
+
+  setInterval(async () => {
+    countdown = REFRESH_INTERVAL / 1000;
+    updateTimerUI();
+    await doRefresh(renderFn, getCurrentMember);
+  }, REFRESH_INTERVAL);
+}
+
+async function doRefresh(renderFn, getCurrentMember) {
+  const btnRefresh = document.getElementById("btn-refresh");
+  if (btnRefresh) {
+    btnRefresh.disabled = true;
+    btnRefresh.textContent = "⏳ 刷新中...";
+  }
+
+  try {
+    const journal = await loadJournal();
+    if (journal) {
+      const member = getCurrentMember ? getCurrentMember() : "all";
+      const result = renderJournal(journal);
+      if (result && result.render) {
+        result.render(member);
+      }
+    }
+  } catch (err) {
+    console.error("刷新失败:", err);
+  } finally {
+    if (btnRefresh) {
+      btnRefresh.disabled = false;
+      btnRefresh.textContent = "🔄 刷新";
+    }
+  }
 }
 
 // ============================================================
@@ -662,7 +798,6 @@ function renderJournal(journal) {
   if (token) {
     try {
       const user = await fetchUser(token);
-      // 白名单检查：只有已映射的队员可以登录
       if (!MEMBER_MAP[user.login]) {
         alert(`抱歉，${user.login} 不在队伍白名单中。\n\n如有需要请联系管理员添加。`);
         localStorage.removeItem(TOKEN_KEY);
@@ -686,10 +821,7 @@ function renderJournal(journal) {
   document.getElementById("btn-login").addEventListener("click", login);
   document.getElementById("btn-logout").addEventListener("click", logout);
   document.getElementById("btn-submit").addEventListener("click", openModal);
-  document.getElementById("btn-close-modal").addEventListener("click", closeModal);
-  document.getElementById("submit-modal").addEventListener("click", (e) => {
-    if (e.target.id === "submit-modal") closeModal();
-  });
+  document.getElementById("btn-close-modal").addEventListener("click", () => closeModal());
   document.getElementById("btn-add-problem").addEventListener("click", addProblem);
   document.getElementById("btn-save").addEventListener("click", handleSubmit);
   document.getElementById("submit-date").addEventListener("change", onDateChange);
@@ -700,11 +832,31 @@ function renderJournal(journal) {
   });
 
   // 3. Load journal
+  let journalRenderer = null;
   try {
-    const response = await fetch("data.json");
-    const journal = await response.json();
-    renderJournal(journal);
+    const journal = await loadJournal();
+    if (journal) {
+      journalRenderer = renderJournal(journal);
+    }
   } catch {
     document.getElementById("records").textContent = "数据加载失败，请稍后刷新重试。";
   }
+
+  // 4. Setup refresh timer
+  if (journalRenderer) {
+    const getCurrentMember = () => {
+      const select = document.getElementById("member-select");
+      return select ? select.value : "all";
+    };
+    startRefreshTimer(journalRenderer.render, getCurrentMember);
+  }
+
+  // 5. Manual refresh
+  document.getElementById("btn-refresh").addEventListener("click", async () => {
+    const getCurrentMember = () => {
+      const select = document.getElementById("member-select");
+      return select ? select.value : "all";
+    };
+    await doRefresh(journalRenderer ? journalRenderer.render : null, getCurrentMember);
+  });
 })();
