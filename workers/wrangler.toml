@@ -1,0 +1,12 @@
+name = "algo-oauth"
+main = "oauth.js"
+
+compatibility_date = "2025-07-23"
+
+# 如果你有自己的域名路由，部署后取消下面的注释并设置路由
+# routes = [
+#   { pattern = "oauth.train.xialiao.org", zone_id = "YOUR_ZONE_ID" }
+# ]
+
+[observability]
+enabled = true
