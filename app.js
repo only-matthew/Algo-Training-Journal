@@ -15,6 +15,7 @@ const USER_KEY = "gh_user";
 const MEMBER_MAP = {
   "only-matthew": "廖夏",
   "wzzzzhhhhh": "王梓豪",
+  "seanist-isx": "郭一鸣",
   // 新队员映射在这里添加："GitHub用户名": "真实姓名"
 };
 
