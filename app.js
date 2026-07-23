@@ -79,9 +79,22 @@
       const dateText = toDateString(date);
       const count = counts[dateText] || 0;
 
+      let tooltip = `${dateText} · ${count} 题`;
+      if (member === "all" && count > 0) {
+        const contributions = members
+          .map((m) => ({
+            name: m,
+            cnt: (heatmap.byMember[m] && heatmap.byMember[m][dateText]) || 0,
+          }))
+          .filter((c) => c.cnt > 0)
+          .sort((a, b) => b.cnt - a.cnt || a.name.localeCompare(b.name, "zh-CN"));
+        const lines = contributions.map((c) => `${c.name}: ${c.cnt} 题`);
+        tooltip = [tooltip, ...lines].join("\n");
+      }
+
       const cell = document.createElement("span");
       cell.className = `cell lv${levelOf(count)}`;
-      cell.title = `${dateText} · ${count} 条`;
+      cell.title = tooltip;
       heatmapRoot.appendChild(cell);
     }
   }

@@ -14,8 +14,8 @@ function toDateString(date) {
   return `${y}-${m}-${d}`;
 }
 
-function parseSections(markdown) {
-  const lines = markdown.split(/\r?\n/);
+function parseOneProblem(markdownBlock) {
+  const lines = markdownBlock.split(/\r?\n/);
   const sections = {};
   let currentKey = null;
   let buffer = [];
@@ -47,6 +47,14 @@ function parseSections(markdown) {
   };
 }
 
+function parseProblems(markdown) {
+  // 用 --- 分隔线拆分多道题目，兼容单道题目的旧格式
+  const blocks = markdown.split(/\r?\n---+\r?\n/);
+  return blocks
+    .map((block) => parseOneProblem(block))
+    .filter((p) => p.problem.trim());
+}
+
 function listMembers() {
   if (!fs.existsSync(LOGS_DIR)) return [];
   return fs
@@ -69,15 +77,17 @@ function readLogs() {
 
       const date = match[1];
       const markdown = fs.readFileSync(path.join(memberDir, file), "utf8");
-      const parsed = parseSections(markdown);
-      logs.push({
-        member,
-        date,
-        problem: parsed.problem || "未填写",
-        platform: parsed.platform || "未填写",
-        takeaway: parsed.takeaway || "未填写",
-        difficulty: parsed.difficulty || "未标注",
-      });
+      const problems = parseProblems(markdown);
+      for (const parsed of problems) {
+        logs.push({
+          member,
+          date,
+          problem: parsed.problem || "未填写",
+          platform: parsed.platform || "未填写",
+          takeaway: parsed.takeaway || "未填写",
+          difficulty: parsed.difficulty || "未标注",
+        });
+      }
     }
   }
 
