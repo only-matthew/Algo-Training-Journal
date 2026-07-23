@@ -175,6 +175,64 @@ select {
   margin-bottom: 0;
 }
 
+/* 可折叠的记录卡片 */
+.record-title-clickable {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  padding: 4px 0;
+}
+
+.record-title-clickable:hover {
+  color: var(--brand);
+}
+
+.expand-icon {
+  font-size: 10px;
+  transition: transform 0.2s;
+  color: var(--muted);
+}
+
+.record.expanded .expand-icon {
+  transform: rotate(180deg);
+}
+
+.record-takeaway {
+  display: none;
+  margin-top: 8px;
+  padding-top: 10px;
+  border-top: 1px solid var(--line);
+}
+
+.record.expanded .record-takeaway {
+  display: block;
+}
+
+/* 代码块样式 */
+.record-takeaway pre {
+  background: #1e293b;
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 14px;
+  overflow-x: auto;
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+
+.record-takeaway code {
+  font-family: "Cascadia Code", "Fira Code", Consolas, monospace;
+  background: transparent;
+  padding: 0;
+}
+
+.record-takeaway pre code {
+  color: #e2e8f0;
+}
+
 .footer {
   color: var(--muted);
   font-size: 13px;

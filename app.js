@@ -496,17 +496,44 @@ function renderJournal(journal) {
     for (const log of filtered) {
       const card = document.createElement("article");
       card.className = "record";
+      const takeawayHtml = log.takeaway ? renderMarkdown(log.takeaway) : "未填写";
+
       card.innerHTML = `
         <div class="record-head">
           <time>${log.date}</time>
           <span>${log.member}</span>
         </div>
-        <h3>${log.problem}</h3>
+        <h3 class="record-title-clickable" onclick="this.closest('.record').classList.toggle('expanded')">${log.problem} <span class="expand-icon">▼</span></h3>
         <p class="meta">平台：${log.platform} ｜ 难度：${log.difficulty}</p>
-        <p>${log.takeaway}</p>
+        <div class="record-takeaway">${takeawayHtml}</div>
       `;
       recordsRoot.appendChild(card);
     }
+  }
+
+  // 轻量级 Markdown 渲染器（支持代码块和行内代码）
+  function renderMarkdown(text) {
+    if (!text) return "";
+    let html = escapeHtml(text);
+
+    // 代码块 ```...```
+    html = html.replace(/```(\w*)\s*\n([\s\S]*?)```/g, (_, lang, code) => {
+      return `<pre><code class="language-${lang || 'text'}">${code.trim()}</code></pre>`;
+    });
+
+    // 行内代码 `...`
+    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
+
+    // 换行转为 <br>
+    html = html.replace(/\n/g, "<br>");
+
+    return html;
+  }
+
+  function escapeHtml(str) {
+    const el = document.createElement("div");
+    el.appendChild(document.createTextNode(str));
+    return el.innerHTML;
   }
 
   // 动态填充队员下拉框
