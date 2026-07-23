@@ -3,7 +3,7 @@
 // ============================================================
 
 const GITHUB_CLIENT_ID = "Ov23liLqB5pUo1d8Pj02";
-const OAUTH_WORKER_URL = "https://algo-oauth.loveoi.workers.dev";
+const OAUTH_WORKER_URL = "https://algo-oauth.xialiao.org";
 const GITHUB_REPO_OWNER = "only-matthew";
 const GITHUB_REPO = "Algo-Training-Journal";
 const GITHUB_BRANCH = "main";
