@@ -2,21 +2,10 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
-    // GET / → 重定向到 GitHub 授权页
-    if (request.method === "GET") {
-      const redirect = url.searchParams.get("redirect") || "/";
-      const state = encodeURIComponent(redirect);
-      const authUrl =
-        `https://github.com/login/oauth/authorize` +
-        `?client_id=${env.GITHUB_CLIENT_ID}` +
-        `&scope=public_repo` +
-        `&state=${state}`;
-      return Response.redirect(authUrl, 302);
-    }
-
-    // POST / → 用 code 换 access_token
-    if (request.method === "POST") {
-      const { code, state } = await request.json();
+    // GitHub OAuth 回调: GET /?code=xxx&state=yyy → 用 code 换 access_token
+    const code = url.searchParams.get("code");
+    if (code) {
+      const state = url.searchParams.get("state") || "";
       const resp = await fetch("https://github.com/login/oauth/access_token", {
         method: "POST",
         headers: {
@@ -31,7 +20,6 @@ export default {
       });
       const data = await resp.json();
       const redirect = state ? decodeURIComponent(state) : "/";
-      // 通过 Cookie 设置 token 并重定向
       if (data.access_token) {
         const token = data.access_token;
         // 把 token 带回前端（通过 URL hash）
@@ -40,6 +28,18 @@ export default {
         return Response.redirect(target.toString(), 302);
       }
       return new Response("OAuth failed: " + JSON.stringify(data), { status: 400 });
+    }
+
+    // 发起 OAuth: GET /?redirect=xxx → 重定向到 GitHub 授权页
+    if (request.method === "GET") {
+      const redirect = url.searchParams.get("redirect") || "/";
+      const state = encodeURIComponent(redirect);
+      const authUrl =
+        `https://github.com/login/oauth/authorize` +
+        `?client_id=${env.GITHUB_CLIENT_ID}` +
+        `&scope=public_repo` +
+        `&state=${state}`;
+      return Response.redirect(authUrl, 302);
     }
 
     return new Response("Not found", { status: 404 });
