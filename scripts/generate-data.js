@@ -4,7 +4,7 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const LOGS_DIR = path.join(ROOT, "logs");
 const OUTPUT_DIR = path.join(ROOT, "site");
-const LOG_FILE_PATTERN = /^(\d{4}-\d{2}-\d{2})\.md$/;
+const LOG_DIR_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
 
 function toDateString(date) {
@@ -14,55 +14,16 @@ function toDateString(date) {
   return `${y}-${m}-${d}`;
 }
 
-function parseOneProblem(markdownBlock) {
-  const lines = markdownBlock.split(/\r?\n/);
-  const sections = {};
-  let currentKey = null;
-  let buffer = [];
-
-  const flush = () => {
-    if (!currentKey) return;
-    sections[currentKey] = buffer.join("\n").trim();
-  };
-
-  for (const line of lines) {
-    const headingMatch = line.match(/^##\s+(.+)\s*$/);
-    if (headingMatch) {
-      flush();
-      currentKey = headingMatch[1].trim();
-      buffer = [];
-      continue;
-    }
-    if (currentKey) {
-      buffer.push(line);
-    }
-  }
-  flush();
-
-  return {
-    problem: sections["题目"] || sections["Problem"] || "",
-    platform: sections["平台"] || sections["Platform"] || "",
-    description: sections["题目描述"] || sections["Description"] || "",
-    takeaway: sections["收获"] || sections["Takeaway"] || "",
-    difficulty: sections["难度"] || sections["Difficulty"] || "",
-    code: sections["代码"] || sections["Code"] || "",
-  };
+function readMeta(memberDir, dateDir) {
+  const metaPath = path.join(memberDir, dateDir, "meta.json");
+  if (!fs.existsSync(metaPath)) return null;
+  return JSON.parse(fs.readFileSync(metaPath, "utf8"));
 }
 
-function parseProblems(markdown) {
-  // 优先用 --- 分隔线拆分
-  let blocks = markdown.split(/\r?\n---+\r?\n/);
-  // 如果没有 ---，尝试用 ## 题目 作为分隔（去掉开头的 # 标题行）
-  if (blocks.length === 1) {
-    blocks = markdown.split(/\r?\n(?=## 题目\s*\r?\n)/);
-    // 首个 block 可能包含 # YYYY-MM-DD 标题，去掉它
-    if (blocks.length > 1) {
-      blocks[0] = blocks[0].replace(/^#[^\n]*\r?\n/, "").trim();
-    }
-  }
-  return blocks
-    .map((block) => parseOneProblem(block))
-    .filter((p) => p.problem.trim());
+function readProblemFile(dir, filename) {
+  const p = path.join(dir, filename);
+  if (!fs.existsSync(p)) return "";
+  return fs.readFileSync(p, "utf8").trim();
 }
 
 function listMembers() {
@@ -80,24 +41,26 @@ function readLogs() {
 
   for (const member of members) {
     const memberDir = path.join(LOGS_DIR, member);
-    const files = fs.readdirSync(memberDir);
-    for (const file of files) {
-      const match = file.match(LOG_FILE_PATTERN);
-      if (!match) continue;
+    const entries = fs.readdirSync(memberDir, { withFileTypes: true });
 
-      const date = match[1];
-      const markdown = fs.readFileSync(path.join(memberDir, file), "utf8");
-      const problems = parseProblems(markdown);
-      for (const parsed of problems) {
+    for (const entry of entries) {
+      if (!entry.isDirectory() || !LOG_DIR_PATTERN.test(entry.name)) continue;
+      const date = entry.name;
+      const dateDir = path.join(memberDir, date);
+      const meta = readMeta(memberDir, date);
+      if (!meta || !meta.problems || !meta.problems.length) continue;
+
+      for (let i = 0; i < meta.problems.length; i++) {
+        const p = meta.problems[i];
         logs.push({
           member,
           date,
-          problem: parsed.problem || "未填写",
-          platform: parsed.platform || "未填写",
-          description: parsed.description || "",
-          takeaway: parsed.takeaway || "未填写",
-          difficulty: parsed.difficulty || "未标注",
-          code: parsed.code || "",
+          problem: p.name || "未填写",
+          platform: p.platform || "未填写",
+          description: readProblemFile(dateDir, `${i}-desc.md`),
+          takeaway: readProblemFile(dateDir, `${i}-takeaway.md`) || "未填写",
+          difficulty: p.difficulty || "未标注",
+          code: readProblemFile(dateDir, `${i}-solution.cpp`),
         });
       }
     }

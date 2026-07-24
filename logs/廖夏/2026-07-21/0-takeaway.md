@@ -1,19 +1,3 @@
-# 2026-07-21
-
-## 题目
-
-P5143
-
-## 平台
-
-洛谷
-
-## 难度
-
-普及-
-
-## 收获
-
 ```cpp
 #include<iostream>
 #include<algorithm>

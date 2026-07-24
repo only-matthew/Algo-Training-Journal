@@ -91,7 +91,7 @@ function updateAuthUI(user) {
 
 async function getFileSha(path, token) {
   const resp = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,
+    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${encodeURI(path)}?ref=${GITHUB_BRANCH}`,
     { headers: { Authorization: `Bearer ${token}` } },
   );
   if (resp.status === 404) return null;
@@ -102,7 +102,7 @@ async function getFileSha(path, token) {
 
 async function getFileContent(path, token) {
   const resp = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${path}?ref=${GITHUB_BRANCH}`,
+    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${encodeURI(path)}?ref=${GITHUB_BRANCH}`,
     { headers: { Authorization: `Bearer ${token}` } },
   );
   if (resp.status === 404) return null;
@@ -111,98 +111,9 @@ async function getFileContent(path, token) {
   return decodeURIComponent(escape(atob(data.content)));
 }
 
-function parseMarkdownToProblems(markdown) {
-  const blocks = markdown.split(/\r?\n---+\r?\n/);
-  return blocks.map((block) => {
-    const lines = block.split(/\r?\n/);
-    const sections = {};
-    let currentKey = null;
-    let buffer = [];
-
-    for (const line of lines) {
-      const headingMatch = line.match(/^##\s+(.+)\s*$/);
-      if (headingMatch) {
-        if (currentKey) sections[currentKey] = buffer.join("\n").trim();
-        currentKey = headingMatch[1].trim();
-        buffer = [];
-        continue;
-      }
-      if (currentKey) buffer.push(line);
-    }
-    if (currentKey) sections[currentKey] = buffer.join("\n").trim();
-
-    return {
-      problem: sections["题目"] || "",
-      platform: sections["平台"] || "洛谷",
-      difficulty: sections["难度"] || "未标注",
-      description: sections["题目描述"] || "",
-      takeaway: sections["收获"] || "",
-      code: sections["代码"] || "",
-    };
-  });
-}
-
-function populateProblems(parsed) {
-  const list = document.getElementById("problem-list");
-  list.innerHTML = "";
-  if (!parsed.length) {
-    list.appendChild(createProblemRow(0));
-    return;
-  }
-  parsed.forEach((p, i) => {
-    const row = createProblemRow(i);
-    row.querySelector(".problem-name").value = p.problem || "";
-    row.querySelector(".problem-platform").value = p.platform || "洛谷";
-    row.querySelector(".problem-difficulty").value = p.difficulty || "未标注";
-    row.querySelector(".problem-description").value = p.description || "";
-    row.querySelector(".problem-takeaway").value = p.takeaway || "";
-    row.querySelector(".problem-code").value = p.code || "";
-    list.appendChild(row);
-  });
-}
-
-async function onDateChange() {
-  const token = loadToken();
-  if (!token || !currentUser) return;
-
-  const date = document.getElementById("submit-date").value;
-  if (!date) return;
-
-  const mappedPath = `logs/${getMemberName(currentUser.login)}/${date}.md`;
-  const githubPath = `logs/${currentUser.login}/${date}.md`;
-
-  const btnSave = document.getElementById("btn-save");
-  const msgEl = document.getElementById("submit-msg");
-
-  try {
-    let content = await getFileContent(mappedPath, token);
-    if (!content) {
-      content = await getFileContent(githubPath, token);
-    }
-    const btnDelete = document.getElementById("btn-delete");
-    if (content) {
-      const parsed = parseMarkdownToProblems(content);
-      populateProblems(parsed);
-      btnSave.textContent = "更新记录";
-      msgEl.textContent = "📝 加载已有记录，修改后点击「更新记录」即可覆盖";
-      btnDelete.style.display = "";
-      btnDelete.onclick = () => handleDelete(date);
-    } else {
-      resetProblems();
-      btnSave.textContent = "提交到 GitHub";
-      msgEl.textContent = "";
-      btnDelete.style.display = "none";
-    }
-  } catch {
-    resetProblems();
-    btnSave.textContent = "提交到 GitHub";
-    msgEl.textContent = "";
-  }
-}
-
 async function deleteFile(path, message, token, sha) {
   const resp = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${path}`,
+    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${encodeURI(path)}`,
     {
       method: "DELETE",
       headers: {
@@ -231,7 +142,7 @@ async function commitFile(path, content, message, token, sha) {
   };
   if (sha) body.sha = sha;
   const resp = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${path}`,
+    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${encodeURI(path)}`,
     {
       method: "PUT",
       headers: {
@@ -254,6 +165,20 @@ async function ensureMemberDir(member, date, token) {
   if (!sha) {
     await commitFile(gitkeepPath, "", `chore: create directory for ${member}`, token, null);
   }
+}
+
+// ============================================================
+// Logs — new multi-file storage: meta.json + N-{desc,takeaway,solution}
+// ============================================================
+
+function metaFromProblems(problems) {
+  return {
+    problems: problems.map((p) => ({
+      name: p.problem,
+      platform: p.platform,
+      difficulty: p.difficulty,
+    })),
+  };
 }
 
 // ============================================================
@@ -330,11 +255,21 @@ function createProblemRow(index) {
       <div class="form-group">
         <label>难度</label>
         <select class="form-input problem-difficulty">
-          <option value="未标注">未标注</option>
-          <option value="入门">入门</option>
-          <option value="普及-">普及-</option>
-          <option value="普及/提高-">普及/提高-</option>
-          <option value="提高+/省选-">提高+/省选-</option>
+          <optgroup label="洛谷难度分级">
+            <option value="未标注">未标注</option>
+            <option value="入门">入门</option>
+            <option value="普及-">普及-</option>
+            <option value="普及/提高-">普及/提高-</option>
+            <option value="提高+/省选-">提高+/省选-</option>
+          </optgroup>
+          <optgroup label="Codeforces Rating 范围">
+            <option value="≤1199">≤1199</option>
+            <option value="1200-1399">1200-1399</option>
+            <option value="1400-1599">1400-1599</option>
+            <option value="1600-1899">1600-1899</option>
+            <option value="1900-2199">1900-2199</option>
+            <option value="≥2200">≥2200</option>
+          </optgroup>
         </select>
       </div>
     </div>
@@ -384,31 +319,85 @@ function collectProblems() {
   return problems;
 }
 
-function buildMarkdown(date, problems) {
-  const blocks = problems.map((p) => {
-    const parts = [
-      `## 题目`,
-      ``,
-      `${p.problem}`,
-      ``,
-      `## 平台`,
-      ``,
-      `${p.platform}`,
-      ``,
-      `## 难度`,
-      ``,
-      `${p.difficulty}`,
-    ];
-    if (p.description) {
-      parts.push(``, `## 题目描述`, ``, p.description);
+async function onDateChange() {
+  const token = loadToken();
+  if (!token || !currentUser) return;
+
+  const date = document.getElementById("submit-date").value;
+  if (!date) return;
+
+  const member = getMemberName(currentUser.login);
+  const baseDir = `logs/${member}/${date}`;
+  const githubBaseDir = `logs/${currentUser.login}/${date}`;
+
+  const btnSave = document.getElementById("btn-save");
+  const msgEl = document.getElementById("submit-msg");
+
+  try {
+    // Try to read meta.json
+    let metaPath = `${baseDir}/meta.json`;
+    let metaContent = await getFileContent(metaPath, token);
+    let actualBaseDir = baseDir;
+    if (!metaContent) {
+      metaPath = `${githubBaseDir}/meta.json`;
+      metaContent = await getFileContent(metaPath, token);
+      if (metaContent) actualBaseDir = githubBaseDir;
     }
-    parts.push(``, `## 收获`, ``, `${p.takeaway || "未填写"}`);
-    if (p.code) {
-      parts.push(``, `## 代码`, ``, p.code);
+
+    const btnDelete = document.getElementById("btn-delete");
+    if (metaContent) {
+      const meta = JSON.parse(metaContent);
+      const problems = [];
+      // Read each problem's individual files
+      for (let i = 0; i < meta.problems.length; i++) {
+        const p = meta.problems[i];
+        const desc = await getFileContent(`${actualBaseDir}/${i}-desc.md`, token);
+        const takeaway = await getFileContent(`${actualBaseDir}/${i}-takeaway.md`, token);
+        const code = await getFileContent(`${actualBaseDir}/${i}-solution.cpp`, token);
+        problems.push({
+          problem: p.name || "",
+          platform: p.platform || "洛谷",
+          difficulty: p.difficulty || "未标注",
+          description: desc || "",
+          takeaway: takeaway || "",
+          code: code || "",
+        });
+      }
+      populateProblems(problems);
+      btnSave.textContent = "更新记录";
+      msgEl.textContent = "📝 加载已有记录，修改后点击「更新记录」即可覆盖";
+      btnDelete.style.display = "";
+      btnDelete.onclick = () => handleDelete(date);
+    } else {
+      resetProblems();
+      btnSave.textContent = "提交到 GitHub";
+      msgEl.textContent = "";
+      btnDelete.style.display = "none";
     }
-    return parts.join("\n");
+  } catch {
+    resetProblems();
+    btnSave.textContent = "提交到 GitHub";
+    msgEl.textContent = "";
+  }
+}
+
+function populateProblems(parsed) {
+  const list = document.getElementById("problem-list");
+  list.innerHTML = "";
+  if (!parsed.length) {
+    list.appendChild(createProblemRow(0));
+    return;
+  }
+  parsed.forEach((p, i) => {
+    const row = createProblemRow(i);
+    row.querySelector(".problem-name").value = p.problem || "";
+    row.querySelector(".problem-platform").value = p.platform || "洛谷";
+    row.querySelector(".problem-difficulty").value = p.difficulty || "未标注";
+    row.querySelector(".problem-description").value = p.description || "";
+    row.querySelector(".problem-takeaway").value = p.takeaway || "";
+    row.querySelector(".problem-code").value = p.code || "";
+    list.appendChild(row);
   });
-  return [`# ${date}`, "", blocks.join("\n\n---\n\n"), ""].join("\n");
 }
 
 async function handleDelete(date) {
@@ -420,9 +409,8 @@ async function handleDelete(date) {
   if (!confirm(`确定要删除 ${date} 的训练记录吗？此操作不可撤销。`)) return;
 
   const member = getMemberName(currentUser.login);
-  const filename = `${date}.md`;
-  const mappedPath = `logs/${member}/${filename}`;
-  const githubPath = `logs/${currentUser.login}/${filename}`;
+  const memberDir = `logs/${member}/${date}`;
+  const githubDir = `logs/${currentUser.login}/${date}`;
 
   const msgEl = document.getElementById("submit-msg");
   msgEl.textContent = "删除中...";
@@ -430,17 +418,52 @@ async function handleDelete(date) {
   if (btnDelete) btnDelete.disabled = true;
 
   try {
-    let sha = await getFileSha(mappedPath, token);
-    let actualPath = mappedPath;
-    if (!sha) {
-      sha = await getFileSha(githubPath, token);
-      if (sha) actualPath = githubPath;
+    // Find which base dir has the meta.json
+    let metaSha = await getFileSha(`${memberDir}/meta.json`, token);
+    let baseDir = memberDir;
+    if (!metaSha) {
+      metaSha = await getFileSha(`${githubDir}/meta.json`, token);
+      if (metaSha) baseDir = githubDir;
     }
-    if (!sha) {
+    if (!metaSha) {
+      // Also try old single .md format
+      const oldSha = await getFileSha(`logs/${currentUser.login}/${date}.md`, token)
+        || await getFileSha(`${memberDir.replace(/\/[^/]+$/, '')}/${date}.md`, token);
+      if (oldSha) {
+        await deleteFile(
+          `logs/${currentUser.login}/${date}.md`,
+          `delete(${member}): remove training log for ${date}`,
+          token, oldSha
+        );
+        msgEl.textContent = "✅ 删除成功！等待自动部署（约 1 分钟）";
+        setTimeout(() => closeModal(true), 2000);
+        return;
+      }
       msgEl.textContent = "❌ 未找到该记录";
       return;
     }
-    await deleteFile(actualPath, `delete(${member}): remove training log for ${date}`, token, sha);
+
+    // Read meta to know how many problems exist
+    const metaContent = await getFileContent(`${baseDir}/meta.json`, token);
+    const meta = JSON.parse(metaContent);
+    const problemCount = meta.problems.length;
+
+    // Collect all files to delete
+    const filesToDelete = [{ path: `${baseDir}/meta.json`, sha: metaSha }];
+    for (let i = 0; i < problemCount; i++) {
+      const descSha = await getFileSha(`${baseDir}/${i}-desc.md`, token);
+      if (descSha) filesToDelete.push({ path: `${baseDir}/${i}-desc.md`, sha: descSha });
+      const takeawaySha = await getFileSha(`${baseDir}/${i}-takeaway.md`, token);
+      if (takeawaySha) filesToDelete.push({ path: `${baseDir}/${i}-takeaway.md`, sha: takeawaySha });
+      const codeSha = await getFileSha(`${baseDir}/${i}-solution.cpp`, token);
+      if (codeSha) filesToDelete.push({ path: `${baseDir}/${i}-solution.cpp`, sha: codeSha });
+    }
+
+    // Delete all files
+    for (const f of filesToDelete) {
+      await deleteFile(f.path, `delete(${member}): remove training log for ${date}`, token, f.sha);
+    }
+
     msgEl.textContent = "✅ 删除成功！等待自动部署（约 1 分钟）";
     setTimeout(() => closeModal(true), 2000);
   } catch (err) {
@@ -476,24 +499,69 @@ async function handleSubmit() {
 
   try {
     const member = getMemberName(currentUser.login);
-    const filename = `${date}.md`;
-    const mappedPath = `logs/${member}/${filename}`;
-    const githubPath = `logs/${currentUser.login}/${filename}`;
+    const baseDir = `logs/${member}/${date}`;
+    const memberName = member;
 
-    let sha = await getFileSha(mappedPath, token);
-    let actualPath = mappedPath;
-    if (!sha) {
-      sha = await getFileSha(githubPath, token);
-      if (sha) actualPath = githubPath;
+    // Build meta.json
+    const meta = metaFromProblems(problems);
+    const metaContent = JSON.stringify(meta, null, 2);
+
+    // Check if this is an edit (meta.json already exists)
+    let oldCount = 0;
+    const oldMetaContent = await getFileContent(`${baseDir}/meta.json`, token);
+    const metaSha = await getFileSha(`${baseDir}/meta.json`, token);
+    const isEdit = !!metaSha;
+    if (isEdit && oldMetaContent) {
+      const oldMeta = JSON.parse(oldMetaContent);
+      oldCount = oldMeta.problems.length;
     }
-    const isEdit = !!sha;
-    const markdown = buildMarkdown(date, problems);
-    const commitMsg = isEdit
-      ? `feat(${member}): update training log for ${date}`
-      : `feat(${member}): add training log for ${date}`;
 
+    const commitMsg = isEdit
+      ? `feat(${memberName}): update training log for ${date}`
+      : `feat(${memberName}): add training log for ${date}`;
+
+    // Ensure directory exists
     await ensureMemberDir(member, date, token);
-    await commitFile(actualPath, markdown, commitMsg, token, sha);
+
+    // Commit meta.json
+    await commitFile(`${baseDir}/meta.json`, metaContent, commitMsg, token, metaSha);
+
+    // Commit each problem's files
+    for (let i = 0; i < problems.length; i++) {
+      const p = problems[i];
+
+      // desc (optional)
+      const descSha = await getFileSha(`${baseDir}/${i}-desc.md`, token);
+      if (p.description) {
+        await commitFile(`${baseDir}/${i}-desc.md`, p.description, commitMsg, token, descSha);
+      } else if (descSha) {
+        await deleteFile(`${baseDir}/${i}-desc.md`, commitMsg, token, descSha);
+      }
+
+      // takeaway (required)
+      const takeawaySha = await getFileSha(`${baseDir}/${i}-takeaway.md`, token);
+      await commitFile(`${baseDir}/${i}-takeaway.md`, p.takeaway || "未填写", commitMsg, token, takeawaySha);
+
+      // code (optional)
+      const codeSha = await getFileSha(`${baseDir}/${i}-solution.cpp`, token);
+      if (p.code) {
+        await commitFile(`${baseDir}/${i}-solution.cpp`, p.code, commitMsg, token, codeSha);
+      } else if (codeSha) {
+        await deleteFile(`${baseDir}/${i}-solution.cpp`, commitMsg, token, codeSha);
+      }
+    }
+
+    // If number of problems decreased, clean up old files
+    if (isEdit && problems.length < oldCount) {
+      for (let i = problems.length; i < oldCount; i++) {
+        const descSha = await getFileSha(`${baseDir}/${i}-desc.md`, token);
+        if (descSha) await deleteFile(`${baseDir}/${i}-desc.md`, commitMsg, token, descSha);
+        const takeawaySha = await getFileSha(`${baseDir}/${i}-takeaway.md`, token);
+        if (takeawaySha) await deleteFile(`${baseDir}/${i}-takeaway.md`, commitMsg, token, takeawaySha);
+        const codeSha = await getFileSha(`${baseDir}/${i}-solution.cpp`, token);
+        if (codeSha) await deleteFile(`${baseDir}/${i}-solution.cpp`, commitMsg, token, codeSha);
+      }
+    }
 
     msgEl.textContent = isEdit
       ? "✅ 更新成功！等待自动部署（约 1 分钟）"
@@ -775,10 +843,65 @@ async function doRefresh(renderFn, getCurrentMember) {
 }
 
 // ============================================================
+// Theme Management
+// ============================================================
+
+const THEME_KEY = "theme";
+const THEME_LIGHT = "light";
+const THEME_DARK = "dark";
+
+function getSystemTheme() {
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? THEME_DARK : THEME_LIGHT;
+}
+
+function getTheme() {
+  const saved = localStorage.getItem(THEME_KEY);
+  return saved || getSystemTheme();
+}
+
+function applyTheme(theme) {
+  const html = document.documentElement;
+  if (theme === THEME_DARK) {
+    html.setAttribute("data-theme", THEME_DARK);
+  } else {
+    html.removeAttribute("data-theme");
+  }
+  updateThemeIcon(theme);
+}
+
+function updateThemeIcon(theme) {
+  const btn = document.getElementById("btn-theme");
+  if (!btn) return;
+  btn.textContent = theme === THEME_DARK ? "☀️" : "🌙";
+  btn.title = theme === THEME_DARK ? "切换为浅色模式" : "切换为暗色模式";
+}
+
+function toggleTheme() {
+  const current = getTheme();
+  const next = current === THEME_DARK ? THEME_LIGHT : THEME_DARK;
+  localStorage.setItem(THEME_KEY, next);
+  applyTheme(next);
+}
+
+function initTheme() {
+  applyTheme(getTheme());
+
+  // Listen for system theme changes — only take effect when user hasn't manually chosen
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    if (!localStorage.getItem(THEME_KEY)) {
+      applyTheme(getSystemTheme());
+    }
+  });
+}
+
+// ============================================================
 // Bootstrap
 // ============================================================
 
 (async function bootstrap() {
+  // 0. Theme
+  initTheme();
+
   // 1. Auth
   const token = loadToken();
   if (token) {
@@ -804,6 +927,7 @@ async function doRefresh(renderFn, getCurrentMember) {
   }
 
   // 2. Event bindings
+  document.getElementById("btn-theme").addEventListener("click", toggleTheme);
   document.getElementById("btn-login").addEventListener("click", login);
   document.getElementById("btn-logout").addEventListener("click", logout);
   document.getElementById("btn-submit").addEventListener("click", openModal);
