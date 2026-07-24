@@ -16,7 +16,7 @@ const MEMBER_MAP = {
   "only-matthew": "廖夏",
   "wzzzzhhhhh": "王梓豪",
   "seanist-isx": "郭一鸣",
-  // 新队员映射在这里添加："GitHub用户名": "真实姓名"
+  // 新队员映射在这里添加："GitHub用户名": nd"真实姓名"
 };
 
 function getMemberName(githubLogin) {
@@ -134,37 +134,61 @@ async function deleteFile(path, message, token, sha) {
   return resp.json();
 }
 
-async function commitFile(path, content, message, token, sha) {
-  const body = {
-    message,
-    content: btoa(unescape(encodeURIComponent(content))),
-    branch: GITHUB_BRANCH,
+async function commitTreeChanges(changes, message, token) {
+  const apiBase = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}`;
+  const headers = {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
   };
-  if (sha) body.sha = sha;
-  const resp = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${encodeURI(path)}`,
-    {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(body),
-    },
-  );
-  if (!resp.ok) {
-    const err = await resp.json();
-    throw new Error(err.message || `GitHub API: ${resp.status}`);
-  }
-  return resp.json();
-}
 
-async function ensureMemberDir(member, date, token) {
-  const gitkeepPath = `logs/${member}/.gitkeep`;
-  const sha = await getFileSha(gitkeepPath, token);
-  if (!sha) {
-    await commitFile(gitkeepPath, "", `chore: create directory for ${member}`, token, null);
-  }
+  const refResp = await fetch(`${apiBase}/git/ref/heads/${GITHUB_BRANCH}`, { headers });
+  if (!refResp.ok) throw new Error(`GitHub API: ${refResp.status}`);
+  const ref = await refResp.json();
+
+  const commitResp = await fetch(`${apiBase}/git/commits/${ref.object.sha}`, { headers });
+  if (!commitResp.ok) throw new Error(`GitHub API: ${commitResp.status}`);
+  const parentCommit = await commitResp.json();
+
+  const tree = await Promise.all(changes.map(async (change) => {
+    if (change.delete) {
+      return { path: change.path, mode: "100644", type: "blob", sha: null };
+    }
+
+    const blobResp = await fetch(`${apiBase}/git/blobs`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        content: btoa(unescape(encodeURIComponent(change.content))),
+        encoding: "base64",
+      }),
+    });
+    if (!blobResp.ok) throw new Error(`GitHub API: ${blobResp.status}`);
+    const blob = await blobResp.json();
+    return { path: change.path, mode: "100644", type: "blob", sha: blob.sha };
+  }));
+
+  const treeResp = await fetch(`${apiBase}/git/trees`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ base_tree: parentCommit.tree.sha, tree }),
+  });
+  if (!treeResp.ok) throw new Error(`GitHub API: ${treeResp.status}`);
+  const newTree = await treeResp.json();
+
+  const newCommitResp = await fetch(`${apiBase}/git/commits`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ message, tree: newTree.sha, parents: [ref.object.sha] }),
+  });
+  if (!newCommitResp.ok) throw new Error(`GitHub API: ${newCommitResp.status}`);
+  const newCommit = await newCommitResp.json();
+
+  const updateRefResp = await fetch(`${apiBase}/git/refs/heads/${GITHUB_BRANCH}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ sha: newCommit.sha, force: false }),
+  });
+  if (!updateRefResp.ok) throw new Error(`GitHub API: ${updateRefResp.status}`);
 }
 
 // ============================================================
@@ -520,48 +544,40 @@ async function handleSubmit() {
       ? `feat(${memberName}): update training log for ${date}`
       : `feat(${memberName}): add training log for ${date}`;
 
-    // Ensure directory exists
-    await ensureMemberDir(member, date, token);
+    const changes = [{ path: `${baseDir}/meta.json`, content: metaContent }];
 
-    // Commit meta.json
-    await commitFile(`${baseDir}/meta.json`, metaContent, commitMsg, token, metaSha);
-
-    // Commit each problem's files
     for (let i = 0; i < problems.length; i++) {
       const p = problems[i];
 
-      // desc (optional)
       const descSha = await getFileSha(`${baseDir}/${i}-desc.md`, token);
       if (p.description) {
-        await commitFile(`${baseDir}/${i}-desc.md`, p.description, commitMsg, token, descSha);
+        changes.push({ path: `${baseDir}/${i}-desc.md`, content: p.description });
       } else if (descSha) {
-        await deleteFile(`${baseDir}/${i}-desc.md`, commitMsg, token, descSha);
+        changes.push({ path: `${baseDir}/${i}-desc.md`, delete: true });
       }
 
-      // takeaway (required)
-      const takeawaySha = await getFileSha(`${baseDir}/${i}-takeaway.md`, token);
-      await commitFile(`${baseDir}/${i}-takeaway.md`, p.takeaway || "未填写", commitMsg, token, takeawaySha);
+      changes.push({ path: `${baseDir}/${i}-takeaway.md`, content: p.takeaway || "未填写" });
 
-      // code (optional)
       const codeSha = await getFileSha(`${baseDir}/${i}-solution.cpp`, token);
       if (p.code) {
-        await commitFile(`${baseDir}/${i}-solution.cpp`, p.code, commitMsg, token, codeSha);
+        changes.push({ path: `${baseDir}/${i}-solution.cpp`, content: p.code });
       } else if (codeSha) {
-        await deleteFile(`${baseDir}/${i}-solution.cpp`, commitMsg, token, codeSha);
+        changes.push({ path: `${baseDir}/${i}-solution.cpp`, delete: true });
       }
     }
 
-    // If number of problems decreased, clean up old files
     if (isEdit && problems.length < oldCount) {
       for (let i = problems.length; i < oldCount; i++) {
         const descSha = await getFileSha(`${baseDir}/${i}-desc.md`, token);
-        if (descSha) await deleteFile(`${baseDir}/${i}-desc.md`, commitMsg, token, descSha);
+        if (descSha) changes.push({ path: `${baseDir}/${i}-desc.md`, delete: true });
         const takeawaySha = await getFileSha(`${baseDir}/${i}-takeaway.md`, token);
-        if (takeawaySha) await deleteFile(`${baseDir}/${i}-takeaway.md`, commitMsg, token, takeawaySha);
+        if (takeawaySha) changes.push({ path: `${baseDir}/${i}-takeaway.md`, delete: true });
         const codeSha = await getFileSha(`${baseDir}/${i}-solution.cpp`, token);
-        if (codeSha) await deleteFile(`${baseDir}/${i}-solution.cpp`, commitMsg, token, codeSha);
+        if (codeSha) changes.push({ path: `${baseDir}/${i}-solution.cpp`, delete: true });
       }
     }
+
+    await commitTreeChanges(changes, commitMsg, token);
 
     msgEl.textContent = isEdit
       ? "✅ 更新成功！等待自动部署（约 1 分钟）"
@@ -672,7 +688,7 @@ function renderJournal(journal) {
       const card = document.createElement("article");
       card.className = "record";
       const takeawayHtml = log.takeaway ? renderMarkdown(log.takeaway) : "未填写";
-      const descHtml = log.description ? `<p class="record-desc">${escapeHtml(log.description)}</p>` : "";
+      const descHtml = log.description ? `<div class="record-desc">${renderMarkdown(log.description)}</div>` : "";
       const codeHtml = log.code
         ? `<pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre>`
         : "";
@@ -746,13 +762,21 @@ function renderJournal(journal) {
       return `\x00P${idx}\x00`;
     });
 
-    // 5. 对剩余内容 escape HTML
+    // 5. Markdown 标题。标题内容先转义，避免用户输入被当成 HTML 执行。
+    processed = processed.replace(/^ {0,3}(#{1,6})[ \t]+(.+?)\s*#*$/gm, (_, marks, heading) => {
+      const idx = preserved.length;
+      const level = marks.length;
+      preserved.push(`<h${level}>${escapeHtml(heading.trim())}</h${level}>`);
+      return `\x00P${idx}\x00`;
+    });
+
+    // 6. 对剩余内容 escape HTML
     processed = escapeHtml(processed);
 
-    // 6. 只给普通文本换行，避免把代码块中的换行变成 <br>
+    // 7. 只给普通文本换行，避免把代码块中的换行变成 <br>
     processed = processed.replace(/\n/g, "<br>");
 
-    // 7. 还原所有保留片段
+    // 8. 还原所有保留片段
     processed = processed.replace(/\x00P(\d+)\x00/g, (_, idx) => preserved[parseInt(idx)]);
 
     return processed;

@@ -11,10 +11,31 @@
 1. 打开 [训练日志页面](https://train.xialiao.org)
 2. 点击右上角 **「🔐 使用 GitHub 登录」**
 3. 登录后点击 **「📝 提交/修改记录」**
-4. 填写日期、题目（可添加多道题）→ 点击提交
-5. 数据每 **5 分钟自动刷新**（也可手动点击 🔄 刷新按钮）
+4. 填写日期、题目名称、平台、难度（支持 **洛谷分级** 和 **Codeforces Rating 范围**）、题目描述、收获、代码
+5. 点击提交 → 自动写入 GitHub 仓库
+6. 数据每 **5 分钟自动刷新**（也可手动点击 🔄 刷新按钮）
 
 > 支持 **代码语法高亮**（Prism.js）和 **LaTeX 数学公式**（KaTeX）
+>
+> 点击左侧的 🌙/☀️ 按钮可手动切换**浅色/暗色模式**（默认跟随系统）
+
+---
+
+## 存储格式
+
+每条训练记录存储为一个日期目录，题目信息、描述、心得、代码分别存放：
+
+```
+logs/廖夏/2026-07-24/
+├── meta.json              # 题目元数据（名称、平台、难度）
+├── 0-desc.md              # 第 1 题题目描述
+├── 0-takeaway.md          # 第 1 题收获/心得（Markdown）
+├── 0-solution.cpp         # 第 1 题代码
+├── 1-desc.md              # 第 2 题 …
+└── ...
+```
+
+这样即使描述中包含 `#`、`##`、`---` 等 Markdown 语法（如粘贴 洛谷 原题），也不会与元数据混淆。
 
 ---
 
@@ -24,6 +45,7 @@
 
 1. 拥有此仓库的管理权限
 2. 拥有 Cloudflare 账户（且域名走 Cloudflare）
+3. 在 `app.js` 的 `MEMBER_MAP` 中配置队员的 GitHub 用户名 → 真实姓名映射
 
 ### 第一步：注册 GitHub OAuth App
 
@@ -87,11 +109,19 @@ npx serve site
 ├── .github/workflows/deploy.yml  # GitHub Actions 自动部署
 ├── workers/oauth.js               # Cloudflare Worker（OAuth token 交换）
 ├── index.html                     # 主页面
-├── app.js                         # 前端逻辑（OAuth、提交、渲染、刷新）
-├── style.css                      # 样式（含深色模式）
-├── scripts/generate-data.js       # 从 Markdown 生成 data.json
+├── app.js                         # 前端逻辑（OAuth、主题切换、提交、渲染、刷新）
+├── style.css                      # 样式（含浅色/暗色模式）
+├── scripts/
+│   ├── generate-data.js           # 从日志目录生成 site/data.json
+│   └── migrate-logs.js            # 旧格式 .md → 新目录格式的一次性迁移脚本
 ├── logs/                          # 队员训练日志
 │   ├── 廖夏/
+│   │   ├── 2026-07-24/
+│   │   │   ├── meta.json
+│   │   │   ├── 0-desc.md
+│   │   │   ├── 0-takeaway.md
+│   │   │   └── 0-solution.cpp
+│   │   └── ...
 │   ├── 郭一鸣/
 │   └── 王梓豪/
 └── site/                          # 构建产物（.gitignore）

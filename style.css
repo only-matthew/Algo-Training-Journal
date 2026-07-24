@@ -176,6 +176,38 @@ select {
   margin-bottom: 0;
 }
 
+.record-takeaway h1,
+.record-takeaway h2,
+.record-takeaway h3,
+.record-takeaway h4,
+.record-takeaway h5,
+.record-takeaway h6 {
+  margin: 14px 0 6px;
+  line-height: 1.35;
+}
+
+.record-takeaway h1 {
+  font-size: 1.35em;
+}
+
+.record-takeaway h2 {
+  font-size: 1.2em;
+}
+
+.record-takeaway h3 {
+  font-size: 1.08em;
+}
+
+.record-takeaway h4,
+.record-takeaway h5,
+.record-takeaway h6 {
+  font-size: 1em;
+}
+
+.record-desc {
+  margin-bottom: 10px;
+}
+
 /* 可折叠的记录卡片 */
 .record-title-clickable {
   cursor: pointer;
