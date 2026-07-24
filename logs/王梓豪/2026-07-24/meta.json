@@ -4,6 +4,11 @@
       "name": "新型冠状病毒（COVID19）传播",
       "platform": "其他",
       "difficulty": "未标注"
+    },
+    {
+      "name": "P1012",
+      "platform": "洛谷",
+      "difficulty": "普及/提高-"
     }
   ]
 }
