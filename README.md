@@ -1,127 +1,206 @@
 # Algo Training Journal
 
-这是我们的 **ICPC 算法训练记录打卡仓库**，用于记录每一次刷题、见证每一步前进。
+这是一个面向 ICPC 队伍的算法训练日志网站。队员不需要学习 Git，可以直接使用 GitHub 账号登录、填写训练记录和查看队伍统计。
 
-队员**无需学习 Git**，在页面上用 GitHub 账号登录后即可填写训练记录，自动产生 Git commit。
+线上地址：[https://train.xialiao.org](https://train.xialiao.org)
 
----
+## 功能概览
 
-## 队员使用方式
+- GitHub OAuth 登录，并限制为队伍白名单成员。
+- 提交、修改和删除每日训练记录。
+- 记录题目名称、平台、难度、题目描述、心得和 C++ 代码。
+- 总览页面：训练记录、队员筛选、年度热力图、近 30 天统计。
+- 训练分析页面：按队员查看某日、某月或自定义时间段的做题情况。
+- Markdown 标题、代码块、C++ 语法高亮和 LaTeX 公式渲染。
+- 记录内容分区显示，题目描述、心得和代码之间只在相邻内容存在时显示分割线。
 
-1. 打开 [训练日志页面](https://train.xialiao.org)
-2. 点击右上角 **「🔐 使用 GitHub 登录」**
-3. 登录后点击 **「📝 提交/修改记录」**
-4. 填写日期、题目名称、平台、难度（支持 **洛谷分级** 和 **Codeforces Rating 范围**）、题目描述、收获、代码
-5. 点击提交 → 自动写入 GitHub 仓库
-6. 数据每 **5 分钟自动刷新**（也可手动点击 🔄 刷新按钮）
+## 使用方式
 
-> 支持 **代码语法高亮**（Prism.js）和 **LaTeX 数学公式**（KaTeX）
->
-> 点击左侧的 🌙/☀️ 按钮可手动切换**浅色/暗色模式**（默认跟随系统）
+1. 打开训练日志页面。
+2. 点击右上角“使用 GitHub 登录”。
+3. 登录后点击“提交/修改记录”。
+4. 选择训练日期，填写一道或多道题目。
+5. 点击“提交到 GitHub”。
+6. 等待 GitHub Actions 完成部署，页面数据会自动更新，也可以点击刷新按钮。
 
----
+“训练分析”位于页面顶部导航中。选择队员和时间范围后，可以查看该范围内的题数、训练天数、涉及队员和具体题目明细。
 
-## 存储格式
+## 整体架构
 
-每条训练记录存储为一个日期目录，题目信息、描述、心得、代码分别存放：
+项目是一个无后端服务器的静态站点，核心数据流如下：
 
+```text
+logs/姓名/年/月/日/
+        │
+        │ npm run generate
+        ▼
+site/data.json + site/index.html + site/app.js + site/style.css
+        │
+        │ GitHub Pages
+        ▼
+训练日志网站
 ```
-logs/廖夏/2026-07-24/
-├── meta.json              # 题目元数据（名称、平台、难度）
-├── 0-desc.md              # 第 1 题题目描述
-├── 0-takeaway.md          # 第 1 题收获/心得（Markdown）
-├── 0-solution.cpp         # 第 1 题代码
-├── 1-desc.md              # 第 2 题 …
-└── ...
+
+登录和写入流程与静态展示分开：
+
+```text
+浏览器 → GitHub OAuth → Cloudflare Worker → access_token
+浏览器 → GitHub API → 仓库内容和 Git Data API
+GitHub push → Actions 构建 → GitHub Pages 部署
 ```
 
-这样即使描述中包含 `#`、`##`、`---` 等 Markdown 语法（如粘贴 洛谷 原题），也不会与元数据混淆。
+## 数据存储
 
----
+每个队员使用姓名作为一级目录，日期使用年、月、日三级目录：
 
-## 管理员部署指南
+```text
+logs/
+└── 廖夏/
+    └── 2026/
+        └── 07/
+            └── 24/
+                ├── meta.json
+                ├── 0-desc.md
+                ├── 0-takeaway.md
+                └── 0-solution.cpp
+```
 
-### 前置条件
+文件含义：
 
-1. 拥有此仓库的管理权限
-2. 拥有 Cloudflare 账户（且域名走 Cloudflare）
-3. 在 `app.js` 的 `MEMBER_MAP` 中配置队员的 GitHub 用户名 → 真实姓名映射
+- `meta.json`：题目名称、平台和难度。
+- `N-desc.md`：第 N 道题的题目描述。
+- `N-takeaway.md`：第 N 道题的心得或题解。
+- `N-solution.cpp`：第 N 道题的 C++ 代码。
 
-### 第一步：注册 GitHub OAuth App
+描述、心得和代码分别保存，因此其中包含 Markdown 标题、分隔线或代码块时，不会影响其他字段的读取。
 
-1. 打开 [GitHub Settings → Developer settings → OAuth Apps](https://github.com/settings/developers)
-2. 点击 **New OAuth App**
-3. 填写：
-   - **Application name**: `Algo Training Journal`（任意）
-   - **Homepage URL**: `https://train.xialiao.org`
-   - **Authorization callback URL**: `https://algo-oauth.YOUR.workers.dev`（先随便填，创建 Worker 后再改）
-4. 注册完成后生成 `Client Secret`，记录 `Client ID` 和 `Client Secret`
+### 数据迁移
 
-### 第二步：部署 Cloudflare Worker
+旧的 `logs/姓名/YYYY-MM-DD/` 目录可以迁移到新结构：
 
-1. 登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)
-2. 进入 **Workers & Pages → Create → Create Worker**
-3. 将 `workers/oauth.js` 的内容粘贴进去
-4. 在 Worker 设置 → **Variables and Secrets** 中添加两个 Secret：
-   - `GITHUB_CLIENT_ID` = 第一步的 Client ID
-   - `GITHUB_CLIENT_SECRET` = 第一步的 Client Secret
-5. 点击 **Deploy**
+```bash
+npm run migrate:date-layout
+```
 
-### 第三步：配置 Worker 路由
+迁移脚本只移动旧日期目录；如果目标目录已经存在，会直接报错并停止，不会覆盖数据。
 
-在 Cloudflare Dashboard 进入你的域名 → **Workers Routes**，添加路由指向刚才的 Worker。
+项目还保留了 [migrate-logs.js](scripts/migrate-logs.js)，用于更早期的单文件 Markdown 格式迁移。
 
-### 第四步：更新 OAuth App 回调地址
+## 提交流程
 
-回到 GitHub OAuth App 设置，将 **Authorization callback URL** 改为 Worker 的真实地址。
+前端提交新记录时会：
 
-### 第五步：修改 `app.js` 中的配置
+1. 使用姓名和日期生成 `logs/姓名/YYYY/MM/DD/` 路径。
+2. 为所有要写入的文件创建 Git blob。
+3. 创建新的 Git tree。
+4. 创建一个 commit。
+5. 更新 `main` 分支指针。
+
+因此，一次新增或更新多文件记录只会产生一个 Git commit。目录不需要单独创建，Git tree 会自动建立路径。
+
+读取和编辑记录时，前端会优先读取新年月日路径，并兼容旧日期目录，便于迁移过程不中断使用。
+
+## GitHub Actions
+
+工作流位于 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)。当 `main` 或 `master` 分支收到 push 后，Actions 会：
+
+1. 使用 Node.js 24 检出仓库。
+2. 执行 `npm run generate`。
+3. 生成 `site` 部署目录。
+4. 上传 GitHub Pages artifact。
+5. 使用 `actions/deploy-pages` 发布网站。
+
+Actions 只负责构建和部署，不执行 `git commit` 或 `git push`，也不会修改训练日志。
+
+## OAuth 配置
+
+OAuth 交换由 [workers/oauth.js](workers/oauth.js) 完成。Worker 使用 GitHub OAuth App 的 client secret 将授权码换成 access token，再将 token 通过 URL hash 返回前端。
+
+前端的 GitHub 用户名和日志姓名映射位于 [app.js](app.js) 的 `MEMBER_MAP`：
 
 ```js
-const GITHUB_CLIENT_ID = "___YOUR_GITHUB_CLIENT_ID___";
-const OAUTH_WORKER_URL = "https://algo-oauth.YOUR.workers.dev";
+const MEMBER_MAP = {
+  "only-matthew": "廖夏",
+  "wzzzzhhhhh": "王梓豪",
+  "seanist-isx": "郭一鸣",
+};
 ```
 
-### 第六步：启用 GitHub Pages
+新增队员需要同时完成：
 
-仓库 Settings → Pages → Source = **GitHub Actions**
+1. 在 `MEMBER_MAP` 中加入映射。
+2. 为该账号授予仓库写权限。
+3. 让队员接受 GitHub Collaborator 邀请。
 
----
+## 部署配置
+
+### GitHub OAuth App
+
+在 GitHub 的 **Settings → Developer settings → OAuth Apps** 创建 OAuth App：
+
+- Homepage URL：`https://train.xialiao.org`
+- Authorization callback URL：Cloudflare Worker 的公开地址，例如 `https://algo-oauth.xialiao.org`
+- Scope：`public_repo`
+
+### Cloudflare Worker
+
+在 Worker 的 Secrets 中配置：
+
+- `GITHUB_CLIENT_ID`
+- `GITHUB_CLIENT_SECRET`
+
+对应代码和 Wrangler 配置分别位于：
+
+- [workers/oauth.js](workers/oauth.js)
+- [workers/wrangler.toml](workers/wrangler.toml)
+
+### GitHub Pages
+
+仓库设置中选择 **Settings → Pages → Source = GitHub Actions**。
 
 ## 本地开发
+
+环境要求：Node.js 24 或更高版本。
 
 ```bash
 git clone https://github.com/only-matthew/Algo-Training-Journal.git
 cd Algo-Training-Journal
 
-# 生成静态站点（需要 Node.js 24+）
+# 生成 site/ 和 site/data.json
 npm run generate
 
 # 本地预览
 npx serve site
 ```
 
----
+目录迁移命令：
+
+```bash
+npm run migrate:date-layout
+```
 
 ## 项目结构
 
-```
-├── .github/workflows/deploy.yml  # GitHub Actions 自动部署
-├── workers/oauth.js               # Cloudflare Worker（OAuth token 交换）
-├── index.html                     # 主页面
-├── app.js                         # 前端逻辑（OAuth、主题切换、提交、渲染、刷新）
-├── style.css                      # 样式（含浅色/暗色模式）
+```text
+├── .github/workflows/deploy.yml  # GitHub Pages 构建与部署
+├── index.html                    # 总览和训练分析页面结构
+├── app.js                        # OAuth、GitHub API、提交、渲染和刷新逻辑
+├── style.css                     # 页面、表单、记录和分析视图样式
 ├── scripts/
-│   ├── generate-data.js           # 从日志目录生成 site/data.json
-│   └── migrate-logs.js            # 旧格式 .md → 新目录格式的一次性迁移脚本
-├── logs/                          # 队员训练日志
-│   ├── 廖夏/
-│   │   ├── 2026-07-24/
-│   │   │   ├── meta.json
-│   │   │   ├── 0-desc.md
-│   │   │   ├── 0-takeaway.md
-│   │   │   └── 0-solution.cpp
-│   │   └── ...
-│   ├── 郭一鸣/
-│   └── 王梓豪/
-└── site/                          # 构建产物（.gitignore）
+│   ├── generate-data.js           # logs/ → site/data.json
+│   ├── migrate-date-layout.js     # YYYY-MM-DD → YYYY/MM/DD
+│   └── migrate-logs.js            # 旧单文件 Markdown 格式迁移
+├── workers/
+│   ├── oauth.js                   # GitHub OAuth token 交换
+│   └── wrangler.toml              # Worker 配置
+├── logs/                          # 训练日志源数据
+└── site/                          # 构建产物，已被 .gitignore 忽略
+```
+
+## 当前边界
+
+- 页面展示使用构建后的 `site/data.json`，不是实时读取 GitHub 仓库。
+- 记录提交由浏览器直接调用 GitHub API 完成，需要队员拥有仓库写权限。
+- 页面 token 当前保存在浏览器 `localStorage` 中。
+- 连续并发提交可能产生分支引用冲突，需要重新加载最新页面后重试。
+- 新增和更新记录使用 Git Data API 合并为单个 commit；删除记录仍沿用逐文件删除流程，删除多文件记录时可能产生多个 commit。

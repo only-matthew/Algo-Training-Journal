@@ -111,29 +111,6 @@ async function getFileContent(path, token) {
   return decodeURIComponent(escape(atob(data.content)));
 }
 
-async function deleteFile(path, message, token, sha) {
-  const resp = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${encodeURI(path)}`,
-    {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        message,
-        sha,
-        branch: GITHUB_BRANCH,
-      }),
-    },
-  );
-  if (!resp.ok) {
-    const err = await resp.json();
-    throw new Error(err.message || `GitHub API: ${resp.status}`);
-  }
-  return resp.json();
-}
-
 async function commitTreeChanges(changes, message, token) {
   const apiBase = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}`;
   const headers = {
@@ -253,6 +230,23 @@ function toDateString(date) {
   return `${y}-${m}-${d}`;
 }
 
+function dateLogPath(member, date) {
+  const [year, month, day] = date.split("-");
+  return `logs/${member}/${year}/${month}/${day}`;
+}
+
+function legacyDateLogPath(member, date) {
+  return `logs/${member}/${date}`;
+}
+
+function logPathCandidates(member, date, githubLogin) {
+  const names = [...new Set([member, githubLogin].filter(Boolean))];
+  return [
+    ...names.map((name) => dateLogPath(name, date)),
+    ...names.map((name) => legacyDateLogPath(name, date)),
+  ];
+}
+
 function createProblemRow(index) {
   const div = document.createElement("div");
   div.className = "problem-block";
@@ -351,21 +345,21 @@ async function onDateChange() {
   if (!date) return;
 
   const member = getMemberName(currentUser.login);
-  const baseDir = `logs/${member}/${date}`;
-  const githubBaseDir = `logs/${currentUser.login}/${date}`;
+  const candidates = logPathCandidates(member, date, currentUser.login);
 
   const btnSave = document.getElementById("btn-save");
   const msgEl = document.getElementById("submit-msg");
 
   try {
     // Try to read meta.json
-    let metaPath = `${baseDir}/meta.json`;
-    let metaContent = await getFileContent(metaPath, token);
-    let actualBaseDir = baseDir;
-    if (!metaContent) {
-      metaPath = `${githubBaseDir}/meta.json`;
-      metaContent = await getFileContent(metaPath, token);
-      if (metaContent) actualBaseDir = githubBaseDir;
+    let metaContent = null;
+    let actualBaseDir = candidates[0];
+    for (const candidate of candidates) {
+      metaContent = await getFileContent(`${candidate}/meta.json`, token);
+      if (metaContent) {
+        actualBaseDir = candidate;
+        break;
+      }
     }
 
     const btnDelete = document.getElementById("btn-delete");
@@ -433,8 +427,7 @@ async function handleDelete(date) {
   if (!confirm(`确定要删除 ${date} 的训练记录吗？此操作不可撤销。`)) return;
 
   const member = getMemberName(currentUser.login);
-  const memberDir = `logs/${member}/${date}`;
-  const githubDir = `logs/${currentUser.login}/${date}`;
+  const candidates = logPathCandidates(member, date, currentUser.login);
 
   const msgEl = document.getElementById("submit-msg");
   msgEl.textContent = "删除中...";
@@ -443,21 +436,33 @@ async function handleDelete(date) {
 
   try {
     // Find which base dir has the meta.json
-    let metaSha = await getFileSha(`${memberDir}/meta.json`, token);
-    let baseDir = memberDir;
-    if (!metaSha) {
-      metaSha = await getFileSha(`${githubDir}/meta.json`, token);
-      if (metaSha) baseDir = githubDir;
+    let metaSha = null;
+    let baseDir = candidates[0];
+    for (const candidate of candidates) {
+      metaSha = await getFileSha(`${candidate}/meta.json`, token);
+      if (metaSha) {
+        baseDir = candidate;
+        break;
+      }
     }
     if (!metaSha) {
       // Also try old single .md format
-      const oldSha = await getFileSha(`logs/${currentUser.login}/${date}.md`, token)
-        || await getFileSha(`${memberDir.replace(/\/[^/]+$/, '')}/${date}.md`, token);
-      if (oldSha) {
-        await deleteFile(
-          `logs/${currentUser.login}/${date}.md`,
+      const oldPaths = [
+        `logs/${currentUser.login}/${date}.md`,
+        `logs/${member}/${date}.md`,
+      ];
+      let oldPath = null;
+      for (const candidate of oldPaths) {
+        if (await getFileSha(candidate, token)) {
+          oldPath = candidate;
+          break;
+        }
+      }
+      if (oldPath) {
+        await commitTreeChanges(
+          [{ path: oldPath, delete: true }],
           `delete(${member}): remove training log for ${date}`,
-          token, oldSha
+          token,
         );
         msgEl.textContent = "✅ 删除成功！等待自动部署（约 1 分钟）";
         setTimeout(() => closeModal(true), 2000);
@@ -473,20 +478,21 @@ async function handleDelete(date) {
     const problemCount = meta.problems.length;
 
     // Collect all files to delete
-    const filesToDelete = [{ path: `${baseDir}/meta.json`, sha: metaSha }];
+    const filesToDelete = [{ path: `${baseDir}/meta.json`, delete: true }];
     for (let i = 0; i < problemCount; i++) {
       const descSha = await getFileSha(`${baseDir}/${i}-desc.md`, token);
-      if (descSha) filesToDelete.push({ path: `${baseDir}/${i}-desc.md`, sha: descSha });
+      if (descSha) filesToDelete.push({ path: `${baseDir}/${i}-desc.md`, delete: true });
       const takeawaySha = await getFileSha(`${baseDir}/${i}-takeaway.md`, token);
-      if (takeawaySha) filesToDelete.push({ path: `${baseDir}/${i}-takeaway.md`, sha: takeawaySha });
+      if (takeawaySha) filesToDelete.push({ path: `${baseDir}/${i}-takeaway.md`, delete: true });
       const codeSha = await getFileSha(`${baseDir}/${i}-solution.cpp`, token);
-      if (codeSha) filesToDelete.push({ path: `${baseDir}/${i}-solution.cpp`, sha: codeSha });
+      if (codeSha) filesToDelete.push({ path: `${baseDir}/${i}-solution.cpp`, delete: true });
     }
 
-    // Delete all files
-    for (const f of filesToDelete) {
-      await deleteFile(f.path, `delete(${member}): remove training log for ${date}`, token, f.sha);
-    }
+    await commitTreeChanges(
+      filesToDelete,
+      `delete(${member}): remove training log for ${date}`,
+      token,
+    );
 
     msgEl.textContent = "✅ 删除成功！等待自动部署（约 1 分钟）";
     setTimeout(() => closeModal(true), 2000);
@@ -523,7 +529,7 @@ async function handleSubmit() {
 
   try {
     const member = getMemberName(currentUser.login);
-    const baseDir = `logs/${member}/${date}`;
+    const baseDir = dateLogPath(member, date);
     const memberName = member;
 
     // Build meta.json
@@ -596,6 +602,11 @@ async function handleSubmit() {
 
 function renderJournal(journal) {
   const { members, logs, heatmap, recent30 } = journal;
+  const analysisState = {
+    member: document.getElementById("analysis-member").value || "all",
+    start: document.getElementById("analysis-start").value,
+    end: document.getElementById("analysis-end").value,
+  };
 
   function levelOf(count) {
     if (!count) return 0;
@@ -687,10 +698,14 @@ function renderJournal(journal) {
     for (const log of filtered) {
       const card = document.createElement("article");
       card.className = "record";
-      const takeawayHtml = log.takeaway ? renderMarkdown(log.takeaway) : "未填写";
-      const descHtml = log.description ? `<div class="record-desc">${renderMarkdown(log.description)}</div>` : "";
+      const descHtml = log.description
+        ? `<div class="record-section record-desc">${renderMarkdown(log.description)}</div>`
+        : "";
+      const takeawayHtml = log.takeaway
+        ? `<div class="record-section record-takeaway-text">${renderMarkdown(log.takeaway)}</div>`
+        : "";
       const codeHtml = log.code
-        ? `<pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre>`
+        ? `<div class="record-section record-code"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div>`
         : "";
 
       card.innerHTML = `
@@ -799,10 +814,141 @@ function renderJournal(journal) {
     memberSelect.appendChild(option);
   }
 
+  const analysisMember = document.getElementById("analysis-member");
+  while (analysisMember.options.length > 1) analysisMember.remove(1);
+  for (const member of uniqueMembers) {
+    const option = document.createElement("option");
+    option.value = member;
+    option.textContent = member;
+    analysisMember.appendChild(option);
+  }
+  analysisMember.value = uniqueMembers.includes(analysisState.member)
+    ? analysisState.member
+    : "all";
+
+  function renderAnalysis() {
+    const selectedMember = analysisMember.value;
+    const startValue = document.getElementById("analysis-start").value;
+    const endValue = document.getElementById("analysis-end").value;
+    const periodLabel = startValue && endValue
+      ? `${startValue} 至 ${endValue}`
+      : "请选择开始和结束日期";
+
+    const filtered = logs.filter((log) => {
+      const memberMatches = selectedMember === "all" || log.member === selectedMember;
+      return memberMatches && startValue && endValue && log.date >= startValue && log.date <= endValue;
+    });
+
+    document.getElementById("analysis-total").textContent = String(filtered.length);
+    document.getElementById("analysis-days").textContent = String(new Set(filtered.map((log) => log.date)).size);
+    document.getElementById("analysis-members").textContent = String(new Set(filtered.map((log) => log.member)).size);
+    document.getElementById("analysis-summary").textContent = `${selectedMember === "all" ? "全队" : selectedMember} · ${periodLabel} · 共 ${filtered.length} 题`;
+
+    const recordsRoot = document.getElementById("analysis-records");
+    recordsRoot.innerHTML = "";
+    if (!filtered.length) {
+      recordsRoot.textContent = startValue && endValue ? "该时间范围暂无记录。" : "请选择开始和结束日期。";
+      return;
+    }
+
+    for (const log of filtered) {
+      const card = document.createElement("article");
+      card.className = "record analysis-record";
+      card.innerHTML = `
+        <div class="record-head">
+          <time>${escapeHtml(log.date)}</time>
+          <span>${escapeHtml(log.member)}</span>
+        </div>
+        <h3 class="record-title">${escapeHtml(log.problem)}</h3>
+        <div class="record-meta">平台：${escapeHtml(log.platform)} ｜ 难度：${escapeHtml(log.difficulty)}</div>
+      `;
+      recordsRoot.appendChild(card);
+    }
+  }
+
+  analysisMember.onchange = renderAnalysis;
+  const analysisStart = document.getElementById("analysis-start");
+  const analysisEnd = document.getElementById("analysis-end");
+  const presetButtons = document.querySelectorAll(".analysis-preset");
+  const calendarTriggers = document.querySelectorAll(".analysis-calendar-trigger");
+
+  function startOfToday() {
+    return new Date(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+  }
+
+  function presetRange(range) {
+    const end = startOfToday();
+    const start = new Date(end);
+
+    if (range === "week") {
+      start.setDate(start.getDate() - 6);
+    } else if (range === "month") {
+      start.setDate(1);
+    }
+
+    return { start: toDateString(start), end: toDateString(end) };
+  }
+
+  function updateRangePresetState() {
+    for (const button of presetButtons) {
+      const range = presetRange(button.dataset.range);
+      const isActive = analysisStart.value === range.start && analysisEnd.value === range.end;
+      button.classList.toggle("active", isActive);
+      button.setAttribute("aria-pressed", String(isActive));
+    }
+  }
+
+  function syncAnalysisDateRange(changedInput) {
+    if (analysisStart.value && analysisEnd.value && analysisStart.value > analysisEnd.value) {
+      if (changedInput === analysisStart) {
+        analysisEnd.value = analysisStart.value;
+      } else {
+        analysisStart.value = analysisEnd.value;
+      }
+    }
+    analysisStart.max = analysisEnd.value || "";
+    analysisEnd.min = analysisStart.value || "";
+  }
+
+  for (const input of [analysisStart, analysisEnd]) {
+    input.onchange = () => {
+      syncAnalysisDateRange(input);
+      updateRangePresetState();
+      renderAnalysis();
+    };
+  }
+  for (const button of presetButtons) {
+    button.onclick = () => {
+      const range = presetRange(button.dataset.range);
+      analysisStart.value = range.start;
+      analysisEnd.value = range.end;
+      syncAnalysisDateRange();
+      updateRangePresetState();
+      renderAnalysis();
+    };
+  }
+  for (const button of calendarTriggers) {
+    button.onclick = () => {
+      const input = document.getElementById(button.dataset.dateTarget);
+      if (typeof input.showPicker === "function") {
+        input.showPicker();
+      } else {
+        input.focus();
+      }
+    };
+  }
+  const today = toDateString(new Date());
+  analysisStart.value = analysisState.start || today;
+  analysisEnd.value = analysisState.end || today;
+  syncAnalysisDateRange();
+  updateRangePresetState();
+  renderAnalysis();
+
   function render(member) {
     renderStats(member);
     renderHeatmap(member);
     renderLogs(member);
+    renderAnalysis();
   }
 
   render("all");
@@ -918,6 +1064,28 @@ function initTheme() {
   });
 }
 
+function initPageNavigation() {
+  const buttons = document.querySelectorAll(".page-nav-btn");
+  const pages = document.querySelectorAll(".page-view");
+
+  function showRequestedPage() {
+    const pageId = window.location.hash === "#analysis" ? "analysis-page" : "overview-page";
+    for (const page of pages) page.hidden = page.id !== pageId;
+    for (const button of buttons) button.classList.toggle("active", button.dataset.page === pageId);
+  }
+
+  for (const button of buttons) {
+    button.addEventListener("click", () => {
+      const hash = `#${button.dataset.page.replace("-page", "")}`;
+      if (window.location.hash === hash) return;
+      window.location.hash = hash;
+    });
+  }
+
+  window.addEventListener("hashchange", showRequestedPage);
+  showRequestedPage();
+}
+
 // ============================================================
 // Bootstrap
 // ============================================================
@@ -925,6 +1093,7 @@ function initTheme() {
 (async function bootstrap() {
   // 0. Theme
   initTheme();
+  initPageNavigation();
 
   // 1. Auth
   const token = loadToken();

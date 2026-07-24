@@ -1,11 +1,14 @@
 const fs = require("fs");
 const path = require("path");
+const crypto = require("crypto");
 
 const ROOT = path.join(__dirname, "..");
 const LOGS_DIR = path.join(ROOT, "logs");
 const OUTPUT_DIR = path.join(ROOT, "site");
-const LOG_DIR_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-const MS_PER_DAY = 24 * 60 * 60 * 1000;
+const LEGACY_LOG_DIR_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+const YEAR_PATTERN = /^\d{4}$/;
+const MONTH_PATTERN = /^(0[1-9]|1[0-2])$/;
+const DAY_PATTERN = /^(0[1-9]|[12]\d|3[01])$/;
 
 function toDateString(date) {
   const y = date.getFullYear();
@@ -14,8 +17,8 @@ function toDateString(date) {
   return `${y}-${m}-${d}`;
 }
 
-function readMeta(memberDir, dateDir) {
-  const metaPath = path.join(memberDir, dateDir, "meta.json");
+function readMeta(dateDir) {
+  const metaPath = path.join(dateDir, "meta.json");
   if (!fs.existsSync(metaPath)) return null;
   return JSON.parse(fs.readFileSync(metaPath, "utf8"));
 }
@@ -24,6 +27,25 @@ function readProblemFile(dir, filename) {
   const p = path.join(dir, filename);
   if (!fs.existsSync(p)) return "";
   return fs.readFileSync(p, "utf8").trim();
+}
+
+function appendDateLogs(logs, member, date, dateDir) {
+  const meta = readMeta(dateDir);
+  if (!meta || !meta.problems || !meta.problems.length) return;
+
+  for (let i = 0; i < meta.problems.length; i++) {
+    const p = meta.problems[i];
+    logs.push({
+      member,
+      date,
+      problem: p.name || "未填写",
+      platform: p.platform || "未填写",
+      description: readProblemFile(dateDir, `${i}-desc.md`),
+      takeaway: readProblemFile(dateDir, `${i}-takeaway.md`) || "未填写",
+      difficulty: p.difficulty || "未标注",
+      code: readProblemFile(dateDir, `${i}-solution.cpp`),
+    });
+  }
 }
 
 function listMembers() {
@@ -44,24 +66,24 @@ function readLogs() {
     const entries = fs.readdirSync(memberDir, { withFileTypes: true });
 
     for (const entry of entries) {
-      if (!entry.isDirectory() || !LOG_DIR_PATTERN.test(entry.name)) continue;
-      const date = entry.name;
-      const dateDir = path.join(memberDir, date);
-      const meta = readMeta(memberDir, date);
-      if (!meta || !meta.problems || !meta.problems.length) continue;
+      if (!entry.isDirectory()) continue;
 
-      for (let i = 0; i < meta.problems.length; i++) {
-        const p = meta.problems[i];
-        logs.push({
-          member,
-          date,
-          problem: p.name || "未填写",
-          platform: p.platform || "未填写",
-          description: readProblemFile(dateDir, `${i}-desc.md`),
-          takeaway: readProblemFile(dateDir, `${i}-takeaway.md`) || "未填写",
-          difficulty: p.difficulty || "未标注",
-          code: readProblemFile(dateDir, `${i}-solution.cpp`),
-        });
+      // 兼容迁移期间的旧目录：logs/姓名/YYYY-MM-DD/
+      if (LEGACY_LOG_DIR_PATTERN.test(entry.name)) {
+        appendDateLogs(logs, member, entry.name, path.join(memberDir, entry.name));
+        continue;
+      }
+
+      if (!YEAR_PATTERN.test(entry.name)) continue;
+      const yearDir = path.join(memberDir, entry.name);
+      for (const monthEntry of fs.readdirSync(yearDir, { withFileTypes: true })) {
+        if (!monthEntry.isDirectory() || !MONTH_PATTERN.test(monthEntry.name)) continue;
+        const monthDir = path.join(yearDir, monthEntry.name);
+        for (const dayEntry of fs.readdirSync(monthDir, { withFileTypes: true })) {
+          if (!dayEntry.isDirectory() || !DAY_PATTERN.test(dayEntry.name)) continue;
+          const date = `${entry.name}-${monthEntry.name}-${dayEntry.name}`;
+          appendDateLogs(logs, member, date, path.join(monthDir, dayEntry.name));
+        }
       }
     }
   }
@@ -128,6 +150,22 @@ function copyFile(name) {
   fs.copyFileSync(path.join(ROOT, name), path.join(OUTPUT_DIR, name));
 }
 
+function assetVersion(name) {
+  return crypto
+    .createHash("sha256")
+    .update(fs.readFileSync(path.join(ROOT, name)))
+    .digest("hex")
+    .slice(0, 12);
+}
+
+function writeVersionedIndex() {
+  const html = fs
+    .readFileSync(path.join(ROOT, "index.html"), "utf8")
+    .replace(/style\.css(?:\?v=[^"']*)?/g, `style.css?v=${assetVersion("style.css")}`)
+    .replace(/app\.js(?:\?v=[^"']*)?/g, `app.js?v=${assetVersion("app.js")}`);
+  fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), html, "utf8");
+}
+
 const { members, logs } = readLogs();
 const heatmap = buildHeatmapCounts(logs);
 const recent30 = buildRecentStats(logs, members);
@@ -142,9 +180,9 @@ const data = {
 fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
 fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
-copyFile("index.html");
 copyFile("style.css");
 copyFile("app.js");
+writeVersionedIndex();
 if (fs.existsSync(path.join(ROOT, "CNAME"))) {
   copyFile("CNAME");
 }

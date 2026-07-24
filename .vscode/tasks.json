@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Preview training journal",
+			"type": "shell",
+			"command": "npx serve site",
+			"args": [
+				"--listen",
+				"4173"
+			],
+			"isBackground": true,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}

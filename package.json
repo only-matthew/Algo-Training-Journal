@@ -4,6 +4,7 @@
   "private": true,
   "description": "队伍训练日志 - 热力图",
   "scripts": {
-    "generate": "node scripts/generate-data.js"
+    "generate": "node scripts/generate-data.js",
+    "migrate:date-layout": "node scripts/migrate-date-layout.js"
   }
 }
