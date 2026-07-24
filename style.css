@@ -154,6 +154,7 @@ select {
   border: 1px solid var(--line);
   border-radius: 10px;
   padding: 12px;
+  min-width: 0;
 }
 
 .record-head,
@@ -205,6 +206,7 @@ select {
   margin-top: 8px;
   padding-top: 10px;
   border-top: 1px solid var(--line);
+  min-width: 0;
 }
 
 .record.expanded .record-takeaway {
@@ -217,6 +219,7 @@ select {
   color: #e2e8f0;
   border-radius: 8px;
   padding: 14px;
+  max-width: 100%;
   overflow-x: auto;
   font-size: 13px;
   line-height: 1.5;
@@ -231,6 +234,8 @@ select {
 
 .record-takeaway pre code {
   color: #e2e8f0;
+  display: block;
+  min-width: max-content;
 }
 
 .footer {
