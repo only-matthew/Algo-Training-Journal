@@ -430,9 +430,14 @@ code {
 
 .page-nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 20px;
   border-bottom: 1px solid var(--line);
+}
+
+#analysis-page .metrics {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 .page-nav-btn {
@@ -744,6 +749,54 @@ textarea.form-input {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
+}
+
+.record-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.record-filters .form-group {
+  min-width: 180px;
+  margin: 0;
+}
+
+.record-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 10px 0;
+}
+
+.tag-chip,
+.review-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 9px;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.tag-chip {
+  color: var(--accent, #2563eb);
+  background: color-mix(in srgb, var(--accent, #2563eb) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #2563eb) 28%, transparent);
+}
+
+.review-chip.todo {
+  color: #b45309;
+  background: rgba(245, 158, 11, 0.14);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.review-chip.mastered {
+  color: #047857;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
 /* ========================================

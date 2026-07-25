@@ -48,6 +48,8 @@ function appendDateLogs(logs, member, date, dateDir) {
       description: readProblemFile(dateDir, `${i}-desc.md`),
       takeaway: readProblemFile(dateDir, `${i}-takeaway.md`) || "未填写",
       difficulty: p.difficulty || "未标注",
+      tags: p.tags || [],
+      reviewStatus: p.reviewStatus || "none",
       code: readProblemFile(dateDir, `${i}-solution.cpp`),
     });
   }
@@ -176,7 +178,7 @@ async function main() {
   const { members, logs } = readLogs();
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
-  const data = { schemaVersion: 1, generatedAt: new Date().toISOString(), members, logs, heatmap, recent30 };
+  const data = { schemaVersion: 2, generatedAt: new Date().toISOString(), members, logs, heatmap, recent30 };
 
   fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });

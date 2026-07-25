@@ -27,6 +27,7 @@
     <nav class="page-nav" aria-label="页面导航">
       <button class="page-nav-btn active" type="button" data-page="overview-page">总览</button>
       <button class="page-nav-btn" type="button" data-page="analysis-page">训练分析</button>
+      <button class="page-nav-btn" type="button" data-page="review-page">错题本</button>
     </nav>
 
     <section id="overview-page" class="page-view active">
@@ -77,6 +78,21 @@
 
     <section class="card">
       <h2>训练记录</h2>
+      <div class="record-filters">
+        <div class="form-group">
+          <label for="tag-filter">题目标签</label>
+          <select id="tag-filter" class="form-input"><option value="all">全部标签</option></select>
+        </div>
+        <div class="form-group">
+          <label for="review-filter">错题状态</label>
+          <select id="review-filter" class="form-input">
+            <option value="all">全部状态</option>
+            <option value="todo">待复习</option>
+            <option value="mastered">已掌握</option>
+            <option value="none">非错题</option>
+          </select>
+        </div>
+      </div>
       <p id="record-count" class="hint"></p>
       <div id="records" class="records record-grid"></div>
     </section>
@@ -86,11 +102,30 @@
       </footer>
     </section>
 
+    <section id="review-page" class="page-view" hidden>
+      <header class="header">
+        <div><h1>错题本</h1><p class="subtitle">集中复习薄弱题目，掌握后仍保留复盘轨迹</p></div>
+      </header>
+      <section class="card analysis-controls">
+        <div class="analysis-filter-row">
+          <div class="form-group"><label for="review-member">队员</label><select id="review-member" class="form-input"><option value="all">全队</option></select></div>
+          <div class="form-group"><label for="review-status">状态</label><select id="review-status" class="form-input"><option value="todo">待复习</option><option value="mastered">已掌握</option><option value="all">全部错题</option></select></div>
+          <div class="form-group"><label for="review-tag">标签</label><select id="review-tag" class="form-input"><option value="all">全部标签</option></select></div>
+        </div>
+      </section>
+      <section class="grid metrics">
+        <article class="card"><p class="metric-label">待复习</p><p id="review-todo-count" class="metric-value">0</p></article>
+        <article class="card"><p class="metric-label">已掌握</p><p id="review-mastered-count" class="metric-value">0</p></article>
+        <article class="card"><p class="metric-label">涉及标签</p><p id="review-tag-count" class="metric-value">0</p></article>
+      </section>
+      <section class="card"><h2>错题清单</h2><p id="review-summary" class="hint"></p><div id="review-records" class="records record-grid"></div></section>
+    </section>
+
     <section id="analysis-page" class="page-view" hidden>
       <header class="header">
         <div>
           <h1>训练分析</h1>
-          <p class="subtitle">按队员和时间范围查看训练情况</p>
+          <p class="subtitle">按队员和时间范围查看训练成果、标签分布与复习重点</p>
         </div>
       </header>
 
@@ -117,7 +152,7 @@
             </div>
             <div class="analysis-range-presets" role="group" aria-label="快捷时段">
               <button type="button" class="analysis-preset" data-range="today">今天</button>
-              <button type="button" class="analysis-preset" data-range="week">近 7 天</button>
+              <button type="button" class="analysis-preset" data-range="week">本周</button>
               <button type="button" class="analysis-preset" data-range="month">本月</button>
             </div>
           </div>
@@ -137,6 +172,15 @@
           <p class="metric-label">涉及队员</p>
           <p id="analysis-members" class="metric-value">0</p>
         </article>
+        <article class="card">
+          <p class="metric-label">待复习错题</p>
+          <p id="analysis-review" class="metric-value">0</p>
+        </article>
+      </section>
+
+      <section class="grid stats">
+        <article class="card"><h2>标签分布</h2><div id="analysis-tags"></div></article>
+        <article class="card"><h2>复习进度</h2><div id="analysis-review-stats"></div></article>
       </section>
 
       <section class="card">

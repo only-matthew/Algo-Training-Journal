@@ -135,6 +135,20 @@ function createProblemRow(index) {
         </select>
       </div>
     </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>题目标签</label>
+        <input type="text" class="form-input problem-tags" placeholder="如 DP, 图论, 二分（逗号分隔）" />
+      </div>
+      <div class="form-group">
+        <label>错题状态</label>
+        <select class="form-input problem-review-status">
+          <option value="none">非错题</option>
+          <option value="todo">待复习</option>
+          <option value="mastered">已掌握</option>
+        </select>
+      </div>
+    </div>
     <div class="form-group">
       <label>题目描述（选填）</label>
       <textarea class="form-input problem-description" rows="2" placeholder="简要描述题目大意..."></textarea>
@@ -175,6 +189,8 @@ function collectProblems() {
       name,
       platform: block.querySelector(".problem-platform").value,
       difficulty: block.querySelector(".problem-difficulty").value,
+      tags: block.querySelector(".problem-tags").value,
+      reviewStatus: block.querySelector(".problem-review-status").value,
       description: block.querySelector(".problem-description").value.trim(),
       takeaway: block.querySelector(".problem-takeaway").value.trim(),
       code: block.querySelector(".problem-code").value.trim(),
@@ -230,6 +246,8 @@ function populateProblems(parsed) {
     row.querySelector(".problem-name").value = p.problem || "";
     row.querySelector(".problem-platform").value = p.platform || "洛谷";
     row.querySelector(".problem-difficulty").value = p.difficulty || "未标注";
+    row.querySelector(".problem-tags").value = (p.tags || []).join(", ");
+    row.querySelector(".problem-review-status").value = p.reviewStatus || "none";
     row.querySelector(".problem-description").value = p.description || "";
     row.querySelector(".problem-takeaway").value = p.takeaway || "";
     row.querySelector(".problem-code").value = p.code || "";
@@ -306,6 +324,10 @@ async function handleSubmit() {
 
 function renderJournal(journal) {
   const { members, logs, heatmap, recent30 } = journal;
+  for (const log of logs) {
+    log.tags = Array.isArray(log.tags) ? log.tags : [];
+    log.reviewStatus = ["none", "todo", "mastered"].includes(log.reviewStatus) ? log.reviewStatus : "none";
+  }
   const analysisState = {
     member: document.getElementById("analysis-member").value || "all",
     start: document.getElementById("analysis-start").value,
@@ -346,6 +368,11 @@ function renderJournal(journal) {
         </div>`
       : "";
 
+    const reviewLabel = log.reviewStatus === "todo" ? "待复习" : log.reviewStatus === "mastered" ? "已掌握" : "";
+    const badges = [
+      ...log.tags.map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`),
+      ...(reviewLabel ? [`<span class="review-chip ${log.reviewStatus}">${reviewLabel}</span>`] : []),
+    ].join("");
     return `
       <div class="record-head">
         <time>${escapeHtml(log.date)}</time>
@@ -353,6 +380,7 @@ function renderJournal(journal) {
       </div>
       ${titleHtml}
       <p class="meta">平台：${escapeHtml(log.platform)} ｜ 难度：${escapeHtml(log.difficulty)}</p>
+      ${badges ? `<div class="record-badges">${badges}</div>` : ""}
       ${details}
       <a class="record-detail-link" href="${problemUrl(log)}">查看题目详情 →</a>
     `;
@@ -440,7 +468,13 @@ function renderJournal(journal) {
   }
 
   function renderLogs(member) {
-    const filtered = member === "all" ? logs : logs.filter((log) => log.member === member);
+    const tag = document.getElementById("tag-filter").value;
+    const reviewStatus = document.getElementById("review-filter").value;
+    const filtered = logs.filter((log) =>
+      (member === "all" || log.member === member) &&
+      (tag === "all" || log.tags.includes(tag)) &&
+      (reviewStatus === "all" || log.reviewStatus === reviewStatus)
+    );
     document.getElementById("record-count").textContent = `${recent30.start} ~ ${recent30.end} 统计窗口，当前筛选共 ${filtered.length} 条记录`;
 
     const recordsRoot = document.getElementById("records");
@@ -541,6 +575,40 @@ function renderJournal(journal) {
     ? analysisState.member
     : "all";
 
+  const allTags = [...new Set(logs.flatMap((log) => log.tags))].sort((a, b) => a.localeCompare(b, "zh-CN"));
+  function populateSelect(select, values) {
+    while (select.options.length > 1) select.remove(1);
+    for (const value of values) select.add(new Option(value, value));
+  }
+  populateSelect(document.getElementById("review-member"), uniqueMembers);
+  for (const id of ["tag-filter", "review-tag"]) populateSelect(document.getElementById(id), allTags);
+
+  function renderReviewBook() {
+    const member = document.getElementById("review-member").value;
+    const status = document.getElementById("review-status").value;
+    const tag = document.getElementById("review-tag").value;
+    const reviewLogs = logs.filter((log) => log.reviewStatus !== "none" && (member === "all" || log.member === member));
+    const filtered = reviewLogs.filter((log) => (status === "all" || log.reviewStatus === status) && (tag === "all" || log.tags.includes(tag)));
+    document.getElementById("review-todo-count").textContent = String(reviewLogs.filter((log) => log.reviewStatus === "todo").length);
+    document.getElementById("review-mastered-count").textContent = String(reviewLogs.filter((log) => log.reviewStatus === "mastered").length);
+    document.getElementById("review-tag-count").textContent = String(new Set(reviewLogs.flatMap((log) => log.tags)).size);
+    document.getElementById("review-summary").textContent = `${member === "all" ? "全队" : member} · 当前筛选 ${filtered.length} 题`;
+    const root = document.getElementById("review-records");
+    root.innerHTML = "";
+    if (!filtered.length) root.textContent = "当前筛选下暂无错题。";
+    for (const log of filtered) root.appendChild(createLogCard(log));
+  }
+
+  function renderCountMap(root, map, emptyText) {
+    const entries = Object.entries(map).filter(([, count]) => count > 0).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
+    root.innerHTML = "";
+    if (!entries.length) { root.textContent = emptyText; return; }
+    const list = document.createElement("ul");
+    list.className = "stat-list";
+    for (const [name, count] of entries) list.insertAdjacentHTML("beforeend", `<li><span>${escapeHtml(name)}</span><strong>${count}</strong></li>`);
+    root.appendChild(list);
+  }
+
   function renderAnalysis() {
     const selectedMember = analysisMember.value;
     const startValue = document.getElementById("analysis-start").value;
@@ -554,10 +622,20 @@ function renderJournal(journal) {
       return memberMatches && startValue && endValue && log.date >= startValue && log.date <= endValue;
     });
 
+    const tagCounts = {};
+    for (const log of filtered) {
+      for (const tag of log.tags) tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+    }
+    const todo = filtered.filter((log) => log.reviewStatus === "todo").length;
+    const mastered = filtered.filter((log) => log.reviewStatus === "mastered").length;
+
     document.getElementById("analysis-total").textContent = String(filtered.length);
     document.getElementById("analysis-days").textContent = String(new Set(filtered.map((log) => log.date)).size);
     document.getElementById("analysis-members").textContent = String(new Set(filtered.map((log) => log.member)).size);
+    document.getElementById("analysis-review").textContent = String(todo);
     document.getElementById("analysis-summary").textContent = `${selectedMember === "all" ? "全队" : selectedMember} · ${periodLabel} · 共 ${filtered.length} 题`;
+    renderCountMap(document.getElementById("analysis-tags"), tagCounts, "该时间范围暂无标签数据。");
+    renderCountMap(document.getElementById("analysis-review-stats"), { 待复习: todo, 已掌握: mastered }, "该时间范围暂无错题记录。");
 
     const recordsRoot = document.getElementById("analysis-records");
     recordsRoot.innerHTML = "";
@@ -624,6 +702,7 @@ function renderJournal(journal) {
         <a class="member-chip" href="${memberUrl(log.member)}">${escapeHtml(log.member)} 的主页</a>
       </div>
       <p class="problem-meta">平台：${escapeHtml(log.platform)} <span>难度：${escapeHtml(log.difficulty)}</span></p>
+      ${(log.tags.length || log.reviewStatus !== "none") ? `<div class="record-badges">${log.tags.map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`).join("")}${log.reviewStatus !== "none" ? `<span class="review-chip ${log.reviewStatus}">${log.reviewStatus === "todo" ? "待复习" : "已掌握"}</span>` : ""}</div>` : ""}
       <div class="problem-content">
         ${log.description ? `<section class="problem-section"><h2>题目描述</h2>${renderMarkdown(log.description)}</section>` : ""}
         ${log.takeaway ? `<section class="problem-section"><h2>收获 / 题解</h2>${renderMarkdown(log.takeaway)}</section>` : ""}
@@ -654,13 +733,16 @@ function renderJournal(journal) {
   }
 
   function presetRange(range) {
-    const end = startOfToday();
+    let end = startOfToday();
     const start = new Date(end);
 
     if (range === "week") {
-      start.setDate(start.getDate() - 6);
+      start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+      end = new Date(start);
+      end.setDate(start.getDate() + 6);
     } else if (range === "month") {
       start.setDate(1);
+      end = new Date(start.getFullYear(), start.getMonth() + 1, 0);
     }
 
     return { start: toDateString(start), end: toDateString(end) };
@@ -720,12 +802,17 @@ function renderJournal(journal) {
   syncAnalysisDateRange();
   updateRangePresetState();
   renderAnalysis();
+  for (const id of ["review-member", "review-status", "review-tag"]) document.getElementById(id).onchange = renderReviewBook;
+  document.getElementById("tag-filter").onchange = () => renderLogs(memberSelect.value);
+  document.getElementById("review-filter").onchange = () => renderLogs(memberSelect.value);
+  renderReviewBook();
 
   function render(member) {
     renderStats(member);
     renderHeatmap(member);
     renderLogs(member);
     renderAnalysis();
+    renderReviewBook();
   }
 
   render("all");
@@ -850,7 +937,8 @@ function initPageNavigation() {
   function showRequestedPage() {
     const route = window.location.hash.slice(1);
     let pageId = "overview-page";
-    if (route === "analysis") pageId = "analysis-page";
+    if (route === "analysis" || route === "report") pageId = "analysis-page";
+    if (route === "review") pageId = "review-page";
     if (route.startsWith("member/")) pageId = "member-page";
     if (route.startsWith("problem/")) pageId = "problem-page";
     for (const page of pages) page.hidden = page.id !== pageId;

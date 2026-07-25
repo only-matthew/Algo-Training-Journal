@@ -19,3 +19,20 @@ test("日期必须是真实 ISO 日期", () => {
   assert.equal(isDateString("2026-07-25"), true);
   assert.equal(isDateString("2026-02-30"), false);
 });
+
+test("标签去重清洗且旧日志获得默认错题状态", () => {
+  const normalized = normalizeMeta({ problems: [{ name: "A", tags: ["DP", " DP ", "", "图论"] }] });
+  assert.deepEqual(normalized.problems[0].tags, ["DP", "图论"]);
+  assert.equal(normalized.problems[0].reviewStatus, "none");
+});
+
+test("错题状态只接受约定值", () => {
+  const result = validateLogInput({
+    problems: [{ id: "p1", name: "A", tags: "二分，贪心, 二分", reviewStatus: "todo" }],
+  });
+  assert.deepEqual(result.problems[0].tags, ["二分", "贪心"]);
+  assert.equal(result.problems[0].reviewStatus, "todo");
+
+  const fallback = validateLogInput({ problems: [{ id: "p2", name: "B", reviewStatus: "unknown" }] });
+  assert.equal(fallback.problems[0].reviewStatus, "none");
+});
