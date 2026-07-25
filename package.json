@@ -5,6 +5,11 @@
   "description": "队伍训练日志 - 热力图",
   "scripts": {
     "generate": "node scripts/generate-data.js",
-    "migrate:date-layout": "node scripts/migrate-date-layout.js"
+    "migrate:date-layout": "node scripts/migrate-date-layout.js",
+    "test": "node --test",
+    "check": "node --check app.js && node --check scripts/generate-data.js && node --test && npm run generate"
+  },
+  "devDependencies": {
+    "wrangler": "^4.114.0"
   }
 }

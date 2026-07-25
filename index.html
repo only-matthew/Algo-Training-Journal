@@ -78,7 +78,7 @@
     <section class="card">
       <h2>训练记录</h2>
       <p id="record-count" class="hint"></p>
-      <div id="records" class="records"></div>
+      <div id="records" class="records record-grid"></div>
     </section>
 
       <footer class="footer">
@@ -142,8 +142,54 @@
       <section class="card">
         <h2>训练明细</h2>
         <p id="analysis-summary" class="hint"></p>
-        <div id="analysis-records" class="records"></div>
+        <div id="analysis-records" class="records record-grid"></div>
       </section>
+    </section>
+
+    <section id="member-page" class="page-view" hidden>
+      <div class="detail-toolbar">
+        <a class="back-link" href="#overview">← 返回总览</a>
+      </div>
+      <header class="header profile-header">
+        <div>
+          <p class="eyebrow">队员主页</p>
+          <h1 id="member-page-title">队员</h1>
+          <p id="member-page-subtitle" class="subtitle"></p>
+        </div>
+      </header>
+      <section class="grid metrics">
+        <article class="card">
+          <p class="metric-label">累计训练题数</p>
+          <p id="member-total" class="metric-value">0</p>
+        </article>
+        <article class="card">
+          <p class="metric-label">累计训练天数</p>
+          <p id="member-days" class="metric-value">0</p>
+        </article>
+        <article class="card">
+          <p class="metric-label">近 30 天题数</p>
+          <p id="member-recent" class="metric-value">0</p>
+        </article>
+      </section>
+      <section class="card">
+        <h2>训练热力图（近 365 天）</h2>
+        <div id="member-heatmap" class="heatmap"></div>
+      </section>
+      <section class="card">
+        <h2>全部训练题目</h2>
+        <p id="member-record-count" class="hint"></p>
+        <div id="member-records" class="records record-grid"></div>
+      </section>
+    </section>
+
+    <section id="problem-page" class="page-view" hidden>
+      <div class="detail-toolbar">
+        <a id="problem-back-member" class="back-link" href="#overview">← 返回队员主页</a>
+        <a class="back-link" href="#analysis">查看训练分析</a>
+      </div>
+      <article id="problem-detail" class="card problem-detail">
+        <p class="hint">正在加载题目详情…</p>
+      </article>
     </section>
 
     <!-- 提交模态框 -->
@@ -180,6 +226,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
-  <script src="app.js?v=20260724-2"></script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

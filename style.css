@@ -150,6 +150,11 @@ select {
   gap: 10px;
 }
 
+.record-grid {
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+}
+
 .record {
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -223,6 +228,14 @@ select {
   gap: 8px;
   margin: 0 0 6px;
   padding: 4px 0;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 1.17em;
+  font-weight: 600;
+  text-align: left;
 }
 
 .record-title-clickable:hover {
@@ -249,6 +262,120 @@ select {
 
 .record.expanded .record-takeaway {
   display: block;
+}
+
+.member-link,
+.record-detail-link,
+.back-link,
+.member-chip {
+  color: var(--brand);
+  text-decoration: none;
+}
+
+.member-link:hover,
+.record-detail-link:hover,
+.back-link:hover,
+.member-chip:hover {
+  text-decoration: underline;
+}
+
+.record-detail-link {
+  display: inline-flex;
+  margin-top: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.record-grid .record {
+  display: flex;
+  min-height: 150px;
+  flex-direction: column;
+}
+
+.record-grid .record-detail-link {
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.detail-toolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.profile-header {
+  margin-bottom: 8px;
+}
+
+.eyebrow {
+  margin-bottom: 7px;
+  color: var(--brand);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.problem-detail {
+  padding: clamp(20px, 4vw, 42px);
+}
+
+.problem-detail-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.problem-detail-head h1 {
+  margin-bottom: 0;
+}
+
+.member-chip {
+  flex: 0 0 auto;
+  border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--line));
+  border-radius: 999px;
+  padding: 7px 12px;
+  background: color-mix(in srgb, var(--brand) 9%, transparent);
+  font-size: 13px;
+}
+
+.problem-meta {
+  display: flex;
+  gap: 24px;
+  margin: 18px 0 28px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.problem-section {
+  line-height: 1.75;
+}
+
+.problem-section + .problem-section {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 1px solid var(--line);
+}
+
+.problem-section h2 {
+  margin-bottom: 12px;
+}
+
+.problem-section pre {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.problem-code-expanded {
+  display: block;
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
 }
 
 /* 代码块样式 */
@@ -673,6 +800,21 @@ textarea.form-input {
     grid-template-columns: 1fr;
     gap: 14px;
   }
+
+  .problem-detail-head {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 560px) {
+  .record-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-toolbar,
+  .problem-meta {
+    flex-direction: column;
+  }
 }
 
 /* ========================================
@@ -748,6 +890,10 @@ textarea.form-input {
 
 [data-theme="dark"] .record-title-clickable:hover {
   color: var(--brand);
+}
+
+[data-theme="dark"] .record-title-clickable {
+  color: var(--text);
 }
 
 [data-theme="dark"] .modal {

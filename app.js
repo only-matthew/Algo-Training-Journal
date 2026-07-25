@@ -1,68 +1,17 @@
+import { createProblemId } from "./lib/log-schema.mjs";
+import { deleteDateLog, loadDateLog, loadSession, loginWithGitHub, logoutSession, saveDateLog } from "./lib/journal-api.js";
+
 // ============================================================
 // OAuth & Auth Module
 // ============================================================
 
-const GITHUB_CLIENT_ID = "Ov23liLqB5pUo1d8Pj02";
-const OAUTH_WORKER_URL = "https://algo-oauth.xialiao.org";
-const GITHUB_REPO_OWNER = "only-matthew";
-const GITHUB_REPO = "Algo-Training-Journal";
-const GITHUB_BRANCH = "main";
-
-const TOKEN_KEY = "gh_token";
-const USER_KEY = "gh_user";
-
-// GitHub 用户名 → 训练日志目录名（真实姓名）的映射
-const MEMBER_MAP = {
-  "only-matthew": "廖夏",
-  "wzzzzhhhhh": "王梓豪",
-  "seanist-isx": "郭一鸣",
-  // 新队员映射在这里添加："GitHub用户名": nd"真实姓名"
-};
-
-function getMemberName(githubLogin) {
-  return MEMBER_MAP[githubLogin] || githubLogin;
-}
-
-function loadToken() {
-  const hash = window.location.hash;
-  if (hash.startsWith("#token=")) {
-    const token = hash.slice("#token=".length);
-    localStorage.setItem(TOKEN_KEY, token);
-    history.replaceState(null, "", window.location.pathname);
-  }
-  return localStorage.getItem(TOKEN_KEY) || null;
-}
-
-function saveUser(user) {
-  localStorage.setItem(USER_KEY, JSON.stringify(user));
-}
-
-function loadUser() {
-  const raw = localStorage.getItem(USER_KEY);
-  return raw ? JSON.parse(raw) : null;
-}
-
-async function fetchUser(token) {
-  const resp = await fetch("https://api.github.com/user", {
-    headers: { Authorization: `Bearer ${token}` },
-  });
-  if (!resp.ok) throw new Error("token expired");
-  return resp.json();
-}
-
 function login() {
-  const redirect = encodeURIComponent(window.location.href);
-  window.location.href =
-    `https://github.com/login/oauth/authorize` +
-    `?client_id=${GITHUB_CLIENT_ID}` +
-    `&scope=public_repo` +
-    `&redirect_uri=${encodeURIComponent(OAUTH_WORKER_URL)}` +
-    `&state=${redirect}`;
+  loginWithGitHub();
 }
 
-function logout() {
-  localStorage.removeItem(TOKEN_KEY);
-  localStorage.removeItem(USER_KEY);
+async function logout() {
+  await logoutSession().catch(console.error);
+  currentUser = null;
   updateAuthUI(null);
 }
 
@@ -83,103 +32,6 @@ function updateAuthUI(user) {
     btnLogout.style.display = "none";
     btnSubmit.style.display = "none";
   }
-}
-
-// ============================================================
-// GitHub API helpers
-// ============================================================
-
-async function getFileSha(path, token) {
-  const resp = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${encodeURI(path)}?ref=${GITHUB_BRANCH}`,
-    { headers: { Authorization: `Bearer ${token}` } },
-  );
-  if (resp.status === 404) return null;
-  if (!resp.ok) throw new Error(`GitHub API: ${resp.status}`);
-  const data = await resp.json();
-  return data.sha;
-}
-
-async function getFileContent(path, token) {
-  const resp = await fetch(
-    `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}/contents/${encodeURI(path)}?ref=${GITHUB_BRANCH}`,
-    { headers: { Authorization: `Bearer ${token}` } },
-  );
-  if (resp.status === 404) return null;
-  if (!resp.ok) throw new Error(`GitHub API: ${resp.status}`);
-  const data = await resp.json();
-  return decodeURIComponent(escape(atob(data.content)));
-}
-
-async function commitTreeChanges(changes, message, token) {
-  const apiBase = `https://api.github.com/repos/${GITHUB_REPO_OWNER}/${GITHUB_REPO}`;
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-
-  const refResp = await fetch(`${apiBase}/git/ref/heads/${GITHUB_BRANCH}`, { headers });
-  if (!refResp.ok) throw new Error(`GitHub API: ${refResp.status}`);
-  const ref = await refResp.json();
-
-  const commitResp = await fetch(`${apiBase}/git/commits/${ref.object.sha}`, { headers });
-  if (!commitResp.ok) throw new Error(`GitHub API: ${commitResp.status}`);
-  const parentCommit = await commitResp.json();
-
-  const tree = await Promise.all(changes.map(async (change) => {
-    if (change.delete) {
-      return { path: change.path, mode: "100644", type: "blob", sha: null };
-    }
-
-    const blobResp = await fetch(`${apiBase}/git/blobs`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({
-        content: btoa(unescape(encodeURIComponent(change.content))),
-        encoding: "base64",
-      }),
-    });
-    if (!blobResp.ok) throw new Error(`GitHub API: ${blobResp.status}`);
-    const blob = await blobResp.json();
-    return { path: change.path, mode: "100644", type: "blob", sha: blob.sha };
-  }));
-
-  const treeResp = await fetch(`${apiBase}/git/trees`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ base_tree: parentCommit.tree.sha, tree }),
-  });
-  if (!treeResp.ok) throw new Error(`GitHub API: ${treeResp.status}`);
-  const newTree = await treeResp.json();
-
-  const newCommitResp = await fetch(`${apiBase}/git/commits`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ message, tree: newTree.sha, parents: [ref.object.sha] }),
-  });
-  if (!newCommitResp.ok) throw new Error(`GitHub API: ${newCommitResp.status}`);
-  const newCommit = await newCommitResp.json();
-
-  const updateRefResp = await fetch(`${apiBase}/git/refs/heads/${GITHUB_BRANCH}`, {
-    method: "PATCH",
-    headers,
-    body: JSON.stringify({ sha: newCommit.sha, force: false }),
-  });
-  if (!updateRefResp.ok) throw new Error(`GitHub API: ${updateRefResp.status}`);
-}
-
-// ============================================================
-// Logs — new multi-file storage: meta.json + N-{desc,takeaway,solution}
-// ============================================================
-
-function metaFromProblems(problems) {
-  return {
-    problems: problems.map((p) => ({
-      name: p.problem,
-      platform: p.platform,
-      difficulty: p.difficulty,
-    })),
-  };
 }
 
 // ============================================================
@@ -230,27 +82,19 @@ function toDateString(date) {
   return `${y}-${m}-${d}`;
 }
 
-function dateLogPath(member, date) {
-  const [year, month, day] = date.split("-");
-  return `logs/${member}/${year}/${month}/${day}`;
+function memberUrl(member) {
+  return `#member/${encodeURIComponent(member)}`;
 }
 
-function legacyDateLogPath(member, date) {
-  return `logs/${member}/${date}`;
-}
-
-function logPathCandidates(member, date, githubLogin) {
-  const names = [...new Set([member, githubLogin].filter(Boolean))];
-  return [
-    ...names.map((name) => dateLogPath(name, date)),
-    ...names.map((name) => legacyDateLogPath(name, date)),
-  ];
+function problemUrl(log) {
+  return `#problem/${encodeURIComponent(log.member)}/${encodeURIComponent(log.date)}/${encodeURIComponent(log.problemId || log.problemIndex || 0)}`;
 }
 
 function createProblemRow(index) {
   const div = document.createElement("div");
   div.className = "problem-block";
   div.dataset.index = index;
+  div.dataset.problemId = createProblemId();
   div.innerHTML = `
     <div class="problem-header">
       <span>第 ${index + 1} 题</span>
@@ -326,7 +170,9 @@ function collectProblems() {
     const name = block.querySelector(".problem-name").value.trim();
     if (!name) continue;
     problems.push({
+      id: block.dataset.problemId,
       problem: name,
+      name,
       platform: block.querySelector(".problem-platform").value,
       difficulty: block.querySelector(".problem-difficulty").value,
       description: block.querySelector(".problem-description").value.trim(),
@@ -338,49 +184,21 @@ function collectProblems() {
 }
 
 async function onDateChange() {
-  const token = loadToken();
-  if (!token || !currentUser) return;
+  if (!currentUser) return;
 
   const date = document.getElementById("submit-date").value;
   if (!date) return;
-
-  const member = getMemberName(currentUser.login);
-  const candidates = logPathCandidates(member, date, currentUser.login);
 
   const btnSave = document.getElementById("btn-save");
   const msgEl = document.getElementById("submit-msg");
 
   try {
-    // Try to read meta.json
-    let metaContent = null;
-    let actualBaseDir = candidates[0];
-    for (const candidate of candidates) {
-      metaContent = await getFileContent(`${candidate}/meta.json`, token);
-      if (metaContent) {
-        actualBaseDir = candidate;
-        break;
-      }
-    }
+    const loaded = await loadDateLog(date);
+    const metaContent = loaded.problems.length ? "present" : null;
 
     const btnDelete = document.getElementById("btn-delete");
     if (metaContent) {
-      const meta = JSON.parse(metaContent);
-      const problems = [];
-      // Read each problem's individual files
-      for (let i = 0; i < meta.problems.length; i++) {
-        const p = meta.problems[i];
-        const desc = await getFileContent(`${actualBaseDir}/${i}-desc.md`, token);
-        const takeaway = await getFileContent(`${actualBaseDir}/${i}-takeaway.md`, token);
-        const code = await getFileContent(`${actualBaseDir}/${i}-solution.cpp`, token);
-        problems.push({
-          problem: p.name || "",
-          platform: p.platform || "洛谷",
-          difficulty: p.difficulty || "未标注",
-          description: desc || "",
-          takeaway: takeaway || "",
-          code: code || "",
-        });
-      }
+      const problems = loaded.problems.map((p) => ({ ...p, problem: p.name }));
       populateProblems(problems);
       btnSave.textContent = "更新记录";
       msgEl.textContent = "📝 加载已有记录，修改后点击「更新记录」即可覆盖";
@@ -408,6 +226,7 @@ function populateProblems(parsed) {
   }
   parsed.forEach((p, i) => {
     const row = createProblemRow(i);
+    row.dataset.problemId = p.id || createProblemId();
     row.querySelector(".problem-name").value = p.problem || "";
     row.querySelector(".problem-platform").value = p.platform || "洛谷";
     row.querySelector(".problem-difficulty").value = p.difficulty || "未标注";
@@ -419,15 +238,11 @@ function populateProblems(parsed) {
 }
 
 async function handleDelete(date) {
-  const token = loadToken();
-  if (!token || !currentUser) {
+  if (!currentUser) {
     alert("请先登录 GitHub");
     return;
   }
   if (!confirm(`确定要删除 ${date} 的训练记录吗？此操作不可撤销。`)) return;
-
-  const member = getMemberName(currentUser.login);
-  const candidates = logPathCandidates(member, date, currentUser.login);
 
   const msgEl = document.getElementById("submit-msg");
   msgEl.textContent = "删除中...";
@@ -435,64 +250,7 @@ async function handleDelete(date) {
   if (btnDelete) btnDelete.disabled = true;
 
   try {
-    // Find which base dir has the meta.json
-    let metaSha = null;
-    let baseDir = candidates[0];
-    for (const candidate of candidates) {
-      metaSha = await getFileSha(`${candidate}/meta.json`, token);
-      if (metaSha) {
-        baseDir = candidate;
-        break;
-      }
-    }
-    if (!metaSha) {
-      // Also try old single .md format
-      const oldPaths = [
-        `logs/${currentUser.login}/${date}.md`,
-        `logs/${member}/${date}.md`,
-      ];
-      let oldPath = null;
-      for (const candidate of oldPaths) {
-        if (await getFileSha(candidate, token)) {
-          oldPath = candidate;
-          break;
-        }
-      }
-      if (oldPath) {
-        await commitTreeChanges(
-          [{ path: oldPath, delete: true }],
-          `delete(${member}): remove training log for ${date}`,
-          token,
-        );
-        msgEl.textContent = "✅ 删除成功！等待自动部署（约 1 分钟）";
-        setTimeout(() => closeModal(true), 2000);
-        return;
-      }
-      msgEl.textContent = "❌ 未找到该记录";
-      return;
-    }
-
-    // Read meta to know how many problems exist
-    const metaContent = await getFileContent(`${baseDir}/meta.json`, token);
-    const meta = JSON.parse(metaContent);
-    const problemCount = meta.problems.length;
-
-    // Collect all files to delete
-    const filesToDelete = [{ path: `${baseDir}/meta.json`, delete: true }];
-    for (let i = 0; i < problemCount; i++) {
-      const descSha = await getFileSha(`${baseDir}/${i}-desc.md`, token);
-      if (descSha) filesToDelete.push({ path: `${baseDir}/${i}-desc.md`, delete: true });
-      const takeawaySha = await getFileSha(`${baseDir}/${i}-takeaway.md`, token);
-      if (takeawaySha) filesToDelete.push({ path: `${baseDir}/${i}-takeaway.md`, delete: true });
-      const codeSha = await getFileSha(`${baseDir}/${i}-solution.cpp`, token);
-      if (codeSha) filesToDelete.push({ path: `${baseDir}/${i}-solution.cpp`, delete: true });
-    }
-
-    await commitTreeChanges(
-      filesToDelete,
-      `delete(${member}): remove training log for ${date}`,
-      token,
-    );
+    await deleteDateLog(date);
 
     msgEl.textContent = "✅ 删除成功！等待自动部署（约 1 分钟）";
     setTimeout(() => closeModal(true), 2000);
@@ -504,8 +262,7 @@ async function handleDelete(date) {
 }
 
 async function handleSubmit() {
-  const token = loadToken();
-  if (!token) {
+  if (!currentUser) {
     alert("请先登录 GitHub");
     return;
   }
@@ -528,62 +285,9 @@ async function handleSubmit() {
   btnSave.disabled = true;
 
   try {
-    const member = getMemberName(currentUser.login);
-    const baseDir = dateLogPath(member, date);
-    const memberName = member;
+    const isEdit = document.getElementById("btn-save").textContent === "更新记录";
 
-    // Build meta.json
-    const meta = metaFromProblems(problems);
-    const metaContent = JSON.stringify(meta, null, 2);
-
-    // Check if this is an edit (meta.json already exists)
-    let oldCount = 0;
-    const oldMetaContent = await getFileContent(`${baseDir}/meta.json`, token);
-    const metaSha = await getFileSha(`${baseDir}/meta.json`, token);
-    const isEdit = !!metaSha;
-    if (isEdit && oldMetaContent) {
-      const oldMeta = JSON.parse(oldMetaContent);
-      oldCount = oldMeta.problems.length;
-    }
-
-    const commitMsg = isEdit
-      ? `feat(${memberName}): update training log for ${date}`
-      : `feat(${memberName}): add training log for ${date}`;
-
-    const changes = [{ path: `${baseDir}/meta.json`, content: metaContent }];
-
-    for (let i = 0; i < problems.length; i++) {
-      const p = problems[i];
-
-      const descSha = await getFileSha(`${baseDir}/${i}-desc.md`, token);
-      if (p.description) {
-        changes.push({ path: `${baseDir}/${i}-desc.md`, content: p.description });
-      } else if (descSha) {
-        changes.push({ path: `${baseDir}/${i}-desc.md`, delete: true });
-      }
-
-      changes.push({ path: `${baseDir}/${i}-takeaway.md`, content: p.takeaway || "未填写" });
-
-      const codeSha = await getFileSha(`${baseDir}/${i}-solution.cpp`, token);
-      if (p.code) {
-        changes.push({ path: `${baseDir}/${i}-solution.cpp`, content: p.code });
-      } else if (codeSha) {
-        changes.push({ path: `${baseDir}/${i}-solution.cpp`, delete: true });
-      }
-    }
-
-    if (isEdit && problems.length < oldCount) {
-      for (let i = problems.length; i < oldCount; i++) {
-        const descSha = await getFileSha(`${baseDir}/${i}-desc.md`, token);
-        if (descSha) changes.push({ path: `${baseDir}/${i}-desc.md`, delete: true });
-        const takeawaySha = await getFileSha(`${baseDir}/${i}-takeaway.md`, token);
-        if (takeawaySha) changes.push({ path: `${baseDir}/${i}-takeaway.md`, delete: true });
-        const codeSha = await getFileSha(`${baseDir}/${i}-solution.cpp`, token);
-        if (codeSha) changes.push({ path: `${baseDir}/${i}-solution.cpp`, delete: true });
-      }
-    }
-
-    await commitTreeChanges(changes, commitMsg, token);
+    await saveDateLog(date, problems);
 
     msgEl.textContent = isEdit
       ? "✅ 更新成功！等待自动部署（约 1 分钟）"
@@ -614,6 +318,58 @@ function renderJournal(journal) {
     if (count === 2) return 2;
     if (count <= 4) return 3;
     return 4;
+  }
+
+  function renderEnhancements(root) {
+    if (typeof Prism !== "undefined") Prism.highlightAllUnder(root);
+    if (typeof renderMathInElement !== "undefined") {
+      renderMathInElement(root, {
+        delimiters: [
+          { left: "$$", right: "$$", display: true },
+          { left: "$", right: "$", display: false },
+        ],
+        throwOnError: false,
+      });
+    }
+  }
+
+  function logCardHtml(log, { expandable = false } = {}) {
+    const title = escapeHtml(log.problem);
+    const titleHtml = expandable
+      ? `<button class="record-title-clickable" type="button" aria-expanded="false">${title} <span class="expand-icon">▼</span></button>`
+      : `<h3 class="record-title">${title}</h3>`;
+    const details = expandable
+      ? `<div class="record-takeaway">
+          ${log.description ? `<div class="record-section record-desc">${renderMarkdown(log.description)}</div>` : ""}
+          ${log.takeaway ? `<div class="record-section record-takeaway-text">${renderMarkdown(log.takeaway)}</div>` : ""}
+          ${log.code ? `<div class="record-section record-code"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div>` : ""}
+        </div>`
+      : "";
+
+    return `
+      <div class="record-head">
+        <time>${escapeHtml(log.date)}</time>
+        <a class="member-link" href="${memberUrl(log.member)}">${escapeHtml(log.member)}</a>
+      </div>
+      ${titleHtml}
+      <p class="meta">平台：${escapeHtml(log.platform)} ｜ 难度：${escapeHtml(log.difficulty)}</p>
+      ${details}
+      <a class="record-detail-link" href="${problemUrl(log)}">查看题目详情 →</a>
+    `;
+  }
+
+  function createLogCard(log, options) {
+    const card = document.createElement("article");
+    card.className = `record${options?.className ? ` ${options.className}` : ""}`;
+    card.innerHTML = logCardHtml(log, options);
+    const toggle = card.querySelector(".record-title-clickable");
+    if (toggle) {
+      toggle.onclick = () => {
+        const expanded = card.classList.toggle("expanded");
+        toggle.setAttribute("aria-expanded", String(expanded));
+      };
+    }
+    return card;
   }
 
   function renderStats(member) {
@@ -695,49 +451,8 @@ function renderJournal(journal) {
       return;
     }
 
-    for (const log of filtered) {
-      const card = document.createElement("article");
-      card.className = "record";
-      const descHtml = log.description
-        ? `<div class="record-section record-desc">${renderMarkdown(log.description)}</div>`
-        : "";
-      const takeawayHtml = log.takeaway
-        ? `<div class="record-section record-takeaway-text">${renderMarkdown(log.takeaway)}</div>`
-        : "";
-      const codeHtml = log.code
-        ? `<div class="record-section record-code"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div>`
-        : "";
-
-      card.innerHTML = `
-        <div class="record-head">
-          <time>${log.date}</time>
-          <span>${log.member}</span>
-        </div>
-        <h3 class="record-title-clickable" onclick="this.closest('.record').classList.toggle('expanded')">${log.problem} <span class="expand-icon">▼</span></h3>
-        <p class="meta">平台：${log.platform} ｜ 难度：${log.difficulty}</p>
-        <div class="record-takeaway">
-          ${descHtml}
-          ${takeawayHtml}
-          ${codeHtml}
-        </div>
-      `;
-      recordsRoot.appendChild(card);
-    }
-
-    // Prism 语法高亮
-    if (typeof Prism !== "undefined") {
-      Prism.highlightAllUnder(recordsRoot);
-    }
-    // KaTeX 数学公式渲染 ($$...$$ 和 $...$)
-    if (typeof renderMathInElement !== "undefined") {
-      renderMathInElement(recordsRoot, {
-        delimiters: [
-          { left: "$$", right: "$$", display: true },
-          { left: "$", right: "$", display: false },
-        ],
-        throwOnError: false,
-      });
-    }
+    for (const log of filtered) recordsRoot.appendChild(createLogCard(log, { expandable: true }));
+    renderEnhancements(recordsRoot);
   }
 
   // Markdown 渲染器（支持代码块 + 行内代码 + LaTeX 公式）
@@ -852,17 +567,79 @@ function renderJournal(journal) {
     }
 
     for (const log of filtered) {
-      const card = document.createElement("article");
-      card.className = "record analysis-record";
-      card.innerHTML = `
-        <div class="record-head">
-          <time>${escapeHtml(log.date)}</time>
-          <span>${escapeHtml(log.member)}</span>
+      recordsRoot.appendChild(createLogCard(log, { className: "analysis-record" }));
+    }
+  }
+
+  function renderMemberPage(member) {
+    const root = document.getElementById("member-records");
+    const memberLogs = logs.filter((log) => log.member === member);
+    document.getElementById("member-page-title").textContent = member || "未找到队员";
+    document.getElementById("member-page-subtitle").textContent = memberLogs.length
+      ? `从 ${memberLogs[memberLogs.length - 1].date} 到 ${memberLogs[0].date} 的训练记录`
+      : "该队员暂无训练记录";
+    document.getElementById("member-total").textContent = String(memberLogs.length);
+    document.getElementById("member-days").textContent = String(new Set(memberLogs.map((log) => log.date)).size);
+    document.getElementById("member-recent").textContent = String(recent30.byMember[member]?.totalLogs || 0);
+    document.getElementById("member-record-count").textContent = `共 ${memberLogs.length} 道题，每道题均可单独打开和分享`;
+    document.title = `${member} 的训练主页 · ICPC 算法训练日志`;
+
+    const heatmapRoot = document.getElementById("member-heatmap");
+    heatmapRoot.innerHTML = "";
+    const counts = heatmap.byMember[member] || {};
+    const end = new Date();
+    const start = new Date(end);
+    start.setDate(end.getDate() - 364);
+    for (let i = 0; i < 365; i += 1) {
+      const date = new Date(start);
+      date.setDate(start.getDate() + i);
+      const dateText = toDateString(date);
+      const count = counts[dateText] || 0;
+      const cell = document.createElement("span");
+      cell.className = `cell lv${levelOf(count)}`;
+      cell.title = `${dateText} · ${count} 题`;
+      heatmapRoot.appendChild(cell);
+    }
+
+    root.innerHTML = "";
+    for (const log of memberLogs) root.appendChild(createLogCard(log));
+  }
+
+  function renderProblemPage(member, date, index) {
+    const problemIndex = Number(index);
+    const log = logs.find((item) => item.member === member && item.date === date && (item.problemId === decodeURIComponent(index) || (Number.isFinite(problemIndex) && (item.problemIndex ?? 0) === problemIndex)));
+    const root = document.getElementById("problem-detail");
+    document.getElementById("problem-back-member").href = memberUrl(member);
+    if (!log) {
+      root.innerHTML = `<p class="eyebrow">题目详情</p><h1>未找到该题目</h1><p class="hint">链接可能已失效，或训练记录已被修改。</p>`;
+      return;
+    }
+
+    root.innerHTML = `
+      <div class="problem-detail-head">
+        <div>
+          <p class="eyebrow">${escapeHtml(log.date)} · 第 ${(log.problemIndex ?? 0) + 1} 题</p>
+          <h1>${escapeHtml(log.problem)}</h1>
         </div>
-        <h3 class="record-title">${escapeHtml(log.problem)}</h3>
-        <div class="record-meta">平台：${escapeHtml(log.platform)} ｜ 难度：${escapeHtml(log.difficulty)}</div>
-      `;
-      recordsRoot.appendChild(card);
+        <a class="member-chip" href="${memberUrl(log.member)}">${escapeHtml(log.member)} 的主页</a>
+      </div>
+      <p class="problem-meta">平台：${escapeHtml(log.platform)} <span>难度：${escapeHtml(log.difficulty)}</span></p>
+      <div class="problem-content">
+        ${log.description ? `<section class="problem-section"><h2>题目描述</h2>${renderMarkdown(log.description)}</section>` : ""}
+        ${log.takeaway ? `<section class="problem-section"><h2>收获 / 题解</h2>${renderMarkdown(log.takeaway)}</section>` : ""}
+        ${log.code ? `<section class="problem-section"><h2>代码</h2><div class="record-takeaway problem-code-expanded"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div></section>` : ""}
+      </div>
+    `;
+    renderEnhancements(root);
+    document.title = `${log.problem} · ${log.member} · ICPC 算法训练日志`;
+  }
+
+  function renderRoute() {
+    const parts = window.location.hash.slice(1).split("/");
+    document.title = "ICPC 算法训练日志";
+    if (parts[0] === "member" && parts[1]) renderMemberPage(decodeURIComponent(parts[1]));
+    if (parts[0] === "problem" && parts.length >= 4) {
+      renderProblemPage(decodeURIComponent(parts[1]), decodeURIComponent(parts[2]), parts[3]);
     }
   }
 
@@ -952,7 +729,9 @@ function renderJournal(journal) {
   }
 
   render("all");
-  memberSelect.addEventListener("change", (e) => render(e.target.value));
+  renderRoute();
+  window.journalRouteRenderer = renderRoute;
+  memberSelect.onchange = (e) => render(e.target.value);
 
   return { render };
 }
@@ -1069,9 +848,15 @@ function initPageNavigation() {
   const pages = document.querySelectorAll(".page-view");
 
   function showRequestedPage() {
-    const pageId = window.location.hash === "#analysis" ? "analysis-page" : "overview-page";
+    const route = window.location.hash.slice(1);
+    let pageId = "overview-page";
+    if (route === "analysis") pageId = "analysis-page";
+    if (route.startsWith("member/")) pageId = "member-page";
+    if (route.startsWith("problem/")) pageId = "problem-page";
     for (const page of pages) page.hidden = page.id !== pageId;
     for (const button of buttons) button.classList.toggle("active", button.dataset.page === pageId);
+    if (typeof window.journalRouteRenderer === "function") window.journalRouteRenderer();
+    window.scrollTo({ top: 0, behavior: "instant" });
   }
 
   for (const button of buttons) {
@@ -1096,28 +881,8 @@ function initPageNavigation() {
   initPageNavigation();
 
   // 1. Auth
-  const token = loadToken();
-  if (token) {
-    try {
-      const user = await fetchUser(token);
-      if (!MEMBER_MAP[user.login]) {
-        alert(`抱歉，${user.login} 不在队伍白名单中。\n\n如有需要请联系管理员添加。`);
-        localStorage.removeItem(TOKEN_KEY);
-        localStorage.removeItem(USER_KEY);
-        updateAuthUI(null);
-        return;
-      }
-      saveUser(user);
-      currentUser = user;
-      updateAuthUI(user);
-    } catch {
-      localStorage.removeItem(TOKEN_KEY);
-      localStorage.removeItem(USER_KEY);
-      updateAuthUI(null);
-    }
-  } else {
-    updateAuthUI(null);
-  }
+  try { currentUser = await loadSession(); } catch { currentUser = null; }
+  updateAuthUI(currentUser);
 
   // 2. Event bindings
   document.getElementById("btn-theme").addEventListener("click", toggleTheme);

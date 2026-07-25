@@ -9,6 +9,7 @@ const LEGACY_LOG_DIR_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const YEAR_PATTERN = /^\d{4}$/;
 const MONTH_PATTERN = /^(0[1-9]|1[0-2])$/;
 const DAY_PATTERN = /^(0[1-9]|[12]\d|3[01])$/;
+let normalizeMeta;
 
 function toDateString(date) {
   const y = date.getFullYear();
@@ -17,10 +18,12 @@ function toDateString(date) {
   return `${y}-${m}-${d}`;
 }
 
-function readMeta(dateDir) {
+function readMeta(dateDir, member, date) {
   const metaPath = path.join(dateDir, "meta.json");
   if (!fs.existsSync(metaPath)) return null;
-  return JSON.parse(fs.readFileSync(metaPath, "utf8"));
+  return normalizeMeta(JSON.parse(fs.readFileSync(metaPath, "utf8")), {
+    legacyIdPrefix: `${member}-${date}`,
+  });
 }
 
 function readProblemFile(dir, filename) {
@@ -30,7 +33,7 @@ function readProblemFile(dir, filename) {
 }
 
 function appendDateLogs(logs, member, date, dateDir) {
-  const meta = readMeta(dateDir);
+  const meta = readMeta(dateDir, member, date);
   if (!meta || !meta.problems || !meta.problems.length) return;
 
   for (let i = 0; i < meta.problems.length; i++) {
@@ -38,6 +41,8 @@ function appendDateLogs(logs, member, date, dateDir) {
     logs.push({
       member,
       date,
+      problemIndex: i,
+      problemId: p.id,
       problem: p.name || "未填写",
       platform: p.platform || "未填写",
       description: readProblemFile(dateDir, `${i}-desc.md`),
@@ -166,27 +171,28 @@ function writeVersionedIndex() {
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), html, "utf8");
 }
 
-const { members, logs } = readLogs();
-const heatmap = buildHeatmapCounts(logs);
-const recent30 = buildRecentStats(logs, members);
-const data = {
-  generatedAt: new Date().toISOString(),
-  members,
-  logs,
-  heatmap,
-  recent30,
-};
+async function main() {
+  ({ normalizeMeta } = await import("../lib/log-schema.mjs"));
+  const { members, logs } = readLogs();
+  const heatmap = buildHeatmapCounts(logs);
+  const recent30 = buildRecentStats(logs, members);
+  const data = { schemaVersion: 1, generatedAt: new Date().toISOString(), members, logs, heatmap, recent30 };
 
-fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
-fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-
-copyFile("style.css");
-copyFile("app.js");
-writeVersionedIndex();
-if (fs.existsSync(path.join(ROOT, "CNAME"))) {
-  copyFile("CNAME");
+  fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  fs.mkdirSync(path.join(OUTPUT_DIR, "lib"), { recursive: true });
+  copyFile("style.css");
+  copyFile("app.js");
+  fs.copyFileSync(path.join(ROOT, "lib", "log-schema.mjs"), path.join(OUTPUT_DIR, "lib", "log-schema.mjs"));
+  fs.copyFileSync(path.join(ROOT, "lib", "journal-api.js"), path.join(OUTPUT_DIR, "lib", "journal-api.js"));
+  writeVersionedIndex();
+  if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
+  fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");
+  fs.writeFileSync(path.join(OUTPUT_DIR, "data.json"), JSON.stringify(data, null, 2), "utf8");
+  console.log(`Generated ${logs.length} logs for ${members.length} members.`);
 }
-fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");
-fs.writeFileSync(path.join(OUTPUT_DIR, "data.json"), JSON.stringify(data, null, 2), "utf8");
 
-console.log(`Generated ${logs.length} logs for ${members.length} members.`);
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
