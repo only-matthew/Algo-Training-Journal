@@ -83,11 +83,28 @@ function toDateString(date) {
 }
 
 function memberUrl(member) {
-  return `#member/${encodeURIComponent(member)}`;
+  return `/member/${encodeURIComponent(member)}/`;
 }
 
 function problemUrl(log) {
-  return `#problem/${encodeURIComponent(log.member)}/${encodeURIComponent(log.date)}/${encodeURIComponent(log.problemId || log.problemIndex || 0)}`;
+  return `/problem/${encodeURIComponent(log.member)}/${encodeURIComponent(log.date)}/${encodeURIComponent(log.problemId || log.problemIndex || 0)}/`;
+}
+
+function currentRoute() {
+  return window.location.pathname.replace(/^\/+|\/+$/g, "");
+}
+
+function navigateTo(path) {
+  if (window.location.pathname === path) return;
+  window.history.pushState(null, "", path);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
+
+function migrateLegacyHashRoute() {
+  const route = window.location.hash.slice(1);
+  if (!route) return;
+  const path = route === "overview" ? "/" : `/${route}/`;
+  window.history.replaceState(null, "", `${path}${window.location.search}`);
 }
 
 function createProblemRow(index) {
@@ -714,7 +731,7 @@ function renderJournal(journal) {
   }
 
   function renderRoute() {
-    const parts = window.location.hash.slice(1).split("/");
+    const parts = currentRoute().split("/");
     document.title = "ICPC 算法训练日志";
     if (parts[0] === "member" && parts[1]) renderMemberPage(decodeURIComponent(parts[1]));
     if (parts[0] === "problem" && parts.length >= 4) {
@@ -935,7 +952,7 @@ function initPageNavigation() {
   const pages = document.querySelectorAll(".page-view");
 
   function showRequestedPage() {
-    const route = window.location.hash.slice(1);
+    const route = currentRoute();
     let pageId = "overview-page";
     if (route === "analysis" || route === "report") pageId = "analysis-page";
     if (route === "review") pageId = "review-page";
@@ -949,13 +966,20 @@ function initPageNavigation() {
 
   for (const button of buttons) {
     button.addEventListener("click", () => {
-      const hash = `#${button.dataset.page.replace("-page", "")}`;
-      if (window.location.hash === hash) return;
-      window.location.hash = hash;
+      const route = button.dataset.page.replace("-page", "");
+      navigateTo(route === "overview" ? "/" : `/${route}/`);
     });
   }
 
-  window.addEventListener("hashchange", showRequestedPage);
+  document.addEventListener("click", (event) => {
+    const link = event.target.closest("a");
+    if (!link || event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    const url = new URL(link.href, window.location.href);
+    if (url.origin !== window.location.origin || link.target || link.hasAttribute("download")) return;
+    event.preventDefault();
+    navigateTo(`${url.pathname}${url.search}${url.hash}`);
+  });
+  window.addEventListener("popstate", showRequestedPage);
   showRequestedPage();
 }
 
@@ -965,6 +989,7 @@ function initPageNavigation() {
 
 (async function bootstrap() {
   // 0. Theme
+  migrateLegacyHashRoute();
   initTheme();
   initPageNavigation();
 

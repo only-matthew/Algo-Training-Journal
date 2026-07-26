@@ -1,24 +1,81 @@
 # Algo Training Journal
 
-这是一个面向 ICPC 队伍的算法训练日志网站。队员不需要学习 Git，可以直接使用 GitHub 账号登录、填写训练记录和查看队伍统计。
+这是一个面向 ICPC / ACM 竞赛队伍的协作式算法训练日志。队员不需要学习 Git，可以直接使用 GitHub 账号登录、填写训练记录和查看队伍统计；日志仍以普通文件保存在 Git 仓库中，通过 GitHub Actions 构建为静态网站。
 
 线上地址：[https://train.xialiao.org](https://train.xialiao.org)
 
-## 功能概览
+## 项目总览
 
-- 题目标签：提交时可添加多个算法标签，并在总览中筛选
-- 团队错题本：将题目标记为“待复习”或“已掌握”，全队共享复盘状态
-- 综合训练分析：支持自定义日期，以及今天、本周（周一至周日）、本月快捷范围，并汇总题数、活跃天数、参与队员、标签分布和错题进度。
+### 项目背景
 
-- GitHub OAuth 登录，并限制为队伍白名单成员。
-- 提交、修改和删除每日训练记录。
-- 记录题目名称、平台、难度、题目描述、心得和 C++ 代码。
-- 总览页面：训练记录、队员筛选、年度热力图、近 30 天统计。
-- 训练分析页面：按队员查看某日、某月或自定义时间段的做题情况。
-- 每名队员拥有独立主页，可查看累计统计、热力图和全部训练题目。
+算法竞赛训练需要长期记录做题数量、知识点、错误原因和复习进度。直接维护 Markdown 或 Git 文件便于沉淀和追踪历史，但对不熟悉 Git 的队员不够友好；普通在线表格又难以同时提供代码展示、题目详情、训练热力图和稳定的历史版本。
+
+本项目将“网页表单的易用性”和“Git 仓库的可追踪性”结合起来：
+
+- **对队员简单**：通过 GitHub 登录后在网页中新增、修改或删除训练记录，无需手动执行 Git 命令。
+- **对数据可靠**：训练日志以结构化文件保存在 `logs/` 中，每次修改形成 Git commit，可审查、可迁移、可长期归档。
+- **对展示轻量**：公开读取由 GitHub Pages 提供静态托管，无需常驻数据库或传统应用服务器。
+- **对写入安全**：Cloudflare Worker 负责 OAuth 和受限 API，只允许白名单成员修改自己的日志目录。
+
+### 技术方案
+
+项目采用“**仓库即数据库、静态站点负责展示、Worker 负责写入**”的架构：
+
+1. `logs/` 保存所有队员的训练源数据。
+2. `scripts/generate-data.js` 聚合日志并生成 `site/data.json`、热力图和近 30 天统计。
+3. GitHub Actions 将 `site/` 发布到 GitHub Pages。
+4. Cloudflare Worker 完成 GitHub OAuth、会话校验和 Git Data API 写入。
+5. 每次网页提交产生一个 Git commit，并触发站点重新构建和部署。
+
+### 核心组成
+
+| 组成 | 主要职责 |
+| --- | --- |
+| 静态前端 | 日志浏览、筛选、统计分析、错题复盘、表单提交和独立页面路由。 |
+| `logs/` 数据目录 | 保存按队员和日期组织的题目元数据、描述、题解和代码。 |
+| 数据构建脚本 | 校验并聚合日志，计算统计信息，生成可部署的 `site/`。 |
+| Cloudflare Worker | 处理 GitHub OAuth、加密会话、成员授权和原子 Git commit。 |
+| GitHub Actions / Pages | 在日志变化后自动构建并发布公开站点。 |
+
+下文分别说明[项目功能](#项目功能)、[整体架构](#整体架构)、[数据存储](#数据存储)、[项目结构](#项目结构)和[部署配置](#部署配置)。
+
+## 项目功能
+
+### 训练记录
+
+- 使用 GitHub OAuth 登录，并限制为队伍白名单成员。
+- 按日期新增、加载、覆盖和删除当天的训练记录。
+- 一天可提交多道题，每道题可记录名称、平台、难度、标签、描述、心得/题解和 C++ 代码。
+- 使用永久题目 ID 保持详情链接稳定，不依赖题目在当天记录中的顺序。
+- 将题目标记为“非错题”“待复习”或“已掌握”，形成团队共享的复盘状态。
+- 描述、心得和代码分文件保存，Markdown 或代码内容不会干扰其他字段解析。
+
+### 总览与检索
+
+- 展示全队或单个队员的年度训练热力图。
+- 汇总近 30 天题数、活跃天数、周均题数、平台和难度分布。
+- 按队员、算法标签和错题状态筛选全部训练记录。
+- 训练卡片可展开查看题目描述、心得和代码。
+- 支持 Markdown 标题、代码块、C++ 语法高亮和 LaTeX 公式。
+- 支持浅色/深色主题和移动端响应式布局。
+
+### 训练分析与错题复盘
+
+- 按队员及自定义日期范围汇总训练数据。
+- 提供“今天 / 本周 / 本月”快捷范围；本周按周一至周日计算。
+- 统一展示题数、训练天数、参与队员、待复习题数、标签分布和复习进度。
+- 团队错题本支持按队员、状态和标签过滤。
+
+### 独立页面与分享
+
+- 每名队员拥有个人主页，可查看累计统计、热力图和全部训练题目。
 - 每道题拥有可直接访问和分享的独立详情 URL。
-- Markdown 标题、代码块、C++ 语法高亮和 LaTeX 公式渲染。
-- 记录内容分区显示，题目描述、心得和代码之间只在相邻内容存在时显示分割线。
+- 页面采用标准 URL 路径，并由构建脚本生成 GitHub Pages 可直接访问的静态入口，例如：
+
+```text
+/member/廖夏/
+/problem/廖夏/2026-07-24/题目永久ID/
+```
 
 ## 使用方式
 
@@ -29,38 +86,43 @@
 5. 点击“提交到 GitHub”。
 6. 等待 GitHub Actions 完成部署，页面数据会自动更新，也可以点击刷新按钮。
 
-“训练分析”位于页面顶部导航中。选择队员和自定义时间范围，或使用今天、本周、本月快捷范围后，可以统一查看题数、训练天数、涉及队员、待复习错题、标签分布、复习进度和具体题目明细。
-
-点击训练记录中的队员姓名可进入个人主页；点击“查看题目详情”可进入该题的独立页面。页面采用兼容 GitHub Pages 的 hash URL，例如：
-
-```text
-#member/廖夏
-#problem/廖夏/2026-07-24/0
-```
+如果所选日期已有记录，表单会自动加载原内容，可以覆盖更新或删除该日期的全部记录。“训练分析”位于顶部导航中；点击记录中的队员姓名可进入个人主页，点击“查看题目详情”可打开该题的独立页面。
 
 ## 整体架构
 
-项目的展示层是静态站点，认证和受限写入由 Cloudflare Worker 提供：
+项目由静态展示、仓库数据、自动构建和认证写入服务四部分组成：
 
 ```text
-logs/姓名/年/月/日/
-        │
-        │ npm run generate
-        ▼
-site/data.json + site/index.html + site/app.js + site/style.css
-        │
-        │ GitHub Pages
-        ▼
-训练日志网站
+                              公开读取
+logs/ 训练源数据 ── npm run generate ──▶ site/data.json + 静态资源
+       ▲                                      │
+       │                                      ▼
+GitHub Git Data API                    GitHub Pages
+       ▲                                      │
+       │                                      ▼
+Cloudflare Worker ◀──── 受限 API ─────── 浏览器
+       │                                      │
+       └──────────── GitHub OAuth ────────────┘
 ```
 
-登录和写入流程与静态展示分开：
+### 读取流程
 
-```text
-浏览器 → Cloudflare Worker → GitHub OAuth
-浏览器 → Worker 受限 API → GitHub Git Data API
-GitHub push → Actions 构建 → GitHub Pages 部署
-```
+1. 构建脚本读取 `logs/` 中所有成员和日期目录。
+2. 脚本通过共享 Schema 规范化元数据，并生成热力图和近 30 天汇总。
+3. 前端资源与 `data.json` 输出到 `site/`。
+4. GitHub Actions 将 `site/` 发布到 GitHub Pages。
+5. 浏览器读取静态数据并在本地完成筛选、统计和页面渲染。
+
+### 写入流程
+
+1. 浏览器跳转到 Worker 发起 GitHub OAuth。
+2. Worker 校验 GitHub 用户是否属于 `MEMBERS` 白名单，并创建 8 小时加密会话。
+3. 浏览器通过受限 API 提交某一天的题目数据。
+4. Worker 只向当前成员对应的 `logs/<姓名>/YYYY/MM/DD/` 写入文件。
+5. 一次新增、更新或删除通过 Git Data API 合并为一个 commit。
+6. commit 触发 GitHub Actions，重新生成并发布静态站点。
+
+因此，站点展示的是最近一次成功构建的仓库数据，而不是直接实时读取 GitHub API。提交后通常需要等待约 1 分钟完成部署。
 
 ## 数据存储
 
@@ -113,7 +175,7 @@ Worker 收到前端的受限日志请求后会：
 
 构建脚本仍兼容旧日期目录；通过网页新增和编辑的记录统一写入年月日路径。
 
-## 安全认证与 Worker 部署
+## 安全认证与自动部署
 
 当前版本不再把 GitHub access token 放进 URL 或 `localStorage`。OAuth code 由 Cloudflare Worker 交换，token 仅保存在加密、`HttpOnly`、`Secure` 会话 Cookie 中；浏览器只调用受限的日志 API。
 
@@ -133,7 +195,7 @@ npx wrangler deploy
 https://algo-oauth.xialiao.org/auth/callback
 ```
 
-允许登录的 GitHub 用户与日志目录映射维护在 `workers/oauth.js` 的 `MEMBERS` 中。前端不再拥有通用 GitHub API 凭据，Worker 只允许已登录用户写入自己的 `logs/<姓名>/YYYY/MM/DD/` 路径。
+允许登录的 GitHub 用户与日志目录映射维护在 `workers/oauth.js` 的 `MEMBERS` 中。前端不再拥有通用 GitHub API 凭据，Worker 只允许已登录用户写入自己的 `logs/<姓名>/YYYY/MM/DD/` 路径。新增队员时，需要在 `MEMBERS` 中加入映射、授予该账号仓库写权限，并让队员接受 Collaborator 邀请。
 
 工作流位于 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)。当 `main` 或 `master` 分支收到 push 后，Actions 会：
 
@@ -145,25 +207,15 @@ https://algo-oauth.xialiao.org/auth/callback
 
 Actions 只负责构建和部署，不执行 `git commit` 或 `git push`，也不会修改训练日志。
 
-## OAuth 配置
+### 安全边界
 
-OAuth 交换由 [workers/oauth.js](workers/oauth.js) 完成。Worker 使用 GitHub OAuth App 的 client secret 将授权码换成 access token，并将 token 封装在 AES-GCM 加密的 `HttpOnly` 会话 Cookie 中；token 不会返回给前端 JavaScript。
-
-GitHub 用户名和日志姓名映射位于 [workers/oauth.js](workers/oauth.js) 的 `MEMBERS`：
-
-```js
-const MEMBERS = {
-  "only-matthew": "廖夏",
-  "wzzzzhhhhh": "王梓豪",
-  "seanist-isx": "郭一鸣",
-};
-```
-
-新增队员需要同时完成：
-
-1. 在 `MEMBERS` 中加入映射。
-2. 为该账号授予仓库写权限。
-3. 让队员接受 GitHub Collaborator 邀请。
+- OAuth authorization code 由 Worker 交换，access token 不返回前端 JavaScript。
+- token 仅存放在 AES-GCM 加密且带 `HttpOnly`、`Secure` 属性的会话 Cookie 中。
+- OAuth state 使用随机 nonce 和有效期，避免未经校验的回调请求。
+- API 校验请求 Origin，只接受配置的线上域名和本地开发来源。
+- 登录用户必须存在于 `MEMBERS` 白名单中，并只能写入映射到自己的日志目录。
+- 日志输入在写入前通过共享 Schema 校验和清洗。
+- Git 分支更新不使用强制覆盖；发生引用冲突时最多自动重试两次。
 
 ## 部署配置
 
@@ -188,6 +240,12 @@ const MEMBERS = {
 - [workers/oauth.js](workers/oauth.js)
 - [workers/wrangler.toml](workers/wrangler.toml)
 
+如果迁移到其他域名或仓库，还需要同步修改：
+
+- `workers/oauth.js` 中的 `REPO`、`BRANCH`、`MEMBERS` 和 `ORIGINS`。
+- `lib/journal-api.js` 中的 `JOURNAL_API_URL`。
+- `CNAME`、OAuth Homepage URL 和 callback URL。
+
 ### GitHub Pages
 
 仓库设置中选择 **Settings → Pages → Source = GitHub Actions**。
@@ -199,38 +257,54 @@ const MEMBERS = {
 ```bash
 git clone https://github.com/only-matthew/Algo-Training-Journal.git
 cd Algo-Training-Journal
+npm install
 
-# 生成 site/ 和 site/data.json
-npm run generate
+# 语法检查、单元测试并生成 site/
+npm run check
 
 # 本地预览
 npx serve site
 ```
 
-目录迁移命令：
+常用命令：
 
-```bash
-npm run migrate:date-layout
-```
+| 命令 | 作用 |
+| --- | --- |
+| `npm test` | 运行 Node.js 单元测试。 |
+| `npm run generate` | 从 `logs/` 生成完整 `site/`。 |
+| `npm run check` | 检查主要脚本语法、运行测试并生成站点。 |
+| `npm run migrate:date-layout` | 将旧日期目录迁移为 `YYYY/MM/DD`。 |
+
+更早期的单文件 Markdown 日志可使用 `node scripts/migrate-logs.js` 迁移。执行迁移前建议创建分支或备份，并在迁移后运行 `npm run check` 和 `git diff --check`。
 
 ## 项目结构
 
 ```text
-├── .github/workflows/deploy.yml  # GitHub Pages 构建与部署
-├── index.html                    # 总览和训练分析页面结构
-├── app.js                        # 页面交互、提交表单、渲染和刷新逻辑
-├── lib/                          # Schema 与 Worker API 客户端
-├── style.css                     # 页面、表单、记录和分析视图样式
+.
+├── .github/
+│   └── workflows/deploy.yml      # GitHub Pages 构建与部署
+├── lib/
+│   ├── journal-api.js            # 浏览器端 Worker API 客户端
+│   └── log-schema.mjs            # 日志校验、清洗和永久 ID 规则
+├── logs/                          # 按成员和日期组织的训练源数据
 ├── scripts/
-│   ├── generate-data.js           # logs/ → site/data.json
-│   ├── migrate-date-layout.js     # YYYY-MM-DD → YYYY/MM/DD
-│   └── migrate-logs.js            # 旧单文件 Markdown 格式迁移
+│   ├── generate-data.js          # 聚合 logs/、计算统计并生成 site/ 与路由入口
+│   ├── migrate-date-layout.js    # YYYY-MM-DD → YYYY/MM/DD
+│   └── migrate-logs.js           # 旧单文件 Markdown 格式迁移
+├── test/
+│   └── log-schema.test.mjs       # Schema、日期、标签和状态测试
 ├── workers/
-│   ├── oauth.js                   # OAuth、加密会话与受限日志 API
-│   └── wrangler.toml              # Worker 配置
-├── logs/                          # 训练日志源数据
-└── site/                          # 构建产物，已被 .gitignore 忽略
+│   ├── oauth.js                  # OAuth、加密会话与受限日志 API
+│   └── wrangler.toml             # Worker 配置
+├── app.js                         # 路由、渲染、筛选、表单和主题交互
+├── index.html                     # 单页应用页面结构
+├── style.css                      # 组件、主题与响应式样式
+├── package.json                   # 构建、测试与迁移命令
+├── CNAME                          # GitHub Pages 自定义域名
+└── site/                           # 构建产物，已被 .gitignore 忽略
 ```
+
+各模块之间通过明确的数据边界协作：`logs/` 是唯一源数据，`lib/log-schema.mjs` 由前端、Worker 与生成脚本共享，`site/` 只作为可重新生成的部署产物，不应直接维护。
 
 ## 当前边界
 
@@ -239,3 +313,5 @@ npm run migrate:date-layout
 - OAuth 会话有效期为 8 小时；会话到期后需要重新登录。
 - Worker 会在分支引用冲突时自动重试两次；高并发持续冲突时仍可能需要稍后重试。
 - 新增、更新和删除都使用 Git Data API 合并为单个 commit。
+- 成员白名单、仓库地址和允许来源目前直接维护在 Worker 源码中。
+- 当前代码字段按 C++ 展示，保存文件扩展名固定为 `.cpp`。

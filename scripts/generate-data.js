@@ -171,6 +171,22 @@ function writeVersionedIndex() {
     .replace(/style\.css(?:\?v=[^"']*)?/g, `style.css?v=${assetVersion("style.css")}`)
     .replace(/app\.js(?:\?v=[^"']*)?/g, `app.js?v=${assetVersion("app.js")}`);
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), html, "utf8");
+  return html;
+}
+
+function writeRouteIndex(html, segments) {
+  const routeDir = path.join(OUTPUT_DIR, ...segments);
+  fs.mkdirSync(routeDir, { recursive: true });
+  fs.writeFileSync(path.join(routeDir, "index.html"), html, "utf8");
+}
+
+function writeRouteIndexes(html, members, logs) {
+  for (const route of ["analysis", "review"]) writeRouteIndex(html, [route]);
+  for (const member of members) writeRouteIndex(html, ["member", member]);
+  for (const log of logs) {
+    writeRouteIndex(html, ["problem", log.member, log.date, String(log.problemId || log.problemIndex || 0)]);
+  }
+  fs.writeFileSync(path.join(OUTPUT_DIR, "404.html"), html, "utf8");
 }
 
 async function main() {
@@ -187,7 +203,8 @@ async function main() {
   copyFile("app.js");
   fs.copyFileSync(path.join(ROOT, "lib", "log-schema.mjs"), path.join(OUTPUT_DIR, "lib", "log-schema.mjs"));
   fs.copyFileSync(path.join(ROOT, "lib", "journal-api.js"), path.join(OUTPUT_DIR, "lib", "journal-api.js"));
-  writeVersionedIndex();
+  const html = writeVersionedIndex();
+  writeRouteIndexes(html, members, logs);
   if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
   fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");
   fs.writeFileSync(path.join(OUTPUT_DIR, "data.json"), JSON.stringify(data, null, 2), "utf8");
