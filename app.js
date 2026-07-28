@@ -109,14 +109,21 @@ function problemUrl(log) {
   return `/problem/${encodeURIComponent(log.member)}/${encodeURIComponent(log.date)}/${encodeURIComponent(log.problemId || log.problemIndex || 0)}/`;
 }
 
-function originalProblemUrl(platform, problemNumber) {
-  const number = String(problemNumber || "").trim();
+function originalProblemUrl(platform, problemNumber, title = "") {
+  let number = String(problemNumber || "").trim();
+  if (!number && platform === "洛谷") {
+    number = String(title).match(/\b([A-Za-z]\d+[A-Za-z0-9_-]*)\b/)?.[1] || "";
+  }
+  if (!number && platform === "Codeforces") {
+    const match = String(title).match(/(?:codeforces\s+round\s+)?(\d+)\s*(?:\([^)]*\)\s*)?([A-Za-z]\d*)\s*$/i);
+    number = match ? `${match[1]}${match[2]}` : "";
+  }
   if (!number) return "";
   if (platform === "洛谷" && /^[A-Za-z][A-Za-z0-9_-]*$/.test(number)) {
     return `https://www.luogu.com.cn/problem/${encodeURIComponent(number)}`;
   }
   if (platform === "Codeforces") {
-    const match = number.match(/^(\d+)\s*(?:\/|-)?\s*([A-Za-z][A-Za-z0-9]*)$/);
+    const match = number.match(/^(\d+)\s*(?:\/|-|\s)?\s*([A-Za-z][A-Za-z0-9]*)$/);
     if (match) return `https://codeforces.com/problemset/problem/${match[1]}/${match[2].toUpperCase()}`;
   }
   return "";
@@ -552,6 +559,10 @@ function loadScript(src) {
 function loadEnhancements() {
   enhancementPromise ??= (async () => {
     await loadScript("vendor/prism/prism.min.js");
+    Prism.languages.c ??= Prism.languages.extend("clike", {
+      keyword: /\b(?:auto|break|case|char|const|continue|default|do|double|else|enum|extern|float|for|goto|if|inline|int|long|register|return|short|signed|sizeof|static|struct|switch|typedef|union|unsigned|void|volatile|while)\b/,
+      macro: { pattern: /(^\s*)#\s*[a-z]+(?:.*\\(?:\r\n|\r|\n).+)*/m, lookbehind: true, alias: "property" },
+    });
     await Promise.all([
       loadScript("vendor/prism/prism-cpp.min.js"),
       loadScript("vendor/prism/prism-line-numbers.min.js"),
@@ -598,7 +609,7 @@ function renderJournal(journal, dataScope = "overview") {
 
   function logCardHtml(log) {
     const title = escapeHtml(log.problem);
-    const sourceUrl = originalProblemUrl(log.platform, log.problemNumber);
+    const sourceUrl = originalProblemUrl(log.platform, log.problemNumber, log.problem);
 
     const reviewLabel = log.reviewStatus === "todo" ? "待复习" : log.reviewStatus === "mastered" ? "已掌握" : "";
     const badges = [
@@ -867,7 +878,7 @@ function renderJournal(journal, dataScope = "overview") {
     }
     if (sequence !== problemDetailSequence || !currentRoute().startsWith("problem/")) return;
 
-    const sourceUrl = originalProblemUrl(log.platform, log.problemNumber);
+    const sourceUrl = originalProblemUrl(log.platform, log.problemNumber, log.problem);
 
     root.innerHTML = `
       <div class="problem-detail-head">
