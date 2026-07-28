@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "problems": [
+    {
+      "id": "6bcf9a16-b105-4e31-a921-95bee6137c0d",
+      "name": "涂条纹",
+      "platform": "洛谷",
+      "difficulty": "普及-"
+    }
+  ]
+}
