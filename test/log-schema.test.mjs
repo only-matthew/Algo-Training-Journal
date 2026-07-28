@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { LOG_SCHEMA_VERSION, isDateString, normalizeMeta, validateLogInput } from "../lib/log-schema.mjs";
+import { LOG_SCHEMA_VERSION, isDateString, metaFromProblems, normalizeMeta, validateLogInput } from "../lib/log-schema.mjs";
 
 test("旧 meta 会得到可重复的兼容 ID", () => {
   const result = normalizeMeta({ problems: [{ name: "P1000", platform: "洛谷" }] }, { legacyIdPrefix: "廖夏-2026-07-25" });
@@ -24,6 +24,14 @@ test("标签去重清洗且旧日志获得默认错题状态", () => {
   const normalized = normalizeMeta({ problems: [{ name: "A", tags: ["DP", " DP ", "", "图论"] }] });
   assert.deepEqual(normalized.problems[0].tags, ["DP", "图论"]);
   assert.equal(normalized.problems[0].reviewStatus, "none");
+  assert.equal(normalized.problems[0].problemNumber, "");
+});
+
+test("题号会清洗并保存在元数据中", () => {
+  const result = validateLogInput({ problems: [{ id: "p1", name: "A", platform: "Codeforces", problemNumber: " 4A " }] });
+  assert.equal(result.problems[0].problemNumber, "4A");
+  assert.equal(metaFromProblems(result.problems).problems[0].problemNumber, "4A");
+  assert.equal(normalizeMeta({ problems: [{ name: "A", problemNumber: " P1000 " }] }).problems[0].problemNumber, "P1000");
 });
 
 test("错题状态只接受约定值", () => {

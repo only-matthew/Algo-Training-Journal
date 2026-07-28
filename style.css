@@ -335,6 +335,19 @@ select {
   margin-bottom: 0;
 }
 
+.problem-detail-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 10px;
+}
+
+.problem-source-link {
+  padding: 7px 12px;
+  font-size: 13px;
+  text-decoration: none;
+}
+
 .member-chip {
   flex: 0 0 auto;
   border: 1px solid color-mix(in srgb, var(--brand) 35%, var(--line));
@@ -856,6 +869,10 @@ textarea.form-input {
 
   .problem-detail-head {
     flex-direction: column;
+  }
+
+  .problem-detail-actions {
+    flex-wrap: wrap;
   }
 }
 

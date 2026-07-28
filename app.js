@@ -90,6 +90,19 @@ function problemUrl(log) {
   return `/problem/${encodeURIComponent(log.member)}/${encodeURIComponent(log.date)}/${encodeURIComponent(log.problemId || log.problemIndex || 0)}/`;
 }
 
+function originalProblemUrl(platform, problemNumber) {
+  const number = String(problemNumber || "").trim();
+  if (!number) return "";
+  if (platform === "洛谷" && /^[A-Za-z][A-Za-z0-9_-]*$/.test(number)) {
+    return `https://www.luogu.com.cn/problem/${encodeURIComponent(number)}`;
+  }
+  if (platform === "Codeforces") {
+    const match = number.match(/^(\d+)\s*(?:\/|-)?\s*([A-Za-z][A-Za-z0-9]*)$/);
+    if (match) return `https://codeforces.com/problemset/problem/${match[1]}/${match[2].toUpperCase()}`;
+  }
+  return "";
+}
+
 function currentRoute() {
   return window.location.pathname.replace(/^\/+|\/+$/g, "");
 }
@@ -117,9 +130,15 @@ function createProblemRow(index) {
       <span>第 ${index + 1} 题</span>
       ${index > 0 ? `<button type="button" class="btn-icon btn-remove" data-idx="${index}">&times;</button>` : ""}
     </div>
-    <div class="form-group">
-      <label>题目名称</label>
-      <input type="text" class="form-input problem-name" placeholder="如 P1104 或 CF 4A" />
+    <div class="form-row">
+      <div class="form-group">
+        <label>题目名称</label>
+        <input type="text" class="form-input problem-name" placeholder="如 排序" />
+      </div>
+      <div class="form-group">
+        <label>题号（洛谷 / Codeforces）</label>
+        <input type="text" class="form-input problem-number" placeholder="如 P1104 或 4A" />
+      </div>
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -205,6 +224,7 @@ function collectProblems() {
       problem: name,
       name,
       platform: block.querySelector(".problem-platform").value,
+      problemNumber: block.querySelector(".problem-number").value.trim(),
       difficulty: block.querySelector(".problem-difficulty").value,
       tags: block.querySelector(".problem-tags").value,
       reviewStatus: block.querySelector(".problem-review-status").value,
@@ -262,6 +282,7 @@ function populateProblems(parsed) {
     row.dataset.problemId = p.id || createProblemId();
     row.querySelector(".problem-name").value = p.problem || "";
     row.querySelector(".problem-platform").value = p.platform || "洛谷";
+    row.querySelector(".problem-number").value = p.problemNumber || "";
     row.querySelector(".problem-difficulty").value = p.difficulty || "未标注";
     row.querySelector(".problem-tags").value = (p.tags || []).join(", ");
     row.querySelector(".problem-review-status").value = p.reviewStatus || "none";
@@ -710,15 +731,20 @@ function renderJournal(journal) {
       return;
     }
 
+    const sourceUrl = originalProblemUrl(log.platform, log.problemNumber);
+
     root.innerHTML = `
       <div class="problem-detail-head">
         <div>
           <p class="eyebrow">${escapeHtml(log.date)} · 第 ${(log.problemIndex ?? 0) + 1} 题</p>
           <h1>${escapeHtml(log.problem)}</h1>
         </div>
-        <a class="member-chip" href="${memberUrl(log.member)}">${escapeHtml(log.member)} 的主页</a>
+        <div class="problem-detail-actions">
+          ${sourceUrl ? `<a class="btn btn-primary problem-source-link" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">前往原题 ↗</a>` : ""}
+          <a class="member-chip" href="${memberUrl(log.member)}">${escapeHtml(log.member)} 的主页</a>
+        </div>
       </div>
-      <p class="problem-meta">平台：${escapeHtml(log.platform)} <span>难度：${escapeHtml(log.difficulty)}</span></p>
+      <p class="problem-meta">平台：${escapeHtml(log.platform)} ${log.problemNumber ? `<span>题号：${escapeHtml(log.problemNumber)}</span>` : ""} <span>难度：${escapeHtml(log.difficulty)}</span></p>
       ${(log.tags.length || log.reviewStatus !== "none") ? `<div class="record-badges">${log.tags.map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`).join("")}${log.reviewStatus !== "none" ? `<span class="review-chip ${log.reviewStatus}">${log.reviewStatus === "todo" ? "待复习" : "已掌握"}</span>` : ""}</div>` : ""}
       <div class="problem-content">
         ${log.description ? `<section class="problem-section"><h2>题目描述</h2>${renderMarkdown(log.description)}</section>` : ""}

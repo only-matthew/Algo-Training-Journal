@@ -45,6 +45,7 @@ function appendDateLogs(logs, member, date, dateDir) {
       problemId: p.id,
       problem: p.name || "未填写",
       platform: p.platform || "未填写",
+      problemNumber: p.problemNumber || "",
       description: readProblemFile(dateDir, `${i}-desc.md`),
       takeaway: readProblemFile(dateDir, `${i}-takeaway.md`) || "未填写",
       difficulty: p.difficulty || "未标注",
