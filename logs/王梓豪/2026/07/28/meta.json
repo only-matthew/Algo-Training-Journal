@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "problems": [
+    {
+      "id": "a192ee1f-cd0b-4f47-b53f-90953a4df75f",
+      "name": "P1007 独木桥",
+      "platform": "洛谷",
+      "difficulty": "普及/提高-"
+    }
+  ]
+}
