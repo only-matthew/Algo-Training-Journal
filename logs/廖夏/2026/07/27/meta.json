@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "problems": [
+    {
+      "id": "3a545919-db94-448d-b752-8c4b49d3bd6a",
+      "name": "全排列问题",
+      "platform": "洛谷",
+      "difficulty": "未标注"
+    }
+  ]
+}
