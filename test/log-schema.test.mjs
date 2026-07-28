@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { LOG_SCHEMA_VERSION, isDateString, metaFromProblems, normalizeMeta, validateLogInput } from "../lib/log-schema.mjs";
+import { LOG_LIMITS, LOG_SCHEMA_VERSION, isDateString, logInputBytes, metaFromProblems, normalizeMeta, validateLogInput } from "../lib/log-schema.mjs";
 
 test("旧 meta 会得到可重复的兼容 ID", () => {
   const result = normalizeMeta({ problems: [{ name: "P1000", platform: "洛谷" }] }, { legacyIdPrefix: "廖夏-2026-07-25" });
@@ -43,4 +43,17 @@ test("错题状态只接受约定值", () => {
 
   const fallback = validateLogInput({ problems: [{ id: "p2", name: "B", reviewStatus: "unknown" }] });
   assert.equal(fallback.problems[0].reviewStatus, "none");
+});
+
+test("单日题目数量限制为 15 道", () => {
+  const problems = Array.from({ length: LOG_LIMITS.maxProblems }, (_, index) => ({ id: `p${index}`, name: `题目 ${index}` }));
+  assert.equal(validateLogInput({ problems }).problems.length, LOG_LIMITS.maxProblems);
+  assert.throws(() => validateLogInput({ problems: [...problems, { id: "overflow", name: "超限" }] }), /1 到 15 道题/);
+});
+
+test("字段和总提交大小超限时明确拒绝而不是截断", () => {
+  assert.throws(() => validateLogInput({ problems: [{ id: "p1", name: "A", code: "x".repeat(LOG_LIMITS.code + 1) }] }), /代码不能超过/);
+  const input = { problems: [{ id: "p1", name: "A", code: "汉".repeat(499_999) }] };
+  assert.ok(logInputBytes(input) > LOG_LIMITS.maxRequestBytes);
+  assert.throws(() => validateLogInput(input), /1.5 MB/);
 });

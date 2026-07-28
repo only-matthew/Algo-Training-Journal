@@ -158,6 +158,16 @@ function copyFile(name) {
   fs.copyFileSync(path.join(ROOT, name), path.join(OUTPUT_DIR, name));
 }
 
+function copyDirRecursive(src, dest) {
+  fs.mkdirSync(dest, { recursive: true });
+  for (const entry of fs.readdirSync(path.join(ROOT, src), { withFileTypes: true })) {
+    const srcPath = path.join(ROOT, src, entry.name);
+    const destPath = path.join(dest, entry.name);
+    if (entry.isDirectory()) copyDirRecursive(path.join(src, entry.name), destPath);
+    else fs.copyFileSync(srcPath, destPath);
+  }
+}
+
 function assetVersion(name) {
   return crypto
     .createHash("sha256")
@@ -166,13 +176,41 @@ function assetVersion(name) {
     .slice(0, 12);
 }
 
-function writeVersionedIndex() {
+function logSummary({ description, takeaway, code, ...summary }) {
+  return summary;
+}
+
+function daysAgo(days) {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return toDateString(date);
+}
+
+function appVersion() {
+  return crypto
+    .createHash("sha256")
+    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
+    .digest("hex")
+    .slice(0, 12);
+}
+
+function writeVersionedIndex(dataVersion) {
   const html = fs
     .readFileSync(path.join(ROOT, "index.html"), "utf8")
+    .replace(/__DATA_VERSION__/g, dataVersion)
     .replace(/style\.css(?:\?v=[^"']*)?/g, `style.css?v=${assetVersion("style.css")}`)
-    .replace(/app\.js(?:\?v=[^"']*)?/g, `app.js?v=${assetVersion("app.js")}`);
+    .replace(/app\.js(?:\?v=[^"']*)?/g, `app.js?v=${appVersion()}`);
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), html, "utf8");
   return html;
+}
+
+function writeVersionedApp() {
+  const source = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
+  const html = source
+    .replace("./lib/log-schema.mjs", `./lib/log-schema.mjs?v=${assetVersion("lib/log-schema.mjs")}`)
+    .replace("./lib/journal-api.js", `./lib/journal-api.js?v=${assetVersion("lib/journal-api.js")}`)
+    .replace("./lib/render-safety.mjs", `./lib/render-safety.mjs?v=${assetVersion("lib/render-safety.mjs")}`);
+  fs.writeFileSync(path.join(OUTPUT_DIR, "app.js"), html, "utf8");
 }
 
 function writeRouteIndex(html, segments) {
@@ -190,25 +228,56 @@ function writeRouteIndexes(html, members, logs) {
   fs.writeFileSync(path.join(OUTPUT_DIR, "404.html"), html, "utf8");
 }
 
+function writeJson(relativePath, value) {
+  const outputPath = path.join(OUTPUT_DIR, relativePath);
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, JSON.stringify(value), "utf8");
+}
+
+function writeProblemDetails(logs, generatedAt) {
+  for (const log of logs) {
+    writeJson(path.join("data", "problems", log.member, log.date, `${log.problemId || log.problemIndex || 0}.json`), {
+      schemaVersion: 3,
+      generatedAt,
+      ...log,
+    });
+  }
+}
+
 async function main() {
   ({ normalizeMeta } = await import("../lib/log-schema.mjs"));
   const { members, logs } = readLogs();
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
-  const data = { schemaVersion: 2, generatedAt: new Date().toISOString(), members, logs, heatmap, recent30 };
+  const generatedAt = new Date().toISOString();
+  const summaryLogs = logs.map(logSummary);
+  const fullData = { schemaVersion: 3, generatedAt, members, logs: summaryLogs, heatmap, recent30 };
+  const overviewData = {
+    schemaVersion: 3,
+    generatedAt,
+    members,
+    logs: summaryLogs.filter((log) => log.date >= daysAgo(29)),
+    heatmap,
+    recent30,
+  };
+  const dataVersion = crypto.createHash("sha256").update(JSON.stringify(fullData)).digest("hex").slice(0, 12);
 
   fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   fs.mkdirSync(path.join(OUTPUT_DIR, "lib"), { recursive: true });
+  copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   copyFile("style.css");
-  copyFile("app.js");
+  writeVersionedApp();
   fs.copyFileSync(path.join(ROOT, "lib", "log-schema.mjs"), path.join(OUTPUT_DIR, "lib", "log-schema.mjs"));
   fs.copyFileSync(path.join(ROOT, "lib", "journal-api.js"), path.join(OUTPUT_DIR, "lib", "journal-api.js"));
-  const html = writeVersionedIndex();
+  fs.copyFileSync(path.join(ROOT, "lib", "render-safety.mjs"), path.join(OUTPUT_DIR, "lib", "render-safety.mjs"));
+  const html = writeVersionedIndex(dataVersion);
   writeRouteIndexes(html, members, logs);
   if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
   fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");
-  fs.writeFileSync(path.join(OUTPUT_DIR, "data.json"), JSON.stringify(data, null, 2), "utf8");
+  writeJson(path.join("data", "overview.json"), overviewData);
+  writeJson(path.join("data", "all.json"), fullData);
+  writeProblemDetails(logs, generatedAt);
   console.log(`Generated ${logs.length} logs for ${members.length} members.`);
 }
 

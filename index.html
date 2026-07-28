@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="journal-data-version" content="__DATA_VERSION__" />
   <base href="/" />
   <title>ICPC 算法训练日志</title>
   <link rel="stylesheet" href="style.css?v=20260724-2" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css" />
+  <link rel="stylesheet" href="vendor/prism/prism-tomorrow.min.css" />
+  <link rel="stylesheet" href="vendor/prism/prism-line-numbers.min.css" />
+  <link rel="stylesheet" href="vendor/katex/katex.min.css" />
 </head>
 <body>
   <main class="container">
@@ -48,37 +49,37 @@
     <section class="grid metrics">
       <article class="card">
         <p class="metric-label">近 30 天训练题数</p>
-        <p id="metric-total" class="metric-value">0</p>
+        <p id="metric-total" class="metric-value loading-value">加载中</p>
       </article>
       <article class="card">
         <p class="metric-label">近 30 天训练天数</p>
-        <p id="metric-days" class="metric-value">0</p>
+        <p id="metric-days" class="metric-value loading-value">加载中</p>
       </article>
       <article class="card">
         <p class="metric-label">近 30 天周均频率</p>
-        <p id="metric-weekly" class="metric-value">0</p>
+        <p id="metric-weekly" class="metric-value loading-value">加载中</p>
       </article>
     </section>
 
     <section class="card">
       <h2>训练热力图（近 365 天）</h2>
       <p class="hint">颜色越深表示当日记录越多</p>
-      <div id="heatmap" class="heatmap"></div>
+      <div id="heatmap" class="heatmap"><p class="hint">加载中...</p></div>
     </section>
 
     <section class="grid stats">
       <article class="card">
         <h2>来源统计（近 30 天）</h2>
-        <div id="platform-stats"></div>
+        <div id="platform-stats"><p class="hint">加载中...</p></div>
       </article>
       <article class="card">
         <h2>难度统计（近 30 天，可选）</h2>
-        <div id="difficulty-stats"></div>
+        <div id="difficulty-stats"><p class="hint">加载中...</p></div>
       </article>
     </section>
 
     <section class="card">
-      <h2>训练记录</h2>
+      <h2>近 30 天训练记录</h2>
       <div class="record-filters">
         <div class="form-group">
           <label for="tag-filter">题目标签</label>
@@ -95,7 +96,7 @@
         </div>
       </div>
       <p id="record-count" class="hint"></p>
-      <div id="records" class="records record-grid"></div>
+      <div id="records" class="records record-grid"><p class="hint">加载中...</p></div>
     </section>
 
       <footer class="footer">
@@ -115,9 +116,9 @@
         </div>
       </section>
       <section class="grid metrics">
-        <article class="card"><p class="metric-label">待复习</p><p id="review-todo-count" class="metric-value">0</p></article>
-        <article class="card"><p class="metric-label">已掌握</p><p id="review-mastered-count" class="metric-value">0</p></article>
-        <article class="card"><p class="metric-label">涉及标签</p><p id="review-tag-count" class="metric-value">0</p></article>
+        <article class="card"><p class="metric-label">待复习</p><p id="review-todo-count" class="metric-value loading-value">加载中</p></article>
+        <article class="card"><p class="metric-label">已掌握</p><p id="review-mastered-count" class="metric-value loading-value">加载中</p></article>
+        <article class="card"><p class="metric-label">涉及标签</p><p id="review-tag-count" class="metric-value loading-value">加载中</p></article>
       </section>
       <section class="card"><h2>错题清单</h2><p id="review-summary" class="hint"></p><div id="review-records" class="records record-grid"></div></section>
     </section>
@@ -163,19 +164,19 @@
       <section class="grid metrics analysis-metrics">
         <article class="card">
           <p class="metric-label">训练题数</p>
-          <p id="analysis-total" class="metric-value">0</p>
+          <p id="analysis-total" class="metric-value loading-value">加载中</p>
         </article>
         <article class="card">
           <p class="metric-label">训练天数</p>
-          <p id="analysis-days" class="metric-value">0</p>
+          <p id="analysis-days" class="metric-value loading-value">加载中</p>
         </article>
         <article class="card">
           <p class="metric-label">涉及队员</p>
-          <p id="analysis-members" class="metric-value">0</p>
+          <p id="analysis-members" class="metric-value loading-value">加载中</p>
         </article>
         <article class="card">
           <p class="metric-label">待复习错题</p>
-          <p id="analysis-review" class="metric-value">0</p>
+          <p id="analysis-review" class="metric-value loading-value">加载中</p>
         </article>
       </section>
 
@@ -205,15 +206,15 @@
       <section class="grid metrics">
         <article class="card">
           <p class="metric-label">累计训练题数</p>
-          <p id="member-total" class="metric-value">0</p>
+          <p id="member-total" class="metric-value loading-value">加载中</p>
         </article>
         <article class="card">
           <p class="metric-label">累计训练天数</p>
-          <p id="member-days" class="metric-value">0</p>
+          <p id="member-days" class="metric-value loading-value">加载中</p>
         </article>
         <article class="card">
           <p class="metric-label">近 30 天题数</p>
-          <p id="member-recent" class="metric-value">0</p>
+          <p id="member-recent" class="metric-value loading-value">加载中</p>
         </article>
       </section>
       <section class="card">
@@ -252,9 +253,13 @@
           <div id="problem-list">
             <!-- 动态生成 -->
           </div>
+          <p id="submission-summary" class="submission-summary" aria-live="polite"></p>
           <button id="btn-add-problem" class="btn btn-outline btn-sm">＋ 添加一道题</button>
           <div class="modal-actions">
-            <span id="submit-msg" class="submit-msg"></span>
+            <span class="submit-status">
+              <span id="submit-msg" class="submit-msg" role="status" aria-live="polite"></span>
+              <button id="btn-retry-date" class="btn btn-outline btn-sm" type="button" hidden>重新加载</button>
+            </span>
             <div>
               <button id="btn-delete" class="btn btn-danger" style="display:none">🗑 删除记录</button>
               <button id="btn-save" class="btn btn-primary">提交到 GitHub</button>
@@ -265,12 +270,6 @@
     </div>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-numbers/prism-line-numbers.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
   <script type="module" src="app.js"></script>
 </body>
 </html>

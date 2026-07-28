@@ -297,6 +297,25 @@ select {
   padding-top: 14px;
 }
 
+.record-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 14px;
+}
+
+.record-source-link {
+  padding: 5px 10px;
+  font-size: 12px;
+}
+
+.record-grid .record-links .record-detail-link {
+  margin-top: 0;
+  padding-top: 0;
+}
+
 .detail-toolbar {
   display: flex;
   justify-content: space-between;
@@ -874,6 +893,23 @@ textarea.form-input {
   .problem-detail-actions {
     flex-wrap: wrap;
   }
+}
+
+.submit-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.submission-summary {
+  margin: -2px 0 10px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.submission-summary.limit-warning {
+  color: #b91c1c;
+  font-weight: 600;
 }
 
 @media (max-width: 560px) {

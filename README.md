@@ -22,7 +22,7 @@
 项目采用“**仓库即数据库、静态站点负责展示、Worker 负责写入**”的架构：
 
 1. `logs/` 保存所有队员的训练源数据。
-2. `scripts/generate-data.js` 聚合日志并生成 `site/data.json`、热力图和近 30 天统计。
+2. `scripts/generate-data.js` 聚合日志并生成首页摘要、全量轻量元数据、单题详情、热力图和近 30 天统计。
 3. GitHub Actions 将 `site/` 发布到 GitHub Pages。
 4. Cloudflare Worker 完成 GitHub OAuth、会话校验和 Git Data API 写入。
 5. 每次网页提交产生一个 Git commit，并触发站点重新构建和部署。
@@ -46,6 +46,7 @@
 - 使用 GitHub OAuth 登录，并限制为队伍白名单成员。
 - 按日期新增、加载、覆盖和删除当天的训练记录。
 - 一天可提交多道题，每道题可记录名称、题号、平台、难度、标签、描述、心得/题解和 C++ 代码。
+- 每个日期最多提交 15 道题，总提交内容不超过 1.5 MB；超限会明确提示，不会静默截断。
 - 洛谷和 Codeforces 题目可通过题号从详情页直接跳转到原题；旧记录的题号默认留空。
 - 使用永久题目 ID 保持详情链接稳定，不依赖题目在当天记录中的顺序。
 - 将题目标记为“非错题”“待复习”或“已掌握”，形成团队共享的复盘状态。
@@ -95,7 +96,7 @@
 
 ```text
                               公开读取
-logs/ 训练源数据 ── npm run generate ──▶ site/data.json + 静态资源
+logs/ 训练源数据 ── npm run generate ──▶ site/data/ 分层 JSON + 静态资源
        ▲                                      │
        │                                      ▼
 GitHub Git Data API                    GitHub Pages
@@ -110,7 +111,7 @@ Cloudflare Worker ◀──── 受限 API ─────── 浏览器
 
 1. 构建脚本读取 `logs/` 中所有成员和日期目录。
 2. 脚本通过共享 Schema 规范化元数据，并生成热力图和近 30 天汇总。
-3. 前端资源与 `data.json` 输出到 `site/`。
+3. 前端资源与分层 JSON 数据输出到 `site/`。
 4. GitHub Actions 将 `site/` 发布到 GitHub Pages。
 5. 浏览器读取静态数据并在本地完成筛选、统计和页面渲染。
 
@@ -307,9 +308,11 @@ npx serve site
 
 各模块之间通过明确的数据边界协作：`logs/` 是唯一源数据，`lib/log-schema.mjs` 由前端、Worker 与生成脚本共享，`site/` 只作为可重新生成的部署产物，不应直接维护。
 
+构建后的数据按用途拆分：`site/data/overview.json` 只包含本月题目和首屏统计，`site/data/all.json` 包含全部轻量题目元数据，`site/data/problems/<成员>/<日期>/<题目ID>.json` 保存单题描述、题解和代码。首页不下载正文；分析、错题本和成员页按需加载全量元数据；题目详情页只加载对应题目文件。
+
 ## 当前边界
 
-- 页面展示使用构建后的 `site/data.json`，不是实时读取 GitHub 仓库。
+- 页面展示使用构建后的 `site/data/` 分层 JSON，不是实时读取 GitHub 仓库。
 - 记录提交由 Worker 使用当前队员的 GitHub 授权完成，因此队员仍需拥有仓库写权限。
 - OAuth 会话有效期为 8 小时；会话到期后需要重新登录。
 - Worker 会在分支引用冲突时自动重试两次；高并发持续冲突时仍可能需要稍后重试。

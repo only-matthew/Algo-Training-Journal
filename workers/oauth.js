@@ -1,4 +1,4 @@
-import { isDateString, metaFromProblems, validateLogInput } from "../lib/log-schema.mjs";
+import { isDateString, LOG_LIMITS, metaFromProblems, validateLogInput } from "../lib/log-schema.mjs";
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
@@ -22,9 +22,21 @@ async function open(value, secret) { try { const all = decode(value); const raw 
 function safeReturnTo(value) { try { const url = new URL(value || "https://train.xialiao.org/"); return ORIGINS.has(url.origin) ? url.toString() : "https://train.xialiao.org/"; } catch { return "https://train.xialiao.org/"; } }
 function ghHeaders(token) { return { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "User-Agent": "Algo-Training-Journal-Worker", "X-GitHub-Api-Version": "2022-11-28" }; }
 async function gh(path, token, options = {}) { const response = await fetch(path.startsWith("http") ? path : `https://api.github.com/repos/${REPO}${path}`, { ...options, headers: { ...ghHeaders(token), ...(options.headers || {}) } }); if (!response.ok) throw new Error(`GitHub API ${response.status}: ${(await response.text()).slice(0, 200)}`); return response.status === 204 ? null : response.json(); }
+async function mapConcurrent(items, concurrency, mapper) {
+  const results = new Array(items.length); let next = 0;
+  async function worker() { while (next < items.length) { const index = next++; results[index] = await mapper(items[index], index); } }
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, worker)); return results;
+}
+async function readJsonBody(request) {
+  const declared = Number(request.headers.get("Content-Length") || 0);
+  if (declared > LOG_LIMITS.maxRequestBytes) throw Object.assign(new RangeError("提交内容不能超过 1.5 MB"), { status: 413 });
+  const text = await request.text();
+  if (new TextEncoder().encode(text).byteLength > LOG_LIMITS.maxRequestBytes) throw Object.assign(new RangeError("提交内容不能超过 1.5 MB"), { status: 413 });
+  try { return JSON.parse(text); } catch { throw Object.assign(new TypeError("请求内容不是有效的 JSON"), { status: 400 }); }
+}
 async function commit(changes, message, token, retry = 0) {
   const ref = await gh(`/git/ref/heads/${BRANCH}`, token); const parent = await gh(`/git/commits/${ref.object.sha}`, token);
-  const tree = await Promise.all(changes.map(async (change) => change.delete ? { path: change.path, mode: "100644", type: "blob", sha: null } : { path: change.path, mode: "100644", type: "blob", sha: (await gh("/git/blobs", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: change.content, encoding: "utf-8" }) })).sha }));
+  const tree = await mapConcurrent(changes, 4, async (change) => change.delete ? { path: change.path, mode: "100644", type: "blob", sha: null } : { path: change.path, mode: "100644", type: "blob", sha: (await gh("/git/blobs", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: change.content, encoding: "utf-8" }) })).sha });
   const nextTree = await gh("/git/trees", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ base_tree: parent.tree.sha, tree }) });
   const nextCommit = await gh("/git/commits", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message, tree: nextTree.sha, parents: [ref.object.sha] }) });
   const response = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, { method: "PATCH", headers: { ...ghHeaders(token), "Content-Type": "application/json" }, body: JSON.stringify({ sha: nextCommit.sha, force: false }) });
@@ -63,7 +75,7 @@ export default { async fetch(request, env) {
     if (url.pathname === "/api/logout" && request.method === "DELETE") return json(request, { ok: true }, 200, { "Set-Cookie": cookie(COOKIE, "", 0) });
     const user = await session(request, env); if (!user) return json(request, { error: "未登录或会话已过期" }, 401);
     if (url.pathname === "/api/session" && request.method === "GET") return json(request, { login: user.login, member: user.member, avatar_url: user.avatar_url });
-    if (url.pathname === "/api/logs/date") { const date = url.searchParams.get("date"); if (!isDateString(date)) return json(request, { error: "日期格式无效" }, 400); if (request.method === "GET") return json(request, await readLog(user, date)); if (request.method === "PUT") return json(request, await saveLog(user, date, await request.json())); if (request.method === "DELETE") return json(request, await deleteLog(user, date)); }
+    if (url.pathname === "/api/logs/date") { const date = url.searchParams.get("date"); if (!isDateString(date)) return json(request, { error: "日期格式无效" }, 400); if (request.method === "GET") return json(request, await readLog(user, date)); if (request.method === "PUT") return json(request, await saveLog(user, date, await readJsonBody(request))); if (request.method === "DELETE") return json(request, await deleteLog(user, date)); }
     return json(request, { error: "Not found" }, 404);
-  } catch (error) { console.error(error); return json(request, { error: error.message || "服务器错误" }, 500); }
+  } catch (error) { console.error(error); const status = error.status || (error instanceof TypeError || error instanceof RangeError ? 400 : 500); return json(request, { error: error.message || "服务器错误" }, status); }
 } };

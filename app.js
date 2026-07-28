@@ -1,5 +1,6 @@
-import { createProblemId } from "./lib/log-schema.mjs";
+import { createProblemId, LOG_LIMITS, logInputBytes, validateLogInput } from "./lib/log-schema.mjs";
 import { deleteDateLog, loadDateLog, loadSession, loginWithGitHub, logoutSession, saveDateLog } from "./lib/journal-api.js";
+import { escapeHtml, renderMarkdown } from "./lib/render-safety.mjs";
 
 // ============================================================
 // OAuth & Auth Module
@@ -39,8 +40,20 @@ function updateAuthUI(user) {
 // ============================================================
 
 let currentUser = null;
+let activeFormDate = "";
+let activeFormExists = false;
+let activeFormInitialized = false;
+let activeFormLoadState = "idle";
+let dateLoadSequence = 0;
+const dateDrafts = new Map();
 
 function openModal() {
+  dateDrafts.clear();
+  activeFormDate = "";
+  activeFormExists = false;
+  activeFormInitialized = false;
+  activeFormLoadState = "idle";
+  dateLoadSequence += 1;
   document.getElementById("submit-modal").style.display = "flex";
   document.getElementById("submit-date").value = toDateString(new Date());
   document.getElementById("submit-msg").textContent = "";
@@ -73,6 +86,12 @@ function closeModal(force = false) {
     }
   }
   document.getElementById("submit-modal").style.display = "none";
+  dateDrafts.clear();
+  activeFormDate = "";
+  activeFormExists = false;
+  activeFormInitialized = false;
+  activeFormLoadState = "idle";
+  dateLoadSequence += 1;
 }
 
 function toDateString(date) {
@@ -133,11 +152,11 @@ function createProblemRow(index) {
     <div class="form-row">
       <div class="form-group">
         <label>题目名称</label>
-        <input type="text" class="form-input problem-name" placeholder="如 排序" />
+        <input type="text" class="form-input problem-name" maxlength="${LOG_LIMITS.name}" placeholder="如 排序" />
       </div>
       <div class="form-group">
         <label>题号（洛谷 / Codeforces）</label>
-        <input type="text" class="form-input problem-number" placeholder="如 P1104 或 4A" />
+        <input type="text" class="form-input problem-number" maxlength="${LOG_LIMITS.problemNumber}" placeholder="如 P1104 或 4A" />
       </div>
     </div>
     <div class="form-row">
@@ -174,7 +193,7 @@ function createProblemRow(index) {
     <div class="form-row">
       <div class="form-group">
         <label>题目标签</label>
-        <input type="text" class="form-input problem-tags" placeholder="如 DP, 图论, 二分（逗号分隔）" />
+        <input type="text" class="form-input problem-tags" maxlength="${LOG_LIMITS.tags * (LOG_LIMITS.tag + 2)}" placeholder="如 DP, 图论, 二分（最多 ${LOG_LIMITS.tags} 个）" />
       </div>
       <div class="form-group">
         <label>错题状态</label>
@@ -187,15 +206,15 @@ function createProblemRow(index) {
     </div>
     <div class="form-group">
       <label>题目描述（选填）</label>
-      <textarea class="form-input problem-description" rows="2" placeholder="简要描述题目大意..."></textarea>
+      <textarea class="form-input problem-description" rows="2" maxlength="${LOG_LIMITS.description}" placeholder="简要描述题目大意..."></textarea>
     </div>
     <div class="form-group">
       <label>收获 / 题解</label>
-      <textarea class="form-input problem-takeaway" rows="4" placeholder="今天学到的内容、踩的坑，或题解..."></textarea>
+      <textarea class="form-input problem-takeaway" rows="4" maxlength="${LOG_LIMITS.takeaway}" placeholder="今天学到的内容、踩的坑，或题解..."></textarea>
     </div>
     <div class="form-group">
       <label>代码（选填，直接粘贴）</label>
-      <textarea class="form-input problem-code" rows="6" placeholder="粘贴代码即可，自动高亮显示" spellcheck="false"></textarea>
+      <textarea class="form-input problem-code" rows="6" maxlength="${LOG_LIMITS.code}" placeholder="粘贴代码即可，自动高亮显示" spellcheck="false"></textarea>
     </div>
   `;
   return div;
@@ -205,12 +224,37 @@ function resetProblems() {
   const list = document.getElementById("problem-list");
   list.innerHTML = "";
   list.appendChild(createProblemRow(0));
+  updateSubmissionSummary();
 }
 
 function addProblem() {
   const list = document.getElementById("problem-list");
+  if (list.children.length >= LOG_LIMITS.maxProblems) {
+    document.getElementById("submit-msg").textContent = `每个日期最多记录 ${LOG_LIMITS.maxProblems} 道题`;
+    return;
+  }
   const idx = list.children.length;
   list.appendChild(createProblemRow(idx));
+  markFormEdited();
+}
+
+function markFormEdited() {
+  activeFormInitialized = true;
+  dateLoadSequence += 1;
+  updateSubmissionSummary();
+}
+
+function formatBytes(bytes) {
+  return bytes < 1024 * 1024 ? `${Math.ceil(bytes / 1024)} KB` : `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+}
+
+function updateSubmissionSummary() {
+  const summary = document.getElementById("submission-summary");
+  if (!summary) return;
+  const problems = captureProblemDrafts();
+  const bytes = logInputBytes({ problems });
+  summary.textContent = `${problems.length}/${LOG_LIMITS.maxProblems} 题 · 约 ${formatBytes(bytes)} / ${formatBytes(LOG_LIMITS.maxRequestBytes)}`;
+  summary.classList.toggle("limit-warning", bytes > LOG_LIMITS.maxRequestBytes || problems.length > LOG_LIMITS.maxProblems);
 }
 
 function collectProblems() {
@@ -236,37 +280,95 @@ function collectProblems() {
   return problems;
 }
 
+function captureProblemDrafts() {
+  return [...document.querySelectorAll(".problem-block")].map((block) => ({
+    id: block.dataset.problemId,
+    problem: block.querySelector(".problem-name").value,
+    platform: block.querySelector(".problem-platform").value,
+    problemNumber: block.querySelector(".problem-number").value,
+    difficulty: block.querySelector(".problem-difficulty").value,
+    tags: block.querySelector(".problem-tags").value,
+    reviewStatus: block.querySelector(".problem-review-status").value,
+    description: block.querySelector(".problem-description").value,
+    takeaway: block.querySelector(".problem-takeaway").value,
+    code: block.querySelector(".problem-code").value,
+  }));
+}
+
+function setDateFormState(date, exists) {
+  const btnSave = document.getElementById("btn-save");
+  const btnDelete = document.getElementById("btn-delete");
+  btnSave.textContent = exists ? "更新记录" : "提交到 GitHub";
+  btnDelete.style.display = exists ? "" : "none";
+  btnDelete.onclick = exists ? () => handleDelete(date) : null;
+  activeFormExists = exists;
+}
+
+function setDateLoadState(state) {
+  activeFormLoadState = state;
+  const blocked = state !== "ready";
+  document.getElementById("btn-save").disabled = blocked;
+  document.getElementById("btn-add-problem").disabled = blocked;
+  for (const control of document.querySelectorAll("#problem-list input, #problem-list select, #problem-list textarea, #problem-list button")) {
+    control.disabled = blocked;
+  }
+  document.getElementById("btn-retry-date").hidden = state !== "error";
+}
+
 async function onDateChange() {
   if (!currentUser) return;
 
+  if (activeFormDate && activeFormInitialized) {
+    dateDrafts.set(activeFormDate, {
+      problems: captureProblemDrafts(),
+      exists: activeFormExists,
+    });
+  }
+
   const date = document.getElementById("submit-date").value;
   if (!date) return;
+  activeFormDate = date;
 
-  const btnSave = document.getElementById("btn-save");
   const msgEl = document.getElementById("submit-msg");
+  const draft = dateDrafts.get(date);
+  if (draft) {
+    populateProblems(draft.problems);
+    setDateFormState(date, draft.exists);
+    activeFormInitialized = true;
+    setDateLoadState("ready");
+    msgEl.textContent = "已恢复该日期尚未提交的内容";
+    return;
+  }
+
+  const sequence = ++dateLoadSequence;
+  setDateFormState(date, false);
+  activeFormInitialized = false;
+  resetProblems();
+  setDateLoadState("loading");
+  msgEl.textContent = "正在加载该日期的记录...";
 
   try {
     const loaded = await loadDateLog(date);
-    const metaContent = loaded.problems.length ? "present" : null;
+    if (sequence !== dateLoadSequence || date !== activeFormDate) return;
+    const exists = loaded.problems.length > 0;
 
-    const btnDelete = document.getElementById("btn-delete");
-    if (metaContent) {
+    if (exists) {
       const problems = loaded.problems.map((p) => ({ ...p, problem: p.name }));
       populateProblems(problems);
-      btnSave.textContent = "更新记录";
       msgEl.textContent = "📝 加载已有记录，修改后点击「更新记录」即可覆盖";
-      btnDelete.style.display = "";
-      btnDelete.onclick = () => handleDelete(date);
     } else {
       resetProblems();
-      btnSave.textContent = "提交到 GitHub";
       msgEl.textContent = "";
-      btnDelete.style.display = "none";
     }
-  } catch {
-    resetProblems();
-    btnSave.textContent = "提交到 GitHub";
-    msgEl.textContent = "";
+    setDateFormState(date, exists);
+    dateDrafts.set(date, { problems: captureProblemDrafts(), exists });
+    activeFormInitialized = true;
+    setDateLoadState("ready");
+  } catch (error) {
+    if (sequence !== dateLoadSequence || date !== activeFormDate) return;
+    setDateFormState(date, false);
+    setDateLoadState("error");
+    msgEl.textContent = `加载失败，尚未确认该日期是否有记录：${error.message}`;
   }
 }
 
@@ -284,13 +386,14 @@ function populateProblems(parsed) {
     row.querySelector(".problem-platform").value = p.platform || "洛谷";
     row.querySelector(".problem-number").value = p.problemNumber || "";
     row.querySelector(".problem-difficulty").value = p.difficulty || "未标注";
-    row.querySelector(".problem-tags").value = (p.tags || []).join(", ");
+    row.querySelector(".problem-tags").value = Array.isArray(p.tags) ? p.tags.join(", ") : (p.tags || "");
     row.querySelector(".problem-review-status").value = p.reviewStatus || "none";
     row.querySelector(".problem-description").value = p.description || "";
     row.querySelector(".problem-takeaway").value = p.takeaway || "";
     row.querySelector(".problem-code").value = p.code || "";
     list.appendChild(row);
   });
+  updateSubmissionSummary();
 }
 
 async function handleDelete(date) {
@@ -308,6 +411,7 @@ async function handleDelete(date) {
   try {
     await deleteDateLog(date);
 
+    dateDrafts.delete(date);
     msgEl.textContent = "✅ 删除成功！等待自动部署（约 1 分钟）";
     setTimeout(() => closeModal(true), 2000);
   } catch (err) {
@@ -335,6 +439,13 @@ async function handleSubmit() {
     return;
   }
 
+  try {
+    validateLogInput({ problems });
+  } catch (error) {
+    document.getElementById("submit-msg").textContent = error.message;
+    return;
+  }
+
   const msgEl = document.getElementById("submit-msg");
   msgEl.textContent = "提交中...";
   const btnSave = document.getElementById("btn-save");
@@ -345,6 +456,7 @@ async function handleSubmit() {
 
     await saveDateLog(date, problems);
 
+    dateDrafts.delete(date);
     msgEl.textContent = isEdit
       ? "✅ 更新成功！等待自动部署（约 1 分钟）"
       : "✅ 提交成功！等待自动部署（约 1 分钟）";
@@ -360,7 +472,97 @@ async function handleSubmit() {
 // Journal Rendering
 // ============================================================
 
-function renderJournal(journal) {
+let journalRenderer = null;
+let overviewJournal = null;
+let fullJournal = null;
+let fullJournalPromise = null;
+let problemDetailSequence = 0;
+let forceProblemDetailRefresh = false;
+const dataVersion = document.querySelector('meta[name="journal-data-version"]')?.content || "dev";
+let enhancementPromise = null;
+
+function dataUrl(path, force = false) {
+  return `${path}?v=${force ? Date.now() : dataVersion}`;
+}
+
+async function fetchJson(path, force = false) {
+  const response = await fetch(dataUrl(path, force));
+  if (!response.ok) throw new Error(`数据加载失败（HTTP ${response.status}）`);
+  return response.json();
+}
+
+async function loadProblemDetail(member, date, problemId, force = false) {
+  const segments = [member, date, problemId].map(encodeURIComponent).join("/");
+  return fetchJson(`data/problems/${segments}.json`, force);
+}
+
+async function ensureOverviewJournal(force = false) {
+  if (overviewJournal && !force) return overviewJournal;
+  const journal = await loadOverview(force);
+  overviewJournal = journal;
+  journalRenderer = renderJournal(journal, "overview");
+  return journal;
+}
+
+async function ensureFullJournal(force = false) {
+  if (fullJournal && !force) return fullJournal;
+  if (fullJournalPromise) return fullJournalPromise;
+  showFullDataLoading();
+  fullJournalPromise = fetchJson("data/all.json", force)
+    .then((journal) => {
+      fullJournal = journal;
+      journalRenderer = renderJournal(journal, "all");
+      return journal;
+    })
+    .catch((error) => {
+      showFullDataError(error);
+      throw error;
+    })
+    .finally(() => {
+      fullJournalPromise = null;
+    });
+  return fullJournalPromise;
+}
+
+function showFullDataLoading() {
+  const route = currentRoute();
+  if (route === "analysis" || route === "report") document.getElementById("analysis-summary").textContent = "正在加载全量训练数据...";
+  if (route === "review") document.getElementById("review-summary").textContent = "正在加载全量错题数据...";
+  if (route.startsWith("member/")) document.getElementById("member-record-count").textContent = "正在加载该队员的全部训练数据...";
+}
+
+function showFullDataError(error) {
+  const message = `加载失败：${error.message}`;
+  const route = currentRoute();
+  if (route === "analysis" || route === "report") document.getElementById("analysis-summary").textContent = message;
+  if (route === "review") document.getElementById("review-summary").textContent = message;
+  if (route.startsWith("member/")) document.getElementById("member-record-count").textContent = message;
+}
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = resolve;
+    script.onerror = () => reject(new Error(`资源加载失败：${src}`));
+    document.head.appendChild(script);
+  });
+}
+
+function loadEnhancements() {
+  enhancementPromise ??= (async () => {
+    await loadScript("vendor/prism/prism.min.js");
+    await Promise.all([
+      loadScript("vendor/prism/prism-cpp.min.js"),
+      loadScript("vendor/prism/prism-line-numbers.min.js"),
+      loadScript("vendor/katex/katex.min.js"),
+    ]);
+    await loadScript("vendor/katex/auto-render.min.js");
+  })();
+  return enhancementPromise;
+}
+
+function renderJournal(journal, dataScope = "overview") {
   const { members, logs, heatmap, recent30 } = journal;
   for (const log of logs) {
     log.tags = Array.isArray(log.tags) ? log.tags : [];
@@ -380,7 +582,8 @@ function renderJournal(journal) {
     return 4;
   }
 
-  function renderEnhancements(root) {
+  async function renderEnhancements(root) {
+    try { await loadEnhancements(); } catch (error) { console.error(error); }
     if (typeof Prism !== "undefined") Prism.highlightAllUnder(root);
     if (typeof renderMathInElement !== "undefined") {
       renderMathInElement(root, {
@@ -393,18 +596,9 @@ function renderJournal(journal) {
     }
   }
 
-  function logCardHtml(log, { expandable = false } = {}) {
+  function logCardHtml(log) {
     const title = escapeHtml(log.problem);
-    const titleHtml = expandable
-      ? `<button class="record-title-clickable" type="button" aria-expanded="false">${title} <span class="expand-icon">▼</span></button>`
-      : `<h3 class="record-title">${title}</h3>`;
-    const details = expandable
-      ? `<div class="record-takeaway">
-          ${log.description ? `<div class="record-section record-desc">${renderMarkdown(log.description)}</div>` : ""}
-          ${log.takeaway ? `<div class="record-section record-takeaway-text">${renderMarkdown(log.takeaway)}</div>` : ""}
-          ${log.code ? `<div class="record-section record-code"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div>` : ""}
-        </div>`
-      : "";
+    const sourceUrl = originalProblemUrl(log.platform, log.problemNumber);
 
     const reviewLabel = log.reviewStatus === "todo" ? "待复习" : log.reviewStatus === "mastered" ? "已掌握" : "";
     const badges = [
@@ -416,25 +610,20 @@ function renderJournal(journal) {
         <time>${escapeHtml(log.date)}</time>
         <a class="member-link" href="${memberUrl(log.member)}">${escapeHtml(log.member)}</a>
       </div>
-      ${titleHtml}
+      <h3 class="record-title">${title}</h3>
       <p class="meta">平台：${escapeHtml(log.platform)} ｜ 难度：${escapeHtml(log.difficulty)}</p>
       ${badges ? `<div class="record-badges">${badges}</div>` : ""}
-      ${details}
-      <a class="record-detail-link" href="${problemUrl(log)}">查看题目详情 →</a>
+      <div class="record-links">
+        ${sourceUrl ? `<a class="btn btn-outline btn-sm record-source-link" href="${sourceUrl}" target="_blank" rel="noopener noreferrer">前往原题 ↗</a>` : ""}
+        <a class="record-detail-link" href="${problemUrl(log)}">查看题目详情 →</a>
+      </div>
     `;
   }
 
   function createLogCard(log, options) {
     const card = document.createElement("article");
     card.className = `record${options?.className ? ` ${options.className}` : ""}`;
-    card.innerHTML = logCardHtml(log, options);
-    const toggle = card.querySelector(".record-title-clickable");
-    if (toggle) {
-      toggle.onclick = () => {
-        const expanded = card.classList.toggle("expanded");
-        toggle.setAttribute("aria-expanded", String(expanded));
-      };
-    }
+    card.innerHTML = logCardHtml(log);
     return card;
   }
 
@@ -460,7 +649,11 @@ function renderJournal(journal) {
       list.className = "stat-list";
       for (const [name, count] of entries) {
         const item = document.createElement("li");
-        item.innerHTML = `<span>${name}</span><strong>${count}</strong>`;
+        const label = document.createElement("span");
+        const value = document.createElement("strong");
+        label.textContent = name;
+        value.textContent = String(count);
+        item.append(label, value);
         list.appendChild(item);
       }
       root.appendChild(list);
@@ -513,7 +706,7 @@ function renderJournal(journal) {
       (tag === "all" || log.tags.includes(tag)) &&
       (reviewStatus === "all" || log.reviewStatus === reviewStatus)
     );
-    document.getElementById("record-count").textContent = `${recent30.start} ~ ${recent30.end} 统计窗口，当前筛选共 ${filtered.length} 条记录`;
+    document.getElementById("record-count").textContent = `近 30 天当前筛选共 ${filtered.length} 条记录`;
 
     const recordsRoot = document.getElementById("records");
     recordsRoot.innerHTML = "";
@@ -523,71 +716,7 @@ function renderJournal(journal) {
       return;
     }
 
-    for (const log of filtered) recordsRoot.appendChild(createLogCard(log, { expandable: true }));
-    renderEnhancements(recordsRoot);
-  }
-
-  // Markdown 渲染器（支持代码块 + 行内代码 + LaTeX 公式）
-  function renderMarkdown(text) {
-    if (!text) return "";
-
-    // 将所有"特殊片段"提取为占位符，然后再对剩余纯文本做 escapeHtml，
-    // 最后还原。这样特殊片段内部的 < > & " ' 不会被二次转义。
-    const preserved = [];
-
-    // 1. 代码块 ```...```
-    let processed = text.replace(/```(\w*)\s*\n([\s\S]*?)```/g, (_, lang, code) => {
-      const idx = preserved.length;
-      const languageClass = lang ? `language-${lang}` : "language-text";
-      preserved.push(`<pre class="line-numbers"><code class="${languageClass}">${escapeHtml(code.trim())}</code></pre>`);
-      return `\x00P${idx}\x00`;
-    });
-
-    // 2. 行间公式 $$...$$
-    processed = processed.replace(/\$\$([\s\S]*?)\$\$/g, (_, formula) => {
-      const idx = preserved.length;
-      preserved.push(`$$${formula.trim()}$$`);
-      return `\x00P${idx}\x00`;
-    });
-
-    // 3. 行内公式 $...$（排除 $$）
-    processed = processed.replace(/(?<!\$)\$(?!\$)([^$]+?)\$(?!\$)/g, (_, formula) => {
-      const idx = preserved.length;
-      preserved.push(`$${formula.trim()}$`);
-      return `\x00P${idx}\x00`;
-    });
-
-    // 4. 行内代码 `...` —— 必须在 escapeHtml 之前提取，否则反引号会被转义成 &#96;
-    processed = processed.replace(/`([^`]+)`/g, (_, codeContent) => {
-      const idx = preserved.length;
-      preserved.push(`<code class="language-text">${escapeHtml(codeContent)}</code>`);
-      return `\x00P${idx}\x00`;
-    });
-
-    // 5. Markdown 标题。标题内容先转义，避免用户输入被当成 HTML 执行。
-    processed = processed.replace(/^ {0,3}(#{1,6})[ \t]+(.+?)\s*#*$/gm, (_, marks, heading) => {
-      const idx = preserved.length;
-      const level = marks.length;
-      preserved.push(`<h${level}>${escapeHtml(heading.trim())}</h${level}>`);
-      return `\x00P${idx}\x00`;
-    });
-
-    // 6. 对剩余内容 escape HTML
-    processed = escapeHtml(processed);
-
-    // 7. 只给普通文本换行，避免把代码块中的换行变成 <br>
-    processed = processed.replace(/\n/g, "<br>");
-
-    // 8. 还原所有保留片段
-    processed = processed.replace(/\x00P(\d+)\x00/g, (_, idx) => preserved[parseInt(idx)]);
-
-    return processed;
-  }
-
-  function escapeHtml(str) {
-    const el = document.createElement("div");
-    el.appendChild(document.createTextNode(str));
-    return el.innerHTML;
+    for (const log of filtered) recordsRoot.appendChild(createLogCard(log));
   }
 
   // 动态填充队员下拉框
@@ -721,15 +850,22 @@ function renderJournal(journal) {
     for (const log of memberLogs) root.appendChild(createLogCard(log));
   }
 
-  function renderProblemPage(member, date, index) {
-    const problemIndex = Number(index);
-    const log = logs.find((item) => item.member === member && item.date === date && (item.problemId === decodeURIComponent(index) || (Number.isFinite(problemIndex) && (item.problemIndex ?? 0) === problemIndex)));
+  async function renderProblemPage(member, date, index) {
     const root = document.getElementById("problem-detail");
     document.getElementById("problem-back-member").href = memberUrl(member);
-    if (!log) {
-      root.innerHTML = `<p class="eyebrow">题目详情</p><h1>未找到该题目</h1><p class="hint">链接可能已失效，或训练记录已被修改。</p>`;
+    const sequence = ++problemDetailSequence;
+    root.innerHTML = `<p class="eyebrow">题目详情</p><h1>加载中</h1><p class="hint">正在加载题目描述、题解和代码...</p>`;
+    let log;
+    try {
+      const force = forceProblemDetailRefresh;
+      forceProblemDetailRefresh = false;
+      log = await loadProblemDetail(member, date, decodeURIComponent(index), force);
+    } catch (error) {
+      if (sequence !== problemDetailSequence) return;
+      root.innerHTML = `<p class="eyebrow">题目详情</p><h1>未找到该题目</h1><p class="hint">${escapeHtml(error.message)}</p>`;
       return;
     }
+    if (sequence !== problemDetailSequence || !currentRoute().startsWith("problem/")) return;
 
     const sourceUrl = originalProblemUrl(log.platform, log.problemNumber);
 
@@ -752,13 +888,21 @@ function renderJournal(journal) {
         ${log.code ? `<section class="problem-section"><h2>代码</h2><div class="record-takeaway problem-code-expanded"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div></section>` : ""}
       </div>
     `;
-    renderEnhancements(root);
+    await renderEnhancements(root);
     document.title = `${log.problem} · ${log.member} · ICPC 算法训练日志`;
   }
 
-  function renderRoute() {
+  async function renderRoute() {
     const parts = currentRoute().split("/");
     document.title = "ICPC 算法训练日志";
+    if (dataScope === "shell" && !parts[0]) {
+      try { await ensureOverviewJournal(); } catch (error) { document.getElementById("records").textContent = `数据加载失败：${error.message}`; }
+      return;
+    }
+    if (dataScope !== "all" && (parts[0] === "analysis" || parts[0] === "report" || parts[0] === "review" || parts[0] === "member")) {
+      try { await ensureFullJournal(); } catch { /* Error state is rendered by ensureFullJournal. */ }
+      return;
+    }
     if (parts[0] === "member" && parts[1]) renderMemberPage(decodeURIComponent(parts[1]));
     if (parts[0] === "problem" && parts.length >= 4) {
       renderProblemPage(decodeURIComponent(parts[1]), decodeURIComponent(parts[2]), parts[3]);
@@ -844,18 +988,20 @@ function renderJournal(journal) {
   analysisEnd.value = analysisState.end || today;
   syncAnalysisDateRange();
   updateRangePresetState();
-  renderAnalysis();
+  if (dataScope === "all") renderAnalysis();
   for (const id of ["review-member", "review-status", "review-tag"]) document.getElementById(id).onchange = renderReviewBook;
   document.getElementById("tag-filter").onchange = () => renderLogs(memberSelect.value);
   document.getElementById("review-filter").onchange = () => renderLogs(memberSelect.value);
-  renderReviewBook();
+  if (dataScope === "all") renderReviewBook();
 
   function render(member) {
     renderStats(member);
     renderHeatmap(member);
     renderLogs(member);
-    renderAnalysis();
-    renderReviewBook();
+    if (dataScope === "all") {
+      renderAnalysis();
+      renderReviewBook();
+    }
   }
 
   render("all");
@@ -863,7 +1009,7 @@ function renderJournal(journal) {
   window.journalRouteRenderer = renderRoute;
   memberSelect.onchange = (e) => render(e.target.value);
 
-  return { render };
+  return { render, renderRoute };
 }
 
 // ============================================================
@@ -871,31 +1017,27 @@ function renderJournal(journal) {
 // ============================================================
 
 const REFRESH_INTERVAL = 5 * 60 * 1000;
-let journalPromise = null;
+let overviewPromise = null;
 
-async function loadJournal() {
-  if (journalPromise) {
-    return await journalPromise;
+async function loadOverview(force = false) {
+  if (overviewPromise) {
+    return await overviewPromise;
   }
-  journalPromise = fetch(`data.json?ts=${Date.now()}`)
-    .then((r) => {
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      return r.json();
-    })
+  overviewPromise = fetchJson("data/overview.json", force)
     .finally(() => {
-      journalPromise = null;
+      overviewPromise = null;
     });
-  return await journalPromise;
+  return await overviewPromise;
 }
 
-function startRefreshTimer(renderFn, getCurrentMember) {
+function startRefreshTimer() {
   // 静默后台刷新，每 5 分钟更新一次数据
   setInterval(async () => {
-    await doRefresh(renderFn, getCurrentMember);
+    await doRefresh();
   }, REFRESH_INTERVAL);
 }
 
-async function doRefresh(renderFn, getCurrentMember) {
+async function doRefresh() {
   const btnRefresh = document.getElementById("btn-refresh");
   if (btnRefresh) {
     btnRefresh.disabled = true;
@@ -903,13 +1045,19 @@ async function doRefresh(renderFn, getCurrentMember) {
   }
 
   try {
-    const journal = await loadJournal();
-    if (journal) {
-      const member = getCurrentMember ? getCurrentMember() : "all";
-      const result = renderJournal(journal);
-      if (result && result.render) {
-        result.render(member);
-      }
+    const route = currentRoute();
+    if (route.startsWith("problem/")) {
+      forceProblemDetailRefresh = true;
+      await journalRenderer?.renderRoute();
+    } else if (route === "analysis" || route === "report" || route === "review" || route.startsWith("member/")) {
+      fullJournal = null;
+      await ensureFullJournal(true);
+    } else {
+      const overview = await loadOverview(true);
+      overviewJournal = overview;
+      const member = document.getElementById("member-select").value || "all";
+      journalRenderer = renderJournal(overview, "overview");
+      journalRenderer.render(member);
     }
   } catch (err) {
     console.error("刷新失败:", err);
@@ -1032,38 +1180,36 @@ function initPageNavigation() {
   document.getElementById("btn-add-problem").addEventListener("click", addProblem);
   document.getElementById("btn-save").addEventListener("click", handleSubmit);
   document.getElementById("submit-date").addEventListener("change", onDateChange);
+  document.getElementById("btn-retry-date").addEventListener("click", onDateChange);
   document.getElementById("problem-list").addEventListener("click", (e) => {
     if (e.target.classList.contains("btn-remove")) {
       e.target.closest(".problem-block").remove();
+      markFormEdited();
     }
   });
+  document.getElementById("problem-list").addEventListener("input", markFormEdited);
+  document.getElementById("problem-list").addEventListener("change", markFormEdited);
 
   // 3. Load journal
-  let journalRenderer = null;
   try {
-    const journal = await loadJournal();
-    if (journal) {
-      journalRenderer = renderJournal(journal);
+    const route = currentRoute();
+    if (route === "analysis" || route === "report" || route === "review" || route.startsWith("member/")) {
+      await ensureFullJournal();
+    } else if (route.startsWith("problem/")) {
+      journalRenderer = renderJournal({ members: [], logs: [], heatmap: { all: {}, byMember: {} }, recent30: { start: "", end: "", byMember: {} } }, "shell");
+    } else {
+      await ensureOverviewJournal();
     }
   } catch {
     document.getElementById("records").textContent = "数据加载失败，请稍后刷新重试。";
+    for (const id of ["metric-total", "metric-days", "metric-weekly"]) document.getElementById(id).textContent = "加载失败";
   }
 
   // 4. Setup refresh timer
-  if (journalRenderer) {
-    const getCurrentMember = () => {
-      const select = document.getElementById("member-select");
-      return select ? select.value : "all";
-    };
-    startRefreshTimer(journalRenderer.render, getCurrentMember);
-  }
+  if (journalRenderer) startRefreshTimer();
 
   // 5. Manual refresh
   document.getElementById("btn-refresh").addEventListener("click", async () => {
-    const getCurrentMember = () => {
-      const select = document.getElementById("member-select");
-      return select ? select.value : "all";
-    };
-    await doRefresh(journalRenderer ? journalRenderer.render : null, getCurrentMember);
+    await doRefresh();
   });
 })();
