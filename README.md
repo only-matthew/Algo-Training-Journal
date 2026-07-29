@@ -51,6 +51,7 @@
 - 使用永久题目 ID 保持详情链接稳定，不依赖题目在当天记录中的顺序。
 - 将题目标记为“非错题”“待复习”或“已掌握”，形成团队共享的复盘状态。
 - 描述、心得和代码分文件保存，Markdown 或代码内容不会干扰其他字段解析。
+- 题目描述填写至少 20 字后，可调用 AI 将题意压缩为一句简短概括；生成结果会回填输入框，提交前仍可人工修改。
 
 ### 总览与检索
 
@@ -58,7 +59,8 @@
 - 汇总近 30 天题数、活跃天数、周均题数、平台和难度分布。
 - 按队员、算法标签和错题状态筛选全部训练记录。
 - 训练卡片可展开查看题目描述、心得和代码。
-- 支持 Markdown 标题、代码块、C++ 语法高亮和 LaTeX 公式。
+- 题目详情使用 Marked 渲染 GFM Markdown，支持标题、列表、表格、链接和代码块。
+- 使用 Prism 提供 C++ 语法高亮，使用 KaTeX 渲染 `$...$` 与 `$$...$$` LaTeX 公式。
 - 支持浅色/深色主题和移动端响应式布局。
 
 ### 训练分析与错题复盘
@@ -181,6 +183,8 @@ Worker 收到前端的受限日志请求后会：
 
 当前版本不再把 GitHub access token 放进 URL 或 `localStorage`。OAuth code 由 Cloudflare Worker 交换，token 仅保存在加密、`HttpOnly`、`Secure` 会话 Cookie 中；浏览器只调用受限的日志 API。
 
+题目描述旁的“概括”按钮会调用 Worker 的 `POST /api/summarize` 接口。接口使用 Workers AI binding 运行 `@cf/qwen/qwen3-30b-a3b-fp8`，要求模型只输出题目对象、计算或判断目标以及关键约束，不猜测题解。Worker 会清理模型可能附带的思考标签、标题和引号，并限制输入不超过 20,000 字。
+
 Worker 部署前需要配置三个 secret：
 
 ```bash
@@ -216,7 +220,9 @@ Actions 只负责构建和部署，不执行 `git commit` 或 `git push`，也�
 - OAuth state 使用随机 nonce 和有效期，避免未经校验的回调请求。
 - API 校验请求 Origin，只接受配置的线上域名和本地开发来源。
 - 登录用户必须存在于 `MEMBERS` 白名单中，并只能写入映射到自己的日志目录。
+- AI 概括接口与日志写入接口使用同一套登录会话和成员白名单，未登录用户不能调用模型。
 - 日志输入在写入前通过共享 Schema 校验和清洗。
+- Markdown 渲染会转义原始 HTML，仅为安全的 HTTP(S)、站内相对路径和锚点生成链接；公式内容也会先转义再交给 KaTeX 渲染。
 - Git 分支更新不使用强制覆盖；发生引用冲突时最多自动重试两次。
 
 ## 部署配置
@@ -236,6 +242,8 @@ Actions 只负责构建和部署，不执行 `git commit` 或 `git push`，也�
 - `GITHUB_CLIENT_ID`
 - `GITHUB_CLIENT_SECRET`
 - `SESSION_SECRET`
+
+AI 概括不需要把模型密钥写入前端或仓库；`workers/wrangler.toml` 中的 `[ai]` 配置会把 Workers AI 暴露为 `env.AI`。如后续改用第三方模型，应通过 Worker Secret 或 AI Gateway BYOK 配置密钥，不得写入 `app.js` 或 Wrangler 配置文件。
 
 对应代码和 Wrangler 配置分别位于：
 
@@ -287,14 +295,17 @@ npx serve site
 │   └── workflows/deploy.yml      # GitHub Pages 构建与部署
 ├── lib/
 │   ├── journal-api.js            # 浏览器端 Worker API 客户端
-│   └── log-schema.mjs            # 日志校验、清洗和永久 ID 规则
+│   ├── log-schema.mjs            # 日志校验、清洗和永久 ID 规则
+│   └── render-safety.mjs         # 安全的 Markdown、链接和公式文本渲染
 ├── logs/                          # 按成员和日期组织的训练源数据
 ├── scripts/
 │   ├── generate-data.js          # 聚合 logs/、计算统计并生成 site/ 与路由入口
 │   ├── migrate-date-layout.js    # YYYY-MM-DD → YYYY/MM/DD
 │   └── migrate-logs.js           # 旧单文件 Markdown 格式迁移
 ├── test/
-│   └── log-schema.test.mjs       # Schema、日期、标签和状态测试
+│   ├── log-schema.test.mjs       # Schema、日期、标签和状态测试
+│   └── render-safety.test.mjs    # Markdown、公式和链接安全测试
+├── vendor/                        # 随静态站点发布的 Marked、KaTeX 与 Prism
 ├── workers/
 │   ├── oauth.js                  # OAuth、加密会话与受限日志 API
 │   └── wrangler.toml             # Worker 配置
@@ -315,6 +326,7 @@ npx serve site
 - 页面展示使用构建后的 `site/data/` 分层 JSON，不是实时读取 GitHub 仓库。
 - 记录提交由 Worker 使用当前队员的 GitHub 授权完成，因此队员仍需拥有仓库写权限。
 - OAuth 会话有效期为 8 小时；会话到期后需要重新登录。
+- AI 概括依赖 Cloudflare Workers AI 的可用性和账户配额，生成结果应在提交前由使用者检查。
 - Worker 会在分支引用冲突时自动重试两次；高并发持续冲突时仍可能需要稍后重试。
 - 新增、更新和删除都使用 Git Data API 合并为单个 commit。
 - 成员白名单、仓库地址和允许来源目前直接维护在 Worker 源码中。
