@@ -63,23 +63,26 @@ async function readLog(user, date) {
 }
 async function deleteLog(user, date) { const root = dir(user.member, date); const raw = await content(`${root}/meta.json`, user.token); if (!raw) return { deleted: false }; const count = JSON.parse(raw).problems?.length || 0; const changes = [{ path: `${root}/meta.json`, delete: true }]; for (let i = 0; i < count; i++) for (const suffix of ["desc.md", "takeaway.md", "solution.cpp"]) { const path = `${root}/${i}-${suffix}`; if (await content(path, user.token) !== null) changes.push({ path, delete: true }); } await commit(changes, `delete(${user.member}): training log for ${date}`, user.token); return { deleted: true }; }
 
-const SUMMARIZE_LIMIT = new Map(); // user -> lastRequestTime
-const SUMMARIZE_COOLDOWN = 10000; // 10s between requests
-
 async function summarizeDescription(ai, description) {
   if (!ai) return null;
   const text = String(description || "").trim();
   if (!text || text.length < 20) return null;
 
-  const result = await ai.run("@cf/meta/llama-3.2-3b-instruct", {
-    max_tokens: 64,
-    temperature: 0.3,
+  const result = await ai.run("@cf/qwen/qwen3-30b-a3b-fp8", {
+    max_tokens: 120,
+    temperature: 0.15,
     messages: [
-      { role: "system", content: "你是算法竞赛题目的概括助手。请用简洁的中文（最多40字）概括以下题目描述的核心问题和目标，提炼出算法要点。只输出概括结果，不要其他内容。" },
-      { role: "user", content: text.slice(0, 2000) },
+      { role: "system", content: "你是算法竞赛题意压缩助手。仅依据用户给出的题面，用一句不超过60个汉字的中文概括：处理什么对象、要求计算或判断什么、最关键的约束或优化目标。不要猜测解法，不要列点，不要标题、引号、Markdown、解释或思考过程。" },
+      { role: "user", content: text.slice(0, 6000) },
     ],
   });
-  return result.response?.trim() || null;
+  const summary = String(result.response || "")
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/^(?:概括|摘要|题意)\s*[:：]\s*/i, "")
+    .replace(/^[“”"']+|[“”"']+$/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return summary ? summary.slice(0, 120) : null;
 }
 
 export default { async fetch(request, env) {
@@ -96,11 +99,9 @@ export default { async fetch(request, env) {
     if (url.pathname === "/api/session" && request.method === "GET") return json(request, { login: user.login, member: user.member, avatar_url: user.avatar_url });
     if (url.pathname === "/api/logs/date") { const date = url.searchParams.get("date"); if (!isDateString(date)) return json(request, { error: "日期格式无效" }, 400); if (request.method === "GET") return json(request, await readLog(user, date)); if (request.method === "PUT") return json(request, await saveLog(user, date, await readJsonBody(request))); if (request.method === "DELETE") return json(request, await deleteLog(user, date)); }
     if (url.pathname === "/api/summarize" && request.method === "POST") {
-      const last = SUMMARIZE_LIMIT.get(user.login) || 0;
-      if (Date.now() - last < SUMMARIZE_COOLDOWN) return json(request, { error: "请稍后再试" }, 429);
-      SUMMARIZE_LIMIT.set(user.login, Date.now());
       const { description } = await readJsonBody(request);
       if (!description || typeof description !== "string" || !description.trim()) return json(request, { error: "请提供题目描述" }, 400);
+      if (description.length > 20000) return json(request, { error: "题目描述过长，请控制在 20000 字以内" }, 413);
       const summary = await summarizeDescription(env.AI, description);
       if (!summary) return json(request, { error: "生成失败，请检查描述内容" }, 422);
       return json(request, { summary });

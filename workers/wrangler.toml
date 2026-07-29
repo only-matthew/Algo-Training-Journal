@@ -5,6 +5,7 @@ compatibility_date = "2026-07-25"
 
 # 使用 `npx wrangler secret put` 配置：
 # GITHUB_CLIENT_ID、GITHUB_CLIENT_SECRET、SESSION_SECRET（至少 32 字节随机值）
+# 第三方 LLM 密钥也必须通过 Worker Secret 或 AI Gateway BYOK 配置，不得写入前端或本文件。
 
 # 如果你有自己的域名路由，部署后取消下面的注释并设置路由
 # routes = [

@@ -403,6 +403,35 @@ select {
   overflow-x: auto;
 }
 
+.problem-section table {
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  margin: 16px 0;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+.problem-section th,
+.problem-section td {
+  min-width: 96px;
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  text-align: left;
+  vertical-align: top;
+}
+
+.problem-section th {
+  background: var(--bg);
+  font-weight: 650;
+}
+
+.problem-section .katex-display {
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
 .problem-code-expanded {
   display: block;
   margin-top: 0;
