@@ -784,6 +784,49 @@ code {
   font-size: 13px;
 }
 
+.form-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.form-label-row label {
+  margin-bottom: 0;
+}
+
+.btn-summarize {
+  border: 0;
+  padding: 2px 0;
+  background: transparent;
+  color: var(--brand);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-summarize:disabled {
+  color: var(--muted);
+  cursor: wait;
+}
+
+.summarize-status {
+  min-height: 18px;
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.summarize-status[data-state="error"] {
+  color: #b91c1c;
+}
+
+.summarize-status[data-state="success"] {
+  color: var(--brand);
+}
+
 .form-input {
   width: 100%;
   padding: 9px 12px;

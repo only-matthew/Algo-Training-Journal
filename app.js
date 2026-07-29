@@ -212,8 +212,12 @@ function createProblemRow(index) {
       </div>
     </div>
     <div class="form-group">
-      <label>题目描述（选填）<button type="button" class="btn-summarize" title="用 AI 概括题目描述">✨ 概括</button></label>
+      <div class="form-label-row">
+        <label>题目描述（选填）</label>
+        <button type="button" class="btn-summarize" title="用 AI 概括题目描述">AI 概括</button>
+      </div>
       <textarea class="form-input problem-description" rows="2" maxlength="${LOG_LIMITS.description}" placeholder="简要描述题目大意..."></textarea>
+      <p class="summarize-status" role="status" aria-live="polite"></p>
     </div>
     <div class="form-group">
       <label>收获 / 题解</label>
@@ -1271,25 +1275,30 @@ function initPageNavigation() {
       e.preventDefault();
       const block = summarizeBtn.closest(".problem-block");
       const desc = block.querySelector(".problem-description");
+      const status = block.querySelector(".summarize-status");
+      const setStatus = (message, state = "") => {
+        status.textContent = message;
+        status.dataset.state = state;
+      };
       if (!desc.value.trim() || desc.value.trim().length < 20) {
-        document.getElementById("submit-msg").textContent = "请先输入至少 20 字的题目描述再概括";
+        setStatus("请先输入至少 20 字的题目描述。", "error");
         return;
       }
       if (summarizeBtn.disabled) return;
       summarizeBtn.disabled = true;
-      summarizeBtn.textContent = "⏳ 概括中...";
+      summarizeBtn.textContent = "概括中...";
+      setStatus("正在生成简短题意，请稍候。", "loading");
       try {
         const res = await apiRequest("/api/summarize", { method: "POST", body: JSON.stringify({ description: desc.value.trim() }) });
-        if (res.summary) {
-          desc.value = res.summary;
-          document.getElementById("submit-msg").textContent = "✅ 已生成概括，可手动修改";
-          markFormEdited();
-        }
+        if (!res.summary) throw new Error("模型没有返回有效内容，请重试");
+        desc.value = res.summary;
+        setStatus("已生成概括，可继续修改。", "success");
+        markFormEdited();
       } catch (err) {
-        document.getElementById("submit-msg").textContent = `概括失败：${err.message}`;
+        setStatus(`概括失败：${err.message}`, "error");
       } finally {
         summarizeBtn.disabled = false;
-        summarizeBtn.textContent = "✨ 概括";
+        summarizeBtn.textContent = "AI 概括";
       }
     }
   });
