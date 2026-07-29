@@ -10,6 +10,10 @@ const YEAR_PATTERN = /^\d{4}$/;
 const MONTH_PATTERN = /^(0[1-9]|1[0-2])$/;
 const DAY_PATTERN = /^(0[1-9]|[12]\d|3[01])$/;
 let normalizeMeta;
+let escapeHtml;
+let renderMarkdown;
+const SITE_ORIGIN = "https://train.xialiao.org";
+const SITE_NAME = "ICPC 算法训练日志";
 
 function toDateString(date) {
   const y = date.getFullYear();
@@ -204,6 +208,190 @@ function writeVersionedIndex(dataVersion) {
   return html;
 }
 
+function routePath(segments = []) {
+  if (!segments.length) return "/";
+  return `/${segments.map((segment) => encodeURIComponent(String(segment))).join("/")}/`;
+}
+
+function absoluteUrl(segments = []) {
+  return `${SITE_ORIGIN}${routePath(segments)}`;
+}
+
+function escapeXml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&apos;",
+  })[char]);
+}
+
+function plainText(value) {
+  return String(value || "")
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]*)`/g, "$1")
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[#>*_~$|]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function truncate(value, maxLength = 155) {
+  const text = plainText(value);
+  return text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
+}
+
+function replaceHeadMetadata(html, { title, description, canonical, robots = "index,follow", jsonLd }) {
+  let output = html
+    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(title)}</title>`)
+    .replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${escapeHtml(description)}" />`)
+    .replace(/<meta name="robots" content="[^"]*" \/>/, `<meta name="robots" content="${escapeHtml(robots)}" />`)
+    .replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${escapeHtml(canonical)}" />`);
+  if (jsonLd) {
+    const serialized = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
+    output = output.replace("</head>", `  <script type="application/ld+json">${serialized}</script>\n</head>`);
+  }
+  return output;
+}
+
+function showOnlyPage(html, pageId) {
+  const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page"];
+  let output = html;
+  for (const id of pageIds) {
+    const pattern = new RegExp(`<section id="${id}" class="([^"]*)"(?: hidden)?>`);
+    output = output.replace(pattern, (_match, classes) => {
+      const normalizedClasses = classes.replace(/\s+active\b/g, "");
+      const activeClass = id === pageId ? `${normalizedClasses} active` : normalizedClasses;
+      return `<section id="${id}" class="${activeClass.trim()}"${id === pageId ? "" : " hidden"}>`;
+    });
+  }
+  return output;
+}
+
+function problemKey(log) {
+  return String(log.problemId || log.problemIndex || 0);
+}
+
+function problemSegments(log) {
+  return ["problem", log.member, log.date, problemKey(log)];
+}
+
+function memberSegments(member) {
+  return ["member", member];
+}
+
+function recordCardHtml(log) {
+  const tags = (log.tags || []).map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`).join("");
+  const reviewLabels = { todo: "待复习", mastered: "已掌握" };
+  const review = reviewLabels[log.reviewStatus]
+    ? `<span class="review-chip ${escapeHtml(log.reviewStatus)}">${reviewLabels[log.reviewStatus]}</span>`
+    : "";
+  return `<article class="record">
+    <div class="record-head"><time datetime="${escapeHtml(log.date)}">${escapeHtml(log.date)}</time><a class="member-link" href="${routePath(memberSegments(log.member))}">${escapeHtml(log.member)}</a></div>
+    <h3 class="record-title"><a href="${routePath(problemSegments(log))}">${escapeHtml(log.problem)}</a></h3>
+    <p class="meta">平台：${escapeHtml(log.platform)} ｜ 难度：${escapeHtml(log.difficulty)}</p>
+    ${tags || review ? `<div class="record-badges">${tags}${review}</div>` : ""}
+    <div class="record-links"><a class="record-detail-link" href="${routePath(problemSegments(log))}">查看题目详情 →</a></div>
+  </article>`;
+}
+
+function writeHomePage(html, logs) {
+  const recentLogs = logs.filter((log) => log.date >= daysAgo(29));
+  const cards = recentLogs.length ? recentLogs.map(recordCardHtml).join("\n") : "<p>近 30 天暂无训练记录。</p>";
+  const description = "ICPC 算法训练日志，汇总队员的刷题记录、原创题解、复盘收获和代码。";
+  const output = replaceHeadMetadata(html, {
+    title: SITE_NAME,
+    description,
+    canonical: absoluteUrl(),
+    jsonLd: { "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, url: absoluteUrl(), description },
+  }).replace(/<div id="records" class="records record-grid">[\s\S]*?<\/div>/, `<div id="records" class="records record-grid">${cards}</div>`);
+  fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), output, "utf8");
+  return output;
+}
+
+function writeMemberPages(html, members, logs) {
+  for (const member of members) {
+    const memberLogs = logs.filter((log) => log.member === member);
+    const activeDays = new Set(memberLogs.map((log) => log.date)).size;
+    const recentCount = memberLogs.filter((log) => log.date >= daysAgo(29)).length;
+    const firstDate = memberLogs.at(-1)?.date;
+    const lastDate = memberLogs[0]?.date;
+    const subtitle = memberLogs.length ? `从 ${firstDate} 到 ${lastDate} 的训练记录` : "该队员暂无训练记录";
+    const description = `${member} 的 ICPC 算法训练主页，共记录 ${memberLogs.length} 道题和 ${activeDays} 个训练日。`;
+    let output = showOnlyPage(html, "member-page");
+    output = replaceHeadMetadata(output, {
+      title: `${member} 的训练主页 · ${SITE_NAME}`,
+      description,
+      canonical: absoluteUrl(memberSegments(member)),
+      jsonLd: { "@context": "https://schema.org", "@type": "CollectionPage", name: `${member} 的训练主页`, url: absoluteUrl(memberSegments(member)), description },
+    })
+      .replace('<h1 id="member-page-title">队员</h1>', `<h1 id="member-page-title">${escapeHtml(member)}</h1>`)
+      .replace('<p id="member-page-subtitle" class="subtitle"></p>', `<p id="member-page-subtitle" class="subtitle">${escapeHtml(subtitle)}</p>`)
+      .replace('<p id="member-total" class="metric-value loading-value">加载中</p>', `<p id="member-total" class="metric-value">${memberLogs.length}</p>`)
+      .replace('<p id="member-days" class="metric-value loading-value">加载中</p>', `<p id="member-days" class="metric-value">${activeDays}</p>`)
+      .replace('<p id="member-recent" class="metric-value loading-value">加载中</p>', `<p id="member-recent" class="metric-value">${recentCount}</p>`)
+      .replace('<p id="member-record-count" class="hint"></p>', `<p id="member-record-count" class="hint">共 ${memberLogs.length} 道题，每道题均可单独打开和分享</p>`)
+      .replace('<div id="member-records" class="records record-grid"></div>', `<div id="member-records" class="records record-grid">${memberLogs.map(recordCardHtml).join("\n") || "<p>暂无训练记录。</p>"}</div>`);
+    writeRouteIndex(output, memberSegments(member));
+  }
+}
+
+function problemPageHtml(html, log) {
+  const canonical = absoluteUrl(problemSegments(log));
+  const description = truncate(log.takeaway !== "未填写" ? log.takeaway : log.description)
+    || `${log.member} 在 ${log.date} 记录的 ${log.problem} 训练题目、题解与代码。`;
+  const badges = [
+    ...(log.tags || []).map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`),
+    ...({ todo: [`<span class="review-chip todo">待复习</span>`], mastered: [`<span class="review-chip mastered">已掌握</span>`] }[log.reviewStatus] || []),
+  ].join("");
+  const article = `<div class="problem-detail-head">
+      <div><p class="eyebrow">${escapeHtml(log.date)} · 第 ${(log.problemIndex ?? 0) + 1} 题</p><h1>${escapeHtml(log.problem)}</h1></div>
+      <div class="problem-detail-actions"><a class="member-chip" href="${routePath(memberSegments(log.member))}">${escapeHtml(log.member)} 的主页</a></div>
+    </div>
+    <p class="problem-meta">平台：${escapeHtml(log.platform)} ${log.problemNumber ? `<span>题号：${escapeHtml(log.problemNumber)}</span>` : ""} <span>难度：${escapeHtml(log.difficulty)}</span></p>
+    ${badges ? `<div class="record-badges">${badges}</div>` : ""}
+    <div class="problem-content">
+      ${log.description ? `<section class="problem-section"><h2>题目描述</h2>${renderMarkdown(log.description)}</section>` : ""}
+      ${log.takeaway ? `<section class="problem-section"><h2>收获 / 题解</h2>${renderMarkdown(log.takeaway)}</section>` : ""}
+      ${log.code ? `<section class="problem-section"><h2>代码</h2><div class="record-takeaway problem-code-expanded"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div></section>` : ""}
+    </div>`;
+  return replaceHeadMetadata(showOnlyPage(html, "problem-page"), {
+    title: `${log.problem} · ${log.member} · ${SITE_NAME}`,
+    description,
+    canonical,
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: log.problem,
+      description,
+      datePublished: log.date,
+      dateModified: log.date,
+      author: { "@type": "Person", name: log.member },
+      mainEntityOfPage: canonical,
+    },
+  })
+    .replace('<a id="problem-back-member" class="back-link" href="/">', `<a id="problem-back-member" class="back-link" href="${routePath(memberSegments(log.member))}">`)
+    .replace('<article id="problem-detail" class="card problem-detail">', `<article id="problem-detail" class="card problem-detail" data-prerendered-path="${routePath(problemSegments(log))}">`)
+    .replace(/(<article id="problem-detail"[^>]*>)[\s\S]*?(<\/article>)/, `$1${article}$2`);
+}
+
+function writeProblemPages(html, logs) {
+  for (const log of logs) writeRouteIndex(problemPageHtml(html, log), problemSegments(log));
+}
+
+function writeCrawlerFiles(members, logs) {
+  const entries = [
+    { segments: [], lastmod: logs[0]?.date },
+    ...members.map((member) => ({ segments: memberSegments(member), lastmod: logs.find((log) => log.member === member)?.date })),
+    ...logs.map((log) => ({ segments: problemSegments(log), lastmod: log.date })),
+  ];
+  const urls = entries.map(({ segments, lastmod }) => `  <url>\n    <loc>${escapeXml(absoluteUrl(segments))}</loc>${lastmod ? `\n    <lastmod>${escapeXml(lastmod)}</lastmod>` : ""}\n  </url>`).join("\n");
+  fs.writeFileSync(path.join(OUTPUT_DIR, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`, "utf8");
+  fs.writeFileSync(path.join(OUTPUT_DIR, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`, "utf8");
+}
+
 function writeVersionedApp() {
   const source = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
   const html = source
@@ -220,12 +408,23 @@ function writeRouteIndex(html, segments) {
 }
 
 function writeRouteIndexes(html, members, logs) {
-  for (const route of ["analysis", "review"]) writeRouteIndex(html, [route]);
-  for (const member of members) writeRouteIndex(html, ["member", member]);
-  for (const log of logs) {
-    writeRouteIndex(html, ["problem", log.member, log.date, String(log.problemId || log.problemIndex || 0)]);
+  const routeTitles = { analysis: "训练分析", review: "错题本" };
+  for (const route of Object.keys(routeTitles)) {
+    const routeHtml = replaceHeadMetadata(showOnlyPage(html, `${route}-page`), {
+      title: `${routeTitles[route]} · ${SITE_NAME}`,
+      description: `${SITE_NAME}${routeTitles[route]}页面。`,
+      canonical: absoluteUrl([route]),
+      robots: "noindex,follow",
+    });
+    writeRouteIndex(routeHtml, [route]);
   }
-  fs.writeFileSync(path.join(OUTPUT_DIR, "404.html"), html, "utf8");
+  const notFoundHtml = replaceHeadMetadata(html, {
+    title: `页面未找到 · ${SITE_NAME}`,
+    description: "请求的页面不存在。",
+    canonical: absoluteUrl(),
+    robots: "noindex,follow",
+  });
+  fs.writeFileSync(path.join(OUTPUT_DIR, "404.html"), notFoundHtml, "utf8");
 }
 
 function writeJson(relativePath, value) {
@@ -246,6 +445,7 @@ function writeProblemDetails(logs, generatedAt) {
 
 async function main() {
   ({ normalizeMeta } = await import("../lib/log-schema.mjs"));
+  ({ escapeHtml, renderMarkdown } = await import("../lib/render-safety.mjs"));
   const { members, logs } = readLogs();
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
@@ -272,7 +472,11 @@ async function main() {
   fs.copyFileSync(path.join(ROOT, "lib", "journal-api.js"), path.join(OUTPUT_DIR, "lib", "journal-api.js"));
   fs.copyFileSync(path.join(ROOT, "lib", "render-safety.mjs"), path.join(OUTPUT_DIR, "lib", "render-safety.mjs"));
   const html = writeVersionedIndex(dataVersion);
-  writeRouteIndexes(html, members, logs);
+  const homeHtml = writeHomePage(html, logs);
+  writeRouteIndexes(homeHtml, members, logs);
+  writeMemberPages(html, members, logs);
+  writeProblemPages(html, logs);
+  writeCrawlerFiles(members, logs);
   if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
   fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");
   writeJson(path.join("data", "overview.json"), overviewData);

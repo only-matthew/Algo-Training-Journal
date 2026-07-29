@@ -213,10 +213,10 @@ function createProblemRow(index) {
     </div>
     <div class="form-group">
       <div class="form-label-row">
-        <label>题目描述（选填）</label>
-        <button type="button" class="btn-summarize" title="用 AI 概括题目描述">AI 概括</button>
+        <label>题目描述（选填，强烈建议使用 AI 概括）</label>
+        <button type="button" class="btn-summarize" title="强烈建议用 AI 概括题目描述，减少篇幅">AI 概括</button>
       </div>
-      <textarea class="form-input problem-description" rows="2" maxlength="${LOG_LIMITS.description}" placeholder="简要描述题目大意..."></textarea>
+      <textarea class="form-input problem-description" rows="2" maxlength="${LOG_LIMITS.description}" placeholder="粘贴题面后点击「AI 概括」，建议只保留题意、目标和关键约束"></textarea>
       <p class="summarize-status" role="status" aria-live="polite"></p>
     </div>
     <div class="form-group">
@@ -911,6 +911,11 @@ function renderJournal(journal, dataScope = "overview") {
   async function renderProblemPage(member, date, index) {
     const root = document.getElementById("problem-detail");
     document.getElementById("problem-back-member").href = memberUrl(member);
+    if (!forceProblemDetailRefresh && root.dataset.prerenderedPath === window.location.pathname) {
+      delete root.dataset.prerenderedPath;
+      await renderEnhancements(root);
+      return;
+    }
     const sequence = ++problemDetailSequence;
     root.innerHTML = `<p class="eyebrow">题目详情</p><h1>加载中</h1><p class="hint">正在加载题目描述、题解和代码...</p>`;
     let log;
@@ -952,7 +957,7 @@ function renderJournal(journal, dataScope = "overview") {
 
   async function renderRoute() {
     const parts = currentRoute().split("/");
-    document.title = "ICPC 算法训练日志";
+    if (!parts[0]) document.title = "ICPC 算法训练日志";
     if (dataScope === "shell" && !parts[0]) {
       try { await ensureOverviewJournal(); } catch (error) { document.getElementById("records").textContent = `数据加载失败：${error.message}`; }
       return;
