@@ -9,7 +9,7 @@ const ORIGINS = new Set(["https://train.xialiao.org", "http://localhost:3000", "
 
 function cors(request) {
   const origin = request.headers.get("Origin");
-  return origin && ORIGINS.has(origin) ? { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "GET,PUT,DELETE,OPTIONS", Vary: "Origin" } : {};
+  return origin && ORIGINS.has(origin) ? { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Headers": "Content-Type", "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS", Vary: "Origin" } : {};
 }
 function json(request, body, status = 200, headers = {}) { return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8", ...cors(request), ...headers } }); }
 function cookies(request) { return Object.fromEntries((request.headers.get("Cookie") || "").split(/;\s*/).filter(Boolean).map((part) => { const i = part.indexOf("="); return [part.slice(0, i), part.slice(i + 1)]; })); }
@@ -63,6 +63,25 @@ async function readLog(user, date) {
 }
 async function deleteLog(user, date) { const root = dir(user.member, date); const raw = await content(`${root}/meta.json`, user.token); if (!raw) return { deleted: false }; const count = JSON.parse(raw).problems?.length || 0; const changes = [{ path: `${root}/meta.json`, delete: true }]; for (let i = 0; i < count; i++) for (const suffix of ["desc.md", "takeaway.md", "solution.cpp"]) { const path = `${root}/${i}-${suffix}`; if (await content(path, user.token) !== null) changes.push({ path, delete: true }); } await commit(changes, `delete(${user.member}): training log for ${date}`, user.token); return { deleted: true }; }
 
+const SUMMARIZE_LIMIT = new Map(); // user -> lastRequestTime
+const SUMMARIZE_COOLDOWN = 10000; // 10s between requests
+
+async function summarizeDescription(ai, description) {
+  if (!ai) return null;
+  const text = String(description || "").trim();
+  if (!text || text.length < 20) return null;
+
+  const result = await ai.run("@cf/meta/llama-3.2-3b-instruct", {
+    max_tokens: 64,
+    temperature: 0.3,
+    messages: [
+      { role: "system", content: "你是算法竞赛题目的概括助手。请用简洁的中文（最多40字）概括以下题目描述的核心问题和目标，提炼出算法要点。只输出概括结果，不要其他内容。" },
+      { role: "user", content: text.slice(0, 2000) },
+    ],
+  });
+  return result.response?.trim() || null;
+}
+
 export default { async fetch(request, env) {
   const url = new URL(request.url);
   if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(request) });
@@ -76,6 +95,16 @@ export default { async fetch(request, env) {
     const user = await session(request, env); if (!user) return json(request, { error: "未登录或会话已过期" }, 401);
     if (url.pathname === "/api/session" && request.method === "GET") return json(request, { login: user.login, member: user.member, avatar_url: user.avatar_url });
     if (url.pathname === "/api/logs/date") { const date = url.searchParams.get("date"); if (!isDateString(date)) return json(request, { error: "日期格式无效" }, 400); if (request.method === "GET") return json(request, await readLog(user, date)); if (request.method === "PUT") return json(request, await saveLog(user, date, await readJsonBody(request))); if (request.method === "DELETE") return json(request, await deleteLog(user, date)); }
+    if (url.pathname === "/api/summarize" && request.method === "POST") {
+      const last = SUMMARIZE_LIMIT.get(user.login) || 0;
+      if (Date.now() - last < SUMMARIZE_COOLDOWN) return json(request, { error: "请稍后再试" }, 429);
+      SUMMARIZE_LIMIT.set(user.login, Date.now());
+      const { description } = await readJsonBody(request);
+      if (!description || typeof description !== "string" || !description.trim()) return json(request, { error: "请提供题目描述" }, 400);
+      const summary = await summarizeDescription(env.AI, description);
+      if (!summary) return json(request, { error: "生成失败，请检查描述内容" }, 422);
+      return json(request, { summary });
+    }
     return json(request, { error: "Not found" }, 404);
   } catch (error) { console.error(error); const status = error.status || (error instanceof TypeError || error instanceof RangeError ? 400 : 500); return json(request, { error: error.message || "服务器错误" }, status); }
 } };

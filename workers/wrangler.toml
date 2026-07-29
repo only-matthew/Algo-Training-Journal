@@ -11,5 +11,8 @@ compatibility_date = "2026-07-25"
 #   { pattern = "oauth.train.xialiao.org", zone_id = "YOUR_ZONE_ID" }
 # ]
 
+[ai]
+binding = "AI"
+
 [observability]
 enabled = true

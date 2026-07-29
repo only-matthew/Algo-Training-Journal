@@ -811,12 +811,64 @@ textarea.form-input {
   font-size: 12px;
   font-weight: 650;
   line-height: 1;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
 }
 
 .tag-chip {
   color: var(--accent, #2563eb);
   background: color-mix(in srgb, var(--accent, #2563eb) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent, #2563eb) 28%, transparent);
+  cursor: pointer;
+  user-select: none;
+}
+
+.tag-chip:hover {
+  background: color-mix(in srgb, var(--accent, #2563eb) 22%, transparent);
+  border-color: color-mix(in srgb, var(--accent, #2563eb) 45%, transparent);
+  transform: scale(1.05);
+}
+
+.tag-chip:active {
+  transform: scale(0.96);
+}
+
+/* Tag cloud — visually weighted tag overview */
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.tag-cloud-chip {
+  padding: 5px 10px;
+  font-weight: 680;
+}
+
+/* Tag filter bar — horizontal clickable chip row */
+.tag-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding: 4px 0;
+}
+
+.tag-filter-chip {
+  font-size: 13px;
+  padding: 5px 11px;
+}
+
+.tag-filter-chip.active {
+  color: #fff;
+  background: var(--accent, #2563eb);
+  border-color: var(--accent, #2563eb);
+}
+
+.tag-filter-chip.active:hover {
+  background: color-mix(in srgb, var(--accent, #2563eb) 85%, #000);
+  border-color: color-mix(in srgb, var(--accent, #2563eb) 85%, #000);
 }
 
 .review-chip.todo {
@@ -1016,6 +1068,28 @@ textarea.form-input {
 
 [data-theme="dark"] .stat-list li {
   border-color: var(--line);
+}
+
+[data-theme="dark"] .tag-chip {
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.12);
+  border-color: rgba(96, 165, 250, 0.25);
+}
+
+[data-theme="dark"] .tag-chip:hover {
+  background: rgba(96, 165, 250, 0.22);
+  border-color: rgba(96, 165, 250, 0.42);
+}
+
+[data-theme="dark"] .tag-filter-chip.active {
+  color: #fff;
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+[data-theme="dark"] .tag-filter-chip.active:hover {
+  background: #1d4ed8;
+  border-color: #1d4ed8;
 }
 
 /* Theme toggle button */

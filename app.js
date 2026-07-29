@@ -1,5 +1,5 @@
 import { createProblemId, LOG_LIMITS, logInputBytes, validateLogInput } from "./lib/log-schema.mjs";
-import { deleteDateLog, loadDateLog, loadSession, loginWithGitHub, logoutSession, saveDateLog } from "./lib/journal-api.js";
+import { apiRequest, deleteDateLog, loadDateLog, loadSession, loginWithGitHub, logoutSession, saveDateLog } from "./lib/journal-api.js";
 import { escapeHtml, renderMarkdown } from "./lib/render-safety.mjs";
 
 // ============================================================
@@ -212,7 +212,7 @@ function createProblemRow(index) {
       </div>
     </div>
     <div class="form-group">
-      <label>题目描述（选填）</label>
+      <label>题目描述（选填）<button type="button" class="btn-summarize" title="用 AI 概括题目描述">✨ 概括</button></label>
       <textarea class="form-input problem-description" rows="2" maxlength="${LOG_LIMITS.description}" placeholder="简要描述题目大意..."></textarea>
     </div>
     <div class="form-group">
@@ -465,7 +465,7 @@ async function handleSubmit() {
 
     dateDrafts.delete(date);
     msgEl.textContent = isEdit
-      ? "✅ 更新成功！等待自动部署（约 1 分钟）"
+     ? "✅ 更新成功！等待自动部署（约 1 分钟）"
       : "✅ 提交成功！等待自动部署（约 1 分钟）";
     setTimeout(() => closeModal(true), 2000);
   } catch (err) {
@@ -710,11 +710,10 @@ function renderJournal(journal, dataScope = "overview") {
   }
 
   function renderLogs(member) {
-    const tag = document.getElementById("tag-filter").value;
     const reviewStatus = document.getElementById("review-filter").value;
     const filtered = logs.filter((log) =>
       (member === "all" || log.member === member) &&
-      (tag === "all" || log.tags.includes(tag)) &&
+      (activeTagFilter === "all" || log.tags.includes(activeTagFilter)) &&
       (reviewStatus === "all" || log.reviewStatus === reviewStatus)
     );
     document.getElementById("record-count").textContent = `近 30 天当前筛选共 ${filtered.length} 条记录`;
@@ -728,6 +727,12 @@ function renderJournal(journal, dataScope = "overview") {
     }
 
     for (const log of filtered) recordsRoot.appendChild(createLogCard(log));
+  }
+
+  function setTagFilter(tag) {
+    activeTagFilter = tag;
+    renderTagFilterBar();
+    renderLogs(memberSelect.value);
   }
 
   // 动态填充队员下拉框
@@ -754,12 +759,50 @@ function renderJournal(journal, dataScope = "overview") {
     : "all";
 
   const allTags = [...new Set(logs.flatMap((log) => log.tags))].sort((a, b) => a.localeCompare(b, "zh-CN"));
+  const tagCounts = {};
+  for (const log of logs) {
+    for (const tag of log.tags) tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+  }
+  const sortedTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], "zh-CN"));
+
+  let activeTagFilter = "all";
+
   function populateSelect(select, values) {
     while (select.options.length > 1) select.remove(1);
     for (const value of values) select.add(new Option(value, value));
   }
   populateSelect(document.getElementById("review-member"), uniqueMembers);
-  for (const id of ["tag-filter", "review-tag"]) populateSelect(document.getElementById(id), allTags);
+  populateSelect(document.getElementById("review-tag"), allTags);
+
+  function renderTagFilterBar() {
+    const bar = document.getElementById("tag-filter-bar");
+    bar.innerHTML = `<span class="tag-chip tag-filter-chip${activeTagFilter === "all" ? " active" : ""}" data-tag="all">全部</span>`;
+    for (const [tag, count] of sortedTags) {
+      const chip = document.createElement("span");
+      chip.className = `tag-chip tag-filter-chip${activeTagFilter === tag ? " active" : ""}`;
+      chip.dataset.tag = tag;
+      chip.textContent = `${tag} (${count})`;
+      bar.appendChild(chip);
+    }
+  }
+
+  function renderTagCloud() {
+    const root = document.getElementById("tag-cloud");
+    root.innerHTML = "";
+    if (!sortedTags.length) { root.innerHTML = `<p class="hint">近 30 天暂无标签数据，提交记录时添加标签即可在此查看。</p>`; return; }
+
+    const maxCount = sortedTags[0]?.[1] || 1;
+    for (const [tag, count] of sortedTags) {
+      const size = 0.75 + (count / maxCount) * 1.25; // Scale from 0.75em to 2em
+      const chip = document.createElement("span");
+      chip.className = "tag-chip tag-cloud-chip";
+      chip.style.cssText = `font-size:${size.toFixed(2)}em;`;
+      chip.dataset.tag = tag;
+      chip.textContent = `${tag} (${count})`;
+      chip.title = `点击筛选「${tag}」· ${count} 题`;
+      root.appendChild(chip);
+    }
+  }
 
   function renderReviewBook() {
     const member = document.getElementById("review-member").value;
@@ -1001,13 +1044,34 @@ function renderJournal(journal, dataScope = "overview") {
   updateRangePresetState();
   if (dataScope === "all") renderAnalysis();
   for (const id of ["review-member", "review-status", "review-tag"]) document.getElementById(id).onchange = renderReviewBook;
-  document.getElementById("tag-filter").onchange = () => renderLogs(memberSelect.value);
   document.getElementById("review-filter").onchange = () => renderLogs(memberSelect.value);
   if (dataScope === "all") renderReviewBook();
+
+  // Tag chip click handlers via event delegation
+  document.getElementById("tag-filter-bar").onclick = (e) => {
+    const chip = e.target.closest(".tag-filter-chip");
+    if (!chip) return;
+    setTagFilter(chip.dataset.tag);
+  };
+  document.getElementById("tag-cloud").onclick = (e) => {
+    const chip = e.target.closest(".tag-cloud-chip");
+    if (!chip) return;
+    setTagFilter(chip.dataset.tag);
+  };
+  // Clickable log card tag chips — delegate from records container
+  document.getElementById("records").addEventListener("click", (e) => {
+    const chip = e.target.closest(".record-badges .tag-chip");
+    if (!chip) return;
+    e.preventDefault();
+    e.stopPropagation();
+    setTagFilter(chip.textContent.trim());
+  });
 
   function render(member) {
     renderStats(member);
     renderHeatmap(member);
+    renderTagCloud();
+    renderTagFilterBar();
     renderLogs(member);
     if (dataScope === "all") {
       renderAnalysis();
@@ -1017,6 +1081,9 @@ function renderJournal(journal, dataScope = "overview") {
 
   render("all");
   renderRoute();
+  // Initial tag UI setup
+  renderTagCloud();
+  renderTagFilterBar();
   window.journalRouteRenderer = renderRoute;
   memberSelect.onchange = (e) => render(e.target.value);
 
@@ -1192,10 +1259,38 @@ function initPageNavigation() {
   document.getElementById("btn-save").addEventListener("click", handleSubmit);
   document.getElementById("submit-date").addEventListener("change", onDateChange);
   document.getElementById("btn-retry-date").addEventListener("click", onDateChange);
-  document.getElementById("problem-list").addEventListener("click", (e) => {
+  document.getElementById("problem-list").addEventListener("click", async (e) => {
     if (e.target.classList.contains("btn-remove")) {
       e.target.closest(".problem-block").remove();
       markFormEdited();
+      return;
+    }
+    // AI summarize button
+    const summarizeBtn = e.target.closest(".btn-summarize");
+    if (summarizeBtn) {
+      e.preventDefault();
+      const block = summarizeBtn.closest(".problem-block");
+      const desc = block.querySelector(".problem-description");
+      if (!desc.value.trim() || desc.value.trim().length < 20) {
+        document.getElementById("submit-msg").textContent = "请先输入至少 20 字的题目描述再概括";
+        return;
+      }
+      if (summarizeBtn.disabled) return;
+      summarizeBtn.disabled = true;
+      summarizeBtn.textContent = "⏳ 概括中...";
+      try {
+        const res = await apiRequest("/api/summarize", { method: "POST", body: JSON.stringify({ description: desc.value.trim() }) });
+        if (res.summary) {
+          desc.value = res.summary;
+          document.getElementById("submit-msg").textContent = "✅ 已生成概括，可手动修改";
+          markFormEdited();
+        }
+      } catch (err) {
+        document.getElementById("submit-msg").textContent = `概括失败：${err.message}`;
+      } finally {
+        summarizeBtn.disabled = false;
+        summarizeBtn.textContent = "✨ 概括";
+      }
     }
   });
   document.getElementById("problem-list").addEventListener("input", markFormEdited);
