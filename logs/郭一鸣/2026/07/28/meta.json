@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "b25da94e-7b74-41f6-9820-5501ec66d89d",
+      "name": "Codeforces Round 1110, Div. 1 + Div. 2",
+      "platform": "Codeforces",
+      "problemNumber": "A",
+      "difficulty": "未标注",
+      "tags": [
+        "排序"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
