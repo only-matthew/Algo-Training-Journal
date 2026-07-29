@@ -1,11 +1,16 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "problems": [
     {
       "id": "3a545919-db94-448d-b752-8c4b49d3bd6a",
       "name": "全排列问题",
       "platform": "洛谷",
-      "difficulty": "未标注"
+      "problemNumber": "P1706",
+      "difficulty": "未标注",
+      "tags": [
+        "STL"
+      ],
+      "reviewStatus": "none"
     }
   ]
 }
