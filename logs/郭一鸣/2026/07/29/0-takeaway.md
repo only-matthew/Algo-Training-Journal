@@ -1,0 +1,1 @@
+两个数x，y分别删除，可得x+y-2c分，一起删，可得max（x，y）-c；一起删除相比分别删除可多得c-min（x，y）。先假设全部单删，即score=Σai-nc，然后令较小的数代入min（x，y）中的一个，若小于c，则score+=c-min，得到最大score
