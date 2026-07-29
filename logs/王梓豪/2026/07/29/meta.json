@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "20ad9dda-50f6-4eca-9470-5228cad8ca38",
+      "name": "旅行家的预算",
+      "platform": "洛谷",
+      "problemNumber": "P1016",
+      "difficulty": "普及/提高-",
+      "tags": [
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
