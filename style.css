@@ -467,6 +467,23 @@ select {
 .footer {
   color: var(--muted);
   font-size: 13px;
+  padding: 12px 0 4px;
+  text-align: center;
+}
+
+.footer p {
+  margin: 4px 0;
+}
+
+.footer a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+  text-underline-offset: 3px;
+}
+
+.footer a:hover,
+.footer a:focus-visible {
+  color: var(--brand);
 }
 
 code {
