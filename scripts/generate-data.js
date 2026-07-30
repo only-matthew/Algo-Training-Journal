@@ -245,13 +245,13 @@ function truncate(value, maxLength = 155) {
 
 function replaceHeadMetadata(html, { title, description, canonical, robots = "index,follow", jsonLd }) {
   let output = html
-    .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapeHtml(title)}</title>`)
-    .replace(/<meta name="description" content="[^"]*" \/>/, `<meta name="description" content="${escapeHtml(description)}" />`)
-    .replace(/<meta name="robots" content="[^"]*" \/>/, `<meta name="robots" content="${escapeHtml(robots)}" />`)
-    .replace(/<link rel="canonical" href="[^"]*" \/>/, `<link rel="canonical" href="${escapeHtml(canonical)}" />`);
+    .replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(title)}</title>`)
+    .replace(/<meta name="description" content="[^"]*" \/>/, () => `<meta name="description" content="${escapeHtml(description)}" />`)
+    .replace(/<meta name="robots" content="[^"]*" \/>/, () => `<meta name="robots" content="${escapeHtml(robots)}" />`)
+    .replace(/<link rel="canonical" href="[^"]*" \/>/, () => `<link rel="canonical" href="${escapeHtml(canonical)}" />`);
   if (jsonLd) {
     const serialized = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
-    output = output.replace("</head>", `  <script type="application/ld+json">${serialized}</script>\n</head>`);
+    output = output.replace("</head>", () => `  <script type="application/ld+json">${serialized}</script>\n</head>`);
   }
   return output;
 }
@@ -306,7 +306,7 @@ function writeHomePage(html, logs) {
     description,
     canonical: absoluteUrl(),
     jsonLd: { "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, url: absoluteUrl(), description },
-  }).replace(/<div id="records" class="records record-grid">[\s\S]*?<\/div>/, `<div id="records" class="records record-grid">${cards}</div>`);
+  }).replace(/<div id="records" class="records record-grid">[\s\S]*?<\/div>/, () => `<div id="records" class="records record-grid">${cards}</div>`);
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), output, "utf8");
   return output;
 }
@@ -327,15 +327,22 @@ function writeMemberPages(html, members, logs) {
       canonical: absoluteUrl(memberSegments(member)),
       jsonLd: { "@context": "https://schema.org", "@type": "CollectionPage", name: `${member} 的训练主页`, url: absoluteUrl(memberSegments(member)), description },
     })
-      .replace('<h1 id="member-page-title">队员</h1>', `<h1 id="member-page-title">${escapeHtml(member)}</h1>`)
-      .replace('<p id="member-page-subtitle" class="subtitle"></p>', `<p id="member-page-subtitle" class="subtitle">${escapeHtml(subtitle)}</p>`)
-      .replace('<p id="member-total" class="metric-value loading-value">加载中</p>', `<p id="member-total" class="metric-value">${memberLogs.length}</p>`)
-      .replace('<p id="member-days" class="metric-value loading-value">加载中</p>', `<p id="member-days" class="metric-value">${activeDays}</p>`)
-      .replace('<p id="member-recent" class="metric-value loading-value">加载中</p>', `<p id="member-recent" class="metric-value">${recentCount}</p>`)
-      .replace('<p id="member-record-count" class="hint"></p>', `<p id="member-record-count" class="hint">共 ${memberLogs.length} 道题，每道题均可单独打开和分享</p>`)
-      .replace('<div id="member-records" class="records record-grid"></div>', `<div id="member-records" class="records record-grid">${memberLogs.map(recordCardHtml).join("\n") || "<p>暂无训练记录。</p>"}</div>`);
+      .replace('<h1 id="member-page-title">队员</h1>', () => `<h1 id="member-page-title">${escapeHtml(member)}</h1>`)
+      .replace('<p id="member-page-subtitle" class="subtitle"></p>', () => `<p id="member-page-subtitle" class="subtitle">${escapeHtml(subtitle)}</p>`)
+      .replace('<p id="member-total" class="metric-value loading-value">加载中</p>', () => `<p id="member-total" class="metric-value">${memberLogs.length}</p>`)
+      .replace('<p id="member-days" class="metric-value loading-value">加载中</p>', () => `<p id="member-days" class="metric-value">${activeDays}</p>`)
+      .replace('<p id="member-recent" class="metric-value loading-value">加载中</p>', () => `<p id="member-recent" class="metric-value">${recentCount}</p>`)
+      .replace('<p id="member-record-count" class="hint"></p>', () => `<p id="member-record-count" class="hint">共 ${memberLogs.length} 道题，每道题均可单独打开和分享</p>`)
+      .replace('<div id="member-records" class="records record-grid"></div>', () => `<div id="member-records" class="records record-grid">${memberLogs.map(recordCardHtml).join("\n") || "<p>暂无训练记录。</p>"}</div>`);
     writeRouteIndex(output, memberSegments(member));
   }
+}
+
+function replaceProblemArticle(html, article) {
+  return html.replace(
+    /(<article id="problem-detail"[^>]*>)[\s\S]*?(<\/article>)/,
+    (_match, openingTag, closingTag) => `${openingTag}${article}${closingTag}`,
+  );
 }
 
 function problemPageHtml(html, log) {
@@ -357,7 +364,7 @@ function problemPageHtml(html, log) {
       ${log.takeaway ? `<section class="problem-section"><h2>收获 / 题解</h2>${renderMarkdown(log.takeaway)}</section>` : ""}
       ${log.code ? `<section class="problem-section"><h2>代码</h2><div class="record-takeaway problem-code-expanded"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div></section>` : ""}
     </div>`;
-  return replaceHeadMetadata(showOnlyPage(html, "problem-page"), {
+  const page = replaceHeadMetadata(showOnlyPage(html, "problem-page"), {
     title: `${log.problem} · ${log.member} · ${SITE_NAME}`,
     description,
     canonical,
@@ -372,9 +379,9 @@ function problemPageHtml(html, log) {
       mainEntityOfPage: canonical,
     },
   })
-    .replace('<a id="problem-back-member" class="back-link" href="/">', `<a id="problem-back-member" class="back-link" href="${routePath(memberSegments(log.member))}">`)
-    .replace('<article id="problem-detail" class="card problem-detail">', `<article id="problem-detail" class="card problem-detail" data-prerendered-path="${routePath(problemSegments(log))}">`)
-    .replace(/(<article id="problem-detail"[^>]*>)[\s\S]*?(<\/article>)/, `$1${article}$2`);
+    .replace('<a id="problem-back-member" class="back-link" href="/">', () => `<a id="problem-back-member" class="back-link" href="${routePath(memberSegments(log.member))}">`)
+    .replace('<article id="problem-detail" class="card problem-detail">', () => `<article id="problem-detail" class="card problem-detail" data-prerendered-path="${routePath(problemSegments(log))}">`);
+  return replaceProblemArticle(page, article);
 }
 
 function writeProblemPages(html, logs) {
@@ -485,7 +492,11 @@ async function main() {
   console.log(`Generated ${logs.length} logs for ${members.length} members.`);
 }
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+if (require.main === module) {
+  main().catch((error) => {
+    console.error(error);
+    process.exitCode = 1;
+  });
+}
+
+module.exports = { replaceProblemArticle };
