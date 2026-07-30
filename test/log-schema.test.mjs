@@ -45,6 +45,28 @@ test("错题状态只接受约定值", () => {
   assert.equal(fallback.problems[0].reviewStatus, "none");
 });
 
+test("标签同时支持顿号（、）和中英文逗号（, ，）作为分隔符", () => {
+  const r1 = validateLogInput({
+    problems: [{ id: "p1", name: "A", tags: "DP、图论、二分", reviewStatus: "todo" }],
+  });
+  assert.deepEqual(r1.problems[0].tags, ["DP", "图论", "二分"]);
+
+  const r2 = validateLogInput({
+    problems: [{ id: "p2", name: "B", tags: "DP, 图论, 二分", reviewStatus: "none" }],
+  });
+  assert.deepEqual(r2.problems[0].tags, ["DP", "图论", "二分"]);
+
+  const r3 = validateLogInput({
+    problems: [{ id: "p3", name: "C", tags: "DP，图论，二分", reviewStatus: "none" }],
+  });
+  assert.deepEqual(r3.problems[0].tags, ["DP", "图论", "二分"]);
+
+  const r4 = validateLogInput({
+    problems: [{ id: "p4", name: "D", tags: "DP、图论, 二分，dfs", reviewStatus: "none" }],
+  });
+  assert.deepEqual(r4.problems[0].tags, ["DP", "图论", "二分", "dfs"]);
+});
+
 test("单日题目数量限制为 15 道", () => {
   const problems = Array.from({ length: LOG_LIMITS.maxProblems }, (_, index) => ({ id: `p${index}`, name: `题目 ${index}` }));
   assert.equal(validateLogInput({ problems }).problems.length, LOG_LIMITS.maxProblems);

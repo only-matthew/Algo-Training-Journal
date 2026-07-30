@@ -200,7 +200,7 @@ function createProblemRow(index) {
     <div class="form-row">
       <div class="form-group">
         <label>题目标签</label>
-        <input type="text" class="form-input problem-tags" maxlength="${LOG_LIMITS.tags * (LOG_LIMITS.tag + 2)}" placeholder="如 DP, 图论, 二分（最多 ${LOG_LIMITS.tags} 个）" />
+        <input type="text" class="form-input problem-tags" maxlength="${LOG_LIMITS.tags * (LOG_LIMITS.tag + 2)}" placeholder="如 DP、图论、二分（可使用逗号或顿号分隔，最多 ${LOG_LIMITS.tags} 个）" />
       </div>
       <div class="form-group">
         <label>错题状态</label>
