@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "475d3ace-bc82-44db-8a21-5bce87c7c3de",
+      "name": "矩阵取数游戏",
+      "platform": "洛谷",
+      "problemNumber": "P1005",
+      "difficulty": "普及/提高-",
+      "tags": [
+        "DP",
+        "高精度"
+      ],
+      "reviewStatus": "todo"
+    }
+  ]
+}
