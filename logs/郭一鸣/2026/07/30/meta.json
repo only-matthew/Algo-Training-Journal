@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "71d135f6-2e79-49e7-9e5f-f57cf8867640",
+      "name": "Codeforces Round 1108 (Div. 2)",
+      "platform": "Codeforces",
+      "problemNumber": "B",
+      "difficulty": "未标注",
+      "tags": [
+        "构造"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
