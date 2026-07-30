@@ -65,6 +65,14 @@ test("标签同时支持顿号（、）和中英文逗号（, ，）作为分隔
     problems: [{ id: "p4", name: "D", tags: "DP、图论, 二分，dfs", reviewStatus: "none" }],
   });
   assert.deepEqual(r4.problems[0].tags, ["DP", "图论", "二分", "dfs"]);
+
+  const r5 = validateLogInput({
+    problems: [{ id: "p5", name: "E", tags: ["暴力、模拟", "枚举，模拟"], reviewStatus: "none" }],
+  });
+  assert.deepEqual(r5.problems[0].tags, ["暴力", "模拟", "枚举"]);
+
+  const legacy = normalizeMeta({ problems: [{ name: "F", tags: ["暴力、模拟"] }] });
+  assert.deepEqual(legacy.problems[0].tags, ["暴力", "模拟"]);
 });
 
 test("单日题目数量限制为 15 道", () => {
