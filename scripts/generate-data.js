@@ -193,6 +193,15 @@ function assetVersion(name) {
     .slice(0, 12);
 }
 
+function writeVersionedDataModule() {
+  const source = fs.readFileSync(path.join(ROOT, "lib", "data.mjs"), "utf8");
+  const content = source.replace(
+    'from "./renderer.mjs"',
+    `from "./renderer.mjs?v=${assetVersion("lib/renderer.mjs")}"`,
+  );
+  fs.writeFileSync(path.join(OUTPUT_DIR, "lib", "data.mjs"), content, "utf8");
+}
+
 function logSummary({ description, takeaway, code, ...summary }) {
   return summary;
 }
@@ -527,7 +536,7 @@ async function main() {
   fs.copyFileSync(path.join(ROOT, "lib", "form.mjs"), path.join(OUTPUT_DIR, "lib", "form.mjs"));
   fs.copyFileSync(path.join(ROOT, "lib", "renderer.mjs"), path.join(OUTPUT_DIR, "lib", "renderer.mjs"));
   fs.copyFileSync(path.join(ROOT, "lib", "router.mjs"), path.join(OUTPUT_DIR, "lib", "router.mjs"));
-  fs.copyFileSync(path.join(ROOT, "lib", "data.mjs"), path.join(OUTPUT_DIR, "lib", "data.mjs"));
+  writeVersionedDataModule();
   const html = writeVersionedIndex(dataVersion);
   const homeHtml = writeHomePage(html, logs);
   writeRouteIndexes(homeHtml, members, logs);
