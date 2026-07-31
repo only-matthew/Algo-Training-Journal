@@ -1,0 +1,154 @@
+\documentclass[12pt,a4paper]{ctexart}
+\usepackage[top=2cm,bottom=2cm,left=2.5cm,right=2.5cm]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\lstset{
+  basicstyle=\ttfamily\small,
+  breaklines=true,
+  frame=single,
+  numbers=left,
+  numberstyle=\tiny,
+  backgroundcolor=\color{gray!5},
+  keywordstyle=\color{blue},
+  commentstyle=\color{green!40!black},
+  stringstyle=\color{red},
+}
+\title{LaTeX Test}
+\date{\today}
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+\section{矩阵取数游戏}
+\begin{tabular}{|l|l|}
+\hline
+队员 & 王梓豪 \\ \hline
+日期 & 2026-07-30 \\ \hline
+平台 & 洛谷 \\ \hline
+题号 & P1005 \\ \hline
+难度 & 普及/提高- \\ \hline
+标签 & DP, 高精度 \\ \hline
+错题状态 & 待复习 \\ \hline
+\end{tabular}
+
+\subsection{题目描述}
+对于n×m矩阵，每次从每行取首或尾元素，共取m次，每次取数乘2\^{}i，求最大总得分。
+
+\subsection{题解}
+这个题非常坑非常难，我做了好几天了。
+\_\_int128
+dp
+
+\subsection{代码}
+\begin{lstlisting}[language=C++]
+#include <bits/stdc++.h>
+using namespace std;
+int main() {
+    // 使用 __int128 类型
+    __int128 x = 0;
+    return 0;
+}
+
+\end{lstlisting}
+
+
+\section{P1036【子集枚举法】}
+\begin{tabular}{|l|l|}
+\hline
+队员 & 廖夏 \\ \hline
+日期 & 2026-07-26 \\ \hline
+平台 & 洛谷 \\ \hline
+题号 &  \\ \hline
+难度 & 普及- \\ \hline
+标签 &  \\ \hline
+错题状态 & 非错题 \\ \hline
+\end{tabular}
+
+\subsection{题目描述}
+从n个整数中任选k个相加，求有多少种方案使得和为素数。
+
+\subsection{题解}
+核心思路：
+1. 交：A1 \& A2
+2. 并：A1 | A2
+3. 补：A1 \^{} A2
+
+\subsection{代码}
+\begin{lstlisting}[language=C++]
+#include<iostream>
+int main() {
+    int a = 1 & 2;
+    return 0;
+}
+
+\end{lstlisting}
+
+
+\section{P5143}
+\begin{tabular}{|l|l|}
+\hline
+队员 & 廖夏 \\ \hline
+日期 & 2026-07-21 \\ \hline
+平台 & 洛谷 \\ \hline
+题号 &  \\ \hline
+难度 & 普及- \\ \hline
+标签 &  \\ \hline
+错题状态 & 非错题 \\ \hline
+\end{tabular}
+
+\subsection{题目描述}
+爬山的题目，计算三维空间中的路径长度。
+
+\subsection{题解}
+解题思路：
+
+\begin{lstlisting}[language=C++]
+#include<iostream>
+#include<algorithm>
+using namespace std;
+int main() { return 0; }
+
+\end{lstlisting}
+
+代码中注意浮点数精度。
+
+
+\section{回文质数}
+\begin{tabular}{|l|l|}
+\hline
+队员 & 廖夏 \\ \hline
+日期 & 2026-07-30 \\ \hline
+平台 & 洛谷 \\ \hline
+题号 & P1217 \\ \hline
+难度 & 普及- \\ \hline
+标签 & 暴力 \\ \hline
+错题状态 & 非错题 \\ \hline
+\end{tabular}
+
+\subsection{题目描述}
+找出区间$[a,b]$内所有既是质数又是回文数的数字。
+
+\subsection{题解}
+力大砖飞，暴力构造。
+
+
+\section{{}[NOIP 2008 提高组] 火柴棒等式}
+\begin{tabular}{|l|l|}
+\hline
+队员 & 廖夏 \\ \hline
+日期 & 2026-07-31 \\ \hline
+平台 & 洛谷 \\ \hline
+题号 & P1149 \\ \hline
+难度 & 普及- \\ \hline
+标签 & 枚举, 模拟 \\ \hline
+错题状态 & 非错题 \\ \hline
+\end{tabular}
+
+\subsection{题目描述}
+用n根火柴棍拼出多少个A+B=C的等式。
+
+\subsection{题解}
+注意范围，A、B不会超过1000。
+
+\end{document}

@@ -2,8 +2,8 @@ import { isDateString, LOG_LIMITS, metaFromProblems, validateLogInput } from "..
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
-const COOKIE = "journal_session";
-const OAUTH_COOKIE = "journal_oauth";
+const COOKIE = "__Host-journal_session";
+const OAUTH_COOKIE = "__Host-journal_oauth";
 const MEMBERS = { "only-matthew": "廖夏", wzzzzhhhhh: "王梓豪", "seanist-isx": "郭一鸣" };
 const ORIGINS = new Set(["https://train.xialiao.org", "http://localhost:3000", "http://localhost:4173", "http://localhost:5000"]);
 
@@ -120,25 +120,34 @@ async function commit(changes, message, token, retry = 0) {
     throw Object.assign(new Error("GitHub 更新引用失败"), { status: 502 });
   }
 }
-function dir(member, date) { const [y, m, d] = date.split("-"); return `logs/${member}/${y}/${m}/${d}`; }
+export function logRoots(member, date) {
+  const [year, month, day] = date.split("-");
+  return [`logs/${member}/${year}/${month}/${day}`, `logs/${member}/${date}`];
+}
 async function session(request, env) { const data = await open(cookies(request)[COOKIE] || "", env.SESSION_SECRET); return data && MEMBERS[data.login] === data.member ? data : null; }
 async function content(path, token) {
   const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${BRANCH}`, { headers: ghHeaders(token) });
   if (response.status === 404) return null; if (!response.ok) { console.error(`GitHub content fetch failed: ${response.status}`); throw Object.assign(new Error("读取仓库文件失败"), { status: 502 }); }
   return new TextDecoder().decode(Uint8Array.from(atob((await response.json()).content.replace(/\s/g, "")), (c) => c.charCodeAt(0)));
 }
+async function resolveLogRoot(user, date) {
+  const [currentRoot, oldRoot] = logRoots(user.member, date);
+  if (await content(`${currentRoot}/meta.json`, user.token) !== null) return currentRoot;
+  if (await content(`${oldRoot}/meta.json`, user.token) !== null) return oldRoot;
+  return currentRoot;
+}
 async function saveLog(user, date, input) {
-  const { problems } = validateLogInput(input); const root = dir(user.member, date); const oldRaw = await content(`${root}/meta.json`, user.token); const oldCount = oldRaw ? JSON.parse(oldRaw).problems?.length || 0 : 0; const changes = [{ path: `${root}/meta.json`, content: JSON.stringify(metaFromProblems(problems), null, 2) }];
+  const { problems } = validateLogInput(input); const root = await resolveLogRoot(user, date); const oldRaw = await content(`${root}/meta.json`, user.token); const oldCount = oldRaw ? JSON.parse(oldRaw).problems?.length || 0 : 0; const changes = [{ path: `${root}/meta.json`, content: JSON.stringify(metaFromProblems(problems), null, 2) }];
   problems.forEach((p, i) => { changes.push({ path: `${root}/${i}-takeaway.md`, content: p.takeaway || "未填写" }); changes.push(p.description ? { path: `${root}/${i}-desc.md`, content: p.description } : { path: `${root}/${i}-desc.md`, delete: true }); changes.push(p.code ? { path: `${root}/${i}-solution.cpp`, content: p.code } : { path: `${root}/${i}-solution.cpp`, delete: true }); });
   for (let i = problems.length; i < oldCount; i++) for (const suffix of ["desc.md", "takeaway.md", "solution.cpp"]) changes.push({ path: `${root}/${i}-${suffix}`, delete: true });
   const existing = []; for (const change of changes) if (!change.delete || await content(change.path, user.token) !== null) existing.push(change);
   await commit(existing, `save(${user.member}): training log for ${date}`, user.token); return { problems };
 }
 async function readLog(user, date) {
-  const root = dir(user.member, date); const raw = await content(`${root}/meta.json`, user.token); if (!raw) return { problems: [] }; const meta = JSON.parse(raw);
+  const root = await resolveLogRoot(user, date); const raw = await content(`${root}/meta.json`, user.token); if (!raw) return { problems: [] }; const meta = JSON.parse(raw);
   return { problems: await Promise.all((meta.problems || []).map(async (p, i) => ({ ...p, description: await content(`${root}/${i}-desc.md`, user.token) || "", takeaway: await content(`${root}/${i}-takeaway.md`, user.token) || "", code: await content(`${root}/${i}-solution.cpp`, user.token) || "" }))) };
 }
-async function deleteLog(user, date) { const root = dir(user.member, date); const raw = await content(`${root}/meta.json`, user.token); if (!raw) return { deleted: false }; const count = JSON.parse(raw).problems?.length || 0; const changes = [{ path: `${root}/meta.json`, delete: true }]; for (let i = 0; i < count; i++) for (const suffix of ["desc.md", "takeaway.md", "solution.cpp"]) { const path = `${root}/${i}-${suffix}`; if (await content(path, user.token) !== null) changes.push({ path, delete: true }); } await commit(changes, `delete(${user.member}): training log for ${date}`, user.token); return { deleted: true }; }
+async function deleteLog(user, date) { const root = await resolveLogRoot(user, date); const raw = await content(`${root}/meta.json`, user.token); if (!raw) return { deleted: false }; const count = JSON.parse(raw).problems?.length || 0; const changes = [{ path: `${root}/meta.json`, delete: true }]; for (let i = 0; i < count; i++) for (const suffix of ["desc.md", "takeaway.md", "solution.cpp"]) { const path = `${root}/${i}-${suffix}`; if (await content(path, user.token) !== null) changes.push({ path, delete: true }); } await commit(changes, `delete(${user.member}): training log for ${date}`, user.token); return { deleted: true }; }
 
 export async function summarizeDescription(ai, description) {
   if (!ai) return null;
