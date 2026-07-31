@@ -531,7 +531,7 @@ async function main() {
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   copyFile("style.css");
   writeVersionedApp();
-  for (const moduleName of ["log-schema.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
+  for (const moduleName of ["log-schema.mjs", "tag-catalog.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
     writeVersionedModule(`lib/${moduleName}`);
   }
   writeVersionedDataModule();
