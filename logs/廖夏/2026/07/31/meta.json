@@ -12,6 +12,18 @@
         "模拟"
       ],
       "reviewStatus": "none"
+    },
+    {
+      "id": "e4fbc169-9cda-41f5-ba93-579604477497",
+      "name": "小 Y 拼木棒",
+      "platform": "洛谷",
+      "problemNumber": "P3799",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "枚举"
+      ],
+      "reviewStatus": "mastered"
     }
   ]
 }
