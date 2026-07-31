@@ -175,6 +175,15 @@ function copyFile(name) {
   fs.copyFileSync(path.join(ROOT, name), path.join(OUTPUT_DIR, name));
 }
 
+function writeVersionedModule(name) {
+  const source = fs.readFileSync(path.join(ROOT, name), "utf8");
+  const content = source.replace(/(["'])(\.\/[^"']+\.(?:mjs|js))\1/g, (match, quote, importPath) => {
+    const dependency = path.posix.join(path.posix.dirname(name), importPath);
+    return `${quote}${importPath}?v=${assetVersion(dependency)}${quote}`;
+  });
+  fs.writeFileSync(path.join(OUTPUT_DIR, name), content, "utf8");
+}
+
 function copyDirRecursive(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(path.join(ROOT, src), { withFileTypes: true })) {
@@ -194,12 +203,7 @@ function assetVersion(name) {
 }
 
 function writeVersionedDataModule() {
-  const source = fs.readFileSync(path.join(ROOT, "lib", "data.mjs"), "utf8");
-  const content = source.replace(
-    'from "./renderer.mjs"',
-    `from "./renderer.mjs?v=${assetVersion("lib/renderer.mjs")}"`,
-  );
-  fs.writeFileSync(path.join(OUTPUT_DIR, "lib", "data.mjs"), content, "utf8");
+  writeVersionedModule("lib/data.mjs");
 }
 
 function logSummary({ description, takeaway, code, ...summary }) {
@@ -527,15 +531,9 @@ async function main() {
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   copyFile("style.css");
   writeVersionedApp();
-  fs.copyFileSync(path.join(ROOT, "lib", "log-schema.mjs"), path.join(OUTPUT_DIR, "lib", "log-schema.mjs"));
-  fs.copyFileSync(path.join(ROOT, "lib", "journal-api.js"), path.join(OUTPUT_DIR, "lib", "journal-api.js"));
-  fs.copyFileSync(path.join(ROOT, "lib", "render-safety.mjs"), path.join(OUTPUT_DIR, "lib", "render-safety.mjs"));
-  fs.copyFileSync(path.join(ROOT, "lib", "constants.mjs"), path.join(OUTPUT_DIR, "lib", "constants.mjs"));
-  fs.copyFileSync(path.join(ROOT, "lib", "auth.mjs"), path.join(OUTPUT_DIR, "lib", "auth.mjs"));
-  fs.copyFileSync(path.join(ROOT, "lib", "theme.mjs"), path.join(OUTPUT_DIR, "lib", "theme.mjs"));
-  fs.copyFileSync(path.join(ROOT, "lib", "form.mjs"), path.join(OUTPUT_DIR, "lib", "form.mjs"));
-  fs.copyFileSync(path.join(ROOT, "lib", "renderer.mjs"), path.join(OUTPUT_DIR, "lib", "renderer.mjs"));
-  fs.copyFileSync(path.join(ROOT, "lib", "router.mjs"), path.join(OUTPUT_DIR, "lib", "router.mjs"));
+  for (const moduleName of ["log-schema.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
+    writeVersionedModule(`lib/${moduleName}`);
+  }
   writeVersionedDataModule();
   const html = writeVersionedIndex(dataVersion);
   const homeHtml = writeHomePage(html, logs);

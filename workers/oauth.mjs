@@ -4,6 +4,7 @@ const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
 const COOKIE = "__Host-journal_session";
 const OAUTH_COOKIE = "__Host-journal_oauth";
+const LEGACY_COOKIE = "journal_session";
 const MEMBERS = { "only-matthew": "廖夏", wzzzzhhhhh: "王梓豪", "seanist-isx": "郭一鸣" };
 const ORIGINS = new Set(["https://train.xialiao.org", "http://localhost:3000", "http://localhost:4173", "http://localhost:5000"]);
 
@@ -124,7 +125,15 @@ export function logRoots(member, date) {
   const [year, month, day] = date.split("-");
   return [`logs/${member}/${year}/${month}/${day}`, `logs/${member}/${date}`];
 }
-async function session(request, env) { const data = await open(cookies(request)[COOKIE] || "", env.SESSION_SECRET); return data && MEMBERS[data.login] === data.member ? data : null; }
+async function session(request, env) {
+  const requestCookies = cookies(request);
+  const values = [requestCookies[COOKIE], requestCookies[LEGACY_COOKIE]].filter(Boolean);
+  for (const value of values) {
+    const data = await open(value, env.SESSION_SECRET);
+    if (data && MEMBERS[data.login] === data.member) return data;
+  }
+  return null;
+}
 async function content(path, token) {
   const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${BRANCH}`, { headers: ghHeaders(token) });
   if (response.status === 404) return null; if (!response.ok) { console.error(`GitHub content fetch failed: ${response.status}`); throw Object.assign(new Error("读取仓库文件失败"), { status: 502 }); }

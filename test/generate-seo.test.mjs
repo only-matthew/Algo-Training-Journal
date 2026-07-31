@@ -46,6 +46,8 @@ test("generator emits crawlable member and problem pages", () => {
   const homePage = fs.readFileSync(path.join(siteDir, "index.html"), "utf8");
   const sitemap = fs.readFileSync(path.join(siteDir, "sitemap.xml"), "utf8");
   const robots = fs.readFileSync(path.join(siteDir, "robots.txt"), "utf8");
+  const generatedApp = fs.readFileSync(path.join(siteDir, "app.js"), "utf8");
+  const generatedForm = fs.readFileSync(path.join(siteDir, "lib", "form.mjs"), "utf8");
 
   assert.match(problemPage, new RegExp(`<title>[^<]*${log.member}[^<]*</title>`));
   assert.ok(problemPage.includes(`data-prerendered-path="${problemRoute}"`));
@@ -75,6 +77,11 @@ test("generator emits crawlable member and problem pages", () => {
   assert.ok(memberPage.includes(`${log.member} 的训练主页`));
   assert.ok(memberPage.includes(problemRoute));
   assert.ok(homePage.includes("/problem/"));
+
+  const appAuthImport = generatedApp.match(/\.\/lib\/auth\.mjs\?v=([a-f0-9]+)/)?.[1];
+  const formAuthImport = generatedForm.match(/\.\/auth\.mjs\?v=([a-f0-9]+)/)?.[1];
+  assert.ok(appAuthImport);
+  assert.equal(formAuthImport, appAuthImport);
 
   const urlCount = (sitemap.match(/<url>/g) || []).length;
   assert.equal(urlCount, 1 + journal.members.length + journal.logs.length);
