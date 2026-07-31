@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "e55d684d-033e-4070-84b8-b79cd53cff9e",
+      "name": "数的划分",
+      "platform": "洛谷",
+      "problemNumber": "P1025",
+      "difficulty": "未标注",
+      "tags": [
+        "dfs"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
