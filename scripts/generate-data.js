@@ -1,6 +1,11 @@
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
+const cheerio = require("cheerio");
+
+function addSelfClosingVoids(html) {
+  return html.replace(/<(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)\b([^>]*?)>/gi, "<$1$2 />");
+}
 
 const ROOT = path.join(__dirname, "..");
 const LOGS_DIR = path.join(ROOT, "logs");
@@ -12,15 +17,9 @@ const DAY_PATTERN = /^(0[1-9]|[12]\d|3[01])$/;
 let normalizeMeta;
 let escapeHtml;
 let renderMarkdown;
+let toDateString;
 const SITE_ORIGIN = "https://train.xialiao.org";
 const SITE_NAME = "ICPC 算法训练日志";
-
-function toDateString(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
 
 function readMeta(dateDir, member, date) {
   const metaPath = path.join(dateDir, "meta.json");
@@ -80,7 +79,6 @@ function readLogs() {
     for (const entry of entries) {
       if (!entry.isDirectory()) continue;
 
-      // 兼容迁移期间的旧目录：logs/姓名/YYYY-MM-DD/
       if (LEGACY_LOG_DIR_PATTERN.test(entry.name)) {
         appendDateLogs(logs, member, entry.name, path.join(memberDir, entry.name));
         continue;
@@ -100,6 +98,17 @@ function readLogs() {
     }
   }
 
+  const seen = new Set();
+  const deduped = logs.filter((log) => {
+    const key = `${log.member}|${log.date}|${log.problemIndex}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+
+  logs.length = 0;
+  logs.push(...deduped);
+
   logs.sort(
     (a, b) =>
       b.date.localeCompare(a.date) ||
@@ -110,6 +119,10 @@ function readLogs() {
   return { members, logs };
 }
 
+// Note: buildHeatmapCounts and buildRecentStats each iterate the full logs array.
+// They compute different aggregates (date counts vs. time-windowed stats), so
+// combining into a single pass would require restructuring their interfaces.
+// Both are O(n) and the data volume is small, so keeping them separate is acceptable.
 function buildHeatmapCounts(logs) {
   const all = {};
   const byMember = {};
@@ -193,17 +206,18 @@ function daysAgo(days) {
 function appVersion() {
   return crypto
     .createHash("sha256")
-    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
+    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs", "lib/constants.mjs", "lib/auth.mjs", "lib/theme.mjs", "lib/form.mjs", "lib/renderer.mjs", "lib/router.mjs", "lib/data.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
     .digest("hex")
     .slice(0, 12);
 }
 
 function writeVersionedIndex(dataVersion) {
-  const html = fs
-    .readFileSync(path.join(ROOT, "index.html"), "utf8")
-    .replace(/__DATA_VERSION__/g, dataVersion)
-    .replace(/style\.css(?:\?v=[^"']*)?/g, `style.css?v=${assetVersion("style.css")}`)
-    .replace(/app\.js(?:\?v=[^"']*)?/g, `app.js?v=${appVersion()}`);
+  const raw = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  const $ = cheerio.load(raw);
+  $('meta[name="journal-data-version"]').attr("content", dataVersion);
+  $('link[rel="stylesheet"][href^="style.css"]').attr("href", `style.css?v=${assetVersion("style.css")}`);
+  $('script[src^="app.js"]').attr("src", `app.js?v=${appVersion()}`);
+  const html = addSelfClosingVoids($.html());
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), html, "utf8");
   return html;
 }
@@ -244,30 +258,39 @@ function truncate(value, maxLength = 155) {
 }
 
 function replaceHeadMetadata(html, { title, description, canonical, robots = "index,follow", jsonLd }) {
-  let output = html
-    .replace(/<title>[\s\S]*?<\/title>/, () => `<title>${escapeHtml(title)}</title>`)
-    .replace(/<meta name="description" content="[^"]*" \/>/, () => `<meta name="description" content="${escapeHtml(description)}" />`)
-    .replace(/<meta name="robots" content="[^"]*" \/>/, () => `<meta name="robots" content="${escapeHtml(robots)}" />`)
-    .replace(/<link rel="canonical" href="[^"]*" \/>/, () => `<link rel="canonical" href="${escapeHtml(canonical)}" />`);
+  const $ = cheerio.load(html);
+  $("title").text(title);
+  $('meta[name="description"]').attr("content", description);
+  $('meta[name="robots"]').attr("content", robots);
+  $('link[rel="canonical"]').attr("href", canonical);
+  $('meta[property="og:title"]').attr("content", title);
+  $('meta[property="og:description"]').attr("content", description);
+  $('meta[property="og:url"]').attr("content", canonical);
+  $('meta[name="twitter:title"]').attr("content", title);
+  $('meta[name="twitter:description"]').attr("content", description);
   if (jsonLd) {
     const serialized = JSON.stringify(jsonLd).replace(/</g, "\\u003c");
-    output = output.replace("</head>", () => `  <script type="application/ld+json">${serialized}</script>\n</head>`);
+    const script = $('<script type="application/ld+json"></script>');
+    script.text(serialized);
+    $("head").append(script);
   }
-  return output;
+  return addSelfClosingVoids($.html());
 }
 
 function showOnlyPage(html, pageId) {
+  const $ = cheerio.load(html);
   const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page"];
-  let output = html;
   for (const id of pageIds) {
-    const pattern = new RegExp(`<section id="${id}" class="([^"]*)"(?: hidden)?>`);
-    output = output.replace(pattern, (_match, classes) => {
-      const normalizedClasses = classes.replace(/\s+active\b/g, "");
-      const activeClass = id === pageId ? `${normalizedClasses} active` : normalizedClasses;
-      return `<section id="${id}" class="${activeClass.trim()}"${id === pageId ? "" : " hidden"}>`;
-    });
+    const section = $(`#${id}`);
+    section.removeClass("active");
+    section.removeAttr("hidden");
+    if (id === pageId) {
+      section.addClass("active");
+    } else {
+      section.attr("hidden", "");
+    }
   }
-  return output;
+  return addSelfClosingVoids($.html());
 }
 
 function problemKey(log) {
@@ -301,12 +324,15 @@ function writeHomePage(html, logs) {
   const recentLogs = logs.filter((log) => log.date >= daysAgo(29));
   const cards = recentLogs.length ? recentLogs.map(recordCardHtml).join("\n") : "<p>近 30 天暂无训练记录。</p>";
   const description = "ICPC 算法训练日志，汇总队员的刷题记录、原创题解、复盘收获和代码。";
-  const output = replaceHeadMetadata(html, {
+  const withMeta = replaceHeadMetadata(html, {
     title: SITE_NAME,
     description,
     canonical: absoluteUrl(),
     jsonLd: { "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, url: absoluteUrl(), description },
-  }).replace(/<div id="records" class="records record-grid">[\s\S]*?<\/div>/, () => `<div id="records" class="records record-grid">${cards}</div>`);
+  });
+  const $ = cheerio.load(withMeta);
+  $("#records").html(cards);
+  const output = addSelfClosingVoids($.html());
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), output, "utf8");
   return output;
 }
@@ -326,15 +352,16 @@ function writeMemberPages(html, members, logs) {
       description,
       canonical: absoluteUrl(memberSegments(member)),
       jsonLd: { "@context": "https://schema.org", "@type": "CollectionPage", name: `${member} 的训练主页`, url: absoluteUrl(memberSegments(member)), description },
-    })
-      .replace('<h1 id="member-page-title">队员</h1>', () => `<h1 id="member-page-title">${escapeHtml(member)}</h1>`)
-      .replace('<p id="member-page-subtitle" class="subtitle"></p>', () => `<p id="member-page-subtitle" class="subtitle">${escapeHtml(subtitle)}</p>`)
-      .replace('<p id="member-total" class="metric-value loading-value">加载中</p>', () => `<p id="member-total" class="metric-value">${memberLogs.length}</p>`)
-      .replace('<p id="member-days" class="metric-value loading-value">加载中</p>', () => `<p id="member-days" class="metric-value">${activeDays}</p>`)
-      .replace('<p id="member-recent" class="metric-value loading-value">加载中</p>', () => `<p id="member-recent" class="metric-value">${recentCount}</p>`)
-      .replace('<p id="member-record-count" class="hint"></p>', () => `<p id="member-record-count" class="hint">共 ${memberLogs.length} 道题，每道题均可单独打开和分享</p>`)
-      .replace('<div id="member-records" class="records record-grid"></div>', () => `<div id="member-records" class="records record-grid">${memberLogs.map(recordCardHtml).join("\n") || "<p>暂无训练记录。</p>"}</div>`);
-    writeRouteIndex(output, memberSegments(member));
+    });
+    const $ = cheerio.load(output);
+    $("#member-page-title").text(member);
+    $("#member-page-subtitle").text(subtitle);
+    $("#member-total").removeClass("loading-value").text(memberLogs.length);
+    $("#member-days").removeClass("loading-value").text(activeDays);
+    $("#member-recent").removeClass("loading-value").text(recentCount);
+    $("#member-record-count").text(`共 ${memberLogs.length} 道题，每道题均可单独打开和分享`);
+    $("#member-records").html(memberLogs.map(recordCardHtml).join("\n") || "<p>暂无训练记录。</p>");
+    writeRouteIndex(addSelfClosingVoids($.html()), memberSegments(member));
   }
 }
 
@@ -364,7 +391,7 @@ function problemPageHtml(html, log) {
       ${log.takeaway ? `<section class="problem-section"><h2>收获 / 题解</h2>${renderMarkdown(log.takeaway)}</section>` : ""}
       ${log.code ? `<section class="problem-section"><h2>代码</h2><div class="record-takeaway problem-code-expanded"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div></section>` : ""}
     </div>`;
-  const page = replaceHeadMetadata(showOnlyPage(html, "problem-page"), {
+  let page = replaceHeadMetadata(showOnlyPage(html, "problem-page"), {
     title: `${log.problem} · ${log.member} · ${SITE_NAME}`,
     description,
     canonical,
@@ -378,10 +405,11 @@ function problemPageHtml(html, log) {
       author: { "@type": "Person", name: log.member },
       mainEntityOfPage: canonical,
     },
-  })
-    .replace('<a id="problem-back-member" class="back-link" href="/">', () => `<a id="problem-back-member" class="back-link" href="${routePath(memberSegments(log.member))}">`)
-    .replace('<article id="problem-detail" class="card problem-detail">', () => `<article id="problem-detail" class="card problem-detail" data-prerendered-path="${routePath(problemSegments(log))}">`);
-  return replaceProblemArticle(page, article);
+  });
+  const $ = cheerio.load(page);
+  $("#problem-back-member").attr("href", routePath(memberSegments(log.member)));
+  $("#problem-detail").attr("data-prerendered-path", routePath(problemSegments(log)));
+  return replaceProblemArticle(addSelfClosingVoids($.html()), article);
 }
 
 function writeProblemPages(html, logs) {
@@ -390,7 +418,7 @@ function writeProblemPages(html, logs) {
 
 function writeCrawlerFiles(members, logs) {
   const entries = [
-    { segments: [], lastmod: logs[0]?.date },
+    { segments: [], lastmod: logs[0]?.date || new Date().toISOString().slice(0, 10) },
     ...members.map((member) => ({ segments: memberSegments(member), lastmod: logs.find((log) => log.member === member)?.date })),
     ...logs.map((log) => ({ segments: problemSegments(log), lastmod: log.date })),
   ];
@@ -404,7 +432,14 @@ function writeVersionedApp() {
   const html = source
     .replace("./lib/log-schema.mjs", `./lib/log-schema.mjs?v=${assetVersion("lib/log-schema.mjs")}`)
     .replace("./lib/journal-api.js", `./lib/journal-api.js?v=${assetVersion("lib/journal-api.js")}`)
-    .replace("./lib/render-safety.mjs", `./lib/render-safety.mjs?v=${assetVersion("lib/render-safety.mjs")}`);
+    .replace("./lib/render-safety.mjs", `./lib/render-safety.mjs?v=${assetVersion("lib/render-safety.mjs")}`)
+    .replace("./lib/constants.mjs", `./lib/constants.mjs?v=${assetVersion("lib/constants.mjs")}`)
+    .replace("./lib/auth.mjs", `./lib/auth.mjs?v=${assetVersion("lib/auth.mjs")}`)
+    .replace("./lib/theme.mjs", `./lib/theme.mjs?v=${assetVersion("lib/theme.mjs")}`)
+    .replace("./lib/form.mjs", `./lib/form.mjs?v=${assetVersion("lib/form.mjs")}`)
+    .replace("./lib/renderer.mjs", `./lib/renderer.mjs?v=${assetVersion("lib/renderer.mjs")}`)
+    .replace("./lib/router.mjs", `./lib/router.mjs?v=${assetVersion("lib/router.mjs")}`)
+    .replace("./lib/data.mjs", `./lib/data.mjs?v=${assetVersion("lib/data.mjs")}`);
   fs.writeFileSync(path.join(OUTPUT_DIR, "app.js"), html, "utf8");
 }
 
@@ -453,6 +488,7 @@ function writeProblemDetails(logs, generatedAt) {
 async function main() {
   ({ normalizeMeta } = await import("../lib/log-schema.mjs"));
   ({ escapeHtml, renderMarkdown } = await import("../lib/render-safety.mjs"));
+  ({ toDateString } = await import("../lib/constants.mjs"));
   const { members, logs } = readLogs();
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
@@ -469,6 +505,13 @@ async function main() {
   };
   const dataVersion = crypto.createHash("sha256").update(JSON.stringify(fullData)).digest("hex").slice(0, 12);
 
+  const resolved = path.resolve(OUTPUT_DIR);
+  const expected = path.resolve(path.join(ROOT, "site"));
+  if (resolved !== expected) {
+    console.error(`Refusing to delete unexpected directory: ${resolved} (expected ${expected})`);
+    process.exit(1);
+  }
+
   fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   fs.mkdirSync(path.join(OUTPUT_DIR, "lib"), { recursive: true });
@@ -478,6 +521,13 @@ async function main() {
   fs.copyFileSync(path.join(ROOT, "lib", "log-schema.mjs"), path.join(OUTPUT_DIR, "lib", "log-schema.mjs"));
   fs.copyFileSync(path.join(ROOT, "lib", "journal-api.js"), path.join(OUTPUT_DIR, "lib", "journal-api.js"));
   fs.copyFileSync(path.join(ROOT, "lib", "render-safety.mjs"), path.join(OUTPUT_DIR, "lib", "render-safety.mjs"));
+  fs.copyFileSync(path.join(ROOT, "lib", "constants.mjs"), path.join(OUTPUT_DIR, "lib", "constants.mjs"));
+  fs.copyFileSync(path.join(ROOT, "lib", "auth.mjs"), path.join(OUTPUT_DIR, "lib", "auth.mjs"));
+  fs.copyFileSync(path.join(ROOT, "lib", "theme.mjs"), path.join(OUTPUT_DIR, "lib", "theme.mjs"));
+  fs.copyFileSync(path.join(ROOT, "lib", "form.mjs"), path.join(OUTPUT_DIR, "lib", "form.mjs"));
+  fs.copyFileSync(path.join(ROOT, "lib", "renderer.mjs"), path.join(OUTPUT_DIR, "lib", "renderer.mjs"));
+  fs.copyFileSync(path.join(ROOT, "lib", "router.mjs"), path.join(OUTPUT_DIR, "lib", "router.mjs"));
+  fs.copyFileSync(path.join(ROOT, "lib", "data.mjs"), path.join(OUTPUT_DIR, "lib", "data.mjs"));
   const html = writeVersionedIndex(dataVersion);
   const homeHtml = writeHomePage(html, logs);
   writeRouteIndexes(homeHtml, members, logs);

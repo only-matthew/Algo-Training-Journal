@@ -5,17 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="journal-data-version" content="__DATA_VERSION__" />
   <meta name="description" content="ICPC 算法训练日志，汇总队员的刷题记录、原创题解、复盘收获和代码。" />
+  <meta property="og:title" content="ICPC 算法训练日志" />
+  <meta property="og:description" content="ICPC 算法训练日志，汇总队员的刷题记录、原创题解、复盘收获和代码。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://train.xialiao.org/" />
+  <meta property="og:site_name" content="ICPC 算法训练日志" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="ICPC 算法训练日志" />
+  <meta name="twitter:description" content="ICPC 算法训练日志，汇总队员的刷题记录、原创题解、复盘收获和代码。" />
   <meta name="robots" content="index,follow" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://algo-oauth.xialiao.org; img-src 'self' https://avatars.githubusercontent.com data:;" />
   <base href="/" />
   <title>ICPC 算法训练日志</title>
   <link rel="canonical" href="https://train.xialiao.org/" />
+  <link rel="sitemap" type="application/xml" href="https://train.xialiao.org/sitemap.xml" />
   <link rel="stylesheet" href="style.css?v=20260730-1" />
   <link rel="stylesheet" href="vendor/prism/prism-tomorrow.min.css" />
   <link rel="stylesheet" href="vendor/prism/prism-line-numbers.min.css" />
   <link rel="stylesheet" href="vendor/katex/katex.min.css" />
 </head>
 <body>
-  <main class="container">
+  <a href="#main-content" class="skip-link">跳到内容</a>
+  <main class="container" id="main-content">
     <div id="auth-bar">
       <div class="auth-left">
         <span id="auth-status">未登录</span>
@@ -49,6 +60,10 @@
       </div>
       </header>
 
+      <div class="search-bar">
+        <input type="search" id="search-input" class="form-input search-input" placeholder="搜索题目、算法标签或内容..." aria-label="搜索训练记录" />
+      </div>
+
     <section class="grid metrics">
       <article class="card">
         <p class="metric-label">近 30 天训练题数</p>
@@ -61,6 +76,10 @@
       <article class="card">
         <p class="metric-label">近 30 天周均频率</p>
         <p id="metric-weekly" class="metric-value loading-value">加载中</p>
+      </article>
+      <article class="card">
+        <p class="metric-label">连续打卡</p>
+        <p id="metric-streak" class="metric-value loading-value">加载中</p>
       </article>
     </section>
 
@@ -187,6 +206,11 @@
         </article>
       </section>
 
+      <section class="card">
+        <h2>训练趋势（周均题数）</h2>
+        <div id="trend-chart" class="trend-chart"></div>
+      </section>
+
       <section class="grid stats">
         <article class="card"><h2>标签分布</h2><div id="analysis-tags"></div></article>
         <article class="card"><h2>复习进度</h2><div id="analysis-review-stats"></div></article>
@@ -239,6 +263,10 @@
       <div class="detail-toolbar">
         <a id="problem-back-member" class="back-link" href="/">← 返回队员主页</a>
         <a class="back-link" href="/analysis/">查看训练分析</a>
+      </div>
+      <div class="export-bar" id="export-bar" hidden>
+        <button id="btn-export-pdf" class="btn btn-outline btn-sm" title="打印为PDF">📄 导出PDF</button>
+        <button id="btn-export-md" class="btn btn-outline btn-sm" title="导出Markdown文件">📥 导出MD</button>
       </div>
       <article id="problem-detail" class="card problem-detail">
         <p class="hint">正在加载题目详情…</p>
