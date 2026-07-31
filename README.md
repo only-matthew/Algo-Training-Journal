@@ -68,7 +68,12 @@
 - 按队员及自定义日期范围汇总训练数据。
 - 提供“今天 / 本周 / 本月”快捷范围；本周按周一至周日计算。
 - 统一展示题数、训练天数、参与队员、待复习题数、标签分布和复习进度。
-- 团队错题本支持按队员、状态和标签过滤。
+- 团队错题本支持按队员、状态和标签过滤。- 训练明细支持勾选题目，批量导出为 Markdown、PDF 或 LaTeX（单次最多 50 题）。
+### 导出与分享
+
+- 题目详情页支持导出为 Markdown、PDF（打印友好的 HTML）或 LaTeX 文件。
+- 训练分析页支持勾选多道题目，批量导出为 Markdown、PDF 或 LaTeX（单次最多 50 题）。
+- LaTeX 导出使用 `ctexart` 文档类，代码段通过 `listings` 宏包高亮，可直接编译。
 
 ### 独立页面与分享
 
@@ -202,12 +207,12 @@ npx wrangler deploy
 https://algo-oauth.xialiao.org/auth/callback
 ```
 
-允许登录的 GitHub 用户与日志目录映射维护在 `workers/oauth.js` 的 `MEMBERS` 中。前端不再拥有通用 GitHub API 凭据，Worker 只允许已登录用户写入自己的 `logs/<姓名>/YYYY/MM/DD/` 路径。新增队员时，需要在 `MEMBERS` 中加入映射、授予该账号仓库写权限，并让队员接受 Collaborator 邀请。
+允许登录的 GitHub 用户与日志目录映射维护在 `workers/oauth.mjs` 的 `MEMBERS` 中。前端不再拥有通用 GitHub API 凭据，Worker 只允许已登录用户写入自己的 `logs/<姓名>/YYYY/MM/DD/` 路径。新增队员时，需要在 `MEMBERS` 中加入映射、授予该账号仓库写权限，并让队员接受 Collaborator 邀请。
 
 工作流位于 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)。当 `main` 或 `master` 分支收到 push 后，Actions 会：
 
 1. 使用 Node.js 24 检出仓库。
-2. 执行 `npm run generate`。
+2. 执行 `npm run check`（语法检查 + 单元测试 + 生成 site）。
 3. 生成 `site` 部署目录。
 4. 上传 GitHub Pages artifact。
 5. 使用 `actions/deploy-pages` 发布网站。
@@ -248,12 +253,12 @@ AI 概括不需要把模型密钥写入前端或仓库；`workers/wrangler.toml`
 
 对应代码和 Wrangler 配置分别位于：
 
-- [workers/oauth.js](workers/oauth.js)
+- [workers/oauth.mjs](workers/oauth.mjs)
 - [workers/wrangler.toml](workers/wrangler.toml)
 
 如果迁移到其他域名或仓库，还需要同步修改：
 
-- `workers/oauth.js` 中的 `REPO`、`BRANCH`、`MEMBERS` 和 `ORIGINS`。
+- `workers/oauth.mjs` 中的 `REPO`、`BRANCH`、`MEMBERS` 和 `ORIGINS`。
 - `lib/journal-api.js` 中的 `JOURNAL_API_URL`。
 - `CNAME`、OAuth Homepage URL 和 callback URL。
 
@@ -295,24 +300,34 @@ npx serve site
 ├── .github/
 │   └── workflows/deploy.yml      # GitHub Pages 构建与部署
 ├── lib/
+│   ├── auth.mjs                  # GitHub 登录状态与会话管理
+│   ├── constants.mjs             # 日期、平台、状态等共享常量
+│   ├── data.mjs                  # 数据加载、缓存与自动刷新
+│   ├── form.mjs                  # 日志提交表单与草稿管理
 │   ├── journal-api.js            # 浏览器端 Worker API 客户端
 │   ├── log-schema.mjs            # 日志校验、清洗和永久 ID 规则
-│   └── render-safety.mjs         # 安全的 Markdown、链接和公式文本渲染
+│   ├── render-safety.mjs         # 安全的 Markdown、链接和公式文本渲染
+│   ├── renderer.mjs             # UI 渲染、导出与热力图
+│   ├── router.mjs               # 客户端路由与历史栈管理
+│   └── theme.mjs                # 浅色/深色主题切换
 ├── logs/                          # 按成员和日期组织的训练源数据
 ├── scripts/
 │   ├── generate-data.js          # 聚合 logs/、计算统计并生成 site/ 与路由入口
 │   ├── migrate-date-layout.js    # YYYY-MM-DD → YYYY/MM/DD
 │   └── migrate-logs.js           # 旧单文件 Markdown 格式迁移
 ├── test/
+│   ├── generate-seo.test.mjs    # SEO 与构建产物测试
 │   ├── log-schema.test.mjs       # Schema、日期、标签和状态测试
+│   ├── oauth-summary.test.mjs   # AI 概括与 Worker 边界测试
 │   └── render-safety.test.mjs    # Markdown、公式和链接安全测试
 ├── vendor/                        # 随静态站点发布的 Marked、KaTeX 与 Prism
 ├── workers/
-│   ├── oauth.js                  # OAuth、加密会话与受限日志 API
+│   ├── oauth.mjs                 # OAuth、加密会话、受限日志 API 与 AI 概括
 │   └── wrangler.toml             # Worker 配置
-├── app.js                         # 路由、渲染、筛选、表单和主题交互
+├── app.js                         # 应用入口：路由、渲染、筛选、表单和主题初始化
 ├── index.html                     # 单页应用页面结构
 ├── style.css                      # 组件、主题与响应式样式
+├── OPTIMIZATION.md               # 优化清单与完成状态
 ├── package.json                   # 构建、测试与迁移命令
 ├── CNAME                          # GitHub Pages 自定义域名
 └── site/                           # 构建产物，已被 .gitignore 忽略

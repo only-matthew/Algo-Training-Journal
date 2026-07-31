@@ -1261,3 +1261,44 @@ textarea.form-input {
   margin-bottom: 16px;
   justify-content: flex-end;
 }
+
+.analysis-detail-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.analysis-detail-header h2 {
+  margin-bottom: 0;
+}
+.analysis-export-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.analysis-select-all-label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.875rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+.analysis-record-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.analysis-record-checkbox {
+  margin-top: 14px;
+  width: 18px;
+  height: 18px;
+  accent-color: var(--brand);
+  flex-shrink: 0;
+}
+.export-status {
+  font-size: 0.8rem;
+  color: var(--muted);
+  margin: 0 4px;
+}

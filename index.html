@@ -217,7 +217,16 @@
       </section>
 
       <section class="card">
-        <h2>训练明细</h2>
+        <div class="analysis-detail-header">
+          <h2>训练明细</h2>
+          <div class="analysis-export-bar" id="analysis-export-bar">
+            <label class="analysis-select-all-label"><input type="checkbox" id="analysis-select-all" /> 全选</label>
+            <span id="export-status" class="export-status"></span>
+            <button id="btn-analysis-export-md" class="btn btn-outline btn-sm">📥 MD</button>
+            <button id="btn-analysis-export-pdf" class="btn btn-outline btn-sm">📄 PDF</button>
+            <button id="btn-analysis-export-latex" class="btn btn-outline btn-sm">📜 LaTeX</button>
+          </div>
+        </div>
         <p id="analysis-summary" class="hint"></p>
         <div id="analysis-records" class="records record-grid"></div>
       </section>
@@ -264,10 +273,11 @@
         <a id="problem-back-member" class="back-link" href="/">← 返回队员主页</a>
         <a class="back-link" href="/analysis/">查看训练分析</a>
       </div>
-      <div class="export-bar" id="export-bar" hidden>
-        <button id="btn-export-pdf" class="btn btn-outline btn-sm" title="打印为PDF">📄 导出PDF</button>
-        <button id="btn-export-md" class="btn btn-outline btn-sm" title="导出Markdown文件">📥 导出MD</button>
-      </div>
+<div class="export-bar" id="export-bar" hidden>
+          <button id="btn-export-pdf" class="btn btn-outline btn-sm" title="打印为PDF">📄 导出PDF</button>
+          <button id="btn-export-md" class="btn btn-outline btn-sm" title="导出Markdown文件">📥 导出MD</button>
+          <button id="btn-export-latex" class="btn btn-outline btn-sm" title="导出LaTeX文件">📜 导出LaTeX</button>
+        </div>
       <article id="problem-detail" class="card problem-detail">
         <p class="hint">正在加载题目详情…</p>
       </article>
