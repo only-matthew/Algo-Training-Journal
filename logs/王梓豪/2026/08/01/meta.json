@@ -22,6 +22,15 @@
         "DFS"
       ],
       "reviewStatus": "none"
+    },
+    {
+      "id": "6ba4c49a-69cb-4801-96c7-29a58ccef8ff",
+      "name": "You Delete, I Delete",
+      "platform": "Codeforces",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [],
+      "reviewStatus": "none"
     }
   ]
 }
