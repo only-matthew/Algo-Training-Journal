@@ -15,6 +15,21 @@
         "暴力"
       ],
       "reviewStatus": "none"
+    },
+    {
+      "id": "353ab477-cf29-40e4-a12e-8ee4541c9be1",
+      "name": "kkksc03 考前临时抱佛脚【DFS版】",
+      "platform": "洛谷",
+      "problemNumber": "P2392",
+      "difficulty": "普及-",
+      "tags": [
+        "DP",
+        "DFS",
+        "模拟",
+        "枚举",
+        "暴力"
+      ],
+      "reviewStatus": "todo"
     }
   ]
 }
