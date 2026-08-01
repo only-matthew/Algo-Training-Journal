@@ -11,6 +11,17 @@
         "DFS"
       ],
       "reviewStatus": "none"
+    },
+    {
+      "id": "23fb140a-af89-484a-8227-985bb8c67769",
+      "name": "单词接龙",
+      "platform": "洛谷",
+      "problemNumber": "",
+      "difficulty": "普及/提高-",
+      "tags": [
+        "DFS"
+      ],
+      "reviewStatus": "none"
     }
   ]
 }
