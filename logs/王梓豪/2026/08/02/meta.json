@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "24ea01f8-801d-4cdc-bb0b-9d8316bc65da",
+      "name": "Merge to Match",
+      "platform": "Codeforces",
+      "problemNumber": "",
+      "difficulty": "≤1199",
+      "tags": [],
+      "reviewStatus": "todo"
+    }
+  ]
+}
