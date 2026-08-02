@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "2484bba5-0e2a-436c-ae83-fc552f6b6f17",
+      "name": "Codeforces Round 1113 (Div. 2)",
+      "platform": "Codeforces",
+      "problemNumber": "A",
+      "difficulty": "未标注",
+      "tags": [
+        "博弈",
+        "字符串"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
