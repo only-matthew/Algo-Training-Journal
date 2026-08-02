@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "ba2a2167-59e7-4e35-8a04-ca8d5c0b1646",
+      "name": "Codeforces Round 1113 (Div. 2)",
+      "platform": "Codeforces",
+      "problemNumber": "B",
+      "difficulty": "未标注",
+      "tags": [
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
