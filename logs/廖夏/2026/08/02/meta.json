@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "71fbf4d3-3d8a-4c36-86dc-d30588eccfda",
+      "name": "P2036 [COCI 2008/2009 #2] PERKET",
+      "platform": "洛谷",
+      "problemNumber": "P2036",
+      "difficulty": "未标注",
+      "tags": [
+        "模拟",
+        "DFS",
+        "搜索"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
