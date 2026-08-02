@@ -9,6 +9,15 @@
       "difficulty": "≤1199",
       "tags": [],
       "reviewStatus": "todo"
+    },
+    {
+      "id": "c65705ba-787d-47a0-9ea7-536f8d079af4",
+      "name": "自由落体",
+      "platform": "洛谷",
+      "problemNumber": "P1033",
+      "difficulty": "普及/提高-",
+      "tags": [],
+      "reviewStatus": "none"
     }
   ]
 }
