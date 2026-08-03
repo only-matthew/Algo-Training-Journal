@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "c6e962d7-8c62-4902-932a-e8324bd55b36",
+      "name": "均分纸牌",
+      "platform": "洛谷",
+      "problemNumber": "P1031",
+      "difficulty": "普及-",
+      "tags": [
+        "前缀和"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
