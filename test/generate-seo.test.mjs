@@ -9,7 +9,7 @@ import { fileURLToPath } from "node:url";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteDir = path.join(root, "site");
 const require = createRequire(import.meta.url);
-const { replaceProblemArticle } = require("../scripts/generate-data.js");
+const { replaceProblemArticle, resolveStatsEnd } = require("../scripts/generate-data.js");
 
 function routePath(segments) {
   return `/${segments.map((segment) => encodeURIComponent(String(segment))).join("/")}/`;
@@ -22,6 +22,14 @@ test("problem article injection preserves JavaScript replacement tokens literall
 
   assert.equal(output, `<article id="problem-detail" class="card"><p>${tokens}</p></article>`);
   assert.equal((output.match(/<article id="problem-detail"/g) || []).length, 1);
+});
+
+test("recent stats include the newest log when the UTC build date is still yesterday", async () => {
+  const { toDateString } = await import("../lib/constants.mjs");
+  assert.equal(
+    resolveStatsEnd([{ date: "2026-08-05" }], new Date("2026-08-04T17:00:00Z"), toDateString),
+    "2026-08-05",
+  );
 });
 
 test("generator emits crawlable member and problem pages", () => {

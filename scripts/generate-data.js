@@ -136,12 +136,17 @@ function buildHeatmapCounts(logs) {
   return { all, byMember };
 }
 
+function resolveStatsEnd(logs, now = new Date(), formatDate = toDateString) {
+  const today = formatDate(now);
+  return logs.reduce((latest, log) => log.date > latest ? log.date : latest, today);
+}
+
 function buildRecentStats(logs, members) {
-  const endDate = new Date();
+  const end = resolveStatsEnd(logs);
+  const endDate = new Date(`${end}T12:00:00`);
   const startDate = new Date(endDate);
   startDate.setDate(endDate.getDate() - 29);
   const start = toDateString(startDate);
-  const end = toDateString(endDate);
 
   const withinRange = logs.filter((log) => log.date >= start && log.date <= end);
 
@@ -556,4 +561,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { replaceProblemArticle };
+module.exports = { replaceProblemArticle, resolveStatsEnd };
