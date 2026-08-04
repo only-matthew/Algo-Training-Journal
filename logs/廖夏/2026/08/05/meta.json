@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "11c99111-2884-4538-93b9-e07d601bbda5",
+      "name": "A - Riptide",
+      "platform": "洛谷",
+      "problemNumber": "2254A",
+      "difficulty": "≤1199",
+      "tags": [
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "9f44516e-e469-404f-aded-54f90e8b8971",
+      "name": "B. Evanescent",
+      "platform": "洛谷",
+      "problemNumber": "2254B",
+      "difficulty": "≤1199",
+      "tags": [
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "1da756b5-2c90-4471-bac8-1633d7358867",
+      "name": "C1 - Marenol (easy version)",
+      "platform": "洛谷",
+      "problemNumber": "2254C1",
+      "difficulty": "≤1199",
+      "tags": [
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "6e8f5014-21ce-4d57-9a2f-eda9323835f8",
+      "name": "C2. Marenol (hard version)",
+      "platform": "洛谷",
+      "problemNumber": "2254C2",
+      "difficulty": "≤1199",
+      "tags": [
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
