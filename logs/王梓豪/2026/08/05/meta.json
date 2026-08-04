@@ -9,6 +9,42 @@
       "difficulty": "未标注",
       "tags": [],
       "reviewStatus": "none"
+    },
+    {
+      "id": "6c014e99-f969-4703-9ed0-0847e46f77de",
+      "name": "B",
+      "platform": "Codeforces",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "78f791e4-01e5-4395-b9f5-6a4ae8448dff",
+      "name": "C1",
+      "platform": "Codeforces",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "5c4d4e4a-48fe-421c-98f6-8dd277a2e011",
+      "name": "C2",
+      "platform": "Codeforces",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "b92a860b-15bc-4a40-9e64-1309ccd81548",
+      "name": "D",
+      "platform": "Codeforces",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [],
+      "reviewStatus": "none"
     }
   ]
 }
