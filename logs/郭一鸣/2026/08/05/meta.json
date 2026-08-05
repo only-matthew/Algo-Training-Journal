@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "c063ddfb-b82e-4298-abab-61d5dde2b34e",
+      "name": "Codeforces Round 1114 (Div. 3)",
+      "platform": "Codeforces",
+      "problemNumber": "A",
+      "difficulty": "≤1199",
+      "tags": [
+        "排序"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
