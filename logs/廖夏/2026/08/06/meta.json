@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "2f7757cf-c316-4b90-b349-2964efd5f9b2",
+      "name": "数楼梯",
+      "platform": "洛谷",
+      "problemNumber": "P1002",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "高精度"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
