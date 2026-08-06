@@ -3,9 +3,20 @@
   "problems": [
     {
       "id": "2f7757cf-c316-4b90-b349-2964efd5f9b2",
-      "name": "数楼梯",
+      "name": "过河卒",
       "platform": "洛谷",
       "problemNumber": "P1002",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "74f2b426-cc78-49c2-a465-62a273436c2b",
+      "name": "数楼梯",
+      "platform": "洛谷",
+      "problemNumber": "P1255",
       "difficulty": "普及-",
       "tags": [
         "模拟",
