@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "9ac5936e-b99e-4b2d-b9e6-01f5fb6d967c",
+      "name": "肥猫的游戏",
+      "platform": "洛谷",
+      "problemNumber": "P1488",
+      "difficulty": "普及/提高-",
+      "tags": [
+        "博弈论"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
