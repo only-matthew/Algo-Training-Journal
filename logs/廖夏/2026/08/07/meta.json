@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "7c05968e-12d3-47e3-8fdf-000f09a14428",
+      "name": "P1044",
+      "platform": "洛谷",
+      "problemNumber": "P1044",
+      "difficulty": "普及-",
+      "tags": [
+        "DP"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
