@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "737aef5c-ae77-4b41-a384-b03fb379419a",
+      "name": "Codeforces Round 1115 (Div. 2)",
+      "platform": "Codeforces",
+      "problemNumber": "A",
+      "difficulty": "未标注",
+      "tags": [
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
