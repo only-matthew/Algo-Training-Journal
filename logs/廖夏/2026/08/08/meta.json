@@ -12,6 +12,18 @@
         "dfs"
       ],
       "reviewStatus": "none"
+    },
+    {
+      "id": "86699026-d65e-4c1a-8caf-9e882d0bf731",
+      "name": "P1028 递推版",
+      "platform": "洛谷",
+      "problemNumber": "P1028",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "递推"
+      ],
+      "reviewStatus": "none"
     }
   ]
 }
