@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "23dafd5b-105a-46a3-9bee-6e0c9b926efd",
+      "name": "P1028 数的计算",
+      "platform": "洛谷",
+      "problemNumber": "P1028",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "dfs"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
