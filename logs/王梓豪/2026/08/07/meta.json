@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "f96b4926-faef-476b-a287-489cbfb1e437",
+      "name": "计算器的改良",
+      "platform": "洛谷",
+      "problemNumber": "",
+      "difficulty": "普及/提高-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}

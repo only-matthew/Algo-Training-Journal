@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "6e434f57-2411-4e91-b3fe-b7aee7c77137",
+      "name": "Codeforces Round 1114 (Div. 3)",
+      "platform": "Codeforces",
+      "problemNumber": "B",
+      "difficulty": "未标注",
+      "tags": [
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
