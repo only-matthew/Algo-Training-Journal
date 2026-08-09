@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "e9072450-5903-4811-a556-48b50d7f4b02",
+      "name": "P1928",
+      "platform": "洛谷",
+      "problemNumber": "P1928",
+      "difficulty": "普及-",
+      "tags": [
+        "递归"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
