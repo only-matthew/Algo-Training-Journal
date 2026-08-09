@@ -171,6 +171,22 @@ select {
 .record-head {
   display: flex;
   justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.record-date-wrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  min-width: 0;
+}
+
+.updated-at {
+  color: var(--muted);
+  font-size: 11px;
+  opacity: 0.75;
+  white-space: nowrap;
 }
 
 .record h3 {

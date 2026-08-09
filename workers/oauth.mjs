@@ -146,7 +146,7 @@ async function resolveLogRoot(user, date) {
   return currentRoot;
 }
 async function saveLog(user, date, input) {
-  const { problems } = validateLogInput(input); const root = await resolveLogRoot(user, date); const oldRaw = await content(`${root}/meta.json`, user.token); const oldCount = oldRaw ? JSON.parse(oldRaw).problems?.length || 0 : 0; const changes = [{ path: `${root}/meta.json`, content: JSON.stringify(metaFromProblems(problems), null, 2) }];
+  const { problems } = validateLogInput(input); const root = await resolveLogRoot(user, date); const oldRaw = await content(`${root}/meta.json`, user.token); const oldCount = oldRaw ? JSON.parse(oldRaw).problems?.length || 0 : 0; const updatedAt = new Date().toISOString(); const changes = [{ path: `${root}/meta.json`, content: JSON.stringify(metaFromProblems(problems, updatedAt), null, 2) }];
   problems.forEach((p, i) => { changes.push({ path: `${root}/${i}-takeaway.md`, content: p.takeaway || "未填写" }); changes.push(p.description ? { path: `${root}/${i}-desc.md`, content: p.description } : { path: `${root}/${i}-desc.md`, delete: true }); changes.push(p.code ? { path: `${root}/${i}-solution.cpp`, content: p.code } : { path: `${root}/${i}-solution.cpp`, delete: true }); });
   for (let i = problems.length; i < oldCount; i++) for (const suffix of ["desc.md", "takeaway.md", "solution.cpp"]) changes.push({ path: `${root}/${i}-${suffix}`, delete: true });
   const existing = []; for (const change of changes) if (!change.delete || await content(change.path, user.token) !== null) existing.push(change);
@@ -154,7 +154,7 @@ async function saveLog(user, date, input) {
 }
 async function readLog(user, date) {
   const root = await resolveLogRoot(user, date); const raw = await content(`${root}/meta.json`, user.token); if (!raw) return { problems: [] }; const meta = JSON.parse(raw);
-  return { problems: await Promise.all((meta.problems || []).map(async (p, i) => ({ ...p, description: await content(`${root}/${i}-desc.md`, user.token) || "", takeaway: await content(`${root}/${i}-takeaway.md`, user.token) || "", code: await content(`${root}/${i}-solution.cpp`, user.token) || "" }))) };
+  return { updatedAt: typeof meta.updatedAt === "string" ? meta.updatedAt : undefined, problems: await Promise.all((meta.problems || []).map(async (p, i) => ({ ...p, description: await content(`${root}/${i}-desc.md`, user.token) || "", takeaway: await content(`${root}/${i}-takeaway.md`, user.token) || "", code: await content(`${root}/${i}-solution.cpp`, user.token) || "" }))) };
 }
 async function deleteLog(user, date) { const root = await resolveLogRoot(user, date); const raw = await content(`${root}/meta.json`, user.token); if (!raw) return { deleted: false }; const count = JSON.parse(raw).problems?.length || 0; const changes = [{ path: `${root}/meta.json`, delete: true }]; for (let i = 0; i < count; i++) for (const suffix of ["desc.md", "takeaway.md", "solution.cpp"]) { const path = `${root}/${i}-${suffix}`; if (await content(path, user.token) !== null) changes.push({ path, delete: true }); } await commit(changes, `delete(${user.member}): training log for ${date}`, user.token); return { deleted: true }; }
 

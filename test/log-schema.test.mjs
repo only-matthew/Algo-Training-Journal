@@ -34,6 +34,18 @@ test("题号会清洗并保存在元数据中", () => {
   assert.equal(normalizeMeta({ problems: [{ name: "A", problemNumber: " P1000 " }] }).problems[0].problemNumber, "P1000");
 });
 
+test("metaFromProblems 可写入 updatedAt，normalizeMeta 会保留它且旧记录为空", () => {
+  const result = validateLogInput({ problems: [{ id: "p1", name: "A" }] });
+  const meta = metaFromProblems(result.problems, "2026-08-10T05:30:00.000Z");
+  assert.equal(meta.updatedAt, "2026-08-10T05:30:00.000Z");
+
+  const normalized = normalizeMeta({ problems: [{ name: "A" }], updatedAt: "2026-08-10T05:30:00.000Z" });
+  assert.equal(normalized.updatedAt, "2026-08-10T05:30:00.000Z");
+
+  const legacy = normalizeMeta({ problems: [{ name: "A" }] });
+  assert.equal(legacy.updatedAt, undefined);
+});
+
 test("错题状态只接受约定值", () => {
   const result = validateLogInput({
     problems: [{ id: "p1", name: "A", tags: "二分，贪心, 二分", reviewStatus: "todo" }],

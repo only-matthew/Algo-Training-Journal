@@ -18,15 +18,22 @@ let normalizeMeta;
 let escapeHtml;
 let renderMarkdown;
 let toDateString;
+let formatUpdateDate;
+let formatUpdateTime;
 const SITE_ORIGIN = "https://train.xialiao.org";
 const SITE_NAME = "ICPC 算法训练日志";
 
 function readMeta(dateDir, member, date) {
   const metaPath = path.join(dateDir, "meta.json");
   if (!fs.existsSync(metaPath)) return null;
-  return normalizeMeta(JSON.parse(fs.readFileSync(metaPath, "utf8")), {
+  const normalized = normalizeMeta(JSON.parse(fs.readFileSync(metaPath, "utf8")), {
     legacyIdPrefix: `${member}-${date}`,
   });
+  // 旧记录没有 updatedAt 时，回退到 meta.json 的文件修改时间作为最后更新时间
+  if (!normalized.updatedAt) {
+    normalized.updatedAt = new Date(fs.statSync(metaPath).mtime).toISOString();
+  }
+  return normalized;
 }
 
 function readProblemFile(dir, filename) {
@@ -44,6 +51,7 @@ function appendDateLogs(logs, member, date, dateDir) {
     logs.push({
       member,
       date,
+      updatedAt: meta.updatedAt,
       problemIndex: i,
       problemId: p.id,
       problem: p.name || "未填写",
@@ -323,6 +331,12 @@ function memberSegments(member) {
   return ["member", member];
 }
 
+function updatedLabelHtml(log) {
+  return log.updatedAt
+    ? `<span class="updated-at" title="最后更新时间 ${escapeHtml(formatUpdateTime(log.updatedAt))}">最后更新 ${escapeHtml(formatUpdateDate(log.updatedAt))}</span>`
+    : "";
+}
+
 function recordCardHtml(log) {
   const tags = (log.tags || []).map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`).join("");
   const reviewLabels = { todo: "待复习", mastered: "已掌握" };
@@ -330,7 +344,7 @@ function recordCardHtml(log) {
     ? `<span class="review-chip ${escapeHtml(log.reviewStatus)}">${reviewLabels[log.reviewStatus]}</span>`
     : "";
   return `<article class="record">
-    <div class="record-head"><time datetime="${escapeHtml(log.date)}">${escapeHtml(log.date)}</time><a class="member-link" href="${routePath(memberSegments(log.member))}">${escapeHtml(log.member)}</a></div>
+    <div class="record-head"><span class="record-date-wrap"><time datetime="${escapeHtml(log.date)}">${escapeHtml(log.date)}</time>${updatedLabelHtml(log)}</span><a class="member-link" href="${routePath(memberSegments(log.member))}">${escapeHtml(log.member)}</a></div>
     <h3 class="record-title"><a href="${routePath(problemSegments(log))}">${escapeHtml(log.problem)}</a></h3>
     <p class="meta">平台：${escapeHtml(log.platform)} ｜ 难度：${escapeHtml(log.difficulty)}</p>
     ${tags || review ? `<div class="record-badges">${tags}${review}</div>` : ""}
@@ -398,8 +412,9 @@ function problemPageHtml(html, log) {
     ...(log.tags || []).map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`),
     ...({ todo: [`<span class="review-chip todo">待复习</span>`], mastered: [`<span class="review-chip mastered">已掌握</span>`] }[log.reviewStatus] || []),
   ].join("");
+  const updated = updatedLabelHtml(log);
   const article = `<div class="problem-detail-head">
-      <div><p class="eyebrow">${escapeHtml(log.date)} · 第 ${(log.problemIndex ?? 0) + 1} 题</p><h1>${escapeHtml(log.problem)}</h1></div>
+      <div><p class="eyebrow">${escapeHtml(log.date)} · 第 ${(log.problemIndex ?? 0) + 1} 题${updated ? ` · ${updated}` : ""}</p><h1>${escapeHtml(log.problem)}</h1></div>
       <div class="problem-detail-actions"><a class="member-chip" href="${routePath(memberSegments(log.member))}">${escapeHtml(log.member)} 的主页</a></div>
     </div>
     <p class="problem-meta">平台：${escapeHtml(log.platform)} ${log.problemNumber ? `<span>题号：${escapeHtml(log.problemNumber)}</span>` : ""} <span>难度：${escapeHtml(log.difficulty)}</span></p>
@@ -419,7 +434,7 @@ function problemPageHtml(html, log) {
       headline: log.problem,
       description,
       datePublished: log.date,
-      dateModified: log.date,
+      dateModified: formatUpdateDate(log.updatedAt) || log.date,
       author: { "@type": "Person", name: log.member },
       mainEntityOfPage: canonical,
     },
@@ -506,7 +521,7 @@ function writeProblemDetails(logs, generatedAt) {
 async function main() {
   ({ normalizeMeta } = await import("../lib/log-schema.mjs"));
   ({ escapeHtml, renderMarkdown } = await import("../lib/render-safety.mjs"));
-  ({ toDateString } = await import("../lib/constants.mjs"));
+  ({ toDateString, formatUpdateDate, formatUpdateTime } = await import("../lib/constants.mjs"));
   const { members, logs } = readLogs();
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
