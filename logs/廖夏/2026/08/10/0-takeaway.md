@@ -1,0 +1,1 @@
+Bigint c忘记初始化，`c.init(0)`

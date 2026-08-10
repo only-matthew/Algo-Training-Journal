@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "042a3932-a436-4ea1-a865-ee1b678ff85f",
+      "name": "P2437",
+      "platform": "洛谷",
+      "problemNumber": "P2437",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "高精度"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
