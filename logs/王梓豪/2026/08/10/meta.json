@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 2,
+  "problems": [
+    {
+      "id": "53b43690-3eda-4b31-9420-9fc41afa8ece",
+      "name": "麦森数",
+      "platform": "洛谷",
+      "problemNumber": "P1045",
+      "difficulty": "普及/提高-",
+      "tags": [
+        "高精度",
+        "快速幂"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
