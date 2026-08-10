@@ -160,7 +160,7 @@ logs/
 - `N-takeaway.md`：第 N 道题的心得或题解。
 - `N-solution.cpp`：第 N 道题的 C++ 代码。
 
-打卡记录的「最后更新时间」由 `meta.json` 中的 `updatedAt` 保存：通过站点 API 提交/更新时由后端自动写入；本地历史记录没有 `updatedAt` 时，构建脚本会回退到 `meta.json` 的文件修改时间作为最后更新时间，并在记录卡片、题目详情页和编辑弹窗中展示（格式如「最后更新 2026.8.10」）。
+打卡记录的「最后更新时间」由 `meta.json` 中的 `updatedAt` 保存，统一使用 **UTC+8 时区**（如 `2026-08-11T01:09:44.000+08:00`）：通过站点 API 提交/更新时由后端自动写入；旧记录可用 `npm run backfill:updated-at`（[scripts/backfill-updated-at.js](scripts/backfill-updated-at.js)）从 git 提交历史回填——每次保存都会产生一次 commit，因此 git 提交时间比文件修改时间可靠（文件 mtime 会被 clone/pull 重置）。构建脚本也会在缺失时优先回退到 git 提交时间，并在记录卡片、题目详情页和编辑弹窗中展示（格式如「最后更新 2026.8.10」，始终按 UTC+8 显示）。
 
 描述、心得和代码分别保存，因此其中包含 Markdown 标题、分隔线或代码块时，不会影响其他字段的读取。
 

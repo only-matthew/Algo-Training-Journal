@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const cheerio = require("cheerio");
+const { execFileSync } = require("child_process");
 
 function addSelfClosingVoids(html) {
   return html.replace(/<(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)\b([^>]*?)>/gi, "<$1$2 />");
@@ -20,8 +21,21 @@ let renderMarkdown;
 let toDateString;
 let formatUpdateDate;
 let formatUpdateTime;
+let toUtc8;
 const SITE_ORIGIN = "https://train.xialiao.org";
 const SITE_NAME = "ICPC 算法训练日志";
+
+function lastCommitDate(relPath) {
+  try {
+    const out = execFileSync("git", ["log", "-1", "--format=%cI", "--", relPath], {
+      cwd: ROOT,
+      encoding: "utf8",
+    }).trim();
+    return out || null;
+  } catch {
+    return null;
+  }
+}
 
 function readMeta(dateDir, member, date) {
   const metaPath = path.join(dateDir, "meta.json");
@@ -29,9 +43,12 @@ function readMeta(dateDir, member, date) {
   const normalized = normalizeMeta(JSON.parse(fs.readFileSync(metaPath, "utf8")), {
     legacyIdPrefix: `${member}-${date}`,
   });
-  // 旧记录没有 updatedAt 时，回退到 meta.json 的文件修改时间作为最后更新时间
+  // 旧记录没有 updatedAt 时，优先使用 git 最后一次提交时间
+  // （文件 mtime 会被 clone/pull 重置为拉取时刻，不可靠），并统一转为 UTC+8
   if (!normalized.updatedAt) {
-    normalized.updatedAt = new Date(fs.statSync(metaPath).mtime).toISOString();
+    const relPath = path.relative(ROOT, metaPath).split(path.sep).join("/");
+    const commitDate = lastCommitDate(relPath);
+    normalized.updatedAt = toUtc8(commitDate || new Date(fs.statSync(metaPath).mtime));
   }
   return normalized;
 }
@@ -434,7 +451,7 @@ function problemPageHtml(html, log) {
       headline: log.problem,
       description,
       datePublished: log.date,
-      dateModified: formatUpdateDate(log.updatedAt) || log.date,
+      dateModified: log.updatedAt ? toUtc8(log.updatedAt).slice(0, 10) : log.date,
       author: { "@type": "Person", name: log.member },
       mainEntityOfPage: canonical,
     },
@@ -521,7 +538,7 @@ function writeProblemDetails(logs, generatedAt) {
 async function main() {
   ({ normalizeMeta } = await import("../lib/log-schema.mjs"));
   ({ escapeHtml, renderMarkdown } = await import("../lib/render-safety.mjs"));
-  ({ toDateString, formatUpdateDate, formatUpdateTime } = await import("../lib/constants.mjs"));
+  ({ toDateString, formatUpdateDate, formatUpdateTime, toUtc8 } = await import("../lib/constants.mjs"));
   const { members, logs } = readLogs();
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
