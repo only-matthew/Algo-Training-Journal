@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-11T23:05:29.071+08:00",
+  "problems": [
+    {
+      "id": "80f4cb01-f68e-4990-9c47-be453ada65db",
+      "name": "P1164",
+      "platform": "洛谷",
+      "problemNumber": "P1164",
+      "difficulty": "普及-",
+      "tags": [
+        "DP"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
