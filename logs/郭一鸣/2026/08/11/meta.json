@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-11T23:28:50.401+08:00",
+  "problems": [
+    {
+      "id": "162071aa-4f0e-4c28-95f8-ed943be42178",
+      "name": "Codeforces Round 1116 (Div. 2)",
+      "platform": "Codeforces",
+      "problemNumber": "B",
+      "difficulty": "未标注",
+      "tags": [
+        "构造"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
