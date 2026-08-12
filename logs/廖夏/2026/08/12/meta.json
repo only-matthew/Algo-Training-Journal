@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-12T16:19:21.664+08:00",
+  "problems": [
+    {
+      "id": "cc1e9ace-bde2-4ff7-99a8-9d866c884eeb",
+      "name": "P1990",
+      "platform": "洛谷",
+      "problemNumber": "P1990",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "递推"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
