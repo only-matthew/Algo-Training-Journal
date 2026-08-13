@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-14T01:04:39.381+08:00",
+  "problems": [
+    {
+      "id": "87a8152f-a331-42a0-b068-2d6b3210f0b1",
+      "name": "P3612",
+      "platform": "洛谷",
+      "problemNumber": "P3612",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "递推"
+      ],
+      "reviewStatus": "todo"
+    }
+  ]
+}
