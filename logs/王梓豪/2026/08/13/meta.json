@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-14T00:37:25.077+08:00",
+  "problems": [
+    {
+      "id": "f0fd692f-a0b1-4120-8626-ba02a4855e0b",
+      "name": "采药",
+      "platform": "洛谷",
+      "problemNumber": "P1048",
+      "difficulty": "普及-",
+      "tags": [
+        "背包"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
