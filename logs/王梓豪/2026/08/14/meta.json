@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-14T23:46:48.367+08:00",
+  "problems": [
+    {
+      "id": "e6186f3a-0662-4938-aa80-a4831767f2ae",
+      "name": "公交系统",
+      "platform": "其他",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [
+        "前缀和"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
