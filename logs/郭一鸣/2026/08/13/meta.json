@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-15T00:32:05.037+08:00",
+  "problems": [
+    {
+      "id": "af3c1c1e-3cc8-48c7-8ab6-9fc45d86fd5d",
+      "name": "Codeforces Round 1107 (Div. 3)",
+      "platform": "Codeforces",
+      "problemNumber": "A",
+      "difficulty": "未标注",
+      "tags": [
+        "数学"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
