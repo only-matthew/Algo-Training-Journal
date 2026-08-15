@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-15T13:46:40.929+08:00",
+  "problems": [
+    {
+      "id": "0aac5b54-63ca-4aae-aef7-5db07b39634c",
+      "name": "P1228",
+      "platform": "洛谷",
+      "problemNumber": "P1228",
+      "difficulty": "普及",
+      "tags": [
+        "模拟",
+        "递归",
+        "分治"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
