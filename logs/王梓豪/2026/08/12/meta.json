@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-12T00:32:20.153+08:00",
+  "problems": [
+    {
+      "id": "5242d2d8-85ee-4d3c-aecc-a50a8d0b6da7",
+      "name": "高精度除法（输出商和余数）",
+      "platform": "其他",
+      "problemNumber": "",
+      "difficulty": "普及-",
+      "tags": [
+        "高精度"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}

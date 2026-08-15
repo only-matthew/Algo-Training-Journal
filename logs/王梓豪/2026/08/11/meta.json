@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-12T00:15:05.112+08:00",
+  "problems": [
+    {
+      "id": "a0705a7d-ef68-43a8-b3ea-1e0741bd0456",
+      "name": "一元三次方程求解",
+      "platform": "洛谷",
+      "problemNumber": "P1024",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}

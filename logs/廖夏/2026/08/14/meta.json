@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-14T19:48:53.576+08:00",
+  "problems": [
+    {
+      "id": "be24e772-afc5-4889-971d-a382305edea8",
+      "name": "P1259",
+      "platform": "洛谷",
+      "problemNumber": "P1259",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "递推"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "21ad2fdb-2052-4a32-bdbb-48270754917b",
+      "name": "P1010",
+      "platform": "洛谷",
+      "problemNumber": "P1010",
+      "difficulty": "普及-",
+      "tags": [
+        "递归",
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
