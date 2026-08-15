@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-15T23:56:39.447+08:00",
+  "problems": [
+    {
+      "id": "dc5e8ccc-3625-44e1-bd41-42d70493cf53",
+      "name": "数的计算",
+      "platform": "洛谷",
+      "problemNumber": "P1028",
+      "difficulty": "普及-",
+      "tags": [
+        "递推"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
