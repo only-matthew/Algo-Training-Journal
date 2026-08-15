@@ -70,7 +70,7 @@ const log1 = {
   date: "2026-07-30",
   platform: "洛谷",
   problemNumber: "P1005",
-  difficulty: "普及/提高-",
+  difficulty: "普及",
   tags: ["DP", "高精度"],
   reviewStatus: "todo",
   description: "对于n×m矩阵，每次从每行取首或尾元素，共取m次，每次取数乘2^i，求最大总得分。",

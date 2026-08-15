@@ -6,7 +6,7 @@
       "name": "矩阵取数游戏",
       "platform": "洛谷",
       "problemNumber": "P1005",
-      "difficulty": "普及/提高-",
+      "difficulty": "普及",
       "tags": [
         "DP",
         "高精度"
