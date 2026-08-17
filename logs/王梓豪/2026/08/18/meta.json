@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-08-18T00:09:01.094+08:00",
+  "updatedAt": "2026-08-18T00:37:44.022+08:00",
   "problems": [
     {
       "id": "fc6e16b6-fda8-4867-900d-8edfb8cd5cdf",
@@ -11,6 +11,15 @@
       "tags": [
         "博弈论"
       ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "e7351cde-da59-4422-adfe-2b06fd3e7cc7",
+      "name": "C. Spying on the Beaver",
+      "platform": "洛谷",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [],
       "reviewStatus": "none"
     }
   ]
