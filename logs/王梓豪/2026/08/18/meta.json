@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-18T00:09:01.094+08:00",
+  "problems": [
+    {
+      "id": "fc6e16b6-fda8-4867-900d-8edfb8cd5cdf",
+      "name": "B. Gigantomachy",
+      "platform": "Codeforces",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [
+        "博弈论"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
