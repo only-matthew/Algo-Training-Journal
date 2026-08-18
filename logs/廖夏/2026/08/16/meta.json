@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-19T01:02:15.446+08:00",
+  "problems": [
+    {
+      "id": "3e0523ee-6820-4785-b8d1-131b06b5b221",
+      "name": "P1498【巧思版】",
+      "platform": "洛谷",
+      "problemNumber": "P1498",
+      "difficulty": "普及",
+      "tags": [
+        "模拟",
+        "巧思"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
