@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-19T00:49:31.387+08:00",
+  "problems": [
+    {
+      "id": "06841f41-f434-4134-849c-e9853405a484",
+      "name": "P1498【递归版】",
+      "platform": "洛谷",
+      "problemNumber": "P1498",
+      "difficulty": "普及",
+      "tags": [
+        "模拟",
+        "递归"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
