@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-19T00:55:30.102+08:00",
+  "problems": [
+    {
+      "id": "d76b82da-d39c-46f5-bbf8-177d70c46974",
+      "name": "Codeforces Round 1117 (Div. 2)",
+      "platform": "Codeforces",
+      "problemNumber": "B",
+      "difficulty": "未标注",
+      "tags": [
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
