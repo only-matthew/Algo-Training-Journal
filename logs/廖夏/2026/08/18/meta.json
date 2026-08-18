@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-19T00:33:56.301+08:00",
+  "problems": [
+    {
+      "id": "08a969c0-24b0-47bc-9f09-7ad19e7a8e13",
+      "name": "P1498",
+      "platform": "洛谷",
+      "problemNumber": "P1498",
+      "difficulty": "普及",
+      "tags": [
+        "模拟",
+        "递推"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
