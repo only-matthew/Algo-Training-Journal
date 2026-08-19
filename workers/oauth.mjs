@@ -7,6 +7,8 @@ const COOKIE = "__Host-journal_session";
 const OAUTH_COOKIE = "__Host-journal_oauth";
 const LEGACY_COOKIE = "journal_session";
 const MEMBERS = { "only-matthew": "廖夏", wzzzzhhhhh: "王梓豪", "seanist-isx": "郭一鸣" };
+// 队员预置的 Codeforces 用户名：登录后导入面板自动预填（可在输入框内修改）
+const CF_HANDLES = { "only-matthew": "onlymatt", wzzzzhhhhh: "hnuwang", "seanist-isx": "ymguo" };
 const ORIGINS = new Set(["https://train.xialiao.org", "http://localhost:3000", "http://localhost:4173", "http://localhost:5000"]);
 
 const RATE_LIMITS = { summarize: { max: 5, windowMs: 60000 }, "import:codeforces": { max: 10, windowMs: 60000 }, "import:luogu": { max: 10, windowMs: 60000 } };
@@ -151,7 +153,9 @@ async function session(request, env) {
   const values = [requestCookies[COOKIE], requestCookies[LEGACY_COOKIE]].filter(Boolean);
   for (const value of values) {
     const data = await open(value, env.SESSION_SECRET);
-    if (data && MEMBERS[data.login] === data.member) return data;
+    if (data && MEMBERS[data.login] === data.member) {
+      return { ...data, cfHandle: CF_HANDLES[data.login] };
+    }
   }
   return null;
 }
@@ -429,7 +433,7 @@ export default {
       }
 
       if (url.pathname === "/api/session" && request.method === "GET") {
-        return json(request, { login: user.login, member: user.member, avatar_url: user.avatar_url, csrfToken: user.csrfToken });
+        return json(request, { login: user.login, member: user.member, avatar_url: user.avatar_url, csrfToken: user.csrfToken, ...(user.cfHandle ? { cfHandle: user.cfHandle } : {}) });
       }
       if (url.pathname === "/api/logs/date") {
         return handleLogsDate(request, user);

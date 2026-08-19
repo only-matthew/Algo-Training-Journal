@@ -1381,11 +1381,17 @@ textarea.form-input {
   margin: 8px 0;
 }
 .import-input-row {
-  display: flex;
+  /* grid 布局确保输入框占满剩余宽度（flex 布局在部分级联下会被压缩到 min-content） */
+  display: grid;
+  grid-template-columns: 1fr auto auto;
   gap: 8px;
+  align-items: center;
 }
 .import-input-row .form-input {
-  flex: 1;
+  width: 100%;
+  min-width: 0;
+  font-size: 15px;
+  padding: 10px 12px;
 }
 .import-status {
   margin: 6px 0 0;

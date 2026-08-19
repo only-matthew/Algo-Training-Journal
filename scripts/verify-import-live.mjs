@@ -43,6 +43,16 @@ async function main() {
   res = await post("/api/import", { platform: "codeforces", handle: "tourist" }, { cookie, csrf: CSRF, origin: "https://evil.example.com" });
   check("非法 Origin 被拒绝（403）", res.status === 403, `HTTP ${res.status}`);
 
+  console.log("── 会话预置 CF handle ──");
+  const sessionReq = new Request(`${WORKER_ORIGIN}/api/session`, {
+    method: "GET",
+    headers: { Origin: SITE_ORIGIN, Cookie: `__Host-journal_session=${cookie}` },
+  });
+  const sessionRes = await worker.fetch(sessionReq, ENV);
+  const sessionBody = await sessionRes.json();
+  check("会话返回预置 cfHandle", sessionBody.cfHandle === "onlymatt", sessionBody.cfHandle || "无");
+  check("会话返回成员信息", sessionBody.member === "廖夏", sessionBody.member || "无");
+
   console.log("── Codeforces 真实导入 ──");
   let cfProblems = [];
   try {
