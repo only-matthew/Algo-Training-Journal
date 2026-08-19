@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-08-19T23:11:34.169+08:00",
+  "updatedAt": "2026-08-19T23:43:03.670+08:00",
   "problems": [
     {
       "id": "aaebe2be-5cdb-47e6-a8bf-7c6d748294d0",
@@ -12,6 +12,15 @@
         "模拟",
         "贪心"
       ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "5ac822d8-ce86-4b32-9142-615ab5850aed",
+      "name": "排队接水",
+      "platform": "洛谷",
+      "problemNumber": "P1223",
+      "difficulty": "普及-",
+      "tags": [],
       "reviewStatus": "none"
     }
   ]
