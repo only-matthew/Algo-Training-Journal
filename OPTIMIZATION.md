@@ -21,7 +21,7 @@
 - [x] **洛谷** — 粘贴题号列表，Worker 抓取题目页解析题名（洛谷提交记录 API 需登录 + CSRF，Worker 无法持用户 Cookie，故采用题号补全方案）（`workers/oauth.mjs`）
 - [x] **限流与安全** — 导入接口复用会话鉴权 + 独立限流（`workers/oauth.mjs`）
 - [x] **表单 UI** — 提交表单新增"从 Codeforces 导入"与"粘贴洛谷题号"入口，勾选结果回填为题目块（`lib/form.mjs`, `lib/journal-api.js`, `index.html`, `style.css`）
-- [x] **测试** — `test/oauth-import.test.mjs`（CF 解析/去重/非 AC 过滤、洛谷标题抓取、错误处理与输入校验）；`scripts/test-import-live.mjs` 本地真实网络全链路验证（鉴权/CSRF/Origin + 真实 Codeforces API 与洛谷页面，无需登录与密钥）
+- [x] **测试** — `test/oauth-import.test.mjs`（CF 解析/去重/非 AC 过滤、洛谷标题抓取、错误处理与输入校验）；`scripts/verify-import-live.mjs` 本地真实网络全链路验证（鉴权/CSRF/Origin + 真实 Codeforces API 与洛谷页面，无需登录与密钥，不进 CI）
 
 ## 安全
 

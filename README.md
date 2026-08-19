@@ -298,7 +298,7 @@ npx serve site
 | `npm test` | 运行 Node.js 单元测试。 |
 | `npm run generate` | 从 `logs/` 生成完整 `site/`。 |
 | `npm run check` | 检查主要脚本语法、运行测试并生成站点。 |
-| `node scripts/test-import-live.mjs` | 本地真实网络集成测试「自动导入」：直接驱动 Worker 全链路（鉴权/CSRF/Origin + 真实请求 Codeforces 与洛谷），无需 GitHub 登录或云端密钥。 |
+| `node scripts/verify-import-live.mjs` | 本地真实网络集成测试「自动导入」：直接驱动 Worker 全链路（鉴权/CSRF/Origin + 真实请求 Codeforces 与洛谷），无需 GitHub 登录或云端密钥。 |
 | `npm run migrate:date-layout` | 将旧日期目录迁移为 `YYYY/MM/DD`。 |
 
 更早期的单文件 Markdown 日志可使用 `node scripts/migrate-logs.js` 迁移。执行迁移前建议创建分支或备份，并在迁移后运行 `npm run check` 和 `git diff --check`。
