@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { LOG_LIMITS, LOG_SCHEMA_VERSION, isDateString, logInputBytes, metaFromProblems, normalizeMeta, validateLogInput } from "../lib/log-schema.mjs";
+import { LOG_LIMITS, LOG_SCHEMA_VERSION, isDateString, logInputBytes, metaFromProblems, normalizeMeta, problemStableKey, validateLogInput } from "../lib/log-schema.mjs";
 
 test("旧 meta 会得到可重复的兼容 ID", () => {
   const result = normalizeMeta({ problems: [{ name: "P1000", platform: "洛谷" }] }, { legacyIdPrefix: "廖夏-2026-07-25" });
@@ -161,4 +161,37 @@ test("dynamic programming alias (DP)", () => {
     problems: [{ id: "p1", name: "A", tags: "动态规划" }],
   });
   assert.deepEqual(r.problems[0].tags, ["DP"]);
+});
+
+// ── 复习日期（reviewDue） ──
+
+test("reviewDue 透传并通过 meta 往返", () => {
+  const r = validateLogInput({ problems: [{ id: "p1", name: "A", reviewDue: "2026-08-15" }] });
+  assert.equal(r.problems[0].reviewDue, "2026-08-15");
+  const meta = metaFromProblems(r.problems, "2026-08-11T01:00:00.000+08:00");
+  assert.equal(meta.problems[0].reviewDue, "2026-08-15");
+  const normalized = normalizeMeta(meta);
+  assert.equal(normalized.problems[0].reviewDue, "2026-08-15");
+});
+
+test("reviewDue 格式非法时拒绝，空值不写入", () => {
+  assert.throws(() => validateLogInput({ problems: [{ id: "p1", name: "A", reviewDue: "2026/08/15" }] }), /复习日期/);
+  const r = validateLogInput({ problems: [{ id: "p1", name: "A" }] });
+  assert.equal(r.problems[0].reviewDue, undefined);
+  assert.equal("reviewDue" in metaFromProblems(r.problems).problems[0], false);
+  // 旧 meta 无 reviewDue 时不报错
+  assert.equal(normalizeMeta({ problems: [{ name: "A" }] }).problems[0].reviewDue, undefined);
+});
+
+// ── 同题聚合稳定 key ──
+
+test("problemStableKey 归一化平台与题号", () => {
+  assert.equal(problemStableKey("Codeforces", " 4a "), "Codeforces|4A");
+  assert.equal(problemStableKey("Codeforces", "20C"), "Codeforces|20C");
+  assert.equal(problemStableKey("洛谷", "p1001"), "洛谷|P1001");
+  assert.equal(problemStableKey("洛谷", "P1001"), "洛谷|P1001");
+  // 平台或题号缺失时不参与聚合
+  assert.equal(problemStableKey("", "P1001"), "");
+  assert.equal(problemStableKey("洛谷", ""), "");
+  assert.equal(problemStableKey(undefined, undefined), "");
 });

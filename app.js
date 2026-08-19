@@ -1,7 +1,7 @@
 import { initTheme, toggleTheme } from "./lib/theme.mjs";
 import { currentRoute, migrateLegacyHashRoute, initPageNavigation } from "./lib/router.mjs";
 import { initSession, login, logout } from "./lib/auth.mjs";
-import { openModal, closeModal, addProblem, markFormEdited, handleSubmit, onDateChange } from "./lib/form.mjs";
+import { openModal, closeModal, addProblem, markFormEdited, handleSubmit, onDateChange, openImportPanel, closeImportPanel, runImport, addImportedToForm } from "./lib/form.mjs";
 import { apiRequest } from "./lib/journal-api.js";
 import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initShellRenderer, startRefreshTimer, doRefresh } from "./lib/data.mjs";
 
@@ -25,6 +25,11 @@ import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initShellRen
   document.getElementById("btn-submit").addEventListener("click", openModal);
   document.getElementById("btn-close-modal").addEventListener("click", () => closeModal());
   document.getElementById("btn-add-problem").addEventListener("click", addProblem);
+  document.getElementById("btn-import-cf").addEventListener("click", () => openImportPanel("codeforces"));
+  document.getElementById("btn-import-luogu").addEventListener("click", () => openImportPanel("luogu"));
+  document.getElementById("btn-import-run").addEventListener("click", runImport);
+  document.getElementById("btn-import-cancel").addEventListener("click", closeImportPanel);
+  document.getElementById("btn-import-add").addEventListener("click", addImportedToForm);
   document.getElementById("btn-save").addEventListener("click", handleSubmit);
   document.getElementById("submit-date").addEventListener("change", onDateChange);
   document.getElementById("btn-retry-date").addEventListener("click", onDateChange);

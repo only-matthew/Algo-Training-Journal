@@ -14,7 +14,7 @@
   <meta name="twitter:title" content="ICPC 算法训练日志" />
   <meta name="twitter:description" content="ICPC 算法训练日志，汇总队员的刷题记录、原创题解、复盘收获和代码。" />
   <meta name="robots" content="index,follow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://algo-oauth.xialiao.org; img-src 'self' https://avatars.githubusercontent.com data:;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://algo-oauth.xialiao.org; img-src 'self' https://avatars.githubusercontent.com data:;" />
   <base href="/" />
   <title>ICPC 算法训练日志</title>
   <link rel="canonical" href="https://train.xialiao.org/" />
@@ -87,6 +87,12 @@
       <h2>训练热力图（近 365 天）</h2>
       <p class="hint">颜色越深表示当日记录越多</p>
       <div id="heatmap" class="heatmap"><p class="hint">加载中...</p></div>
+    </section>
+
+    <section class="card">
+      <h2>📚 今日复习队列</h2>
+      <p class="hint">把题目标记为「待复习」并设定复习日期后，到期题目会在这里出现</p>
+      <div id="review-queue" class="review-queue"><p class="hint">加载中...</p></div>
     </section>
 
     <section class="grid stats">
@@ -305,6 +311,21 @@
           <div class="form-group">
             <label for="submit-date">训练日期</label>
             <input type="date" id="submit-date" class="form-input" />
+          </div>
+          <div class="import-tools">
+            <span class="import-tools-label">快速导入：</span>
+            <button id="btn-import-cf" type="button" class="btn btn-outline btn-sm" title="拉取该用户在 Codeforces 最近的 AC 记录">Codeforces AC 记录</button>
+            <button id="btn-import-luogu" type="button" class="btn btn-outline btn-sm" title="粘贴洛谷题号自动补全题名">洛谷题号</button>
+          </div>
+          <div id="import-panel" class="import-panel" hidden>
+            <div class="import-input-row">
+              <input id="import-input" type="text" class="form-input" placeholder="" autocomplete="off" />
+              <button id="btn-import-run" type="button" class="btn btn-outline btn-sm">查询</button>
+              <button id="btn-import-cancel" type="button" class="btn-icon" title="关闭导入">&times;</button>
+            </div>
+            <p id="import-status" class="import-status" role="status" aria-live="polite"></p>
+            <div id="import-list" class="import-list"></div>
+            <button id="btn-import-add" type="button" class="btn btn-primary btn-sm" hidden>添加到表单</button>
           </div>
           <div id="problem-list">
             <!-- 动态生成 -->

@@ -19,25 +19,39 @@ let normalizeMeta;
 let escapeHtml;
 let renderMarkdown;
 let toDateString;
-let formatUpdateDate;
-let formatUpdateTime;
 let toUtc8;
-const SITE_ORIGIN = "https://train.xialiao.org";
-const SITE_NAME = "ICPC 算法训练日志";
+let problemStableKey;
+let problemDetailHtml;
+let updatedLabel;
+let relatedSectionHtml;
+let SITE_ORIGIN;
+let SITE_NAME;
 
-function lastCommitDate(relPath) {
+// 批量获取多个文件各自的最后一次提交时间（一次 git log，替代每文件 spawn 一次进程）
+function lastCommitDates(relPaths) {
+  const map = new Map();
+  if (!relPaths.length) return map;
   try {
-    const out = execFileSync("git", ["log", "-1", "--format=%cI", "--", relPath], {
+    const out = execFileSync("git", ["log", "--format=%cI%x1f", "--name-only", "--", ...relPaths], {
       cwd: ROOT,
       encoding: "utf8",
-    }).trim();
-    return out || null;
+      maxBuffer: 16 * 1024 * 1024,
+    });
+    let date = null;
+    for (const line of out.split("\n")) {
+      if (line.endsWith("\x1f")) {
+        date = line.slice(0, -1);
+        continue;
+      }
+      if (line && !map.has(line)) map.set(line, date);
+    }
   } catch {
-    return null;
+    // git 不可用时保持空表，调用方回退到 mtime
   }
+  return map;
 }
 
-function readMeta(dateDir, member, date) {
+function readMeta(dateDir, member, date, commitDates) {
   const metaPath = path.join(dateDir, "meta.json");
   if (!fs.existsSync(metaPath)) return null;
   const normalized = normalizeMeta(JSON.parse(fs.readFileSync(metaPath, "utf8")), {
@@ -47,7 +61,7 @@ function readMeta(dateDir, member, date) {
   // （文件 mtime 会被 clone/pull 重置为拉取时刻，不可靠），并统一转为 UTC+8
   if (!normalized.updatedAt) {
     const relPath = path.relative(ROOT, metaPath).split(path.sep).join("/");
-    const commitDate = lastCommitDate(relPath);
+    const commitDate = commitDates.get(relPath);
     normalized.updatedAt = toUtc8(commitDate || new Date(fs.statSync(metaPath).mtime));
   }
   return normalized;
@@ -59,8 +73,8 @@ function readProblemFile(dir, filename) {
   return fs.readFileSync(p, "utf8").trim();
 }
 
-function appendDateLogs(logs, member, date, dateDir) {
-  const meta = readMeta(dateDir, member, date);
+function appendDateLogs(logs, member, date, dateDir, commitDates) {
+  const meta = readMeta(dateDir, member, date, commitDates);
   if (!meta || !meta.problems || !meta.problems.length) return;
 
   for (let i = 0; i < meta.problems.length; i++) {
@@ -95,7 +109,7 @@ function listMembers() {
 
 function readLogs() {
   const members = listMembers();
-  const logs = [];
+  const dateDirs = [];
 
   for (const member of members) {
     const memberDir = path.join(LOGS_DIR, member);
@@ -105,7 +119,7 @@ function readLogs() {
       if (!entry.isDirectory()) continue;
 
       if (LEGACY_LOG_DIR_PATTERN.test(entry.name)) {
-        appendDateLogs(logs, member, entry.name, path.join(memberDir, entry.name));
+        dateDirs.push({ member, date: entry.name, dir: path.join(memberDir, entry.name) });
         continue;
       }
 
@@ -117,11 +131,19 @@ function readLogs() {
         for (const dayEntry of fs.readdirSync(monthDir, { withFileTypes: true })) {
           if (!dayEntry.isDirectory() || !DAY_PATTERN.test(dayEntry.name)) continue;
           const date = `${entry.name}-${monthEntry.name}-${dayEntry.name}`;
-          appendDateLogs(logs, member, date, path.join(monthDir, dayEntry.name));
+          dateDirs.push({ member, date, dir: path.join(monthDir, dayEntry.name) });
         }
       }
     }
   }
+
+  // 一次 git log 批量取得所有 meta.json 的最后提交时间
+  const commitDates = lastCommitDates(
+    dateDirs.map(({ dir }) => path.relative(ROOT, path.join(dir, "meta.json")).split(path.sep).join("/")),
+  );
+
+  const logs = [];
+  for (const { member, date, dir } of dateDirs) appendDateLogs(logs, member, date, dir, commitDates);
 
   const seen = new Set();
   const deduped = logs.filter((log) => {
@@ -173,7 +195,14 @@ function buildRecentStats(logs, members) {
   startDate.setDate(endDate.getDate() - 29);
   const start = toDateString(startDate);
 
-  const withinRange = logs.filter((log) => log.date >= start && log.date <= end);
+  const withinRange = [];
+  const grouped = new Map();
+  for (const item of logs) {
+    if (item.date < start || item.date > end) continue;
+    withinRange.push(item);
+    if (!grouped.has(item.member)) grouped.set(item.member, []);
+    grouped.get(item.member).push(item);
+  }
 
   function summarize(items) {
     const activeDays = new Set(items.map((item) => item.date)).size;
@@ -193,9 +222,10 @@ function buildRecentStats(logs, members) {
     };
   }
 
+  // 单遍分组，避免对每个成员重复过滤整个数组（O(m×n) → O(n)）
   const byMember = { all: summarize(withinRange) };
   for (const member of members) {
-    byMember[member] = summarize(withinRange.filter((item) => item.member === member));
+    byMember[member] = summarize(grouped.get(member) || []);
   }
 
   return { start, end, byMember };
@@ -249,7 +279,7 @@ function daysAgo(days) {
 function appVersion() {
   return crypto
     .createHash("sha256")
-    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs", "lib/constants.mjs", "lib/auth.mjs", "lib/theme.mjs", "lib/form.mjs", "lib/renderer.mjs", "lib/router.mjs", "lib/data.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
+    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs", "lib/constants.mjs", "lib/problem-detail.mjs", "lib/auth.mjs", "lib/theme.mjs", "lib/form.mjs", "lib/renderer.mjs", "lib/router.mjs", "lib/data.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
     .digest("hex")
     .slice(0, 12);
 }
@@ -348,12 +378,6 @@ function memberSegments(member) {
   return ["member", member];
 }
 
-function updatedLabelHtml(log) {
-  return log.updatedAt
-    ? `<span class="updated-at" title="最后更新时间 ${escapeHtml(formatUpdateTime(log.updatedAt))}">最后更新 ${escapeHtml(formatUpdateDate(log.updatedAt))}</span>`
-    : "";
-}
-
 function recordCardHtml(log) {
   const tags = (log.tags || []).map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`).join("");
   const reviewLabels = { todo: "待复习", mastered: "已掌握" };
@@ -361,7 +385,7 @@ function recordCardHtml(log) {
     ? `<span class="review-chip ${escapeHtml(log.reviewStatus)}">${reviewLabels[log.reviewStatus]}</span>`
     : "";
   return `<article class="record">
-    <div class="record-head"><span class="record-date-wrap"><time datetime="${escapeHtml(log.date)}">${escapeHtml(log.date)}</time>${updatedLabelHtml(log)}</span><a class="member-link" href="${routePath(memberSegments(log.member))}">${escapeHtml(log.member)}</a></div>
+    <div class="record-head"><span class="record-date-wrap"><time datetime="${escapeHtml(log.date)}">${escapeHtml(log.date)}</time>${updatedLabel(log)}</span><a class="member-link" href="${routePath(memberSegments(log.member))}">${escapeHtml(log.member)}</a></div>
     <h3 class="record-title"><a href="${routePath(problemSegments(log))}">${escapeHtml(log.problem)}</a></h3>
     <p class="meta">平台：${escapeHtml(log.platform)} ｜ 难度：${escapeHtml(log.difficulty)}</p>
     ${tags || review ? `<div class="record-badges">${tags}${review}</div>` : ""}
@@ -421,26 +445,12 @@ function replaceProblemArticle(html, article) {
   );
 }
 
-function problemPageHtml(html, log) {
+function problemPageHtml(html, log, related) {
   const canonical = absoluteUrl(problemSegments(log));
   const description = truncate(log.takeaway !== "未填写" ? log.takeaway : log.description)
     || `${log.member} 在 ${log.date} 记录的 ${log.problem} 训练题目、题解与代码。`;
-  const badges = [
-    ...(log.tags || []).map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`),
-    ...({ todo: [`<span class="review-chip todo">待复习</span>`], mastered: [`<span class="review-chip mastered">已掌握</span>`] }[log.reviewStatus] || []),
-  ].join("");
-  const updated = updatedLabelHtml(log);
-  const article = `<div class="problem-detail-head">
-      <div><p class="eyebrow">${escapeHtml(log.date)} · 第 ${(log.problemIndex ?? 0) + 1} 题${updated ? ` · ${updated}` : ""}</p><h1>${escapeHtml(log.problem)}</h1></div>
-      <div class="problem-detail-actions"><a class="member-chip" href="${routePath(memberSegments(log.member))}">${escapeHtml(log.member)} 的主页</a></div>
-    </div>
-    <p class="problem-meta">平台：${escapeHtml(log.platform)} ${log.problemNumber ? `<span>题号：${escapeHtml(log.problemNumber)}</span>` : ""} <span>难度：${escapeHtml(log.difficulty)}</span></p>
-    ${badges ? `<div class="record-badges">${badges}</div>` : ""}
-    <div class="problem-content">
-      ${log.description ? `<section class="problem-section"><h2>题目描述</h2>${renderMarkdown(log.description)}</section>` : ""}
-      ${log.takeaway ? `<section class="problem-section"><h2>收获 / 题解</h2>${renderMarkdown(log.takeaway)}</section>` : ""}
-      ${log.code ? `<section class="problem-section"><h2>代码</h2><div class="record-takeaway problem-code-expanded"><pre class="line-numbers"><code class="language-cpp">${escapeHtml(log.code)}</code></pre></div></section>` : ""}
-    </div>`;
+  // 正文结构与浏览器端共用 lib/problem-detail.mjs 模板，避免两份维护
+  const article = problemDetailHtml(log, { memberHref: routePath(memberSegments(log.member)) }) + relatedSectionHtml(related, log);
   let page = replaceHeadMetadata(showOnlyPage(html, "problem-page"), {
     title: `${log.problem} · ${log.member} · ${SITE_NAME}`,
     description,
@@ -462,8 +472,12 @@ function problemPageHtml(html, log) {
   return replaceProblemArticle(addSelfClosingVoids($.html()), article);
 }
 
-function writeProblemPages(html, logs) {
-  for (const log of logs) writeRouteIndex(problemPageHtml(html, log), problemSegments(log));
+function writeProblemPages(html, logs, problemIndex) {
+  for (const log of logs) {
+    const key = problemStableKey(log.platform, log.problemNumber);
+    const related = key ? (problemIndex.get(key) || []) : [];
+    writeRouteIndex(problemPageHtml(html, log, related), problemSegments(log));
+  }
 }
 
 function writeCrawlerFiles(members, logs) {
@@ -525,20 +539,67 @@ function writeJson(relativePath, value) {
   fs.writeFileSync(outputPath, JSON.stringify(value), "utf8");
 }
 
-function writeProblemDetails(logs, generatedAt) {
+function writeProblemDetails(logs, generatedAt, problemIndex) {
   for (const log of logs) {
+    const key = problemStableKey(log.platform, log.problemNumber);
+    const related = key
+      ? (problemIndex.get(key) || [])
+          .filter((r) => !(r.member === log.member && r.date === log.date && r.problemId === String(log.problemId || log.problemIndex || 0)))
+      : [];
     writeJson(path.join("data", "problems", log.member, log.date, `${log.problemId || log.problemIndex || 0}.json`), {
       schemaVersion: 3,
       generatedAt,
       ...log,
+      ...(related.length ? { related } : {}),
     });
   }
 }
 
+// 聚合全队同题记录（二刷关联）：key = 平台 + 归一化题号
+// 独立运行时懒加载 problemStableKey（main() 会预置，直接 require 测试时自动 import）
+async function buildProblemIndex(logs) {
+  const stableKey = problemStableKey || (await import("../lib/log-schema.mjs")).problemStableKey;
+  const index = new Map();
+  for (const log of logs) {
+    const key = stableKey(log.platform, log.problemNumber);
+    if (!key) continue;
+    if (!index.has(key)) index.set(key, []);
+    index.get(key).push({
+      member: log.member,
+      date: log.date,
+      problemId: String(log.problemId || log.problemIndex || 0),
+      problem: log.problem,
+      reviewStatus: log.reviewStatus || "none",
+      difficulty: log.difficulty || "",
+    });
+  }
+  return index;
+}
+
+// 全量待复习题（不受 30 天窗口限制），按复习日期升序，供首页"今日复习队列"
+function buildReviewQueue(logs) {
+  return logs
+    .filter((log) => log.reviewStatus === "todo" && log.reviewDue)
+    .map((log) => ({
+      member: log.member,
+      date: log.date,
+      problemId: String(log.problemId || log.problemIndex || 0),
+      problem: log.problem,
+      problemNumber: log.problemNumber || "",
+      platform: log.platform || "",
+      difficulty: log.difficulty || "",
+      reviewDue: log.reviewDue,
+    }))
+    .sort((a, b) => a.reviewDue.localeCompare(b.reviewDue) || a.member.localeCompare(b.member, "zh-CN"));
+}
+
 async function main() {
-  ({ normalizeMeta } = await import("../lib/log-schema.mjs"));
-  ({ escapeHtml, renderMarkdown } = await import("../lib/render-safety.mjs"));
-  ({ toDateString, formatUpdateDate, formatUpdateTime, toUtc8 } = await import("../lib/constants.mjs"));
+  ({ normalizeMeta, problemStableKey } = await import("../lib/log-schema.mjs"));
+  ({ escapeHtml } = await import("../lib/render-safety.mjs"));
+  ({ toDateString, toUtc8, SITE_ORIGIN: siteOrigin, SITE_NAME: siteName } = await import("../lib/constants.mjs"));
+  ({ problemDetailHtml, updatedLabel, relatedSectionHtml } = await import("../lib/problem-detail.mjs"));
+  SITE_ORIGIN = siteOrigin;
+  SITE_NAME = siteName;
   const { members, logs } = readLogs();
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
@@ -550,9 +611,11 @@ async function main() {
     generatedAt,
     members,
     logs: summaryLogs.filter((log) => log.date >= daysAgo(29)),
+    reviewQueue: buildReviewQueue(logs),
     heatmap,
     recent30,
   };
+  const problemIndex = await buildProblemIndex(logs);
   const dataVersion = crypto.createHash("sha256").update(JSON.stringify(fullData)).digest("hex").slice(0, 12);
 
   const resolved = path.resolve(OUTPUT_DIR);
@@ -568,7 +631,7 @@ async function main() {
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   copyFile("style.css");
   writeVersionedApp();
-  for (const moduleName of ["log-schema.mjs", "tag-catalog.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
+  for (const moduleName of ["log-schema.mjs", "tag-catalog.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "problem-detail.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
     writeVersionedModule(`lib/${moduleName}`);
   }
   writeVersionedDataModule();
@@ -576,13 +639,13 @@ async function main() {
   const homeHtml = writeHomePage(html, logs);
   writeRouteIndexes(homeHtml, members, logs);
   writeMemberPages(html, members, logs);
-  writeProblemPages(html, logs);
+  writeProblemPages(html, logs, problemIndex);
   writeCrawlerFiles(members, logs);
   if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
   fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");
   writeJson(path.join("data", "overview.json"), overviewData);
   writeJson(path.join("data", "all.json"), fullData);
-  writeProblemDetails(logs, generatedAt);
+  writeProblemDetails(logs, generatedAt, problemIndex);
   console.log(`Generated ${logs.length} logs for ${members.length} members.`);
 }
 
@@ -593,4 +656,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { replaceProblemArticle, resolveStatsEnd };
+module.exports = { replaceProblemArticle, resolveStatsEnd, buildProblemIndex, buildReviewQueue };

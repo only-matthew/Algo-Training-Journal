@@ -50,6 +50,8 @@
 - 洛谷和 Codeforces 题目可通过题号从详情页直接跳转到原题；旧记录的题号默认留空。
 - 使用永久题目 ID 保持详情链接稳定，不依赖题目在当天记录中的顺序。
 - 将题目标记为“非错题”“待复习”或“已掌握”，形成团队共享的复盘状态。
+- 标记“待复习”时可设定复习日期（默认 +3 天），到期题目自动出现在首页“今日复习队列”，逾期高亮提醒，形成“记录 → 复习 → 掌握”的闭环。
+- 提交表单支持快速导入：输入 Codeforces 用户名一键拉取最近 AC 记录；或粘贴洛谷题号自动补全题名（洛谷提交记录接口需登录态，故采用题号补全的半自动方案）。
 - 描述、心得和代码分文件保存，Markdown 或代码内容不会干扰其他字段解析。
 - 题目描述填写至少 20 字后，可调用 AI 将题意压缩为一句简短概括；表单强烈建议先概括再提交，以减少题面篇幅，生成结果回填后仍可人工修改。
 
@@ -57,6 +59,7 @@
 
 - 展示全队或单个队员的年度训练热力图。
 - 汇总近 30 天题数、活跃天数、周均题数、平台和难度分布。
+- 首页展示"今日复习队列"：到期待复习题按日期排序，逾期题目高亮提醒。
 - 按队员、算法标签和错题状态筛选全部训练记录。
 - 训练卡片可展开查看题目描述、心得和代码。
 - 题目详情使用 Marked 渲染 GFM Markdown，支持标题、列表、表格、链接和代码块。
@@ -71,6 +74,7 @@
 - 统一展示题数、训练天数、参与队员、待复习题数、标签分布和复习进度。
 - 团队错题本支持按队员、状态和标签过滤。
 - 训练明细支持勾选题目并批量导出。
+- 题目详情页展示"全队同题记录"：按平台+题号聚合，同一道题被谁、何时做过、当前复盘状态一目了然，方便二刷对比。
 ### 导出与分享
 
 - 题目详情页支持导出为 Markdown、PDF（打印友好的 HTML）或 LaTeX 文件。
@@ -294,6 +298,7 @@ npx serve site
 | `npm test` | 运行 Node.js 单元测试。 |
 | `npm run generate` | 从 `logs/` 生成完整 `site/`。 |
 | `npm run check` | 检查主要脚本语法、运行测试并生成站点。 |
+| `node scripts/test-import-live.mjs` | 本地真实网络集成测试「自动导入」：直接驱动 Worker 全链路（鉴权/CSRF/Origin + 真实请求 Codeforces 与洛谷），无需 GitHub 登录或云端密钥。 |
 | `npm run migrate:date-layout` | 将旧日期目录迁移为 `YYYY/MM/DD`。 |
 
 更早期的单文件 Markdown 日志可使用 `node scripts/migrate-logs.js` 迁移。执行迁移前建议创建分支或备份，并在迁移后运行 `npm run check` 和 `git diff --check`。
@@ -311,6 +316,7 @@ npx serve site
 │   ├── form.mjs                  # 日志提交表单与草稿管理
 │   ├── journal-api.js            # 浏览器端 Worker API 客户端
 │   ├── log-schema.mjs            # 日志校验、清洗和永久 ID 规则
+│   ├── problem-detail.mjs        # 题目详情正文共享模板（构建与浏览器共用）
 │   ├── render-safety.mjs         # 安全的 Markdown、链接和公式文本渲染
 │   ├── renderer.mjs             # UI 渲染、导出与热力图
 │   ├── router.mjs               # 客户端路由与历史栈管理
@@ -321,10 +327,15 @@ npx serve site
 │   ├── migrate-date-layout.js    # YYYY-MM-DD → YYYY/MM/DD
 │   └── migrate-logs.js           # 旧单文件 Markdown 格式迁移
 ├── test/
+│   ├── aggregation.test.mjs      # 同题聚合与复习队列构建测试
 │   ├── generate-seo.test.mjs    # SEO 与构建产物测试
-│   ├── log-schema.test.mjs       # Schema、日期、标签和状态测试
+│   ├── journal-api.test.mjs      # 浏览器端 API client 测试
+│   ├── log-schema.test.mjs       # Schema、日期、标签、复习日期和稳定 key 测试
+│   ├── oauth-import.test.mjs     # Codeforces / 洛谷导入解析测试
+│   ├── oauth-plan.test.mjs       # Worker 保存/读取/删除规划与增量写入测试
 │   ├── oauth-summary.test.mjs   # AI 概括与 Worker 边界测试
-│   └── render-safety.test.mjs    # Markdown、公式和链接安全测试
+│   ├── render-safety.test.mjs    # Markdown、公式和链接安全测试
+│   └── tag-normalize.test.mjs    # 标签规范化与别名测试
 ├── vendor/                        # 随静态站点发布的 Marked、KaTeX 与 Prism
 ├── workers/
 │   ├── oauth.mjs                 # OAuth、加密会话、受限日志 API 与 AI 概括

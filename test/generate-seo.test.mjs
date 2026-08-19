@@ -43,6 +43,12 @@ test("generator emits crawlable member and problem pages", () => {
   assert.ok(journal.logs.length > 0);
   assert.ok(journal.members.length > 0);
 
+  const overview = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "overview.json"), "utf8"));
+  assert.ok(Array.isArray(overview.reviewQueue), "overview.json must expose the review queue");
+  for (const item of overview.reviewQueue) {
+    assert.ok(item.problemId && item.member && item.reviewDue, "review queue entries must carry id/member/due");
+  }
+
   const log = journal.logs[0];
   const problemId = String(log.problemId || log.problemIndex || 0);
   const problemRoute = routePath(["problem", log.member, log.date, problemId]);

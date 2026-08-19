@@ -109,6 +109,13 @@ select {
   padding-bottom: 4px;
 }
 
+/* 热力图容器作为单一键盘停靠点 */
+.heatmap:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
 .cell {
   width: 12px;
   height: 12px;
@@ -1317,4 +1324,118 @@ textarea.form-input {
   font-size: 0.8rem;
   color: var(--muted);
   margin: 0 4px;
+}
+
+/* ── 今日复习队列 ── */
+.review-queue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.review-queue-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.review-due {
+  flex: none;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.review-due.review-overdue {
+  color: #dc2626;
+  font-weight: 600;
+}
+.review-problem {
+  font-weight: 600;
+  text-decoration: none;
+}
+.review-meta {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ── 快速导入面板 ── */
+.import-tools {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  flex-wrap: wrap;
+}
+.import-tools-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+.import-panel {
+  border: 1px dashed var(--line);
+  border-radius: 8px;
+  padding: 10px;
+  margin: 8px 0;
+}
+.import-input-row {
+  display: flex;
+  gap: 8px;
+}
+.import-input-row .form-input {
+  flex: 1;
+}
+.import-status {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+.import-list {
+  margin: 8px 0;
+  max-height: 220px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.import-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+.import-item input {
+  flex: none;
+}
+
+/* ── 同题记录（二刷关联） ── */
+.related-section {
+  margin-top: 8px;
+}
+.related-hint {
+  color: var(--muted);
+  font-size: 13px;
+}
+.related-list {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.related-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.related-list a {
+  font-weight: 600;
+}
+.related-meta {
+  color: var(--muted);
+  font-size: 13px;
 }

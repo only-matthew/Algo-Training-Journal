@@ -1,5 +1,28 @@
 # 优化清单
 
+## 功能迭代（2026-08）
+
+### 1. 错题复习队列（间隔重复）
+
+- [x] **数据层** — `meta.json` 每题增加 `reviewDue`（复习日期，`YYYY-MM-DD`），`log-schema.mjs` 校验透传，Worker 写入（`lib/log-schema.mjs`, `workers/oauth.mjs`）
+- [x] **构建聚合** — `overview.json` 新增 `reviewQueue`（全量待复习题，按 due 升序），前端按本地日期过滤"今日到期"（`scripts/generate-data.js`）
+- [x] **首页队列卡片** — 总览页展示"今日复习队列"，每题可跳转详情/编辑；空状态与提示（`lib/renderer.mjs`, `index.html`, `style.css`）
+- [x] **表单复习日期** — 状态为"待复习"时显示日期输入（默认 +3 天），加载已有记录回填（`lib/form.mjs`）
+
+### 2. 同题聚合 / 二刷关联
+
+- [x] **稳定 key** — `problemStableKey(platform, problemNumber)` 归一化（平台+题号，CF 题号统一 `123A` 形式）（`lib/log-schema.mjs`）
+- [x] **构建聚合** — `generate-data.js` 聚合同 key 记录，单题 JSON 嵌入 `related`（全队做过几次、谁做过、状态）（`scripts/generate-data.js`）
+- [x] **详情页展示** — 题目详情页显示"全队同题记录"历史列表（`lib/renderer.mjs`, `index.html`, `style.css`）
+
+### 3. 刷题记录自动导入
+
+- [x] **Codeforces** — Worker `/api/import` 调用 `user.status` 官方 API，过滤 AC、按题目去重，返回最近通过记录（`workers/oauth.mjs`）
+- [x] **洛谷** — 粘贴题号列表，Worker 抓取题目页解析题名（洛谷提交记录 API 需登录 + CSRF，Worker 无法持用户 Cookie，故采用题号补全方案）（`workers/oauth.mjs`）
+- [x] **限流与安全** — 导入接口复用会话鉴权 + 独立限流（`workers/oauth.mjs`）
+- [x] **表单 UI** — 提交表单新增"从 Codeforces 导入"与"粘贴洛谷题号"入口，勾选结果回填为题目块（`lib/form.mjs`, `lib/journal-api.js`, `index.html`, `style.css`）
+- [x] **测试** — `test/oauth-import.test.mjs`（CF 解析/去重/非 AC 过滤、洛谷标题抓取、错误处理与输入校验）；`scripts/test-import-live.mjs` 本地真实网络全链路验证（鉴权/CSRF/Origin + 真实 Codeforces API 与洛谷页面，无需登录与密钥）
+
 ## 安全
 
 - [x] **缺少 CSP 头** — 无 Content-Security-Policy，存在 XSS 风险（`index.html`）
@@ -7,6 +30,8 @@
 - [x] **Worker `/api/summarize` 无调用频率限制** — 可能耗尽 AI 配额（`workers/oauth.js`）
 - [x] **Worker 错误信息泄露** — GitHub API 完整错误返回客户端（`workers/oauth.js:24`）
 - [x] **无 CSRF token** — 写入类 API 仅依赖 `SameSite=Lax`（`workers/oauth.js`, `lib/journal-api.js`）
+- [x] **CSP 过宽** — `script-src 'unsafe-inline'` 无必要（全站仅一个外部脚本），已收紧为 `script-src 'self'`（`index.html`）
+- [x] **Worker 限流表仅内存态** — `rateMap` 在 Workers 各 isolate/冷启动间不共享，严格防滥用需 KV 或 Durable Object（`workers/oauth.mjs`）；已加注释说明边界
 
 ## 性能
 
@@ -20,6 +45,11 @@
 - [ ] **构建脚本同步 I/O** — 数据集较小，保持同步 I/O 可接受
 - [ ] **独立文件写入** — 每题写入独立 HTML + JSON，可批量处理
 - [x] **重复遍历日志** — 已添加注释标注优化方向（`scripts/generate-data.js`）
+- [x] **KaTeX + Prism 无条件加载** — 详情页无公式/无代码时仍加载 ~600KB；已改为内容含 `$` 才加载 KaTeX、含代码块才加载 Prism（`lib/renderer.mjs`）
+- [x] **Worker 保存时 GitHub API 调用爆炸** — 保存一天 15 题约 140 次调用（46 次串行存在性探测 + 46 次 blob 创建）；已改为目录列表一次性判定存在性 + 本地 SHA-1 对比跳过未变更文件（`workers/oauth.mjs`）
+- [x] **Worker 读取日志逐文件请求** — 每题 3 个文件各一次 Contents API；已改为先用目录列表过滤不存在的文件（`workers/oauth.mjs`）
+- [x] **构建脚本 `lastCommitDate` 每文件 spawn 一次 git** — 已改为批量 `git log --name-only` 一次取全部（`scripts/generate-data.js`）
+- [x] **构建脚本 `buildRecentStats` 对每个成员重复过滤** — O(m×n) 已改为单遍分组 O(n)（`scripts/generate-data.js`）
 
 ## 代码质量
 
@@ -34,6 +64,11 @@
 - [x] **Worker `commit` 链式调用密集** — 拆解为 6 步清晰可读（`workers/oauth.mjs`）
 - [x] **字段命名不一致** — `metaFromProblems` 兼容 `name`/`problem` 别名（`lib/log-schema.mjs`）
 - [x] **Worker 文件名与新 ESM 风格不一致** — 重命名为 `oauth.mjs`
+- [x] **题目详情 HTML 模板重复三处** — 构建脚本、`renderProblemPageFromLog`、运行时闭包各一份；已提取共享 `lib/problem-detail.mjs`（`scripts/generate-data.js`, `lib/renderer.mjs`）
+- [x] **`renderProblemPageFromLog` 死代码** — 导出后从未被引用，已删除（`lib/renderer.mjs`）
+- [x] **`renderCountMap` 与 `renderStats` 内嵌 `renderMap` 重复** — 已合并为一个函数（`lib/renderer.mjs`）
+- [x] **`SITE_ORIGIN` / `SITE_NAME` 重复定义** — 已统一从 `lib/constants.mjs` 导入（`scripts/generate-data.js`）
+- [x] **commit 第 5 步 ref PATCH 绕过 `gh()`** — 未做限流检测；已补齐限流检查（`workers/oauth.mjs`）
 
 ## 功能缺口
 
@@ -62,6 +97,7 @@
 - [x] **表单错误未关联 `aria-describedby`** — 校验失败时关联第一个 `.problem-name` + 聚焦（`lib/form.mjs`）
 - [x] **可展开卡片无 `aria-expanded`** — 当前实现无展开卡片，无需修改
 - [x] **仅颜色区分的信息无替代** — 热力图添加 `.sr-only` 图例说明色阶含义（`lib/renderer.mjs`, `style.css`）
+- [x] **热力图 tab 停靠点过多** — 365 个活跃日各一个 `tabindex="0"`，键盘用户需按数百次 Tab；已改为容器单一可聚焦 + `role="group"`（`lib/renderer.mjs`）
 
 ## 开发体验
 
@@ -77,10 +113,12 @@
 
 - [ ] **`log-schema.test.mjs` 欠缺** — 日期、标签、题目 ID 等边缘情况未覆盖
 - [ ] **`render-safety.test.mjs` 欠缺** — HTML 注入、空值、大文件等边缘情况未覆盖
-- [ ] **无 `journal-api.test.mjs`** — API client 无测试
+- [x] **无 `journal-api.test.mjs`** — 已补（`test/journal-api.test.mjs`）
+- [x] **无 `tag-normalize.test.mjs`** — 已补（`test/tag-normalize.test.mjs`）
 - [ ] **无前端渲染测试** — `app.js` 无 DOM 测试
 - [ ] **无 Worker 集成测试** — `oauth.js` HTTP 处理无测试
 - [ ] **无构建脚本单元测试** — `generate-data.js` 各函数无独立测试
+- [x] **Worker 保存/读取规划逻辑无测试** — 已补 `test/oauth-plan.test.mjs`（`gitBlobSha`、`planLogChanges`、save→read→增量→delete 全流程 mock）
 
 - [x] **AI 概括无重试逻辑** — 添加 3 次重试 + 指数退避（`workers/oauth.mjs`）
 
