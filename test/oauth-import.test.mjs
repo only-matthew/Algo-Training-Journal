@@ -1,20 +1,24 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { fetchCodeforcesAccepted, fetchLuoguTitles } from "../workers/oauth.mjs";
+import { fetchCodeforcesAccepted, fetchLuoguProblems } from "../workers/oauth.mjs";
 
-test("fetchCodeforcesAccepted keeps AC submissions, dedupes by problem, and formats numbers", async () => {
+const now = Math.floor(Date.now() / 1000);
+const DAY = 86400;
+
+test("fetchCodeforcesAccepted keeps only AC submissions within the last 3 days, deduped", async () => {
   const fetchImpl = async () => new Response(JSON.stringify({
     status: "OK",
     result: [
-      { id: 111, verdict: "OK", problem: { contestId: 20, index: "C", name: "Dijkstra?", rating: 1500, tags: ["graphs", "shortest paths"] } },
-      // 同一道题重复提交：应只保留一条（最近一次）
-      { id: 222, verdict: "OK", problem: { contestId: 20, index: "C", name: "Dijkstra?", rating: 1500, tags: ["graphs"] } },
-      // 非 AC 提交：应被过滤
-      { id: 333, verdict: "WRONG_ANSWER", problem: { contestId: 4, index: "A", name: "Watermelon" } },
-      { id: 444, verdict: "OK", problem: { contestId: 4, index: "A", name: "Watermelon" } },
-      // 缺 problem 对象：跳过
-      { id: 555, verdict: "OK" },
+      { id: 111, creationTimeSeconds: now - 3600, verdict: "OK", problem: { contestId: 20, index: "C", name: "Dijkstra?", rating: 1500, tags: ["graphs", "shortest paths"] } },
+      // 同一道题 3 天内重复 AC：应只保留最近一条
+      { id: 222, creationTimeSeconds: now - 2 * DAY, verdict: "OK", problem: { contestId: 20, index: "C", name: "Dijkstra?", rating: 1500, tags: ["graphs"] } },
+      // 3 天内的另一道题
+      { id: 333, creationTimeSeconds: now - 2 * DAY, verdict: "OK", problem: { contestId: 4, index: "A", name: "Watermelon" } },
+      // 超过 3 天：应被过滤
+      { id: 444, creationTimeSeconds: now - 4 * DAY, verdict: "OK", problem: { contestId: 10, index: "A", name: "Old Problem" } },
+      // 非 AC：应被过滤
+      { id: 555, creationTimeSeconds: now - 3600, verdict: "WRONG_ANSWER", problem: { contestId: 1, index: "A", name: "Failed" } },
     ],
   }));
 
@@ -28,13 +32,36 @@ test("fetchCodeforcesAccepted keeps AC submissions, dedupes by problem, and form
     rating: 1500,
     tags: ["graphs", "shortest paths"],
   });
-  assert.deepEqual(problems[1], {
-    name: "Watermelon",
-    platform: "Codeforces",
-    problemNumber: "4A",
-    submissionUrl: "https://codeforces.com/contest/4/submission/444",
-    tags: [],
-  });
+  assert.equal(problems[1].problemNumber, "4A");
+});
+
+test("fetchCodeforcesAccepted pages forward until the 3-day window is covered", async () => {
+  const urls = [];
+  const fetchImpl = async (url) => {
+    urls.push(String(url));
+    // 第 1 页：满 2 条且都在窗口内 → 需要翻页；第 2 页：最后一条已过期 → 停止
+    if (String(url).includes("from=1")) {
+      return new Response(JSON.stringify({
+        status: "OK",
+        result: [
+          { id: 1, creationTimeSeconds: now - 3600, verdict: "OK", problem: { contestId: 1, index: "A", name: "Fresh A" } },
+          { id: 2, creationTimeSeconds: now - 3600, verdict: "OK", problem: { contestId: 1, index: "B", name: "Fresh B" } },
+        ],
+      }));
+    }
+    return new Response(JSON.stringify({
+      status: "OK",
+      result: [
+        { id: 3, creationTimeSeconds: now - 2 * DAY, verdict: "OK", problem: { contestId: 2, index: "A", name: "In Window" } },
+        { id: 4, creationTimeSeconds: now - 10 * DAY, verdict: "OK", problem: { contestId: 2, index: "B", name: "Too Old" } },
+      ],
+    }));
+  };
+
+  const problems = await fetchCodeforcesAccepted("tourist", { fetchImpl, perPage: 2, maxPages: 3 });
+  assert.equal(urls.length, 2, "should fetch exactly two pages");
+  assert.match(urls[1], /from=3/);
+  assert.deepEqual(problems.map((p) => p.name), ["Fresh A", "Fresh B", "In Window"]);
 });
 
 test("fetchCodeforcesAccepted rejects empty handle and failed API responses", async () => {
@@ -48,29 +75,60 @@ test("fetchCodeforcesAccepted rejects empty handle and failed API responses", as
   await assert.rejects(fetchCodeforcesAccepted("tourist", { fetchImpl: networkError }), /接口不可用/);
 });
 
-test("fetchLuoguTitles parses titles from server-rendered problem pages", async () => {
+function luoguPage({ pid, name, difficulty, content }) {
+  const problem = { pid, name };
+  if (difficulty !== undefined) problem.difficulty = difficulty;
+  if (content !== undefined) problem.content = content;
+  return `<html><head><title>${pid} ${name} - 洛谷 | 计算机科学教育新生态</title></head><body><script id="lentille-context" type="application/json">{"data":{"problem":${JSON.stringify(problem)}}}</script></body></html>`;
+}
+
+test("fetchLuoguProblems parses name, official difficulty and description", async () => {
   const fetchImpl = async (url) => {
-    assert.match(String(url), /^https:\/\/www\.luogu\.com\.cn\/problem\/P1001$/);
-    return new Response("<html><head><title>P1001 最大子段和 - 洛谷 | 计算机科学教育新生态</title></head></html>");
+    assert.match(String(url), /^https:\/\/www\.luogu\.com\.cn\/problem\/P3376$/);
+    return new Response(luoguPage({ pid: "P3376", name: "【模板】网络最大流", difficulty: 6, content: "<p>给定网络，求最大流。</p>\n<p>数据范围较大。</p>" }));
   };
-  const problems = await fetchLuoguTitles("P1001", { fetchImpl });
-  assert.deepEqual(problems, [{ name: "最大子段和", platform: "洛谷", problemNumber: "P1001" }]);
+  const problems = await fetchLuoguProblems("P3376", { fetchImpl });
+  assert.equal(problems.length, 1);
+  assert.deepEqual(problems[0], {
+    name: "【模板】网络最大流",
+    platform: "洛谷",
+    problemNumber: "P3376",
+    difficulty: "省选/NOI-",
+    description: "给定网络，求最大流。\n\n数据范围较大。",
+  });
 });
 
-test("fetchLuoguTitles handles multiple numbers and falls back on failure", async () => {
+test("fetchLuoguProblems maps all official difficulty levels", async () => {
+  const expected = ["暂无评定", "入门", "普及-", "普及/提高-", "普及+/提高", "提高+/省选-", "省选/NOI-", "NOI/NOI+/CTSC"];
+  for (let difficulty = 0; difficulty <= 7; difficulty += 1) {
+    const fetchImpl = async () => new Response(luoguPage({ pid: "P1001", name: "A+B Problem", difficulty }));
+    const [problem] = await fetchLuoguProblems("P1001", { fetchImpl });
+    assert.equal(problem.difficulty, expected[difficulty], `difficulty ${difficulty}`);
+  }
+});
+
+test("fetchLuoguProblems falls back to <title> when lentille-context is missing", async () => {
+  const fetchImpl = async () => new Response("<html><head><title>P1001 A+B Problem - 洛谷 | 计算机科学教育新生态</title></head></html>");
+  const [problem] = await fetchLuoguProblems("P1001", { fetchImpl });
+  assert.equal(problem.name, "A+B Problem");
+  assert.equal(problem.difficulty, "未标注");
+  assert.equal(problem.description, "");
+});
+
+test("fetchLuoguProblems handles multiple numbers and falls back on failure", async () => {
   const fetchImpl = async (url) => {
-    if (String(url).includes("/P3376")) return new Response("<html><title>P3376 【模板】网络最大流 - 洛谷</title></html>");
+    if (String(url).includes("/P3376")) return new Response(luoguPage({ pid: "P3376", name: "【模板】网络最大流", difficulty: 6 }));
     return new Response("Not Found", { status: 404 });
   };
-  const problems = await fetchLuoguTitles("p1001 P3376", { fetchImpl });
+  const problems = await fetchLuoguProblems("p1001 P3376", { fetchImpl });
   assert.deepEqual(problems, [
-    { name: "P1001", platform: "洛谷", problemNumber: "P1001" },
-    { name: "【模板】网络最大流", platform: "洛谷", problemNumber: "P3376" },
+    { name: "P1001", platform: "洛谷", problemNumber: "P1001", difficulty: "未标注", description: "" },
+    { name: "【模板】网络最大流", platform: "洛谷", problemNumber: "P3376", difficulty: "省选/NOI-", description: "" },
   ]);
 });
 
-test("fetchLuoguTitles rejects empty or invalid input without fetching", async () => {
+test("fetchLuoguProblems rejects empty or invalid input without fetching", async () => {
   const noFetch = async () => { throw new Error("must not fetch"); };
-  await assert.rejects(fetchLuoguTitles("", { fetchImpl: noFetch }), /题号/);
-  await assert.rejects(fetchLuoguTitles("abc def", { fetchImpl: noFetch }), /题号/);
+  await assert.rejects(fetchLuoguProblems("", { fetchImpl: noFetch }), /题号/);
+  await assert.rejects(fetchLuoguProblems("abc def", { fetchImpl: noFetch }), /题号/);
 });

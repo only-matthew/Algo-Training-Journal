@@ -329,39 +329,70 @@ async function handleSummarize(request, user, env) {
   return json(request, { summary });
 }
 
-// Codeforces 官方 API：拉取最近 AC 记录，按题目去重（公开接口，无需登录）
-export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, maxSubmissions = 100 } = {}) {
+// Codeforces 官方 API：拉取最近 days 天内的 AC 记录，按题目去重（公开接口，无需登录）。
+// 自动翻页直到覆盖时间窗口或达到 maxPages 页，避免一次性拉取全部历史记录。
+export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, days = 3, maxPages = 5, perPage = 100 } = {}) {
   const h = String(handle || "").trim();
   if (!h) throw Object.assign(new TypeError("请输入 Codeforces 用户名"), { status: 400 });
-  const response = await fetchImpl(`https://codeforces.com/api/user.status?handle=${encodeURIComponent(h)}&from=1&count=${maxSubmissions}`);
-  if (!response.ok) throw Object.assign(new Error("Codeforces 接口不可用，请稍后再试"), { status: 502 });
-  const data = await response.json();
-  if (data.status !== "OK") throw Object.assign(new Error(`Codeforces 用户 ${h} 不存在或接口错误`), { status: 400 });
+  const cutoff = Math.floor(Date.now() / 1000) - days * 86400;
   const seen = new Set();
   const problems = [];
-  for (const submission of data.result || []) {
-    if (submission.verdict !== "OK") continue;
-    const p = submission.problem;
-    if (!p || !p.name) continue;
-    const number = [p.contestId, p.index].filter(Boolean).join("");
-    const key = `${number}|${p.name}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    problems.push({
-      name: p.name,
-      platform: "Codeforces",
-      problemNumber: number,
-      submissionUrl: submission.id && p.contestId ? `https://codeforces.com/contest/${p.contestId}/submission/${submission.id}` : "",
-      ...(p.rating ? { rating: p.rating } : {}),
-      tags: Array.isArray(p.tags) ? p.tags : [],
-    });
+  for (let page = 0; page < maxPages; page += 1) {
+    const from = page * perPage + 1;
+    const response = await fetchImpl(`https://codeforces.com/api/user.status?handle=${encodeURIComponent(h)}&from=${from}&count=${perPage}`);
+    if (!response.ok) throw Object.assign(new Error("Codeforces 接口不可用，请稍后再试"), { status: 502 });
+    const data = await response.json();
+    if (data.status !== "OK") throw Object.assign(new Error(`Codeforces 用户 ${h} 不存在或接口错误`), { status: 400 });
+    const result = data.result || [];
+    if (!result.length) break;
+    for (const submission of result) {
+      if (submission.creationTimeSeconds < cutoff) continue;
+      if (submission.verdict !== "OK") continue;
+      const p = submission.problem;
+      if (!p || !p.name) continue;
+      const number = [p.contestId, p.index].filter(Boolean).join("");
+      const key = `${number}|${p.name}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      problems.push({
+        name: p.name,
+        platform: "Codeforces",
+        problemNumber: number,
+        submissionUrl: submission.id && p.contestId ? `https://codeforces.com/contest/${p.contestId}/submission/${submission.id}` : "",
+        ...(p.rating ? { rating: p.rating } : {}),
+        tags: Array.isArray(p.tags) ? p.tags : [],
+      });
+    }
+    // 本页最后一条已早于窗口起点：后续页面只会更旧，无需继续翻页
+    const oldest = result[result.length - 1];
+    if (result.length < perPage || !oldest || oldest.creationTimeSeconds < cutoff) break;
   }
   return problems;
 }
 
-// 洛谷：逐题抓取题目页解析题名。
-// 洛谷提交记录 API 需要登录态 + CSRF，Worker 无法持有用户 Cookie，故采用「粘贴题号 → 自动补全题名」的半自动方案。
-export async function fetchLuoguTitles(numbers, { fetchImpl = fetch, concurrency = 3 } = {}) {
+// 洛谷官方难度分级（与 _lfe/config 的 problemDifficulty 一致，减号统一为 ASCII）
+const LUOGU_DIFFICULTY = { 0: "暂无评定", 1: "入门", 2: "普及-", 3: "普及/提高-", 4: "普及+/提高", 5: "提高+/省选-", 6: "省选/NOI-", 7: "NOI/NOI+/CTSC" };
+
+function htmlToText(html) {
+  return String(html || "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<\/h[1-6]>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+// 洛谷：抓取题目页解析题名、官方难度与题目描述（页面内嵌 lentille-context JSON）。
+// 标签为数字 ID 且平台未提供公开的标签名称接口，故不返回；洛谷提交记录 API 需登录态 + CSRF，
+// 故导入采用「粘贴题号 → 补全题名/难度/题面」的半自动方案。
+export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurrency = 3 } = {}) {
   const list = String(numbers || "")
     .split(/[\s,，、;；]+/)
     .map((s) => s.trim())
@@ -369,6 +400,7 @@ export async function fetchLuoguTitles(numbers, { fetchImpl = fetch, concurrency
     .slice(0, 15);
   if (!list.length) throw Object.assign(new TypeError("请至少输入一个洛谷题号，如 P1001"), { status: 400 });
 
+  const fallback = (number) => ({ name: number, platform: "洛谷", problemNumber: number, difficulty: "未标注", description: "" });
   const results = new Array(list.length);
   let next = 0;
   async function worker() {
@@ -379,12 +411,22 @@ export async function fetchLuoguTitles(numbers, { fetchImpl = fetch, concurrency
         const response = await fetchImpl(`https://www.luogu.com.cn/problem/${encodeURIComponent(number)}`);
         if (!response.ok) throw new Error("页面不存在");
         const html = await response.text();
-        // 洛谷标题格式：「P1001 题名 - 洛谷 | 计算机科学教育新生态」
-        const title = (html.match(/<title>([^<]*)<\/title>/i)?.[1] || "").replace(/\s*-\s*洛谷.*$/i, "");
-        const name = title.replace(/^[A-Za-z]?\d+\s*/, "").trim() || number;
-        results[index] = { name, platform: "洛谷", problemNumber: number };
+        const item = fallback(number);
+        const context = html.match(/<script id="lentille-context" type="application\/json">([\s\S]*?)<\/script>/i);
+        const problem = context ? JSON.parse(context[1])?.data?.problem : null;
+        if (problem) {
+          if (problem.name) item.name = problem.name;
+          if (typeof problem.difficulty === "number") item.difficulty = LUOGU_DIFFICULTY[problem.difficulty] || "未标注";
+          if (problem.content) item.description = htmlToText(problem.content).slice(0, 20000);
+        } else {
+          // 回退：解析 <title>（如「P1001 A+B Problem - 洛谷 | ...」）
+          const title = (html.match(/<title>([^<]*)<\/title>/i)?.[1] || "").replace(/\s*-\s*洛谷.*$/i, "");
+          const name = title.replace(/^[A-Za-z]?\d+\s*/, "").trim();
+          if (name) item.name = name;
+        }
+        results[index] = item;
       } catch {
-        results[index] = { name: number, platform: "洛谷", problemNumber: number };
+        results[index] = fallback(number);
       }
     }
   }
@@ -404,7 +446,7 @@ async function handleImport(request, user) {
     if (rateExceeded(`import:luogu:${user.member}`, RATE_LIMITS["import:luogu"])) {
       return json(request, { error: "导入请求过于频繁，请稍后再试" }, 429);
     }
-    return json(request, { problems: await fetchLuoguTitles(numbers) });
+    return json(request, { problems: await fetchLuoguProblems(numbers) });
   }
   return json(request, { error: "不支持的导入平台，可选 codeforces 或 luogu" }, 400);
 }

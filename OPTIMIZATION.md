@@ -17,8 +17,8 @@
 
 ### 3. 刷题记录自动导入
 
-- [x] **Codeforces** — Worker `/api/import` 调用 `user.status` 官方 API，过滤 AC、按题目去重，返回最近通过记录并携带提交页链接（`workers/oauth.mjs`）
-- [x] **洛谷** — 粘贴题号列表，Worker 抓取题目页解析题名（洛谷提交记录 API 需登录 + CSRF，Worker 无法持用户 Cookie，故采用题号补全方案）（`workers/oauth.mjs`）
+- [x] **Codeforces** — Worker `/api/import` 调用 `user.status` 官方 API，过滤 AC、按题目去重，**仅返回最近 3 天内的 AC 记录**（自动翻页覆盖窗口，避免一次性拉取全部历史），并携带提交页链接（`workers/oauth.mjs`）
+- [x] **洛谷** — 粘贴题号列表，Worker 抓取题目页内嵌 `lentille-context` JSON 解析**题名、官方难度（8 级）与题目描述**；标签为数字 ID 且平台无公开名称接口故不返回（`workers/oauth.mjs`）
 - [x] **CF 代码替代方案** — CF 提交页有 Cloudflare managed challenge 反爬（无头 HTTP 客户端一律 403，实测 curl/Node 均被拦截），服务端自动抓取源码不可行；改为导入列表提供「📄 提交」直达链接，浏览器中可正常查看源码（`lib/form.mjs`）
 - [x] **导入位置** — 导入的题目优先填入未填写的空题目块，而不是盲目追加到末尾（`lib/form.mjs`）
 - [x] **标签中英合并** — CF 英文标签（`graphs`/`shortest paths`/`dfs and similar` 等 30+ 项）在 `lib/tag-catalog.mjs` 中映射为中文标签，导入回填与提交校验统一归一化（`lib/tag-catalog.mjs`, `lib/form.mjs`）
@@ -26,7 +26,7 @@
 - [x] **表单 UI** — 提交表单新增"从 Codeforces 导入"与"粘贴洛谷题号"入口，勾选结果回填为题目块（`lib/form.mjs`, `lib/journal-api.js`, `index.html`, `style.css`）
 - [x] **预置 CF handle** — `workers/oauth.mjs` 新增 `CF_HANDLES`（廖夏 onlymatt / 王梓豪 hnuwang / 郭一鸣 ymguo），会话接口下发 `cfHandle`，导入面板自动预填可修改
 - [x] **导入输入框过窄** — `.import-input-row` 由 flex 改为 grid（`1fr auto auto`），实测输入框宽度从 26px 修复为占满面板
-- [x] **测试** — `test/oauth-import.test.mjs`（CF 解析/去重/非 AC 过滤、提交链接、洛谷标题抓取、错误处理与输入校验）；`test/tag-normalize.test.mjs`（CF 标签合并）；`scripts/verify-import-live.mjs` 本地真实网络全链路验证（鉴权/CSRF/Origin + 真实 Codeforces API 与洛谷页面，无需登录与密钥，不进 CI）
+- [x] **测试** — `test/oauth-import.test.mjs`（CF 3 天窗口/去重/非 AC 过滤/翻页、洛谷难度与题面解析、错误处理与输入校验）；`test/tag-normalize.test.mjs`（CF 标签合并）；`scripts/verify-import-live.mjs` 本地真实网络全链路验证（鉴权/CSRF/Origin + 真实 Codeforces API 与洛谷页面，无需登录与密钥，不进 CI）
 
 ## 安全
 
