@@ -87,7 +87,7 @@ async function main() {
     check("P1001 题名正确（A+B Problem）", titles.includes("A+B Problem"), titles[0] || "");
     check("P3376 题名正确（网络最大流）", titles.some((t) => t.includes("网络最大流")), titles.join(", ") || "");
     check("P3376 难度已解析（省选/NOI-）", p3376.difficulty === "省选/NOI-", p3376.difficulty || "无");
-    check("P3376 题面已解析", (p3376.description || "").length > 10, `${(p3376.description || "").length} 字符`);
+    check("P3376 题面已解析（非 [object Object]）", (p3376.description || "").length > 20 && !String(p3376.description).includes("[object Object]"), `${(p3376.description || "").length} 字符`);
   } catch (error) {
     check("洛谷接口可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
   }

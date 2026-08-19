@@ -78,11 +78,14 @@ test("fetchCodeforcesAccepted rejects empty handle and failed API responses", as
 function luoguPage({ pid, name, difficulty, content }) {
   const problem = { pid, name };
   if (difficulty !== undefined) problem.difficulty = difficulty;
-  if (content !== undefined) problem.content = content;
+  if (content !== undefined) {
+    // 真实洛谷 content 为对象结构 { description, background, hint, ... }，而非字符串
+    problem.content = typeof content === "string" ? { description: content } : content;
+  }
   return `<html><head><title>${pid} ${name} - 洛谷 | 计算机科学教育新生态</title></head><body><script id="lentille-context" type="application/json">{"data":{"problem":${JSON.stringify(problem)}}}</script></body></html>`;
 }
 
-test("fetchLuoguProblems parses name, official difficulty and description", async () => {
+test("fetchLuoguProblems parses name, official difficulty and description from object content", async () => {
   const fetchImpl = async (url) => {
     assert.match(String(url), /^https:\/\/www\.luogu\.com\.cn\/problem\/P3376$/);
     return new Response(luoguPage({ pid: "P3376", name: "【模板】网络最大流", difficulty: 6, content: "<p>给定网络，求最大流。</p>\n<p>数据范围较大。</p>" }));
@@ -96,6 +99,13 @@ test("fetchLuoguProblems parses name, official difficulty and description", asyn
     difficulty: "省选/NOI-",
     description: "给定网络，求最大流。\n\n数据范围较大。",
   });
+  assert.ok(!problems[0].description.includes("[object Object]"), "description must not be [object Object]");
+});
+
+test("fetchLuoguProblems falls back to raw string content without breaking", async () => {
+  const fetchImpl = async () => new Response(luoguPage({ pid: "P1001", name: "A+B Problem", difficulty: 1, content: "直接字符串题面" }));
+  const [problem] = await fetchLuoguProblems("P1001", { fetchImpl });
+  assert.equal(problem.description, "直接字符串题面");
 });
 
 test("fetchLuoguProblems maps all official difficulty levels", async () => {

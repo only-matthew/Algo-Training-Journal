@@ -417,7 +417,14 @@ export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurren
         if (problem) {
           if (problem.name) item.name = problem.name;
           if (typeof problem.difficulty === "number") item.difficulty = LUOGU_DIFFICULTY[problem.difficulty] || "未标注";
-          if (problem.content) item.description = htmlToText(problem.content).slice(0, 20000);
+          // content 为对象结构 { description, background, hint, ... }，取 description 字段；
+          // 直接 String(对象) 会产生 "[object Object]"
+          if (problem.content) {
+            const raw = typeof problem.content === "string"
+              ? problem.content
+              : (problem.content && problem.content.description) || "";
+            if (raw) item.description = htmlToText(raw).slice(0, 20000);
+          }
         } else {
           // 回退：解析 <title>（如「P1001 A+B Problem - 洛谷 | ...」）
           const title = (html.match(/<title>([^<]*)<\/title>/i)?.[1] || "").replace(/\s*-\s*洛谷.*$/i, "");
