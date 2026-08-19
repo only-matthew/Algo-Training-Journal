@@ -22,7 +22,7 @@
 项目采用“**仓库即数据库、静态站点负责展示、Worker 负责写入**”的架构：
 
 1. `logs/` 保存所有队员的训练源数据。
-2. `scripts/generate-data.js` 聚合日志并生成首页摘要、全量轻量元数据、可索引的成员页与单题 HTML、单题 JSON、热力图和近 30 天统计。
+2. `scripts/generate-data.js` 聚合日志并生成首页摘要、复习队列、同题聚合、全量轻量元数据、可索引的成员页与单题 HTML、单题 JSON、热力图和近 30 天统计。
 3. GitHub Actions 将 `site/` 发布到 GitHub Pages。
 4. Cloudflare Worker 完成 GitHub OAuth、会话校验和 Git Data API 写入。
 5. 每次网页提交产生一个 Git commit，并触发站点重新构建和部署。
@@ -34,7 +34,7 @@
 | 静态前端 | 日志浏览、筛选、统计分析、错题复盘、表单提交和独立页面路由。 |
 | `logs/` 数据目录 | 保存按队员和日期组织的题目元数据、描述、题解和代码。 |
 | 数据构建脚本 | 校验并聚合日志，计算统计信息，生成可部署的 `site/`。 |
-| Cloudflare Worker | 处理 GitHub OAuth、加密会话、成员授权和原子 Git commit。 |
+| Cloudflare Worker | 处理 GitHub OAuth、加密会话、成员授权、原子 Git commit 与题目导入。 |
 | GitHub Actions / Pages | 在日志变化后自动构建并发布公开站点。 |
 
 下文分别说明[项目功能](#项目功能)、[整体架构](#整体架构)、[数据存储](#数据存储)、[项目结构](#项目结构)和[部署配置](#部署配置)。
@@ -105,6 +105,8 @@
 
 如果所选日期已有记录，表单会自动加载原内容，可以覆盖更新或删除该日期的全部记录。“训练分析”位于顶部导航中；点击记录中的队员姓名可进入个人主页，点击“查看题目详情”可打开该题的独立页面。
 
+填写题目时可使用“快速导入”：登录后点击表单上方的“Codeforces AC 记录”或“洛谷题号”按钮，查询并勾选结果后一键回填为题目块。
+
 ## 整体架构
 
 项目由静态展示、仓库数据、自动构建和认证写入服务四部分组成：
@@ -159,7 +161,7 @@ logs/
 
 文件含义：
 
-- `meta.json`：题目永久 ID、名称、题号、平台、难度、标签、错题状态，以及该打卡记录的 `updatedAt`（最后更新时间，ISO 格式时间戳）。
+- `meta.json`：题目永久 ID、名称、题号、平台、难度、标签、错题状态、复习日期（`reviewDue`，可选，格式 `YYYY-MM-DD`），以及该打卡记录的 `updatedAt`（最后更新时间，ISO 格式时间戳）。
 - `N-desc.md`：第 N 道题的题目描述。
 - `N-takeaway.md`：第 N 道题的心得或题解。
 - `N-solution.cpp`：第 N 道题的 C++ 代码。
@@ -192,6 +194,8 @@ Worker 收到前端的受限日志请求后会：
 
 因此，一次新增或更新多文件记录只会产生一个 Git commit。目录不需要单独创建，Git tree 会自动建立路径。
 
+保存时 Worker 会先一次请求列出当天目录，用本地计算的 Git blob SHA-1 与已有文件对比，**跳过内容未变化的文件**，只为新增或修改的文件创建 blob——一天 15 题从约 140 次 GitHub API 调用降到约 10 次，并避免中间移除题目时残留孤儿文件。
+
 构建脚本仍兼容旧日期目录；通过网页新增和编辑的记录统一写入年月日路径。
 
 ## 安全认证与自动部署
@@ -199,6 +203,14 @@ Worker 收到前端的受限日志请求后会：
 当前版本不再把 GitHub access token 放进 URL 或 `localStorage`。OAuth code 由 Cloudflare Worker 交换，token 仅保存在加密、`HttpOnly`、`Secure` 会话 Cookie 中；浏览器只调用受限的日志 API。
 
 题目描述旁的“概括”按钮会调用 Worker 的 `POST /api/summarize` 接口。接口使用 Workers AI binding 运行 `@cf/qwen/qwen3-30b-a3b-fp8`，要求模型只输出题目对象、计算或判断目标以及关键约束，不猜测题解。Worker 会清理模型可能附带的思考标签、标题和引号，并限制输入不超过 20,000 字。
+
+提交表单的“快速导入”会调用 Worker 的 `POST /api/import`：
+
+- **Codeforces**：通过官方公开 `user.status` API 拉取该用户最近 AC 记录，过滤非 AC、按题目去重，返回题名、题号、Rating 与标签，并携带「📄 提交」直达链接（CF 提交页受 Cloudflare 反爬保护，源码无法服务端自动抓取，浏览器中可直接查看复制）。
+- **洛谷**：粘贴题号列表，Worker 抓取题目页解析题名（洛谷提交记录接口需登录态，故采用题号补全的半自动方案）。
+- 登录队员会在导入面板自动预填自己的 CF 用户名（维护在 `workers/oauth.mjs` 的 `CF_HANDLES` 中，廖夏 `onlymatt`、王梓豪 `hnuwang`、郭一鸣 `ymguo`），可修改。
+- 导入的 CF 英文标签自动合并为中文标签（如 `graphs` → 图论），导入题目优先填入未填写的空题目位。
+- 所有导入接口复用登录会话、CSRF 校验与独立限流（每分钟每队员 10 次）。
 
 Worker 部署前需要配置三个 secret：
 
@@ -216,7 +228,7 @@ npx wrangler deploy
 https://algo-oauth.xialiao.org/auth/callback
 ```
 
-允许登录的 GitHub 用户与日志目录映射维护在 `workers/oauth.mjs` 的 `MEMBERS` 中。前端不再拥有通用 GitHub API 凭据，Worker 只允许已登录用户写入自己的 `logs/<姓名>/YYYY/MM/DD/` 路径。新增队员时，需要在 `MEMBERS` 中加入映射、授予该账号仓库写权限，并让队员接受 Collaborator 邀请。
+允许登录的 GitHub 用户与日志目录映射维护在 `workers/oauth.mjs` 的 `MEMBERS` 中，队员的 Codeforces 用户名维护在同文件的 `CF_HANDLES` 中（导入面板自动预填）。前端不再拥有通用 GitHub API 凭据，Worker 只允许已登录用户写入自己的 `logs/<姓名>/YYYY/MM/DD/` 路径。新增队员时，需要在 `MEMBERS`（和 `CF_HANDLES`）中加入映射、授予该账号仓库写权限，并让队员接受 Collaborator 邀请。
 
 工作流位于 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)。当 `main` 或 `master` 分支收到 push 后，Actions 会：
 
@@ -323,9 +335,11 @@ npx serve site
 │   └── theme.mjs                # 浅色/深色主题切换
 ├── logs/                          # 按成员和日期组织的训练源数据
 ├── scripts/
+│   ├── backfill-updated-at.js     # 从 git 提交历史回填 updatedAt
 │   ├── generate-data.js          # 聚合 logs/、计算统计并生成 site/ 与路由入口
 │   ├── migrate-date-layout.js    # YYYY-MM-DD → YYYY/MM/DD
-│   └── migrate-logs.js           # 旧单文件 Markdown 格式迁移
+│   ├── migrate-logs.js           # 旧单文件 Markdown 格式迁移
+│   └── verify-import-live.mjs    # 本地真实网络验证自动导入（人工运行，不进 CI）
 ├── test/
 │   ├── aggregation.test.mjs      # 同题聚合与复习队列构建测试
 │   ├── generate-seo.test.mjs    # SEO 与构建产物测试
@@ -338,7 +352,7 @@ npx serve site
 │   └── tag-normalize.test.mjs    # 标签规范化与别名测试
 ├── vendor/                        # 随静态站点发布的 Marked、KaTeX 与 Prism
 ├── workers/
-│   ├── oauth.mjs                 # OAuth、加密会话、受限日志 API 与 AI 概括
+│   ├── oauth.mjs                 # OAuth、加密会话、受限日志 API、AI 概括与题目导入
 │   └── wrangler.toml             # Worker 配置
 ├── app.js                         # 应用入口：路由、渲染、筛选、表单和主题初始化
 ├── index.html                     # 单页应用页面结构
@@ -349,9 +363,9 @@ npx serve site
 └── site/                           # 构建产物，已被 .gitignore 忽略
 ```
 
-各模块之间通过明确的数据边界协作：`logs/` 是唯一源数据，`lib/log-schema.mjs` 由前端、Worker 与生成脚本共享，`site/` 只作为可重新生成的部署产物，不应直接维护。
+各模块之间通过明确的数据边界协作：`logs/` 是唯一源数据，`lib/log-schema.mjs`、`lib/tag-catalog.mjs`、`lib/problem-detail.mjs` 由前端、Worker 与生成脚本按需共享，`site/` 只作为可重新生成的部署产物，不应直接维护。
 
-构建后的数据按用途拆分：`site/data/overview.json` 只包含近 30 天题目和首屏统计，`site/data/all.json` 包含全部轻量题目元数据，`site/data/problems/<成员>/<日期>/<题目ID>.json` 保存单题描述、题解和代码。首页不下载正文；分析与错题本按需加载全量元数据；成员页和题目详情页拥有可直接索引的预渲染 HTML，浏览器交互或刷新时仍可从对应 JSON 更新内容。
+构建后的数据按用途拆分：`site/data/overview.json` 只包含近 30 天题目、首屏统计与全量「今日复习队列」，`site/data/all.json` 包含全部轻量题目元数据（含复习日期），`site/data/problems/<成员>/<日期>/<题目ID>.json` 保存单题描述、题解、代码与同题历史（`related`）。首页不下载正文；分析与错题本按需加载全量元数据；成员页和题目详情页拥有可直接索引的预渲染 HTML，浏览器交互或刷新时仍可从对应 JSON 更新内容。
 
 ## 当前边界
 
@@ -363,3 +377,5 @@ npx serve site
 - 新增、更新和删除都使用 Git Data API 合并为单个 commit。
 - 成员白名单、仓库地址和允许来源目前直接维护在 Worker 源码中。
 - 当前代码字段按 C++ 展示，保存文件扩展名固定为 `.cpp`。
+- Codeforces 提交页受 Cloudflare 反爬保护，源码无法由服务端自动抓取，需在浏览器中打开提交页复制；洛谷提交记录接口需登录态，导入采用「粘贴题号自动补全题名」方案。
+- 导入接口有频率限制（每分钟每队员 10 次），大量导入时可分次进行。
