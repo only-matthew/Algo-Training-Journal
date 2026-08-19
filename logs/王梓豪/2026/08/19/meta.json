@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-19T23:53:24.100+08:00",
+  "problems": [
+    {
+      "id": "e710937f-f591-423b-b2b7-9b5d5c97e614",
+      "name": "[NOIP 2002 普及组] 选数",
+      "platform": "洛谷",
+      "problemNumber": "P1036",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
