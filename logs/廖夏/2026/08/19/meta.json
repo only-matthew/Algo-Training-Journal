@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-19T23:11:34.169+08:00",
+  "problems": [
+    {
+      "id": "aaebe2be-5cdb-47e6-a8bf-7c6d748294d0",
+      "name": "【深基12.例1】部分背包问题",
+      "platform": "洛谷",
+      "problemNumber": "P2240",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
