@@ -44,17 +44,20 @@ async function main() {
   check("非法 Origin 被拒绝（403）", res.status === 403, `HTTP ${res.status}`);
 
   console.log("── Codeforces 真实导入 ──");
+  let cfProblems = [];
   try {
     res = await post("/api/import", { platform: "codeforces", handle: "tourist" }, { cookie, csrf: CSRF });
     const body = await res.json();
+    cfProblems = body.problems || [];
     check("CF 请求成功（200）", res.status === 200, `HTTP ${res.status}`);
-    check("返回题目列表", Array.isArray(body.problems) && body.problems.length > 0, `${body.problems?.length ?? 0} 题`);
-    const first = body.problems?.[0];
+    check("返回题目列表", Array.isArray(cfProblems) && cfProblems.length > 0, `${cfProblems.length} 题`);
+    const first = cfProblems[0];
     check(
       "题目字段完整（名称/题号/平台）",
       Boolean(first && first.name && first.problemNumber && first.platform === "Codeforces"),
       first ? `${first.platform} ${first.problemNumber} · ${first.name}` : "无数据",
     );
+    check("携带提交页链接（submissionUrl）", Boolean(first && first.submissionUrl), first?.submissionUrl ? `→ ${first.submissionUrl}` : "无");
   } catch (error) {
     check("CF 接口可达", false, `${error.message}（网络不可达时请检查代理/网络，不代表功能故障）`);
   }

@@ -7,14 +7,14 @@ test("fetchCodeforcesAccepted keeps AC submissions, dedupes by problem, and form
   const fetchImpl = async () => new Response(JSON.stringify({
     status: "OK",
     result: [
-      { verdict: "OK", problem: { contestId: 20, index: "C", name: "Dijkstra?", rating: 1500, tags: ["graphs", "shortest paths"] } },
+      { id: 111, verdict: "OK", problem: { contestId: 20, index: "C", name: "Dijkstra?", rating: 1500, tags: ["graphs", "shortest paths"] } },
       // 同一道题重复提交：应只保留一条（最近一次）
-      { verdict: "OK", problem: { contestId: 20, index: "C", name: "Dijkstra?", rating: 1500, tags: ["graphs"] } },
+      { id: 222, verdict: "OK", problem: { contestId: 20, index: "C", name: "Dijkstra?", rating: 1500, tags: ["graphs"] } },
       // 非 AC 提交：应被过滤
-      { verdict: "WRONG_ANSWER", problem: { contestId: 4, index: "A", name: "Watermelon" } },
-      { verdict: "OK", problem: { contestId: 4, index: "A", name: "Watermelon" } },
+      { id: 333, verdict: "WRONG_ANSWER", problem: { contestId: 4, index: "A", name: "Watermelon" } },
+      { id: 444, verdict: "OK", problem: { contestId: 4, index: "A", name: "Watermelon" } },
       // 缺 problem 对象：跳过
-      { verdict: "OK" },
+      { id: 555, verdict: "OK" },
     ],
   }));
 
@@ -24,6 +24,7 @@ test("fetchCodeforcesAccepted keeps AC submissions, dedupes by problem, and form
     name: "Dijkstra?",
     platform: "Codeforces",
     problemNumber: "20C",
+    submissionUrl: "https://codeforces.com/contest/20/submission/111",
     rating: 1500,
     tags: ["graphs", "shortest paths"],
   });
@@ -31,6 +32,7 @@ test("fetchCodeforcesAccepted keeps AC submissions, dedupes by problem, and form
     name: "Watermelon",
     platform: "Codeforces",
     problemNumber: "4A",
+    submissionUrl: "https://codeforces.com/contest/4/submission/444",
     tags: [],
   });
 });

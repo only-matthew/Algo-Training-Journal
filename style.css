@@ -1410,6 +1410,16 @@ textarea.form-input {
 .import-item input {
   flex: none;
 }
+.import-submission-link {
+  flex: none;
+  font-size: 12px;
+  color: var(--brand);
+  text-decoration: none;
+  margin-left: auto;
+}
+.import-submission-link:hover {
+  text-decoration: underline;
+}
 
 /* ── 同题记录（二刷关联） ── */
 .related-section {

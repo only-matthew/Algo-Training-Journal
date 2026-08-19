@@ -17,11 +17,14 @@
 
 ### 3. 刷题记录自动导入
 
-- [x] **Codeforces** — Worker `/api/import` 调用 `user.status` 官方 API，过滤 AC、按题目去重，返回最近通过记录（`workers/oauth.mjs`）
+- [x] **Codeforces** — Worker `/api/import` 调用 `user.status` 官方 API，过滤 AC、按题目去重，返回最近通过记录并携带提交页链接（`workers/oauth.mjs`）
 - [x] **洛谷** — 粘贴题号列表，Worker 抓取题目页解析题名（洛谷提交记录 API 需登录 + CSRF，Worker 无法持用户 Cookie，故采用题号补全方案）（`workers/oauth.mjs`）
+- [x] **CF 代码替代方案** — CF 提交页有 Cloudflare managed challenge 反爬（无头 HTTP 客户端一律 403，实测 curl/Node 均被拦截），服务端自动抓取源码不可行；改为导入列表提供「📄 提交」直达链接，浏览器中可正常查看源码（`lib/form.mjs`）
+- [x] **导入位置** — 导入的题目优先填入未填写的空题目块，而不是盲目追加到末尾（`lib/form.mjs`）
+- [x] **标签中英合并** — CF 英文标签（`graphs`/`shortest paths`/`dfs and similar` 等 30+ 项）在 `lib/tag-catalog.mjs` 中映射为中文标签，导入回填与提交校验统一归一化（`lib/tag-catalog.mjs`, `lib/form.mjs`）
 - [x] **限流与安全** — 导入接口复用会话鉴权 + 独立限流（`workers/oauth.mjs`）
 - [x] **表单 UI** — 提交表单新增"从 Codeforces 导入"与"粘贴洛谷题号"入口，勾选结果回填为题目块（`lib/form.mjs`, `lib/journal-api.js`, `index.html`, `style.css`）
-- [x] **测试** — `test/oauth-import.test.mjs`（CF 解析/去重/非 AC 过滤、洛谷标题抓取、错误处理与输入校验）；`scripts/verify-import-live.mjs` 本地真实网络全链路验证（鉴权/CSRF/Origin + 真实 Codeforces API 与洛谷页面，无需登录与密钥，不进 CI）
+- [x] **测试** — `test/oauth-import.test.mjs`（CF 解析/去重/非 AC 过滤、提交链接、洛谷标题抓取、错误处理与输入校验）；`test/tag-normalize.test.mjs`（CF 标签合并）；`scripts/verify-import-live.mjs` 本地真实网络全链路验证（鉴权/CSRF/Origin + 真实 Codeforces API 与洛谷页面，无需登录与密钥，不进 CI）
 
 ## 安全
 

@@ -567,3 +567,22 @@ test("边界：线段树分治→复合拆分→分治（非cdq分治/整体二�
   const r = validateLogInput({ problems: [{ id: "e17", name: "X", tags: "线段树分治" }] });
   assert.deepEqual(r.problems[0].tags, ["线段树", "分治"]);
 });
+
+// ============================================================
+// CODEFORCES 英文标签 → 中文合并
+// ============================================================
+
+test("CF 标签：graphs/shortest paths/dp/greedy 合并为中文", () => {
+  const r = validateLogInput({ problems: [{ id: "cf1", name: "X", tags: "graphs, shortest paths, dp, greedy" }] });
+  assert.deepEqual(r.problems[0].tags, ["图论", "最短路", "DP", "贪心"]);
+});
+
+test("CF 标签：data structures/dfs and similar/bitmasks 合并为中文", () => {
+  const r = validateLogInput({ problems: [{ id: "cf2", name: "X", tags: "data structures, dfs and similar, bitmasks, two pointers" }] });
+  assert.deepEqual(r.problems[0].tags, ["数据结构", "DFS", "状态压缩", "双指针"]);
+});
+
+test("CF 标签：未收录的英文标签原样保留（不误伤）", () => {
+  const r = validateLogInput({ problems: [{ id: "cf3", name: "X", tags: "schedules, somecustomtag, graphs" }] });
+  assert.deepEqual(r.problems[0].tags, ["schedules", "somecustomtag", "图论"]);
+});

@@ -347,6 +347,7 @@ export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, maxSu
       name: p.name,
       platform: "Codeforces",
       problemNumber: number,
+      submissionUrl: submission.id && p.contestId ? `https://codeforces.com/contest/${p.contestId}/submission/${submission.id}` : "",
       ...(p.rating ? { rating: p.rating } : {}),
       tags: Array.isArray(p.tags) ? p.tags : [],
     });
