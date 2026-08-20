@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-21T00:43:58.872+08:00",
+  "problems": [
+    {
+      "id": "460d0601-c544-4000-a6af-985258e0b3f3",
+      "name": "[yLOI2023] 分解只因数",
+      "platform": "洛谷",
+      "problemNumber": "P9063",
+      "difficulty": "入门",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
