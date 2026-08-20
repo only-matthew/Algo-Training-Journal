@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-21T00:44:21.624+08:00",
+  "problems": [
+    {
+      "id": "7c3be037-deea-470c-bd6f-648f60b3f398",
+      "name": "[NOIP 2008 提高组] 火柴棒等式",
+      "platform": "洛谷",
+      "problemNumber": "P1149",
+      "difficulty": "普及-",
+      "tags": [
+        "枚举"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
