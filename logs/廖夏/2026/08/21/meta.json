@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-21T22:23:27.725+08:00",
+  "problems": [
+    {
+      "id": "41c9d02d-1a46-4f50-a0b6-59582505a9d9",
+      "name": "[NOIP 2004 提高组] 合并果子",
+      "platform": "洛谷",
+      "problemNumber": "P1090",
+      "difficulty": "普及/提高-",
+      "tags": [
+        "贪心",
+        "哈夫曼编码",
+        "队列"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
