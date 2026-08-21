@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-21T17:17:03.940+08:00",
+  "problems": [
+    {
+      "id": "d705ac2d-10b0-4589-8391-ff045aaad2d5",
+      "name": "凌乱的yyy / 线段覆盖",
+      "platform": "洛谷",
+      "problemNumber": "P1803",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
