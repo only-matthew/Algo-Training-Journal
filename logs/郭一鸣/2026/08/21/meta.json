@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-21T16:24:22.956+08:00",
+  "problems": [
+    {
+      "id": "c4fb435e-5148-4a98-95da-c69735118d0d",
+      "name": "[NOIP 2010 提高组] 机器翻译",
+      "platform": "洛谷",
+      "problemNumber": "P1540",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
