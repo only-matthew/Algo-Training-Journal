@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-21T23:09:06.854+08:00",
+  "problems": [
+    {
+      "id": "a08e9cfa-1321-4e79-9e1c-be8fbf0f7062",
+      "name": "[NOIP 2006 普及组] 明明的随机数",
+      "platform": "洛谷",
+      "problemNumber": "P1059",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
