@@ -314,9 +314,10 @@
           </div>
           <div class="import-tools">
             <span class="import-tools-label">快速导入：</span>
-            <button id="btn-import-cf" type="button" class="btn btn-outline btn-sm" title="拉取该用户在 Codeforces 最近的 AC 记录">Codeforces AC 记录</button>
-            <button id="btn-import-luogu" type="button" class="btn btn-outline btn-sm" title="粘贴洛谷题号自动补全题名">洛谷题号</button>
+            <button id="btn-import-cf" type="button" class="btn btn-outline btn-sm" title="拉取该用户在 Codeforces 最近 3 天的 AC 记录">Codeforces AC 记录</button>
+            <button id="btn-import-luogu" type="button" class="btn btn-outline btn-sm" title="粘贴洛谷题号自动补全题名、难度与题面">洛谷题号</button>
           </div>
+          <p class="import-tools-hint">💡 Codeforces 导入会自动合并中文标签；洛谷不提供标签接口，导入后标签需在表单中手动补充。</p>
           <div id="import-panel" class="import-panel" hidden>
             <div class="import-input-row">
               <input id="import-input" type="text" class="form-input" placeholder="" autocomplete="off" />
