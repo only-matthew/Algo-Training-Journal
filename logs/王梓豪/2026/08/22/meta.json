@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-23T00:14:55.333+08:00",
+  "problems": [
+    {
+      "id": "67b2a533-9745-4d3f-9f3d-77b6092aed77",
+      "name": "歌唱练习",
+      "platform": "洛谷",
+      "problemNumber": "P11769",
+      "difficulty": "普及+/提高",
+      "tags": [
+        "贪心",
+        "后缀和"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
