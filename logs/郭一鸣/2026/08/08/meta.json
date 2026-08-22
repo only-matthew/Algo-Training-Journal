@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-22T23:33:32.637+08:00",
+  "problems": [
+    {
+      "id": "5ded0f17-a33c-497d-8c7e-1e3b0241dd50",
+      "name": "攀爬者",
+      "platform": "洛谷",
+      "problemNumber": "P5143",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
