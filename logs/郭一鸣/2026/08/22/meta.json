@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-22T23:18:29.669+08:00",
+  "problems": [
+    {
+      "id": "b0e7a5d5-d0bc-4a8b-837a-c2248bdc519b",
+      "name": "【深基9.例1】选举学生会",
+      "platform": "洛谷",
+      "problemNumber": "P1271",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
