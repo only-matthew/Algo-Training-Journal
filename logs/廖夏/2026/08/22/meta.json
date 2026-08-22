@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-08-22T19:30:23.085+08:00",
+  "updatedAt": "2026-08-22T20:14:48.242+08:00",
   "problems": [
     {
       "id": "2deefa65-ae22-44b8-848f-3c918d9035ed",
@@ -13,6 +13,19 @@
         "贪心"
       ],
       "reviewStatus": "none"
+    },
+    {
+      "id": "88a3bd72-606f-4c21-ad84-baac3a0ca11f",
+      "name": "删数问题",
+      "platform": "洛谷",
+      "problemNumber": "P1106",
+      "difficulty": "普及/提高-",
+      "tags": [
+        "模拟",
+        "贪心"
+      ],
+      "reviewStatus": "todo",
+      "reviewDue": "2026-08-25"
     }
   ]
 }
