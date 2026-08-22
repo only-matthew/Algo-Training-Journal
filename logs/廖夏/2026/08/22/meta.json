@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-22T19:30:23.085+08:00",
+  "problems": [
+    {
+      "id": "2deefa65-ae22-44b8-848f-3c918d9035ed",
+      "name": "小 A 的糖果",
+      "platform": "洛谷",
+      "problemNumber": "P3817",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
