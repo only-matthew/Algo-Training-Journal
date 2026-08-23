@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-23T14:22:58.101+08:00",
+  "problems": [
+    {
+      "id": "241fee83-8cc8-493f-95aa-826efa066d04",
+      "name": "[NOIP 2002 普及组] 过河卒",
+      "platform": "洛谷",
+      "problemNumber": "P1002",
+      "difficulty": "普及-",
+      "tags": [
+        "DP"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
