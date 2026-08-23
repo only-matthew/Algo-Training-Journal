@@ -11,7 +11,7 @@ const MEMBERS = { "only-matthew": "廖夏", wzzzzhhhhh: "王梓豪", "seanist-is
 const CF_HANDLES = { "only-matthew": "onlymatt", wzzzzhhhhh: "hnuwang", "seanist-isx": "ymguo" };
 const ORIGINS = new Set(["https://train.xialiao.org", "http://localhost:3000", "http://localhost:4173", "http://localhost:5000"]);
 
-const RATE_LIMITS = { summarize: { max: 5, windowMs: 60000 }, "import:codeforces": { max: 10, windowMs: 60000 }, "import:luogu": { max: 10, windowMs: 60000 } };
+const RATE_LIMITS = { summarize: { max: 5, windowMs: 60000 }, "import:codeforces": { max: 10, windowMs: 60000 }, "import:luogu": { max: 10, windowMs: 60000 }, "import:atcoder": { max: 10, windowMs: 60000 } };
 // 注意：此限流表是 isolate 内存态，跨冷启动 / 多个 isolate 不共享；
 // 对小队规模足够，严格防滥用需迁移到 KV 或 Durable Object。
 const rateMap = new Map();
@@ -441,6 +441,63 @@ export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurren
   return results;
 }
 
+// AtCoder：通过 AtCoder Problems 非官方公开 API（kenkoooo.com）拉取最近 days 天内的 AC 提交，
+// 按题目去重（保留最近一次 AC）；题名与难度来自 resources/merged-problems.json。
+// 该 API 不提供题面与标签，故与 Codeforces 一致不返回 description；标签需在表单中手动补充。
+const ATCODER_SUBMISSIONS_URL = "https://kenkoooo.com/atcoder/atcoder-api/v3/user/submissions";
+const ATCODER_PROBLEMS_URL = "https://kenkoooo.com/atcoder/resources/merged-problems.json";
+
+export async function fetchAtCoderAccepted(handle, { fetchImpl = fetch, days = 3, maxPages = 5, perPage = 500 } = {}) {
+  const h = String(handle || "").trim();
+  if (!h) throw Object.assign(new TypeError("请输入 AtCoder 用户名"), { status: 400 });
+  const cutoff = Math.floor(Date.now() / 1000) - days * 86400;
+  // problem_id → 最近一次 AC 时间，用于按题去重并让结果按最新 AC 排序
+  const byProblem = new Map();
+  let fromSecond = cutoff;
+  for (let page = 0; page < maxPages; page += 1) {
+    const response = await fetchImpl(`${ATCODER_SUBMISSIONS_URL}?user=${encodeURIComponent(h)}&from_second=${fromSecond}`);
+    if (!response.ok) throw Object.assign(new Error("AtCoder 接口不可用，请稍后再试"), { status: 502 });
+    const result = await response.json();
+    if (!Array.isArray(result) || !result.length) break;
+    for (const submission of result) {
+      if (submission.result !== "AC" || !submission.problem_id) continue;
+      const epoch = Number(submission.epoch_second);
+      if (!Number.isFinite(epoch) || epoch < cutoff) continue;
+      const prev = byProblem.get(submission.problem_id);
+      if (!prev || epoch > prev.epoch) byProblem.set(submission.problem_id, { problemId: submission.problem_id, epoch });
+    }
+    // API 按 epoch_second 升序返回、单页最多 perPage 条；满页时以下一条时间续页
+    if (result.length < perPage) break;
+    const next = Number(result[result.length - 1].epoch_second);
+    if (!Number.isFinite(next) || next <= fromSecond) break;
+    fromSecond = next + 1;
+  }
+  const entries = [...byProblem.values()].sort((a, b) => b.epoch - a.epoch);
+  if (!entries.length) return [];
+  // 补充题名与难度；题库数据拉取失败时降级为仅返回题号，不影响主流程
+  let byId = null;
+  try {
+    const response = await fetchImpl(ATCODER_PROBLEMS_URL);
+    if (response.ok) {
+      const list = await response.json();
+      byId = new Map();
+      for (const item of list) if (item && item.id) byId.set(item.id, item);
+    }
+  } catch {
+    byId = null;
+  }
+  return entries.map(({ problemId }) => {
+    const meta = byId ? byId.get(problemId) : null;
+    const title = (meta && (meta.title || meta.name)) || "";
+    return {
+      name: title || problemId,
+      platform: "AtCoder",
+      problemNumber: problemId,
+      ...(meta && typeof meta.difficulty === "number" ? { rating: meta.difficulty } : {}),
+    };
+  });
+}
+
 async function handleImport(request, user) {
   const { platform, handle, numbers } = await readJsonBody(request);
   if (platform === "codeforces") {
@@ -455,7 +512,13 @@ async function handleImport(request, user) {
     }
     return json(request, { problems: await fetchLuoguProblems(numbers) });
   }
-  return json(request, { error: "不支持的导入平台，可选 codeforces 或 luogu" }, 400);
+  if (platform === "atcoder") {
+    if (rateExceeded(`import:atcoder:${user.member}`, RATE_LIMITS["import:atcoder"])) {
+      return json(request, { error: "导入请求过于频繁，请稍后再试" }, 429);
+    }
+    return json(request, { problems: await fetchAtCoderAccepted(handle) });
+  }
+  return json(request, { error: "不支持的导入平台，可选 codeforces、luogu 或 atcoder" }, 400);
 }
 
 export default {

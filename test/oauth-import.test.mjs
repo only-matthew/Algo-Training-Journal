@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { fetchCodeforcesAccepted, fetchLuoguProblems } from "../workers/oauth.mjs";
+import { fetchCodeforcesAccepted, fetchLuoguProblems, fetchAtCoderAccepted } from "../workers/oauth.mjs";
 
 const now = Math.floor(Date.now() / 1000);
 const DAY = 86400;
@@ -141,4 +141,97 @@ test("fetchLuoguProblems rejects empty or invalid input without fetching", async
   const noFetch = async () => { throw new Error("must not fetch"); };
   await assert.rejects(fetchLuoguProblems("", { fetchImpl: noFetch }), /题号/);
   await assert.rejects(fetchLuoguProblems("abc def", { fetchImpl: noFetch }), /题号/);
+});
+
+// ── AtCoder（kenkoooo AtCoder Problems API）──
+
+function atcoderCatalog(entries) {
+  return new Response(JSON.stringify(entries));
+}
+
+test("fetchAtCoderAccepted keeps only recent AC submissions, deduped and enriched", async () => {
+  const fetchImpl = async (url) => {
+    const u = String(url);
+    if (u.includes("/resources/merged-problems.json")) {
+      return atcoderCatalog([
+        { id: "abc001_a", title: "A - 高橋君とペンギン", difficulty: 400 },
+        { id: "abc001_b", title: "B - 問題", difficulty: -400 },
+      ]);
+    }
+    assert.match(u, /user\/submissions\?user=tourist&from_second=\d+/);
+    return new Response(JSON.stringify([
+      { id: 1, epoch_second: now - 3600, problem_id: "abc001_a", result: "AC" },
+      // 同一道题 3 天内多次 AC：应只保留最近一次
+      { id: 2, epoch_second: now - 2 * DAY, problem_id: "abc001_a", result: "AC" },
+      // 3 天内的另一道题
+      { id: 3, epoch_second: now - 2 * DAY, problem_id: "abc001_b", result: "AC" },
+      // 超过 3 天：不应出现（from_second 从窗口起点开始，API 不会返回更早记录）
+      { id: 4, epoch_second: now - 4 * DAY, problem_id: "abc001_c", result: "AC" },
+      // 非 AC：应被过滤
+      { id: 5, epoch_second: now - 3600, problem_id: "abc001_d", result: "WA" },
+      // 无题号：应被过滤
+      { id: 6, epoch_second: now - 3600, result: "AC" },
+    ]));
+  };
+
+  const problems = await fetchAtCoderAccepted("tourist", { fetchImpl });
+  assert.equal(problems.length, 2);
+  // 结果按最近 AC 时间倒序
+  assert.deepEqual(problems[0], {
+    name: "A - 高橋君とペンギン",
+    platform: "AtCoder",
+    problemNumber: "abc001_a",
+    rating: 400,
+  });
+  assert.equal(problems[1].problemNumber, "abc001_b");
+  assert.equal(problems[1].rating, -400, "负难度也应映射为 rating");
+});
+
+test("fetchAtCoderAccepted pages forward until the page is not full", async () => {
+  const submissions = [
+    { id: 1, epoch_second: now - 3 * 3600, problem_id: "abc001_a", result: "AC" },
+    { id: 2, epoch_second: now - 2 * 3600, problem_id: "abc002_a", result: "AC" },
+    { id: 3, epoch_second: now - 3600, problem_id: "abc003_a", result: "AC" },
+  ];
+  const urls = [];
+  const fetchImpl = async (url) => {
+    const u = String(url);
+    urls.push(u);
+    if (u.includes("/resources/merged-problems.json")) {
+      return atcoderCatalog([{ id: "abc003_a", title: "C 题", difficulty: null }]);
+    }
+    const from = Number(u.match(/from_second=(\d+)/)[1]);
+    return new Response(JSON.stringify(submissions.filter((s) => s.epoch_second >= from).slice(0, 2)));
+  };
+
+  const problems = await fetchAtCoderAccepted("tourist", { fetchImpl, perPage: 2, maxPages: 3 });
+  const pages = urls.filter((u) => u.includes("from_second="));
+  assert.equal(pages.length, 2, "第 1 页满 2 条应继续翻页");
+  assert.match(pages[1], /from_second=\d+/);
+  assert.ok(Number(pages[1].match(/from_second=(\d+)/)[1]) === now - 2 * 3600 + 1, "续页时间应为上一页最后一条 + 1");
+  assert.deepEqual(problems.map((p) => p.problemNumber), ["abc003_a", "abc002_a", "abc001_a"]);
+  assert.equal(problems[0].name, "C 题", "难度为 null 时不应携带 rating");
+  assert.ok(!("rating" in problems[0]));
+});
+
+test("fetchAtCoderAccepted falls back to problem ids when the catalog is unavailable", async () => {
+  const fetchImpl = async (url) => {
+    if (String(url).includes("/resources/merged-problems.json")) return new Response("boom", { status: 500 });
+    return new Response(JSON.stringify([{ id: 1, epoch_second: now - 3600, problem_id: "abc001_a", result: "AC" }]));
+  };
+  const problems = await fetchAtCoderAccepted("tourist", { fetchImpl });
+  assert.deepEqual(problems, [{ name: "abc001_a", platform: "AtCoder", problemNumber: "abc001_a" }]);
+});
+
+test("fetchAtCoderAccepted rejects empty handle and handles empty results", async () => {
+  await assert.rejects(
+    fetchAtCoderAccepted("  ", { fetchImpl: async () => { throw new Error("must not fetch"); } }),
+    /用户名/,
+  );
+  const fetchImpl = async (url) => {
+    if (String(url).includes("/resources/merged-problems.json")) return atcoderCatalog([]);
+    return new Response("[]");
+  };
+  const problems = await fetchAtCoderAccepted("ghost", { fetchImpl });
+  assert.deepEqual(problems, []);
 });

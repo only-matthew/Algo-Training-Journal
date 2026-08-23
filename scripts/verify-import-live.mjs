@@ -1,7 +1,7 @@
 // 本地真实网络集成测试：直接驱动 Worker 的 /api/import 全链路。
 // 用法：node scripts/test-import-live.mjs
 // 覆盖：会话鉴权（构造加密会话）、CSRF、Origin 校验、Codeforces 真实 API、
-//       洛谷真实页面抓取、限流不误伤。不依赖 wrangler / GitHub OAuth / 云端 secrets。
+//       洛谷真实页面抓取、AtCoder 真实 API、限流不误伤。不依赖 wrangler / GitHub OAuth / 云端 secrets。
 import worker, { seal } from "../workers/oauth.mjs";
 
 const ENV = { SESSION_SECRET: "local-test-secret-0123456789abcdef0123456789abcdef" };
@@ -90,6 +90,27 @@ async function main() {
     check("P3376 题面已解析（非 [object Object]）", (p3376.description || "").length > 20 && !String(p3376.description).includes("[object Object]"), `${(p3376.description || "").length} 字符`);
   } catch (error) {
     check("洛谷接口可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
+  }
+
+  console.log("── AtCoder 真实导入（3 天窗口） ──");
+  try {
+    res = await post("/api/import", { platform: "atcoder", handle: "tourist" }, { cookie, csrf: CSRF });
+    const body = await res.json();
+    const acProblems = body.problems || [];
+    check("AtCoder 请求成功（200）", res.status === 200, `HTTP ${res.status}`);
+    if (acProblems.length) {
+      const first = acProblems[0];
+      check(
+        "题目字段完整（名称/题号/平台）",
+        Boolean(first && first.name && first.problemNumber && first.platform === "AtCoder"),
+        first ? `${first.platform} ${first.problemNumber} · ${first.name}` : "无数据",
+      );
+      check("题号格式符合 AtCoder（如 abc381_a）", /^[a-z0-9_]+$/.test(first.problemNumber), first.problemNumber);
+    } else {
+      check("AtCoder 3 天窗口生效（当前无 AC 记录）", true, "0 题：该用户最近 3 天没有 AC 提交（窗口过滤生效）");
+    }
+  } catch (error) {
+    check("AtCoder 接口可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
   }
 
   console.log("── 限流不误伤 ──");

@@ -26,6 +26,7 @@ import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initShellRen
   document.getElementById("btn-close-modal").addEventListener("click", () => closeModal());
   document.getElementById("btn-add-problem").addEventListener("click", addProblem);
   document.getElementById("btn-import-cf").addEventListener("click", () => openImportPanel("codeforces"));
+  document.getElementById("btn-import-atcoder").addEventListener("click", () => openImportPanel("atcoder"));
   document.getElementById("btn-import-luogu").addEventListener("click", () => openImportPanel("luogu"));
   document.getElementById("btn-import-run").addEventListener("click", runImport);
   document.getElementById("btn-import-cancel").addEventListener("click", closeImportPanel);
