@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-25T00:08:42.396+08:00",
+  "problems": [
+    {
+      "id": "b7f29317-8d6f-46c4-848c-0603735655a3",
+      "name": "[入门赛 #51] 千秋的数学探究活动没有问题",
+      "platform": "洛谷",
+      "problemNumber": "P17309",
+      "difficulty": "普及-",
+      "tags": [
+        "贪心",
+        "递归"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
