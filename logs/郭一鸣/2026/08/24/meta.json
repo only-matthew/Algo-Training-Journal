@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-24T17:22:55.182+08:00",
+  "problems": [
+    {
+      "id": "786ec7ac-5f77-4f0b-856e-d06d2b6f7b02",
+      "name": "删数问题",
+      "platform": "洛谷",
+      "problemNumber": "P1106",
+      "difficulty": "普及/提高-",
+      "tags": [
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
