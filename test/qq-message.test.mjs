@@ -60,12 +60,12 @@ test("buildReply 按指令返回对应消息，未知指令返回 null", async (
   assert.equal(await buildReply("", fetchers), null);
 });
 
-test("buildTreeProgressMessage 增量口径：按顺序推进的当前阶段 + 下一步节点", () => {
+test("buildTreeProgressMessage 知识点覆盖制：选做 3 题算覆盖，下一步指向未覆盖节点", () => {
   const message = buildTreeProgressMessage(roadmap);
-  // 甲：基础算法 5/8 题（63%）→ 当前阶段为基础算法，下一步是进度最低的排序（25%）
-  assert.ok(message.includes("基础算法（第 0 阶段）63%（5/8 题）"));
-  assert.ok(message.includes("下一步：排序（25%）"));
-  assert.ok(message.includes("全队：10/100 题"));
+  // 甲：模拟 4 题（≥3 已覆盖），排序 1 题（<3 未覆盖）→ 当前阶段为基础算法，下一步排序
+  assert.ok(message.includes("基础算法（第 0 阶段）已覆盖 1/2 知识点"));
+  assert.ok(message.includes("下一步：排序（已做 1 题）"));
+  assert.ok(message.includes("全队：已覆盖 2/4 知识点")); // 全树 4 节点，模拟+排序都有人做过题
   assert.ok(!message.includes("搜索（第 1 阶段）"));
 });
 

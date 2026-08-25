@@ -16,7 +16,7 @@ QQ_BOT_NAME = ""
 # QQ 机器人 AI 指令：默认 OpenAI 兼容端点（如 DeepSeek）。API key 请用
 # `npx wrangler secret put QQ_LLM_API_KEY` 配置（不写入本文件）；未配置时回退 Workers AI。
 QQ_LLM_BASE_URL = "https://api.deepseek.com"
-QQ_LLM_MODEL = "deepseek-chat"
+QQ_LLM_MODEL = "deepseek-v4-flash"
 
 [[routes]]
 pattern = "algo-oauth.xialiao.org"

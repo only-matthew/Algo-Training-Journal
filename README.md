@@ -331,7 +331,7 @@ npx wrangler secret put QQ_BOT_SECRET      # Bot Secret（Webhook 签名用，�
 npx wrangler secret put QQ_LLM_API_KEY     # LLM API key（AI 指令用，如 DeepSeek；不配则回退 Workers AI）
 ```
 
-可选变量（`wrangler.toml [vars]`）：`QQ_BOT_NAME`（机器人昵称，用于剔除群消息里的 @提及）、`QQ_DATA_URL`（默认 `https://train.xialiao.org`）、`QQ_LLM_BASE_URL`（默认 `https://api.deepseek.com`）、`QQ_LLM_MODEL`（默认 `deepseek-chat`）。
+可选变量（`wrangler.toml [vars]`）：`QQ_BOT_NAME`（机器人昵称，用于剔除群消息里的 @提及）、`QQ_DATA_URL`（默认 `https://train.xialiao.org`）、`QQ_LLM_BASE_URL`（默认 `https://api.deepseek.com`）、`QQ_LLM_MODEL`（默认 `deepseek-v4-flash`）。
 
 **控制台配置**：
 

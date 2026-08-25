@@ -72,8 +72,11 @@ export function extractCommand(content, botName) {
   return text;
 }
 
-// 知识树进度（增量口径，不做"全部完成"式施压）：
-// 每人只看"当前前沿阶段 + 该阶段完成节点数 + 下一步攻克哪个节点"
+// 知识树进度（知识点覆盖制，解决"每阶段题太多做不完"）：
+// 每个知识点只需选做 COVER_THRESHOLD 题即算"已覆盖"，重在广度、题单选做；
+// 每人只看"当前阶段已覆盖知识点数 + 下一步覆盖哪个知识点"。
+export const COVER_THRESHOLD = 3;
+
 export function buildTreeProgressMessage(roadmap) {
   const phases = (roadmap && roadmap.phases) || [];
   const members = (roadmap && roadmap.members) || [];
@@ -83,46 +86,35 @@ export function buildTreeProgressMessage(roadmap) {
   function memberDone(member, node) {
     const stat = (node.stats && node.stats.byMember) || [];
     const item = stat.find((s) => s.member === member);
-    const total = (node.stats && node.stats.totalProblems) || 0;
-    const done = item ? item.done : 0;
-    return { done, total, pct: total > 0 ? Math.round((done / total) * 100) : 0 };
+    return item ? item.done : 0;
   }
+  const covered = (member, node) => memberDone(member, node) >= COVER_THRESHOLD;
 
-  const overall = roadmap.stats || {};
-  const overallLine = overall.totalProblems
-    ? `全队：${overall.done}/${overall.totalProblems} 题（${overall.pct}%）\n`
-    : "";
+  // 全队覆盖：树中任意成员做过题的知识点（stats.done > 0）
+  const teamCovered = allNodes.filter((n) => (n.stats && n.stats.done) > 0).length;
 
   const lines = members.map((member) => {
-    // 当前阶段：第一个仍有未完成节点的阶段（按顺序推进，避免跳到末尾空阶段）
+    // 当前阶段：第一个仍存在"未覆盖节点"的阶段（按顺序推进）
     let current = null;
     for (const phase of phases) {
-      const hasTodo = (phase.nodes || []).some((n) => {
-        const d = memberDone(member, n);
-        return d.total > 0 && d.done < d.total;
-      });
+      const hasTodo = (phase.nodes || []).some((n) => !covered(member, n));
       if (hasTodo) { current = phase; break; }
     }
-    if (!current) return `· ${member}：全部节点已攻克 🎉`;
+    if (!current) return `· ${member}：全部知识点已覆盖 🎉`;
 
     const phaseNodes = current.nodes || [];
-    let doneSum = 0;
-    let totalSum = 0;
-    for (const n of phaseNodes) {
-      const d = memberDone(member, n);
-      doneSum += d.done;
-      totalSum += d.total;
-    }
-    const phasePct = totalSum > 0 ? Math.round((doneSum / totalSum) * 100) : 0;
+    const doneCount = phaseNodes.filter((n) => covered(member, n)).length;
     const next = phaseNodes
-      .map((n) => ({ title: n.title, ...memberDone(member, n) }))
-      .filter((n) => n.total > 0 && n.done < n.total)
-      .sort((a, b) => a.pct - b.pct)[0];
-    const nextText = next ? `，下一步：${next.title}（${next.pct}%）` : "";
-    return `· ${member}：${current.title}（第 ${current.index ?? 0} 阶段）${phasePct}%（${doneSum}/${totalSum} 题）${nextText}`;
+      .filter((n) => !covered(member, n))
+      .sort((a, b) => (a.difficulty || 0) - (b.difficulty || 0) || memberDone(member, b) - memberDone(member, a))[0];
+    const doneInNext = memberDone(member, next);
+    const nextText = next
+      ? `，下一步：${next.title}${doneInNext > 0 ? `（已做 ${doneInNext} 题）` : "（还没练过）"}`
+      : "";
+    return `· ${member}：${current.title}（第 ${current.index ?? 0} 阶段）已覆盖 ${doneCount}/${phaseNodes.length} 知识点${nextText}`;
   });
 
-  return `📈 知识树进度（${phases.length} 阶段 / ${allNodes.length} 节点）\n${overallLine}${lines.join("\n")}\n💡 本周每人攻克 1 个节点就达标，互相督促！`;
+  return `📈 知识树进度（${phases.length} 阶段 / ${allNodes.length} 知识点）\n全队：已覆盖 ${teamCovered}/${allNodes.length} 知识点\n${lines.join("\n")}\n💡 每个知识点选做 ${COVER_THRESHOLD} 题就算覆盖，重在广度，题单不用刷完！`;
 }
 
 // 按群消息内容返回回复文本；无法识别返回 null
