@@ -1,9 +1,16 @@
 import { initTheme, toggleTheme } from "./lib/theme.mjs";
 import { currentRoute, migrateLegacyHashRoute, initPageNavigation } from "./lib/router.mjs";
 import { initSession, login, logout } from "./lib/auth.mjs";
-import { openModal, closeModal, addProblem, markFormEdited, handleSubmit, onDateChange, openImportPanel, closeImportPanel, runImport, addImportedToForm } from "./lib/form.mjs";
 import { apiRequest } from "./lib/journal-api.js";
 import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initRoadmapRenderer, initShellRenderer, startRefreshTimer, doRefresh } from "./lib/data.mjs";
+
+// 表单模块（~50KB，含 tag-catalog）按需动态导入：日志页首屏与学习路线页都不加载，
+// 仅在用户首次打开提交表单/导入面板时才拉取。
+let formModulePromise = null;
+function withForm() {
+  formModulePromise ??= import("./lib/form.mjs");
+  return formModulePromise;
+}
 
 // ============================================================
 // Bootstrap
@@ -18,26 +25,26 @@ import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initRoadmapR
   // 1. Auth
   await initSession();
 
-  // 2. Event bindings
+  // 2. Event bindings（表单相关均按需动态导入 form.mjs）
   document.getElementById("btn-theme").addEventListener("click", toggleTheme);
   document.getElementById("btn-login").addEventListener("click", login);
   document.getElementById("btn-logout").addEventListener("click", logout);
-  document.getElementById("btn-submit").addEventListener("click", openModal);
-  document.getElementById("btn-close-modal").addEventListener("click", () => closeModal());
-  document.getElementById("btn-add-problem").addEventListener("click", addProblem);
-  document.getElementById("btn-import-cf").addEventListener("click", () => openImportPanel("codeforces"));
-  document.getElementById("btn-import-atcoder").addEventListener("click", () => openImportPanel("atcoder"));
-  document.getElementById("btn-import-luogu").addEventListener("click", () => openImportPanel("luogu"));
-  document.getElementById("btn-import-run").addEventListener("click", runImport);
-  document.getElementById("btn-import-cancel").addEventListener("click", closeImportPanel);
-  document.getElementById("btn-import-add").addEventListener("click", addImportedToForm);
-  document.getElementById("btn-save").addEventListener("click", handleSubmit);
-  document.getElementById("submit-date").addEventListener("change", onDateChange);
-  document.getElementById("btn-retry-date").addEventListener("click", onDateChange);
+  document.getElementById("btn-submit").addEventListener("click", async () => (await withForm()).openModal());
+  document.getElementById("btn-close-modal").addEventListener("click", async () => (await withForm()).closeModal());
+  document.getElementById("btn-add-problem").addEventListener("click", async () => (await withForm()).addProblem());
+  document.getElementById("btn-import-cf").addEventListener("click", async () => (await withForm()).openImportPanel("codeforces"));
+  document.getElementById("btn-import-atcoder").addEventListener("click", async () => (await withForm()).openImportPanel("atcoder"));
+  document.getElementById("btn-import-luogu").addEventListener("click", async () => (await withForm()).openImportPanel("luogu"));
+  document.getElementById("btn-import-run").addEventListener("click", async () => (await withForm()).runImport());
+  document.getElementById("btn-import-cancel").addEventListener("click", async () => (await withForm()).closeImportPanel());
+  document.getElementById("btn-import-add").addEventListener("click", async () => (await withForm()).addImportedToForm());
+  document.getElementById("btn-save").addEventListener("click", async () => (await withForm()).handleSubmit());
+  document.getElementById("submit-date").addEventListener("change", async () => (await withForm()).onDateChange());
+  document.getElementById("btn-retry-date").addEventListener("click", async () => (await withForm()).onDateChange());
   document.getElementById("problem-list").addEventListener("click", async (e) => {
     if (e.target.classList.contains("btn-remove")) {
       e.target.closest(".problem-block").remove();
-      markFormEdited();
+      (await withForm()).markFormEdited();
       return;
     }
     // AI summarize button
@@ -64,7 +71,7 @@ import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initRoadmapR
         if (!res.summary) throw new Error("模型没有返回有效内容，请重试");
         desc.value = res.summary;
         setStatus("已生成概括，可继续修改。", "success");
-        markFormEdited();
+        (await withForm()).markFormEdited();
       } catch (err) {
         setStatus(`概括失败：${err.message}`, "error");
       } finally {
@@ -73,8 +80,8 @@ import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initRoadmapR
       }
     }
   });
-  document.getElementById("problem-list").addEventListener("input", markFormEdited);
-  document.getElementById("problem-list").addEventListener("change", markFormEdited);
+  document.getElementById("problem-list").addEventListener("input", async () => (await withForm()).markFormEdited());
+  document.getElementById("problem-list").addEventListener("change", async () => (await withForm()).markFormEdited());
 
   // 3. Load journal
   try {
@@ -92,6 +99,16 @@ import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initRoadmapR
   } catch {
     document.getElementById("records").textContent = "数据加载失败，请稍后刷新重试。";
     for (const id of ["metric-total", "metric-days", "metric-weekly"]) document.getElementById(id).textContent = "加载失败";
+  }
+
+  // 非学习路线页面：空闲时预加载表单模块，避免首次点击"提交/修改记录"时等待动态导入
+  const current = currentRoute();
+  if (current !== "roadmap" && !current.startsWith("roadmap/")) {
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(() => { withForm(); }, { timeout: 3000 });
+    } else {
+      setTimeout(() => { withForm(); }, 1500);
+    }
   }
 
   // 4. Setup refresh timer
