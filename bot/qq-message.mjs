@@ -53,9 +53,9 @@ export function buildStatsMessage(overview) {
   return `📊 近 30 天统计（${recent.start || ""} ~ ${recent.end || ""}）\n${allLine}${lines.join("\n")}`;
 }
 
-export const HELP_TEXT = `🤖 训练日志助手指令\n· 今日复习 / 复习：查看今日复习队列\n· 今日打卡 / 打卡：查看今日打卡情况\n· 统计 / 近30天：查看近 30 天训练统计\n· 帮助：显示本列表`;
+export const HELP_TEXT = `🤖 训练日志助手指令\n· 今日复习 / 复习：今日复习队列\n· 今日打卡 / 打卡：今日打卡情况\n· 统计 / 近30天：近 30 天统计\n· 知识树 / 进度：知识树当前进度与下一步\n· AI <问题>：AI 教练答疑（如：AI 图论怎么学）\n· 帮助：显示本列表`;
 
-const COMMAND_RE = /^(今日复习|复习|复习队列|待复习|今日打卡|打卡|今天打卡|出勤|统计|近30天|近三十天|近况|汇总|帮助|help|菜单|指令)/i;
+const COMMAND_RE = /^(今日复习|复习|复习队列|待复习|今日打卡|打卡|今天打卡|出勤|统计|近30天|近三十天|近况|汇总|知识树|进度|督促|树|节点|帮助|help|菜单|指令)/i;
 
 // 从群 @ 消息内容中提取指令文本：
 // 1. 剔除 @提及 与可选机器人昵称；2. 锚定匹配指令；3. 若开头是疑似昵称的 token，去掉后再匹配
@@ -72,20 +72,90 @@ export function extractCommand(content, botName) {
   return text;
 }
 
+// 知识树进度（增量口径，不做"全部完成"式施压）：
+// 每人只看"当前前沿阶段 + 该阶段完成节点数 + 下一步攻克哪个节点"
+export function buildTreeProgressMessage(roadmap) {
+  const phases = (roadmap && roadmap.phases) || [];
+  const members = (roadmap && roadmap.members) || [];
+  const allNodes = phases.flatMap((p) => (p.nodes || []).map((n) => ({ ...n, phase: p })));
+  if (!allNodes.length || !members.length) return "知识树数据暂不可用，稍后再试。";
+
+  function memberDone(member, node) {
+    const stat = (node.stats && node.stats.byMember) || [];
+    const item = stat.find((s) => s.member === member);
+    const total = (node.stats && node.stats.totalProblems) || 0;
+    const done = item ? item.done : 0;
+    return { done, total, pct: total > 0 ? Math.round((done / total) * 100) : 0 };
+  }
+
+  const overall = roadmap.stats || {};
+  const overallLine = overall.totalProblems
+    ? `全队：${overall.done}/${overall.totalProblems} 题（${overall.pct}%）\n`
+    : "";
+
+  const lines = members.map((member) => {
+    // 当前阶段：第一个仍有未完成节点的阶段（按顺序推进，避免跳到末尾空阶段）
+    let current = null;
+    for (const phase of phases) {
+      const hasTodo = (phase.nodes || []).some((n) => {
+        const d = memberDone(member, n);
+        return d.total > 0 && d.done < d.total;
+      });
+      if (hasTodo) { current = phase; break; }
+    }
+    if (!current) return `· ${member}：全部节点已攻克 🎉`;
+
+    const phaseNodes = current.nodes || [];
+    let doneSum = 0;
+    let totalSum = 0;
+    for (const n of phaseNodes) {
+      const d = memberDone(member, n);
+      doneSum += d.done;
+      totalSum += d.total;
+    }
+    const phasePct = totalSum > 0 ? Math.round((doneSum / totalSum) * 100) : 0;
+    const next = phaseNodes
+      .map((n) => ({ title: n.title, ...memberDone(member, n) }))
+      .filter((n) => n.total > 0 && n.done < n.total)
+      .sort((a, b) => a.pct - b.pct)[0];
+    const nextText = next ? `，下一步：${next.title}（${next.pct}%）` : "";
+    return `· ${member}：${current.title}（第 ${current.index ?? 0} 阶段）${phasePct}%（${doneSum}/${totalSum} 题）${nextText}`;
+  });
+
+  return `📈 知识树进度（${phases.length} 阶段 / ${allNodes.length} 节点）\n${overallLine}${lines.join("\n")}\n💡 本周每人攻克 1 个节点就达标，互相督促！`;
+}
+
 // 按群消息内容返回回复文本；无法识别返回 null
-export async function buildReply(content, fetchOverview, botName = "") {
+// fetchers: { overview: () => Promise<json>, roadmap: () => Promise<json> }
+// opts: { botName, aiReply: async (question) => string | null }
+export async function buildReply(content, fetchers, opts = {}) {
+  const { botName = "", aiReply = null } = opts;
   const cmdText = extractCommand(content, botName);
   if (/^(今日复习|复习|复习队列|待复习)/.test(cmdText)) {
-    return buildReviewMessage(await fetchOverview());
+    return buildReviewMessage(await fetchers.overview());
   }
   if (/^(今日打卡|打卡|今天打卡|出勤)/.test(cmdText)) {
-    return buildCheckinMessage(await fetchOverview());
+    return buildCheckinMessage(await fetchers.overview());
   }
   if (/^(统计|近30天|近三十天|近况|汇总)/.test(cmdText)) {
-    return buildStatsMessage(await fetchOverview());
+    return buildStatsMessage(await fetchers.overview());
+  }
+  if (/^(知识树|进度|督促|树|节点)/.test(cmdText)) {
+    return buildTreeProgressMessage(await fetchers.roadmap());
   }
   if (/^(帮助|help|菜单|指令)/.test(cmdText)) {
     return HELP_TEXT;
+  }
+  const aiMatch = cmdText.match(/^(?:ai|问答|问问|提问|分析)\s*[:：]?\s*(.*)$/i);
+  if (aiMatch) {
+    const question = aiMatch[1].trim().slice(0, 500);
+    if (!question) return "请带上问题，例如：AI 图论怎么学";
+    if (!aiReply) return "AI 指令未配置（Webhook 部署需设置 QQ_LLM_API_KEY 等环境变量）";
+    try {
+      return await aiReply(question);
+    } catch (error) {
+      return `⚠️ AI 出错了：${error.message}`;
+    }
   }
   return null;
 }

@@ -178,3 +178,103 @@ test("Webhook 事件推送：验签失败 403、通过则 ACK 并被动回复", 
 
   delete globalThis.fetch;
 });
+
+test("Webhook 知识树指令：拉取 roadmap.json 并回复进度", async () => {
+  const secret = "naOC0ocQE3shWLAfffVLB1rhYPG7";
+  const env = { QQ_BOT_SECRET: secret, QQ_APP_ID: "11111111", QQ_CLIENT_SECRET: "cs", QQ_BOT_NAME: "", QQ_DATA_URL: "https://example.com" };
+  const roadmap = {
+    members: ["廖夏"],
+    stats: { totalProblems: 100, done: 5, pct: 5, byMember: [] },
+    phases: [
+      {
+        id: "p0", index: 0, title: "基础算法", nodes: [
+          { id: "a", title: "模拟", stats: { totalProblems: 4, done: 4, pct: 100, byMember: [{ member: "廖夏", done: 4, pct: 100 }] } },
+          { id: "b", title: "排序", stats: { totalProblems: 4, done: 1, pct: 25, byMember: [{ member: "廖夏", done: 1, pct: 25 }] } },
+        ],
+      },
+    ],
+  };
+  const calls = [];
+  globalThis.fetch = async (url, options = {}) => {
+    calls.push({ url: String(url), body: options.body });
+    if (String(url).includes("overview.json")) return new Response(JSON.stringify({ members: ["廖夏"] }), { status: 200 });
+    if (String(url).includes("roadmap.json")) return new Response(JSON.stringify(roadmap), { status: 200 });
+    if (String(url).includes("getAppAccessToken")) return new Response(JSON.stringify({ access_token: "T", expires_in: "7200" }), { status: 200 });
+    if (String(url).includes("/v2/groups/")) return new Response(JSON.stringify({ id: "s" }), { status: 200 });
+    return new Response(JSON.stringify({ code: 404 }), { status: 404 });
+  };
+
+  const payload = { id: "evt2", op: 0, s: 1, t: "GROUP_AT_MESSAGE_CREATE", d: { id: "msg2", group_openid: "G2", author: { member_openid: "u" }, content: "知识树", msg_type: 0 } };
+  const bodyText = JSON.stringify(payload);
+  const sigHex = await signRequestBody(secret, "1725442341", bodyText);
+
+  let bg = null;
+  const response = await handleQqBotWebhook(
+    new Request("https://example.com/api/qq-bot", {
+      method: "POST",
+      headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": "1725442341" },
+      body: bodyText,
+    }),
+    env,
+    { waitUntil(p) { bg = p; } },
+  );
+  assert.equal(response.status, 200);
+  await bg;
+  const sendCall = calls.find((c) => c.url.includes("/v2/groups/G2/messages"));
+  assert.ok(sendCall, "应回复知识树进度");
+  const body = JSON.parse(sendCall.body);
+  assert.ok(body.content.includes("知识树进度"));
+  assert.ok(body.content.includes("下一步：排序"));
+
+  delete globalThis.fetch;
+});
+
+test("Webhook AI 指令：走配置的 OpenAI 兼容端点", async () => {
+  const secret = "naOC0ocQE3shWLAfffVLB1rhYPG7";
+  const env = {
+    QQ_BOT_SECRET: secret, QQ_APP_ID: "11111111", QQ_CLIENT_SECRET: "cs", QQ_BOT_NAME: "",
+    QQ_DATA_URL: "https://example.com",
+    QQ_LLM_API_KEY: "sk-test", QQ_LLM_BASE_URL: "https://llm.example.com", QQ_LLM_MODEL: "deepseek-chat",
+  };
+  const calls = [];
+  globalThis.fetch = async (url, options = {}) => {
+    calls.push({ url: String(url), body: options.body });
+    const u = String(url);
+    if (u.includes("overview.json")) return new Response(JSON.stringify({ members: ["廖夏"] }), { status: 200 });
+    if (u.includes("getAppAccessToken")) return new Response(JSON.stringify({ access_token: "T", expires_in: "7200" }), { status: 200 });
+    if (u.includes("/v2/groups/")) return new Response(JSON.stringify({ id: "s" }), { status: 200 });
+    if (u.includes("chat/completions")) {
+      return new Response(JSON.stringify({ choices: [{ message: { content: "建议先掌握 DFS 与 BFS。" } }] }), { status: 200 });
+    }
+    return new Response(JSON.stringify({ code: 404 }), { status: 404 });
+  };
+
+  const payload = { id: "evt3", op: 0, s: 1, t: "GROUP_AT_MESSAGE_CREATE", d: { id: "msg3", group_openid: "G3", author: { member_openid: "u" }, content: "AI 搜索怎么入门", msg_type: 0 } };
+  const bodyText = JSON.stringify(payload);
+  const sigHex = await signRequestBody(secret, "1725442341", bodyText);
+
+  let bg = null;
+  const response = await handleQqBotWebhook(
+    new Request("https://example.com/api/qq-bot", {
+      method: "POST",
+      headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": "1725442341" },
+      body: bodyText,
+    }),
+    env,
+    { waitUntil(p) { bg = p; } },
+  );
+  assert.equal(response.status, 200);
+  await bg;
+
+  const llmCall = calls.find((c) => c.url.includes("chat/completions"));
+  assert.ok(llmCall, "应调用 LLM 端点");
+  const llmBody = JSON.parse(llmCall.body);
+  assert.equal(llmBody.model, "deepseek-chat");
+  assert.ok(llmBody.messages.some((m) => m.content.includes("搜索怎么入门")));
+
+  const sendCall = calls.find((c) => c.url.includes("/v2/groups/G3/messages"));
+  assert.ok(sendCall, "应回复 AI 结果");
+  assert.ok(JSON.parse(sendCall.body).content.includes("DFS 与 BFS"));
+
+  delete globalThis.fetch;
+});

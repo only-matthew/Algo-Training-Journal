@@ -309,6 +309,8 @@ AI 概括不需要把模型密钥写入前端或仓库；`workers/wrangler.toml`
 | `今日复习` / `复习` | 今日复习队列（含逾期高亮），数据来自站点 `data/overview.json` |
 | `今日打卡` / `打卡` | 今日各成员打卡情况（已打卡/未打卡） |
 | `统计` / `近30天` | 近 30 天训练统计 |
+| `知识树` / `进度` | 知识树当前阶段进度 + 下一步攻克节点（增量口径，不要求全部完成） |
+| `AI <问题>` | AI 教练答疑（OpenAI 兼容端点，见下方 LLM 配置） |
 | `帮助` | 指令列表 |
 
 ### 推荐方案：Webhook + Cloudflare Worker（免费边缘计算，无需服务器）
@@ -326,9 +328,10 @@ npx wrangler deploy
 npx wrangler secret put QQ_APP_ID          # 机器人 AppID
 npx wrangler secret put QQ_CLIENT_SECRET   # 客户端密钥
 npx wrangler secret put QQ_BOT_SECRET      # Bot Secret（Webhook 签名用，控制台-开发设置）
+npx wrangler secret put QQ_LLM_API_KEY     # LLM API key（AI 指令用，如 DeepSeek；不配则回退 Workers AI）
 ```
 
-可选变量（`wrangler.toml [vars]`）：`QQ_BOT_NAME`（机器人昵称，用于剔除群消息里的 @提及）、`QQ_DATA_URL`（默认 `https://train.xialiao.org`）。
+可选变量（`wrangler.toml [vars]`）：`QQ_BOT_NAME`（机器人昵称，用于剔除群消息里的 @提及）、`QQ_DATA_URL`（默认 `https://train.xialiao.org`）、`QQ_LLM_BASE_URL`（默认 `https://api.deepseek.com`）、`QQ_LLM_MODEL`（默认 `deepseek-chat`）。
 
 **控制台配置**：
 

@@ -14,11 +14,15 @@
 //   QQ_BOT_TOKEN     机器人令牌（Identify 使用 "Bot {appid}.{token}"，控制台 - 开发设置）
 //   QQ_BOT_NAME      机器人昵称，用于从消息内容中剔除 @提及（可选，默认空）
 //   QQ_DATA_URL      站点数据地址，默认 https://train.xialiao.org
+//   AI 指令（OpenAI 兼容端点，如 DeepSeek）：
+//   QQ_LLM_API_KEY   必填才启用 AI 指令
+//   QQ_LLM_BASE_URL  默认 https://api.deepseek.com
+//   QQ_LLM_MODEL     默认 deepseek-chat
 //
 // 首次运行：把机器人拉进目标群后，在群里 @机器人 发任意消息，
 // 控制台会打印该群的 group_openid（后续配置定时/其他用途需要）。
 
-import { fetchAccessToken, getGatewayUrl, sendGroupMessage } from "./qq-bot.mjs";
+import { fetchAccessToken, getGatewayUrl, sendGroupMessage, chatCompletion } from "./qq-bot.mjs";
 import { buildReply } from "./qq-message.mjs";
 
 const APP_ID = process.env.QQ_APP_ID;
@@ -26,6 +30,11 @@ const CLIENT_SECRET = process.env.QQ_CLIENT_SECRET;
 const BOT_TOKEN = process.env.QQ_BOT_TOKEN;
 const BOT_NAME = process.env.QQ_BOT_NAME || "";
 const DATA_URL = (process.env.QQ_DATA_URL || "https://train.xialiao.org").replace(/\/+$/, "");
+const LLM = {
+  baseUrl: process.env.QQ_LLM_BASE_URL || "https://api.deepseek.com",
+  apiKey: process.env.QQ_LLM_API_KEY || "",
+  model: process.env.QQ_LLM_MODEL || "deepseek-chat",
+};
 
 const INTENTS_GROUP_AND_C2C = 1 << 25; // GROUP_AND_C2C_EVENT：群 @ 消息 / 加群事件等
 const RECONNECT_DELAY_MS = 5000;
@@ -52,6 +61,28 @@ async function fetchOverview() {
   return response.json();
 }
 
+async function fetchRoadmap() {
+  const response = await fetch(`${DATA_URL}/data/roadmap.json`);
+  if (!response.ok) throw new Error(`知识树数据加载失败（HTTP ${response.status}）`);
+  return response.json();
+}
+
+// AI 指令（本地监听）：配置 QQ_LLM_API_KEY 后走 OpenAI 兼容端点；未配置时 buildReply 返回提示
+async function aiReply(question) {
+  const content = await chatCompletion({
+    baseUrl: LLM.baseUrl,
+    apiKey: LLM.apiKey,
+    model: LLM.model,
+    messages: [
+      { role: "system", content: "你是算法竞赛教练（ICPC/NOI/蓝桥杯方向），熟悉 C++ 算法与数据结构。用简洁中文回答，必要时给简短代码片段；回答控制在 300 字以内；不确定时明确说明。" },
+      { role: "user", content: `${question}\n/no_think` },
+    ],
+    maxTokens: 600,
+    temperature: 0.6,
+  });
+  return content ? content.replace(/\s+/g, " ").trim().slice(0, 1500) : "AI 指令未配置：请设置 QQ_LLM_API_KEY。";
+}
+
 // 剔除消息中的 @机器人 提及与多余空白，得到指令文本（与 Worker 版共用 buildReply 的 extractCommand）
 async function handleGroupAtMessage(event) {
   const data = event.d || {};
@@ -65,7 +96,11 @@ async function handleGroupAtMessage(event) {
 
   let reply;
   try {
-    reply = await buildReply(content, fetchOverview, BOT_NAME);
+    reply = await buildReply(
+      content,
+      { overview: fetchOverview, roadmap: fetchRoadmap },
+      { botName: BOT_NAME, aiReply },
+    );
   } catch (error) {
     reply = `⚠️ 查询失败：${error.message}`;
   }

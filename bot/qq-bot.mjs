@@ -53,3 +53,22 @@ export async function sendGroupMessage(groupOpenid, content, { token, msgId, eve
   }
   return data;
 }
+
+// 通用 LLM 对话（OpenAI 兼容接口，如 DeepSeek / 通义 / OpenAI）。
+// 供 Worker（Webhook）与本地监听（listen.mjs）共用。
+export async function chatCompletion({ baseUrl, apiKey, model, messages, maxTokens = 600, temperature = 0.6 }) {
+  const base = String(baseUrl || "").replace(/\/+$/, "");
+  if (!base || !apiKey) return null;
+  const response = await fetch(`${base}/chat/completions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${apiKey}` },
+    body: JSON.stringify({ model: String(model || "deepseek-chat"), messages, max_tokens: maxTokens, temperature }),
+  });
+  if (!response.ok) {
+    const text = await response.text().catch(() => "");
+    throw new Error(`LLM 请求失败（HTTP ${response.status}）：${text.slice(0, 200)}`);
+  }
+  const data = await response.json();
+  const content = data && data.choices && data.choices[0] && data.choices[0].message && data.choices[0].message.content;
+  return String(content || "").trim() || null;
+}

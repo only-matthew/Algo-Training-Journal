@@ -22,7 +22,7 @@ import { sha512 } from "@noble/hashes/sha2.js";
 import * as ed from "@noble/ed25519";
 ed.hashes.sha512 = sha512;
 
-import { fetchAccessToken, sendGroupMessage } from "../bot/qq-bot.mjs";
+import { fetchAccessToken, sendGroupMessage, chatCompletion } from "../bot/qq-bot.mjs";
 import { buildReply } from "../bot/qq-message.mjs";
 
 const JSON_HEADERS = { "Content-Type": "application/json; charset=utf-8" };
@@ -73,12 +73,61 @@ async function fetchOverview(dataUrl) {
   return response.json();
 }
 
+async function fetchRoadmap(dataUrl) {
+  const response = await fetch(`${dataUrl}/data/roadmap.json`);
+  if (!response.ok) throw new Error(`知识树数据加载失败（HTTP ${response.status}）`);
+  return response.json();
+}
+
+const AI_SYSTEM_PROMPT =
+  "你是算法竞赛教练（ICPC/NOI/蓝桥杯方向），熟悉 C++ 算法与数据结构。用简洁中文回答，必要时给简短代码片段；回答控制在 300 字以内；不确定时明确说明。不要使用 Markdown 表格。";
+
+// AI 指令：优先走配置的 OpenAI 兼容端点（QQ_LLM_API_KEY），否则回退 Workers AI（env.AI）
+export async function qqAiReply(question, env) {
+  const messages = [
+    { role: "system", content: AI_SYSTEM_PROMPT },
+    { role: "user", content: `${question}\n/no_think` },
+  ];
+  let content = null;
+  if (env.QQ_LLM_API_KEY) {
+    content = await chatCompletion({
+      baseUrl: env.QQ_LLM_BASE_URL || "https://api.deepseek.com",
+      apiKey: env.QQ_LLM_API_KEY,
+      model: env.QQ_LLM_MODEL || "deepseek-chat",
+      messages,
+      maxTokens: 600,
+      temperature: 0.6,
+    });
+  } else if (env.AI) {
+    const result = await env.AI.run(env.QQ_LLM_MODEL || "@cf/qwen/qwen3-30b-a3b-fp8", {
+      max_tokens: 600,
+      temperature: 0.6,
+      messages,
+    });
+    content = result && result.response ? String(result.response) : null;
+  }
+  if (!content) return "AI 指令未配置：请设置 QQ_LLM_API_KEY（及 QQ_LLM_BASE_URL / QQ_LLM_MODEL）。";
+  return content
+    .replace(/<think>[\s\S]*?<\/think>/gi, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 1500);
+}
+
 // 处理群 @ 消息：识别指令 → 拉取站点数据 → 被动回复
 async function processGroupAtMessage(data, env) {
   const groupOpenid = data && data.group_openid;
   const msgId = data && data.id;
   if (!groupOpenid) return;
-  const reply = await buildReply(data.content, () => fetchOverview(env.QQ_DATA_URL || "https://train.xialiao.org"), env.QQ_BOT_NAME || "");
+  const dataUrl = env.QQ_DATA_URL || "https://train.xialiao.org";
+  const reply = await buildReply(
+    data.content,
+    {
+      overview: () => fetchOverview(dataUrl),
+      roadmap: () => fetchRoadmap(dataUrl),
+    },
+    { botName: env.QQ_BOT_NAME || "", aiReply: (question) => qqAiReply(question, env) },
+  );
   if (!reply) return;
   const { token } = await fetchAccessToken({ appId: env.QQ_APP_ID, clientSecret: env.QQ_CLIENT_SECRET });
   await sendGroupMessage(groupOpenid, reply, { token, msgId });
