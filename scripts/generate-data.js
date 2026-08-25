@@ -744,6 +744,10 @@ async function generateRoadmapPages(html, roadmapData, nodeDataById) {
       canonical: absoluteUrl(segments),
     });
     const $ = cheerio.load(page);
+    // 预渲染标记：data-route 标识该页内容对应的路由，data-members 内嵌成员列表。
+    // 前端首屏命中 data-route 时直接使用预渲染 HTML，不再拉取 roadmap.json / 节点 JSON。
+    $("#roadmap-content").attr("data-route", segments.join("/"));
+    $("#roadmap-content").attr("data-members", JSON.stringify(roadmapData.members));
     $("#roadmap-content").html(contentHtml);
     writeRouteIndex(addSelfClosingVoids($.html()), segments);
   }
