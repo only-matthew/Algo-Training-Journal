@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-25T23:54:03.123+08:00",
+  "problems": [
+    {
+      "id": "be08357a-bda1-4df2-9b7a-acee6cd275a0",
+      "name": "[NOIP 2018 提高组] 铺设道路",
+      "platform": "洛谷",
+      "problemNumber": "P5019",
+      "difficulty": "普及/提高-",
+      "tags": [
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
