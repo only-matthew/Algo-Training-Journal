@@ -20,6 +20,12 @@
   "lanqiao": [
     "大学B组"
   ],
+  "noiLabels": [
+    "树型动态规划"
+  ],
+  "lanqiaoLabels": [
+    "树形 DP"
+  ],
   "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》5.6 · NOI 大纲·提高级 · 蓝桥杯·大学B组",
   "oiTree": [],
   "problems": [

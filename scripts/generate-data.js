@@ -670,6 +670,8 @@ async function generateRoadmapData(logs) {
         ref: node.ref || "",
         noiLevels: node.noiLevels || [],
         lanqiao: node.lanqiao || [],
+        noiLabels: node.noiLabels || [],
+        lanqiaoLabels: node.lanqiaoLabels || [],
         oiTree: node.oiTree || [],
       },
       stats,

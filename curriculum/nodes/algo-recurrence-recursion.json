@@ -19,6 +19,12 @@
   "lanqiao": [
     "大学B组"
   ],
+  "noiLabels": [
+    "递归法",
+    "递归函数",
+    "递推法"
+  ],
+  "lanqiaoLabels": [],
   "ref": "洛谷·深入浅出 · NOI 大纲·入门级 · 蓝桥杯·大学B组",
   "oiTree": [],
   "problems": [

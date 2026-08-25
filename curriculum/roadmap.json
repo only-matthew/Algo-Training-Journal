@@ -142,41 +142,5 @@
       "graph-network-flow",
       "ds-block-mo"
     ]
-  },
-  {
-    "id": "phase-7",
-    "index": 7,
-    "title": "NOI 竞赛大纲（2025）",
-    "subtitle": "按 CCF《NOI 竞赛大纲（2025 年修订版）》分级：入门级（CSP-J）/ 提高级（NOIP·CSP-S）/ NOI 级",
-    "goal": "对照 NOI 大纲三级知识清单自检，明确各级别应掌握的知识点与配套练习。",
-    "milestone": "完成各级知识清单题单，覆盖对应级别全部考点。",
-    "difficulty": [
-      1,
-      10
-    ],
-    "reference": "依据：CCF《NOI 竞赛大纲（2025 年修订版）》",
-    "nodes": [
-      "noi-basic",
-      "noi-intermediate",
-      "noi-advanced"
-    ]
-  },
-  {
-    "id": "phase-8",
-    "index": 8,
-    "title": "蓝桥杯考点（第十七届）",
-    "subtitle": "按《第十七届蓝桥杯大赛软件赛竞赛大纲》分大学 C / B / A 组考点清单",
-    "goal": "对照蓝桥杯三组考点清单训练，覆盖各组别竞赛考点。",
-    "milestone": "完成各组考点题单，按组别难度递进刷题。",
-    "difficulty": [
-      1,
-      10
-    ],
-    "reference": "依据：《第十七届蓝桥杯大赛软件赛竞赛大纲》",
-    "nodes": [
-      "lq-c",
-      "lq-b",
-      "lq-a"
-    ]
   }
 ]

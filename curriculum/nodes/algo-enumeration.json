@@ -17,6 +17,12 @@
   "lanqiao": [
     "大学C组"
   ],
+  "noiLabels": [
+    "枚举法"
+  ],
+  "lanqiaoLabels": [
+    "枚举"
+  ],
   "ref": "洛谷·深入浅出 · 刘汝佳《算法竞赛入门经典》暴力求解法 · NOI 大纲·入门级 · 蓝桥杯·大学C组",
   "oiTree": [],
   "problems": [

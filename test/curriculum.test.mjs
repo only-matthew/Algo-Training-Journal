@@ -114,3 +114,29 @@ test("readCurriculum 读取真实数据并通过校验（若存在）", () => {
   for (const phase of data.phases) for (const id of phase.nodes) phaseNodeIds.add(id);
   assert.equal(phaseNodeIds.size, data.nodes.size);
 });
+
+test("NOI 大纲与蓝桥杯考点已合并进知识树节点（无孤立知识清单节点）", () => {
+  const data = readCurriculum("curriculum");
+  // 不再存在 noi-* / lq-* 知识清单节点与对应阶段
+  for (const id of data.nodes.keys()) {
+    assert.ok(!id.startsWith("noi-"), `不应存在 NOI 知识清单节点 ${id}`);
+    assert.ok(!id.startsWith("lq-"), `不应存在蓝桥杯知识清单节点 ${id}`);
+  }
+  // 每个节点都带 NOI/蓝桥杯标签数组（可为空）
+  for (const node of data.nodes.values()) {
+    assert.ok(Array.isArray(node.noiLabels), `节点 ${node.id} 缺少 noiLabels`);
+    assert.ok(Array.isArray(node.lanqiaoLabels), `节点 ${node.id} 缺少 lanqiaoLabels`);
+    assert.ok(Array.isArray(node.noiLevels), `节点 ${node.id} 缺少 noiLevels`);
+    assert.ok(Array.isArray(node.lanqiao), `节点 ${node.id} 缺少 lanqiao`);
+  }
+  // 抽查关键标签归并：KMP → 字符串；LCA/树链剖分 → 树；逆元/CRT → 进阶数论
+  const find = (id) => data.nodes.get(id);
+  assert.ok((find("string-basics").noiLabels || []).some((l) => l.includes("KMP")));
+  assert.ok((find("string-basics").lanqiaoLabels || []).some((l) => l.includes("KMP")));
+  assert.ok((find("graph-tree").noiLabels || []).some((l) => l.includes("LCA")));
+  assert.ok((find("graph-tree").lanqiaoLabels || []).some((l) => l.includes("LCA") || l.includes("最近共同祖先")));
+  assert.ok((find("math-number-theory").noiLabels || []).some((l) => l.includes("逆元")));
+  assert.ok((find("math-number-theory").noiLabels || []).some((l) => l.includes("中国剩余定理")));
+  assert.ok((find("math-number-theory").lanqiaoLabels || []).some((l) => l.includes("逆元")));
+  assert.ok((find("algo-sorting").lanqiaoLabels || []).some((l) => l.includes("排序")));
+});

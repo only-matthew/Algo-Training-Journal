@@ -15,10 +15,18 @@
   ],
   "description": "掌握 Kruskal 与 Prim 算法，理解最小生成树的建模与变形。",
   "noiLevels": [
-    "提高级"
+    "提高级",
+    "NOI级"
   ],
   "lanqiao": [
     "大学B组"
+  ],
+  "noiLabels": [
+    "最小生成树：Prim、Kruskal 等",
+    "最小树形图"
+  ],
+  "lanqiaoLabels": [
+    "最小生成树"
   ],
   "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》10.9 · NOI 大纲·提高级 · 蓝桥杯·大学B组",
   "oiTree": [

@@ -20,6 +20,10 @@
   "lanqiao": [
     "大学A组"
   ],
+  "noiLabels": [
+    "线段树"
+  ],
+  "lanqiaoLabels": [],
   "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》4.3 · NOI 大纲·提高级 · 蓝桥杯·大学A组",
   "oiTree": [
     "线段树 (Segment Tree)（区间修改区间查询 / 权值线段树）"

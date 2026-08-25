@@ -22,6 +22,11 @@
   "lanqiao": [
     "大学A组"
   ],
+  "noiLabels": [
+    "尼姆(Nim)博弈",
+    "SG 函数"
+  ],
+  "lanqiaoLabels": [],
   "ref": "NOI 大纲·提高级/NOI级 · 蓝桥杯·大学A组",
   "oiTree": [
     "SG 函数",

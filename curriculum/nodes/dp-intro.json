@@ -21,6 +21,10 @@
   "lanqiao": [
     "大学C组"
   ],
+  "noiLabels": [
+    "动态规划的基本思路"
+  ],
+  "lanqiaoLabels": [],
   "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》5.1 · NOI 大纲·入门级/提高级 · 蓝桥杯·大学C组",
   "oiTree": [],
   "problems": [

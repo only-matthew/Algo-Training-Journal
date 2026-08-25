@@ -21,6 +21,10 @@
   "lanqiao": [
     "大学B组"
   ],
+  "noiLabels": [
+    "单调队列"
+  ],
+  "lanqiaoLabels": [],
   "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》2.2 · NOI 大纲·提高级 · 蓝桥杯·大学B组",
   "oiTree": [],
   "problems": [

@@ -16,10 +16,24 @@
   ],
   "description": "掌握 Manacher、回文树、AC 自动机、后缀数组与后缀自动机等高级字符串算法。",
   "noiLevels": [
+    "提高级",
     "NOI级"
   ],
   "lanqiao": [
+    "大学B组",
     "大学A组"
+  ],
+  "noiLabels": [
+    "后缀树",
+    "后缀数组",
+    "后缀自动机",
+    "扩展 KMP 算法",
+    "有穷自动机的概念",
+    "AC 自动机",
+    "Manacher 算法"
+  ],
+  "lanqiaoLabels": [
+    "Manacher"
   ],
   "ref": "罗勇军《算法竞赛》9.2/9.4/9.6/9.7/9.8 · NOI 大纲·NOI级 · 蓝桥杯·大学A组",
   "oiTree": [

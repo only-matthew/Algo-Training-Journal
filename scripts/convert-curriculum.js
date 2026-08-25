@@ -1,14 +1,16 @@
 // scripts/convert-curriculum.js
 // 生成学习路线数据层（多源合并）：
-//   - curriculum/nodes/<id>.json  43 个知识点节点（40 原有 + 计算几何/字符串进阶/网络流）
-//   - curriculum/nodes/<id>.json  6 个 NOI 大纲 / 蓝桥杯知识清单节点
-//   - curriculum/roadmap.json     10 阶段学习路线（含 NOI 大纲、蓝桥杯知识树分支）
+//   - curriculum/nodes/<id>.json  39 个知识点节点（37 原有 + 计算几何/字符串进阶/网络流 + 博弈论/分块与莫队）
+//   - curriculum/roadmap.json     7 阶段学习路线
+// NOI 大纲与蓝桥杯考点不再作为独立知识清单节点，而是把其中的算法标签逐条
+// 归并进 39 个知识点节点（noiLabels / lanqiaoLabels），节点已有的标签合并去重，
+// 树中缺失的标签补挂到对应节点，并在 noiLevels / lanqiao 中同步级别/组别归属。
 // 数据来源（只读）：
 //   - know-tree/Luogu-深入浅出.txt（洛谷题单，题源主目录）
 //   - know-tree/罗勇军-算法竞赛.txt（罗勇军《算法竞赛》各节例题/习题）
 //   - know-tree/刘汝佳.txt（刘汝佳《算法竞赛入门经典》各章练习）
-//   - know-tree/NOI_竞赛大纲_2025.md（difficulty 参考 + NOI 大纲知识树）
-//   - know-tree/蓝桥杯_软件赛竞赛大纲_第十七届.md（蓝桥杯考点知识树）
+//   - know-tree/NOI_竞赛大纲_2025.md（difficulty 参考 + NOI 大纲算法标签）
+//   - know-tree/蓝桥杯_软件赛竞赛大纲_第十七届.md（蓝桥杯考点算法标签）
 //   - lib/tag-catalog.mjs（规范标签）
 //   - oi-wiki/docs 目录清单（wiki 链接只使用该清单中真实存在的路径）
 // 用法：
@@ -638,27 +640,402 @@ const PHASES = [
     reference: "参考：罗勇军《算法竞赛》第 4、8、9、10 章高阶内容 · NOI 大纲·NOI 级 · 蓝桥杯·大学 A 组",
     nodes: ["ds-segtree-advanced", "math-geometry", "string-advanced", "graph-network-flow", "ds-block-mo"],
   },
-  {
-    id: "phase-7", index: 7,
-    title: "NOI 竞赛大纲（2025）",
-    subtitle: "按 CCF《NOI 竞赛大纲（2025 年修订版）》分级：入门级（CSP-J）/ 提高级（NOIP·CSP-S）/ NOI 级",
-    goal: "对照 NOI 大纲三级知识清单自检，明确各级别应掌握的知识点与配套练习。",
-    milestone: "完成各级知识清单题单，覆盖对应级别全部考点。",
-    difficulty: [1, 10],
-    reference: "依据：CCF《NOI 竞赛大纲（2025 年修订版）》",
-    nodes: ["noi-basic", "noi-intermediate", "noi-advanced"],
-  },
-  {
-    id: "phase-8", index: 8,
-    title: "蓝桥杯考点（第十七届）",
-    subtitle: "按《第十七届蓝桥杯大赛软件赛竞赛大纲》分大学 C / B / A 组考点清单",
-    goal: "对照蓝桥杯三组考点清单训练，覆盖各组别竞赛考点。",
-    milestone: "完成各组考点题单，按组别难度递进刷题。",
-    difficulty: [1, 10],
-    reference: "依据：《第十七届蓝桥杯大赛软件赛竞赛大纲》",
-    nodes: ["lq-c", "lq-b", "lq-a"],
-  },
 ];
+
+// ---------------------------------------------------------------------------
+// 7b. NOI 大纲 / 蓝桥杯考点 → 节点 的算法标签映射规则。
+// 两份大纲中的算法标签（知识点）逐条归并进现有 43 个节点：
+//   - 节点已有的标签 / 已覆盖的知识点：合并去重（由 Set 去重保证）；
+//   - 树中没有的知识点：按规则补挂到对应节点（如 数位DP→线性DP、欧拉回路→图的基本应用）；
+//   - 每条规则按顺序 first-match-wins，复合词条在前、通用词条在后，避免误挂
+//     （如"堆排序"先于"堆"、"可持久化线段树"先于"线段树"、"拓扑"先于"排序"）。
+// 仅收录算法 / 数据结构 / 数学类标签；"基础知识与编程环境""C++ 程序设计"等
+// 语言与工具类条目不属于知识树范围，不参与合并。
+// ---------------------------------------------------------------------------
+function normalizeLabel(s) {
+  return String(s || "")
+    .replace(/[\s（）()【】\[\],，、；;:：]/g, "")
+    .toLowerCase();
+}
+
+const NOI_LABEL_RULES = [
+  // ===== 排序（复合词条优先于"堆"/"排序"）=====
+  { match: "堆排序", node: "algo-sorting" },
+  { match: "归并排序", node: "algo-sorting" },
+  { match: "快速排序", node: "algo-sorting" },
+  { match: "桶排序", node: "algo-sorting" },
+  { match: "基数排序", node: "algo-sorting" },
+  { match: "冒泡排序", node: "algo-sorting" },
+  { match: "选择排序", node: "algo-sorting" },
+  { match: "插入排序", node: "algo-sorting" },
+  { match: "计数排序", node: "algo-sorting" },
+  { match: "拓扑", node: "ds-graph-basics" }, // 拓扑排序 / 有向无环图的拓扑排序
+  { match: "排序", node: "algo-sorting" },
+  // ===== 高级数据结构（复合词条优先）=====
+  { match: "可持久化线段树", node: "ds-segtree-advanced" },
+  { match: "可持久化", node: "ds-segtree-advanced" },
+  { match: "平衡树", node: "ds-segtree-advanced" },
+  { match: "树套树", node: "ds-segtree-advanced" },
+  { match: "动态树", node: "ds-segtree-advanced" },
+  { match: "k-d树", node: "ds-segtree-advanced" },
+  { match: "kd树", node: "ds-segtree-advanced" },
+  { match: "虚树", node: "ds-segtree-advanced" },
+  { match: "笛卡尔树", node: "ds-segtree-advanced" },
+  { match: "动态开点", node: "ds-segtree-advanced" },
+  { match: "线段树", node: "ds-segtree" },
+  { match: "树状数组", node: "ds-heap-bit" },
+  { match: "二叉堆", node: "ds-heap-bit" },
+  { match: "优先队列", node: "ds-heap-bit" },
+  { match: "左偏树", node: "ds-heap-bit" },
+  { match: "二项堆", node: "ds-heap-bit" },
+  { match: "可合并堆", node: "ds-heap-bit" },
+  { match: "堆", node: "ds-heap-bit" },
+  { match: "块状链表", node: "ds-block-mo" },
+  { match: "分块", node: "ds-block-mo" },
+  { match: "平衡规划", node: "ds-block-mo" },
+  { match: "离线", node: "ds-block-mo" },
+  { match: "ST表", node: "algo-divide-conquer-doubling" },
+  { match: "稀疏表", node: "algo-divide-conquer-doubling" },
+  // ===== 树上算法（复合词条优先于"树"）=====
+  { match: "树链剖分", node: "graph-tree" },
+  { match: "最近公共祖先", node: "graph-tree" },
+  { match: "lca", node: "graph-tree" },
+  { match: "树上差分", node: "graph-tree" },
+  { match: "树的重心", node: "graph-tree" },
+  { match: "直径", node: "graph-tree" },
+  { match: "dfs序", node: "graph-tree" },
+  { match: "欧拉序", node: "graph-tree" },
+  { match: "子树和", node: "graph-tree" },
+  { match: "基环树", node: "graph-tree" },
+  { match: "树型动态规划", node: "dp-tree-graph" },
+  { match: "树形dp", node: "dp-tree-graph" },
+  { match: "树状数组", node: "ds-heap-bit" },
+  { match: "二叉树", node: "ds-binary-tree" },
+  { match: "哈夫曼", node: "ds-binary-tree" },
+  { match: "二叉搜索", node: "ds-binary-tree" },
+  { match: "完全二叉树", node: "ds-binary-tree" },
+  { match: "树的定义", node: "ds-binary-tree" },
+  { match: "树的表示", node: "ds-binary-tree" },
+  { match: "孩子兄弟", node: "ds-binary-tree" },
+  // ===== 图论 =====
+  { match: "最小树形图", node: "graph-mst" },
+  { match: "最小生成树", node: "graph-mst" },
+  { match: "prim", node: "graph-mst" },
+  { match: "kruskal", node: "graph-mst" },
+  { match: "单源次短路", node: "graph-shortest-path" },
+  { match: "次短路", node: "graph-shortest-path" },
+  { match: "bellman-ford", node: "graph-shortest-path" },
+  { match: "dijkstra", node: "graph-shortest-path" },
+  { match: "spfa", node: "graph-shortest-path" },
+  { match: "floyd", node: "graph-shortest-path" },
+  { match: "单源最短路", node: "graph-shortest-path" },
+  { match: "最短路", node: "graph-shortest-path" },
+  { match: "差分约束", node: "graph-shortest-path" },
+  { match: "强连通", node: "graph-connectivity" },
+  { match: "双连通", node: "graph-connectivity" },
+  { match: "割点", node: "graph-connectivity" },
+  { match: "割边", node: "graph-connectivity" },
+  { match: "2-sat", node: "graph-connectivity" },
+  { match: "连通图", node: "graph-connectivity" },
+  { match: "网络流", node: "graph-network-flow" },
+  { match: "匈牙利", node: "graph-network-flow" },
+  { match: "km算法", node: "graph-network-flow" },
+  { match: "一般图的匹配", node: "graph-network-flow" },
+  { match: "支配集", node: "graph-network-flow" },
+  { match: "独立集", node: "graph-network-flow" },
+  { match: "覆盖集", node: "graph-network-flow" },
+  { match: "二分图的判定", node: "ds-graph-basics" },
+  { match: "偶图", node: "ds-graph-basics" },
+  { match: "欧拉图", node: "ds-graph-basics" },
+  { match: "欧拉道路", node: "ds-graph-basics" },
+  { match: "欧拉回路", node: "ds-graph-basics" },
+  { match: "有向无环图", node: "ds-graph-basics" },
+  { match: "邻接矩阵", node: "ds-graph-basics" },
+  { match: "邻接表", node: "ds-graph-basics" },
+  { match: "图的定义", node: "ds-graph-basics" },
+  { match: "稀疏图", node: "ds-graph-basics" },
+  // ===== 字符串 =====
+  { match: "扩展kmp", node: "string-advanced" },
+  { match: "kmp", node: "string-basics" },
+  { match: "字典树", node: "string-basics" },
+  { match: "trie", node: "string-basics" },
+  { match: "字符串哈希", node: "string-basics" },
+  { match: "字符串匹配", node: "string-basics" },
+  { match: "manacher", node: "string-advanced" },
+  { match: "ac自动机", node: "string-advanced" },
+  { match: "后缀数组", node: "string-advanced" },
+  { match: "后缀树", node: "string-advanced" },
+  { match: "后缀自动机", node: "string-advanced" },
+  { match: "有穷自动机", node: "string-advanced" },
+  // ===== 搜索 =====
+  { match: "记忆化搜索", node: "search-advanced" },
+  { match: "启发式", node: "search-advanced" },
+  { match: "迭代加深", node: "search-advanced" },
+  { match: "双向广度", node: "search-advanced" },
+  { match: "剪枝", node: "search-advanced" },
+  { match: "深度优先", node: "algo-search-basics" },
+  { match: "广度优先", node: "algo-search-basics" },
+  { match: "dfs", node: "algo-search-basics" },
+  { match: "bfs", node: "algo-search-basics" },
+  { match: "泛洪", node: "algo-search-basics" },
+  // ===== 基础算法 =====
+  { match: "枚举法", node: "algo-enumeration" },
+  { match: "模拟法", node: "algo-simulation-bigint" },
+  { match: "贪心法", node: "algo-greedy" },
+  { match: "递推法", node: "algo-recurrence-recursion" },
+  { match: "递归", node: "algo-recurrence-recursion" },
+  { match: "二分法", node: "algo-binary-search" },
+  { match: "二分", node: "algo-binary-search" },
+  { match: "倍增法", node: "algo-divide-conquer-doubling" },
+  { match: "前缀和", node: "algo-prefix-diff-discretize" },
+  { match: "差分", node: "algo-prefix-diff-discretize" },
+  { match: "离散化", node: "algo-prefix-diff-discretize" },
+  { match: "扫描线", node: "math-geometry" },
+  { match: "分治", node: "algo-divide-conquer-doubling" },
+  { match: "构造思想", node: "algo-divide-conquer-doubling" },
+  { match: "高精度", node: "algo-simulation-bigint" },
+  // ===== DP =====
+  { match: "状态压缩", node: "dp-bitmask" },
+  { match: "状压", node: "dp-bitmask" },
+  { match: "背包", node: "dp-linear" },
+  { match: "一维动态规划", node: "dp-linear" },
+  { match: "多维动态规划", node: "dp-linear" },
+  { match: "数位dp", node: "dp-linear" },
+  { match: "区间类型", node: "dp-interval" },
+  { match: "区间", node: "dp-interval" },
+  { match: "复杂动态规划", node: "dp-optimization" },
+  { match: "常用优化", node: "dp-optimization" },
+  { match: "优化", node: "dp-optimization" },
+  { match: "动态规划", node: "dp-intro" },
+  // ===== 哈希 / 集合 =====
+  { match: "多重集合", node: "math-combinatorics" },
+  { match: "哈希冲突", node: "ds-set" },
+  { match: "数值哈希", node: "ds-set" },
+  { match: "哈希", node: "ds-set" },
+  { match: "并查集", node: "ds-set" },
+  { match: "集合", node: "ds-set" },
+  // ===== 线性表 =====
+  { match: "单调队列", node: "algo-optimization-tricks" },
+  { match: "双端队列", node: "ds-linear-list" },
+  { match: "双端栈", node: "ds-linear-list" },
+  { match: "链表", node: "ds-linear-list" },
+  { match: "栈", node: "ds-linear-list" },
+  { match: "队列", node: "ds-linear-list" },
+  { match: "vector", node: "ds-linear-list" },
+  // ===== 数学：数论 =====
+  { match: "扩展欧几里得", node: "math-number-theory" },
+  { match: "中国剩余定理", node: "math-number-theory" },
+  { match: "欧拉定理", node: "math-number-theory" },
+  { match: "欧拉函数", node: "math-number-theory" },
+  { match: "费马小定理", node: "math-number-theory" },
+  { match: "威尔逊", node: "math-number-theory" },
+  { match: "裴蜀", node: "math-number-theory" },
+  { match: "逆元", node: "math-number-theory" },
+  { match: "同余", node: "math-number-theory" },
+  { match: "原根", node: "math-number-theory" },
+  { match: "bsgs", node: "math-number-theory" },
+  { match: "大步小步", node: "math-number-theory" },
+  { match: "狄利克雷", node: "math-number-theory" },
+  { match: "dirichlet", node: "math-number-theory" },
+  { match: "二次剩余", node: "math-number-theory" },
+  { match: "莫比乌斯", node: "math-number-theory" },
+  { match: "杜教筛", node: "math-number-theory" },
+  { match: "min_25", node: "math-number-theory" },
+  // ===== 数学：组合 =====
+  { match: "prüfer", node: "math-combinatorics" },
+  { match: "斯特林", node: "math-combinatorics" },
+  { match: "stirling", node: "math-combinatorics" },
+  { match: "burnside", node: "math-combinatorics" },
+  { match: "pólya", node: "math-combinatorics" },
+  { match: "母函数", node: "math-combinatorics" },
+  { match: "置换群", node: "math-combinatorics" },
+  { match: "群", node: "math-combinatorics" },
+  { match: "错排", node: "math-combinatorics" },
+  { match: "圆排列", node: "math-combinatorics" },
+  { match: "鸽巢", node: "math-combinatorics" },
+  { match: "二项式定理", node: "math-combinatorics" },
+  { match: "容斥", node: "math-combinatorics" },
+  { match: "卡特兰", node: "math-combinatorics" },
+  { match: "catalan", node: "math-combinatorics" },
+  { match: "排列", node: "math-combinatorics" },
+  { match: "组合", node: "math-combinatorics" },
+  { match: "杨辉三角", node: "math-combinatorics" },
+  { match: "加法原理", node: "math-combinatorics" },
+  { match: "乘法原理", node: "math-combinatorics" },
+  // ===== 数学：线性代数 / 高等数学 =====
+  { match: "高斯消元", node: "math-linear-algebra" },
+  { match: "线性基", node: "math-linear-algebra" },
+  { match: "逆矩阵", node: "math-linear-algebra" },
+  { match: "行列式", node: "math-linear-algebra" },
+  { match: "线性相关", node: "math-linear-algebra" },
+  { match: "向量", node: "math-linear-algebra" },
+  { match: "矩阵", node: "math-linear-algebra" },
+  { match: "单纯形", node: "math-linear-algebra" },
+  { match: "快速傅里叶", node: "math-linear-algebra" },
+  { match: "fft", node: "math-linear-algebra" },
+  { match: "泰勒", node: "math-linear-algebra" },
+  { match: "微分", node: "math-linear-algebra" },
+  { match: "积分", node: "math-linear-algebra" },
+  // ===== 数学：概率 / 信息论 =====
+  { match: "条件概率", node: "math-probability" },
+  { match: "贝叶斯", node: "math-probability" },
+  { match: "概率", node: "math-probability" },
+  { match: "期望", node: "math-probability" },
+  { match: "方差", node: "math-probability" },
+  { match: "熵", node: "math-probability" },
+  { match: "互信息", node: "math-probability" },
+  { match: "信息复杂度", node: "math-probability" },
+  { match: "描述复杂度", node: "math-probability" },
+  { match: "通讯复杂度", node: "math-probability" },
+  // ===== 数学：博弈论 =====
+  { match: "尼姆", node: "math-game-theory" },
+  { match: "nim", node: "math-game-theory" },
+  { match: "sg函数", node: "math-game-theory" },
+  { match: "博弈", node: "math-game-theory" },
+  // ===== 数学：基础 =====
+  { match: "复杂度分析", node: "math-basics" },
+  { match: "时间复杂度", node: "math-basics" },
+  { match: "空间复杂度", node: "math-basics" },
+  { match: "整除", node: "math-basics" },
+  { match: "因数", node: "math-basics" },
+  { match: "质数", node: "math-basics" },
+  { match: "素数", node: "math-basics" },
+  { match: "取整", node: "math-basics" },
+  { match: "模运算", node: "math-basics" },
+  { match: "唯一分解", node: "math-basics" },
+  { match: "辗转相除", node: "math-basics" },
+  { match: "欧几里得", node: "math-basics" },
+  { match: "筛法", node: "math-basics" },
+  // ===== 计算几何 =====
+  { match: "凸包", node: "math-geometry" },
+  { match: "半平面交", node: "math-geometry" },
+  { match: "点、线、面", node: "math-geometry" },
+  { match: "图形面积", node: "math-geometry" },
+  { match: "几何", node: "math-geometry" },
+  // 通用词条（放在最后，避免抢先命中复合词条）
+  { match: "树", node: "ds-binary-tree" },
+];
+
+// NOI 大纲中 STL 容器等完整条目 → 节点的精确匹配（键为原始文本，查找时规范化）
+const NOI_LABEL_EXACT = {
+  "集合(set)、多重集合(multiset)": "ds-set",
+  "映射(map)、多重映射(multimap)": "ds-set",
+  "位集合(bitset)": "ds-set",
+  "栈(stack)、队列(queue)、链表(list)、向量(vector)等容器": "ds-linear-list",
+  "双端队列(deque)、优先队列(priority_queue)": "ds-heap-bit",
+  "进制与进制转换：二进制、八进制、十进制、十六进制": "math-basics",
+};
+
+const LANQIAO_LABEL_RULES = [
+  // 排序（"堆排序"先于"堆"）
+  { match: "堆排序", node: "algo-sorting" },
+  { match: "归并排序", node: "algo-sorting" },
+  { match: "快速排序", node: "algo-sorting" },
+  { match: "桶排序", node: "algo-sorting" },
+  { match: "基数排序", node: "algo-sorting" },
+  { match: "冒泡排序", node: "algo-sorting" },
+  { match: "选择排序", node: "algo-sorting" },
+  { match: "插入排序", node: "algo-sorting" },
+  { match: "拓扑序列", node: "ds-graph-basics" },
+  { match: "拓扑", node: "ds-graph-basics" },
+  // 搜索
+  { match: "双向bfs", node: "search-advanced" },
+  { match: "记忆化搜索", node: "search-advanced" },
+  { match: "迭代加深", node: "search-advanced" },
+  { match: "启发式", node: "search-advanced" },
+  { match: "剪枝", node: "search-advanced" },
+  { match: "bfs、dfs", node: "algo-search-basics" },
+  { match: "dfs序", node: "graph-tree" },
+  { match: "bfs", node: "algo-search-basics" },
+  { match: "dfs", node: "algo-search-basics" },
+  // DP
+  { match: "背包dp", node: "dp-linear" },
+  { match: "树形dp", node: "dp-tree-graph" },
+  { match: "状压dp", node: "dp-bitmask" },
+  { match: "数位dp", node: "dp-linear" },
+  { match: "dp的常见优化", node: "dp-optimization" },
+  { match: "dp", node: "dp-linear" },
+  { match: "普通一维", node: "dp-linear" },
+  // 字符串
+  { match: "manacher", node: "string-advanced" },
+  { match: "哈希", node: "string-basics" },
+  { match: "kmp", node: "string-basics" },
+  // 图论
+  { match: "欧拉回路", node: "ds-graph-basics" },
+  { match: "最小生成树", node: "graph-mst" },
+  { match: "单源最短路", node: "graph-shortest-path" },
+  { match: "差分约束", node: "graph-shortest-path" },
+  { match: "二分图匹配", node: "graph-network-flow" },
+  { match: "图的连通性", node: "graph-connectivity" },
+  { match: "割点", node: "graph-connectivity" },
+  { match: "桥", node: "graph-connectivity" },
+  { match: "强连通", node: "graph-connectivity" },
+  { match: "lca", node: "graph-tree" },
+  { match: "最近共同祖先", node: "graph-tree" },
+  { match: "树链剖分", node: "graph-tree" },
+  // 数学
+  { match: "排列组合", node: "math-combinatorics" },
+  { match: "二项式定理", node: "math-combinatorics" },
+  { match: "容斥原理", node: "math-combinatorics" },
+  { match: "模意义下的逆元", node: "math-number-theory" },
+  { match: "矩阵运算", node: "math-linear-algebra" },
+  { match: "高斯消元", node: "math-linear-algebra" },
+  { match: "初等数论", node: "math-basics" },
+  // 数据结构
+  { match: "树状数组", node: "ds-heap-bit" },
+  { match: "st表", node: "algo-divide-conquer-doubling" },
+  { match: "堆", node: "ds-heap-bit" },
+  { match: "动态开点", node: "ds-segtree-advanced" },
+  { match: "平衡树", node: "ds-segtree-advanced" },
+  { match: "可持久化", node: "ds-segtree-advanced" },
+  { match: "树套树", node: "ds-segtree-advanced" },
+  { match: "动态树", node: "ds-segtree-advanced" },
+  // 基础
+  { match: "枚举", node: "algo-enumeration" },
+  { match: "模拟", node: "algo-simulation-bigint" },
+  { match: "贪心", node: "algo-greedy" },
+  { match: "二分", node: "algo-binary-search" },
+  { match: "高精度", node: "algo-simulation-bigint" },
+  { match: "链表", node: "ds-linear-list" },
+  { match: "栈", node: "ds-linear-list" },
+  { match: "队列", node: "ds-linear-list" },
+];
+
+// 把一批大纲条目（{ text, diff }）按规则归并，返回 Map<nodeId, Set<labelText>>
+// exactRules：完整条目文本 → 节点 id，优先于子串规则精确命中。
+function matchSyllabusLabels(points, rules, exactRules = {}) {
+  const exactNorm = {};
+  for (const [key, nodeId] of Object.entries(exactRules)) {
+    exactNorm[normalizeLabel(key)] = nodeId;
+  }
+  const hits = new Map();
+  for (const pt of points) {
+    const text = String(pt.text || pt.name || "").trim();
+    if (!text) continue;
+    const norm = normalizeLabel(text);
+    const exact = exactNorm[norm];
+    if (exact) {
+      if (!hits.has(exact)) hits.set(exact, new Set());
+      hits.get(exact).add(text);
+      continue;
+    }
+    for (const rule of rules) {
+      if (norm.includes(normalizeLabel(rule.match))) {
+        if (!hits.has(rule.node)) hits.set(rule.node, new Set());
+        hits.get(rule.node).add(text);
+        break;
+      }
+    }
+  }
+  return hits;
+}
+
+const NOI_LEVEL_ORDER = ["入门级", "提高级", "NOI级"];
+const LANQIAO_GROUP_ORDER = ["大学C组", "大学B组", "大学A组"];
+
+function sortByOrder(values, order) {
+  return [...values].sort((a, b) => order.indexOf(a) - order.indexOf(b));
+}
 
 // ---------------------------------------------------------------------------
 // 8. 解析洛谷题单 txt：### 分组 → #### 【编号】标题 → [problem:平台-题号] 行
@@ -881,11 +1258,6 @@ function parseLanqiao() {
   return groups;
 }
 
-function truncate(s, n) {
-  const arr = Array.from(String(s || ""));
-  return arr.length > n ? arr.slice(0, n).join("") + "…" : arr.join("");
-}
-
 // ---------------------------------------------------------------------------
 // 13. 节点 ref 计算（多来源标注）
 // ---------------------------------------------------------------------------
@@ -908,10 +1280,25 @@ function buildRef(nodeId, hasLuogu, luoProblems, liuProblems) {
 // ---------------------------------------------------------------------------
 // 14. 生成 43 个普通节点（洛谷 + 罗勇军 + 刘汝佳 + CF + 新节点补充题，来源去重）
 // ---------------------------------------------------------------------------
-function buildNodes(modules, luoSections, liuChapters, oiTreeDetails) {
+function buildNodes(modules, luoSections, liuChapters, oiTreeDetails, syllabusMerges) {
   const nodes = [];
   const problemsByNode = new Map();
   const cfSupplement = loadCfSupplement();
+
+  // 汇总某节点的 NOI/蓝桥杯算法标签（合并去重、排序）与级别/组别（原有标注 ∪ 标签推导）
+  function nodeSyllabus(nodeId) {
+    const noiLabels = [...(syllabusMerges.noiLabels.get(nodeId) || [])].sort((a, b) => a.localeCompare(b, "zh-CN"));
+    const lanqiaoLabels = [...(syllabusMerges.lanqiaoLabels.get(nodeId) || [])].sort((a, b) => a.localeCompare(b, "zh-CN"));
+    const noiLevels = sortByOrder(
+      new Set([...(NOI_NODE_LEVELS[nodeId] || []), ...(syllabusMerges.noiLevelSet.get(nodeId) || [])]),
+      NOI_LEVEL_ORDER
+    );
+    const lanqiao = sortByOrder(
+      new Set([...(LANQIAO_NODE_GROUPS[nodeId] || []), ...(syllabusMerges.lanqiaoGroupSet.get(nodeId) || [])]),
+      LANQIAO_GROUP_ORDER
+    );
+    return { noiLabels, lanqiaoLabels, noiLevels, lanqiao };
+  }
 
   for (const meta of NODE_META) {
     const problems = [];
@@ -990,6 +1377,9 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails) {
       oiTree.push(details.length ? `${topic}（${details.join(" / ")}）` : topic);
     }
 
+    // NOI 大纲 / 蓝桥杯考点算法标签合并
+    const { noiLabels, lanqiaoLabels, noiLevels, lanqiao } = nodeSyllabus(meta.id);
+
     nodes.push({
       id: meta.id,
       title: meta.title,
@@ -1000,8 +1390,10 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails) {
       wiki: meta.wiki,
       tags: meta.tags,
       description: meta.description,
-      noiLevels: NOI_NODE_LEVELS[meta.id] || [],
-      lanqiao: LANQIAO_NODE_GROUPS[meta.id] || [],
+      noiLevels,
+      lanqiao,
+      noiLabels,
+      lanqiaoLabels,
       ref: buildRef(meta.id, !!luoguMod, luoProblems, liuProblems),
       oiTree,
       problems: capped,
@@ -1039,6 +1431,8 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails) {
       if (OI_TOPIC_TO_NODE[topic] !== def.id) continue;
       oiTree.push(details.length ? `${topic}（${details.join(" / ")}）` : topic);
     }
+    // NOI 大纲 / 蓝桥杯考点算法标签合并（新节点同样参与）
+    const { noiLabels, lanqiaoLabels, noiLevels, lanqiao } = nodeSyllabus(def.id);
     nodes.push({
       id: def.id,
       title: def.title,
@@ -1049,8 +1443,10 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails) {
       wiki: def.wiki,
       tags: def.tags,
       description: def.description,
-      noiLevels: def.noiLevels || [],
-      lanqiao: def.lanqiao || [],
+      noiLevels,
+      lanqiao,
+      noiLabels,
+      lanqiaoLabels,
       ref: buildRef(def.id, false, [], []),
       oiTree,
       problems: problems.slice(0, MAX_PROBLEMS_PER_NODE),
@@ -1060,111 +1456,46 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails) {
   return { nodes, problemsByNode };
 }
 
-// 代表性练习：从若干节点各取前 maxPer 题（跨节点去重，上限 cap）
-function pickProblems(nodeIds, problemsByNode, maxPer, cap) {
-  const out = [];
-  const seen = new Set();
-  for (const id of nodeIds) {
-    const probs = problemsByNode.get(id) || [];
-    let added = 0;
-    for (const p of probs) {
-      const key = p.platform + "|" + p.number;
-      if (seen.has(key)) continue;
-      seen.add(key);
-      out.push({ platform: p.platform, number: p.number, name: "", source: p.source, role: "练习", note: "" });
-      added += 1;
-      if (added >= maxPer || out.length >= cap) break;
-    }
-    if (out.length >= cap) break;
-  }
-  return out;
-}
-
-function noiNodeDescription(levelData, contestLine) {
-  const cats = levelData.categories.map((c) => {
-    const pts = c.points.slice(0, 12).map((p) => truncate(p.text, 30));
-    const more = c.points.length > 12 ? `；…（共 ${c.points.length} 项）` : "";
-    return `【${c.title}】${pts.join("；")}${more}`;
-  });
-  return `${contestLine}\n${cats.join("\n")}`;
-}
-
-function lanqiaoNodeDescription(groupData, contestLine) {
-  const mods = groupData.modules.map((m) => {
-    const pts = m.points.slice(0, 12).map((p) => `${p.name} ${p.diff}`);
-    const more = m.points.length > 12 ? `；…（共 ${m.points.length} 项）` : "";
-    return `【${m.title}】${pts.join("；")}${more}`;
-  });
-  return `${contestLine}\n${mods.join("\n")}`;
-}
-
 // ---------------------------------------------------------------------------
-// 15. NOI 大纲 / 蓝桥杯 知识清单节点（知识树分支）
+// 15. 汇总 NOI 大纲 / 蓝桥杯考点 → 节点的算法标签归并结果。
+//     按级别/组别分别匹配，返回：
+//       noiLabels / lanqiaoLabels: Map<nodeId, Set<labelText>>
+//       noiLevelSet / lanqiaoGroupSet: Map<nodeId, Set<级别|组别>>
 // ---------------------------------------------------------------------------
-const NOI_POOL = {
-  "noi-basic": ["algo-simulation-bigint", "algo-sorting", "algo-enumeration", "algo-recurrence-recursion", "algo-greedy", "algo-binary-search", "algo-search-basics", "ds-linear-list", "ds-binary-tree", "ds-set", "ds-graph-basics", "math-basics", "algo-prefix-diff-discretize"],
-  "noi-intermediate": ["algo-optimization-tricks", "algo-divide-conquer-doubling", "string-basics", "search-advanced", "ds-heap-bit", "ds-segtree", "graph-tree", "graph-shortest-path", "graph-mst", "graph-connectivity", "dp-intro", "dp-linear", "dp-interval", "dp-tree-graph", "dp-bitmask", "math-number-theory", "math-combinatorics", "math-probability", "math-linear-algebra"],
-  "noi-advanced": ["ds-segtree-advanced", "math-geometry", "string-advanced", "graph-network-flow", "dp-optimization", "math-number-theory", "math-probability"],
-};
-
-const LANQIAO_POOL = {
-  "lq-c": ["algo-simulation-bigint", "algo-sorting", "algo-enumeration", "algo-search-basics", "algo-greedy", "algo-binary-search", "dp-intro", "ds-linear-list", "math-basics"],
-  "lq-b": ["algo-recurrence-recursion", "algo-prefix-diff-discretize", "algo-optimization-tricks", "algo-divide-conquer-doubling", "string-basics", "search-advanced", "ds-binary-tree", "ds-set", "ds-heap-bit", "ds-graph-basics", "dp-linear", "dp-interval", "dp-tree-graph", "dp-bitmask", "dp-optimization", "graph-tree", "graph-shortest-path", "graph-mst", "graph-connectivity", "math-number-theory", "math-combinatorics", "math-linear-algebra"],
-  "lq-a": ["ds-segtree", "ds-segtree-advanced", "string-advanced", "graph-network-flow", "math-geometry", "math-probability"],
-};
-
-function buildKnowledgeNodes(noiLevels, lanqiaoGroups, problemsByNode) {
-  const noiById = {};
+function collectSyllabusMerges(noiLevels, lanqiaoGroups) {
+  const noiLabels = new Map();
+  const noiLevelSet = new Map();
   for (const lv of noiLevels) {
-    const key = lv.level === "入门级" ? "noi-basic" : lv.level === "提高级" ? "noi-intermediate" : "noi-advanced";
-    noiById[key] = lv;
+    const points = [];
+    for (const cat of lv.categories || []) {
+      for (const p of cat.points || []) points.push({ text: p.text, diff: p.diff });
+    }
+    const hits = matchSyllabusLabels(points, NOI_LABEL_RULES, NOI_LABEL_EXACT);
+    for (const [nodeId, labels] of hits) {
+      if (!noiLabels.has(nodeId)) noiLabels.set(nodeId, new Set());
+      for (const label of labels) noiLabels.get(nodeId).add(label);
+      if (!noiLevelSet.has(nodeId)) noiLevelSet.set(nodeId, new Set());
+      noiLevelSet.get(nodeId).add(lv.level);
+    }
   }
-  const lqById = {};
+
+  const lanqiaoLabels = new Map();
+  const lanqiaoGroupSet = new Map();
   for (const g of lanqiaoGroups) {
-    const m = /大学([A-Z])组/.exec(g.group);
-    if (m) lqById["lq-" + m[1].toLowerCase()] = g;
+    const points = [];
+    for (const m of g.modules || []) {
+      for (const p of m.points || []) points.push({ text: p.name, diff: p.diff });
+    }
+    const hits = matchSyllabusLabels(points, LANQIAO_LABEL_RULES);
+    for (const [nodeId, labels] of hits) {
+      if (!lanqiaoLabels.has(nodeId)) lanqiaoLabels.set(nodeId, new Set());
+      for (const label of labels) lanqiaoLabels.get(nodeId).add(label);
+      if (!lanqiaoGroupSet.has(nodeId)) lanqiaoGroupSet.set(nodeId, new Set());
+      lanqiaoGroupSet.get(nodeId).add(g.group);
+    }
   }
 
-  const defs = [
-    { id: "noi-basic", title: "入门级（CSP-J）", listId: "NOI·入门级", group: "NOI大纲", difficulty: 3, prerequisites: [], pick: 4, cap: 40, wiki: "https://oi-wiki.org/intro/", tags: ["NOI大纲", "CSP-J"], noi: "入门级" },
-    { id: "noi-intermediate", title: "提高级（NOIP / CSP-S）", listId: "NOI·提高级", group: "NOI大纲", difficulty: 6, prerequisites: ["noi-basic"], pick: 3, cap: 36, wiki: "https://oi-wiki.org/intro/", tags: ["NOI大纲", "NOIP", "CSP-S"], noi: "提高级" },
-    { id: "noi-advanced", title: "NOI 级", listId: "NOI·NOI级", group: "NOI大纲", difficulty: 9, prerequisites: ["noi-intermediate"], pick: 2, cap: 24, wiki: "https://oi-wiki.org/intro/", tags: ["NOI大纲", "NOI级"], noi: "NOI级" },
-    { id: "lq-c", title: "大学 C 组（基础）", listId: "蓝桥杯·C组", group: "蓝桥杯", difficulty: 4, prerequisites: [], pick: 3, cap: 36, wiki: "", tags: ["蓝桥杯", "大学C组"], lanqiao: "大学C组" },
-    { id: "lq-b", title: "大学 B 组（进阶）", listId: "蓝桥杯·B组", group: "蓝桥杯", difficulty: 6, prerequisites: ["lq-c"], pick: 3, cap: 36, wiki: "", tags: ["蓝桥杯", "大学B组"], lanqiao: "大学B组" },
-    { id: "lq-a", title: "大学 A 组（高阶）", listId: "蓝桥杯·A组", group: "蓝桥杯", difficulty: 8, prerequisites: ["lq-b"], pick: 2, cap: 24, wiki: "", tags: ["蓝桥杯", "大学A组"], lanqiao: "大学A组" },
-  ];
-
-  const nodes = [];
-  for (const d of defs) {
-    const isNoi = d.noi != null;
-    const src = isNoi ? noiById[d.id] : lqById[d.id];
-    const pool = isNoi ? NOI_POOL[d.id] : LANQIAO_POOL[d.id];
-    const contestLine = isNoi
-      ? `CCF《NOI 竞赛大纲（2025 年修订版）》${d.title}（难度系数对应 ${d.noi === "入门级" ? "1-5" : d.noi === "提高级" ? "5-8" : "7-10"}）知识点清单：`
-      : `《第十七届蓝桥杯大赛软件赛竞赛大纲》${d.title}（难度 1-10 递进）考点清单：`;
-    const description = isNoi
-      ? (src ? noiNodeDescription(src, contestLine) : contestLine)
-      : (src ? lanqiaoNodeDescription(src, contestLine) : contestLine);
-    const problems = pickProblems(pool || [], problemsByNode, d.pick, d.cap);
-    if (problems.length === 0) throw new Error(`知识节点 ${d.id} 无题目`);
-
-    nodes.push({
-      id: d.id,
-      title: d.title,
-      listId: d.listId,
-      group: d.group,
-      difficulty: d.difficulty,
-      prerequisites: d.prerequisites,
-      wiki: d.wiki,
-      tags: d.tags,
-      description,
-      noiLevels: isNoi ? [d.noi] : [],
-      lanqiao: isNoi ? [] : [d.lanqiao],
-      ref: isNoi ? "依据：CCF《NOI 竞赛大纲（2025 年修订版）》" : "依据：《第十七届蓝桥杯大赛软件赛竞赛大纲》",
-      problems,
-    });
-  }
-  return nodes;
+  return { noiLabels, noiLevelSet, lanqiaoLabels, lanqiaoGroupSet };
 }
 
 function writeJson(filePath, data, label) {
@@ -1186,9 +1517,9 @@ function main() {
   const lanqiaoGroups = parseLanqiao();
   const oiTreeDetails = parseOiTree();
 
-  const { nodes, problemsByNode } = buildNodes(modules, luoSections, liuChapters, oiTreeDetails);
-  const knowledgeNodes = buildKnowledgeNodes(noiLevels, lanqiaoGroups, problemsByNode);
-  const allNodes = [...nodes, ...knowledgeNodes];
+  const syllabusMerges = collectSyllabusMerges(noiLevels, lanqiaoGroups);
+  const { nodes } = buildNodes(modules, luoSections, liuChapters, oiTreeDetails, syllabusMerges);
+  const allNodes = nodes;
 
   // 校验阶段并集 = 全部节点
   const nodeIds = allNodes.map((n) => n.id);
@@ -1208,6 +1539,14 @@ function main() {
   }
   if (writeJson(ROADMAP_FILE, PHASES, "roadmap.json")) written++;
 
+  // NOI/蓝桥杯标签归并统计
+  let noiCount = 0;
+  let lanqiaoCount = 0;
+  for (const n of allNodes) {
+    noiCount += (n.noiLabels || []).length;
+    lanqiaoCount += (n.lanqiaoLabels || []).length;
+  }
+
   console.log("\n===== 数据来源统计 =====");
   const countBySource = {};
   for (const n of allNodes) {
@@ -1218,7 +1557,8 @@ function main() {
   }
   console.log(`\n洛谷模块数=${modules.size} 罗勇军小节数=${luoSections.length} 刘汝佳章节数=${liuChapters.length}`);
   console.log(`NOI 级别数=${noiLevels.length} 蓝桥杯组别数=${lanqiaoGroups.length} OI知识树主题数=${oiTreeDetails.size}`);
-  console.log(`节点数=${allNodes.length}（普通 ${nodes.length} + 知识清单 ${knowledgeNodes.length}） 阶段数=${PHASES.length} 写入文件数=${written}`);
+  console.log(`节点数=${allNodes.length} 阶段数=${PHASES.length} 写入文件数=${written}`);
+  console.log(`NOI 大纲标签归并 ${noiCount} 条、蓝桥杯考点标签归并 ${lanqiaoCount} 条（已合并进对应节点）`);
 }
 
 main();

@@ -20,6 +20,14 @@
   "lanqiao": [
     "大学B组"
   ],
+  "noiLabels": [
+    "单源次短路",
+    "单源最短路：Bellman-Ford、Dijkstra、SPFA 等",
+    "Floyd-Warshall 算法"
+  ],
+  "lanqiaoLabels": [
+    "单源最短路及差分约束系统"
+  ],
   "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》10.8 · NOI 大纲·提高级 · 蓝桥杯·大学B组",
   "oiTree": [
     "单源最短路（Dijkstra (堆优化) / SPFA (队列优化 Bellman-Ford) / Bellman-Ford）",

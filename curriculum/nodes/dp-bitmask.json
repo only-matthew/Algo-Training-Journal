@@ -21,6 +21,12 @@
   "lanqiao": [
     "大学B组"
   ],
+  "noiLabels": [
+    "状态压缩动态规划"
+  ],
+  "lanqiaoLabels": [
+    "状压 DP"
+  ],
   "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》5.4 · NOI 大纲·提高级 · 蓝桥杯·大学B组",
   "oiTree": [
     "状压 DP（旅行商问题 (TSP) / 插头 DP）"
