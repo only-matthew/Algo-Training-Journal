@@ -55,8 +55,26 @@ export function buildStatsMessage(overview) {
 
 export const HELP_TEXT = `🤖 训练日志助手指令\n· 今日复习 / 复习：查看今日复习队列\n· 今日打卡 / 打卡：查看今日打卡情况\n· 统计 / 近30天：查看近 30 天训练统计\n· 帮助：显示本列表`;
 
-// 按指令文本返回回复内容；无法识别返回 null
-export async function buildReply(cmdText, fetchOverview) {
+const COMMAND_RE = /^(今日复习|复习|复习队列|待复习|今日打卡|打卡|今天打卡|出勤|统计|近30天|近三十天|近况|汇总|帮助|help|菜单|指令)/i;
+
+// 从群 @ 消息内容中提取指令文本：
+// 1. 剔除 @提及 与可选机器人昵称；2. 锚定匹配指令；3. 若开头是疑似昵称的 token，去掉后再匹配
+export function extractCommand(content, botName) {
+  let text = String(content || "");
+  if (botName) text = text.split(botName).join("");
+  text = text.replace(/@[^\s，,。]+/g, "").replace(/^[:：\s]+/, "").trim();
+  if (COMMAND_RE.test(text)) return text;
+  const parts = text.split(/\s+/);
+  if (parts.length > 1 && !COMMAND_RE.test(parts[0])) {
+    const rest = parts.slice(1).join(" ");
+    if (COMMAND_RE.test(rest)) return rest;
+  }
+  return text;
+}
+
+// 按群消息内容返回回复文本；无法识别返回 null
+export async function buildReply(content, fetchOverview, botName = "") {
+  const cmdText = extractCommand(content, botName);
   if (/^(今日复习|复习|复习队列|待复习)/.test(cmdText)) {
     return buildReviewMessage(await fetchOverview());
   }

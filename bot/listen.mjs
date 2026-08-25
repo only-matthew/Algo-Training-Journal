@@ -52,14 +52,7 @@ async function fetchOverview() {
   return response.json();
 }
 
-// 剔除消息中的 @机器人 提及与多余空白，得到指令文本
-function stripMention(content) {
-  let text = String(content || "");
-  if (BOT_NAME) text = text.split(BOT_NAME).join("");
-  text = text.replace(/@[^\s，,。]+/g, "").replace(/^[:：\s]+/, "").trim();
-  return text;
-}
-
+// 剔除消息中的 @机器人 提及与多余空白，得到指令文本（与 Worker 版共用 buildReply 的 extractCommand）
 async function handleGroupAtMessage(event) {
   const data = event.d || {};
   const content = data.content || "";
@@ -70,10 +63,9 @@ async function handleGroupAtMessage(event) {
   // 打印群 openid 便于首次部署收集
   console.log(`[群消息] group=${groupOpenid} author=${data.author ? data.author.member_openid : "?"} content=${content}`);
 
-  const cmd = stripMention(content);
   let reply;
   try {
-    reply = await buildReply(cmd, fetchOverview);
+    reply = await buildReply(content, fetchOverview, BOT_NAME);
   } catch (error) {
     reply = `⚠️ 查询失败：${error.message}`;
   }

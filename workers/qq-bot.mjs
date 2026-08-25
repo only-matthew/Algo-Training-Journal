@@ -67,14 +67,6 @@ export async function qqVerifySignature(secret, sigHex, timestamp, bodyBytes) {
   }
 }
 
-// 剔除消息中的 @机器人 提及与多余空白，得到指令文本
-function stripMention(content, botName) {
-  let text = String(content || "");
-  if (botName) text = text.split(botName).join("");
-  text = text.replace(/@[^\s，,。]+/g, "").replace(/^[:：\s]+/, "").trim();
-  return text;
-}
-
 async function fetchOverview(dataUrl) {
   const response = await fetch(`${dataUrl}/data/overview.json`);
   if (!response.ok) throw new Error(`站点数据加载失败（HTTP ${response.status}）`);
@@ -86,8 +78,7 @@ async function processGroupAtMessage(data, env) {
   const groupOpenid = data && data.group_openid;
   const msgId = data && data.id;
   if (!groupOpenid) return;
-  const command = stripMention(data.content, env.QQ_BOT_NAME || "");
-  const reply = await buildReply(command, () => fetchOverview(env.QQ_DATA_URL || "https://train.xialiao.org"));
+  const reply = await buildReply(data.content, () => fetchOverview(env.QQ_DATA_URL || "https://train.xialiao.org"), env.QQ_BOT_NAME || "");
   if (!reply) return;
   const { token } = await fetchAccessToken({ appId: env.QQ_APP_ID, clientSecret: env.QQ_CLIENT_SECRET });
   await sendGroupMessage(groupOpenid, reply, { token, msgId });
