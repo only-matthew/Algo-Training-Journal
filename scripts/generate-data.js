@@ -299,6 +299,66 @@ function writeVersionedIndex(dataVersion) {
   return html;
 }
 
+// 生成 Service Worker：缓存版本由代码哈希 + 数据哈希 + 构建时间共同决定，
+// 任何部署都会产生新版本 → 旧缓存自动清理，避免发布后命中陈旧资源。
+function writeServiceWorker(dataVersion) {
+  const version = `${appVersion()}-${dataVersion}-${Date.now().toString(36)}`;
+  const sw = `// Algo Training Journal Service Worker（构建时生成，勿手改）
+const VERSION = ${JSON.stringify(version)};
+const CACHE = "atj-" + VERSION;
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open(CACHE).then((cache) => cache.add("/")).then(() => self.skipWaiting())
+  );
+});
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (event) => {
+  const request = event.request;
+  if (request.method !== "GET") return;
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) return;
+
+  // 页面导航：网络优先，失败时回退缓存的首页（离线可用）
+  if (request.mode === "navigate") {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put("/", copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match("/"))
+    );
+    return;
+  }
+
+  // 静态资源与数据 JSON（均带版本查询或随构建整体失效）：缓存优先，未命中再请求并回填
+  event.respondWith(
+    caches.match(request).then((hit) => hit || fetch(request).then((response) => {
+      if (response.ok) {
+        const copy = response.clone();
+        caches.open(CACHE).then((cache) => cache.put(request, copy));
+      }
+      return response;
+    }))
+  );
+});
+`;
+  fs.writeFileSync(path.join(OUTPUT_DIR, "sw.js"), sw, "utf8");
+  console.log(`[write] sw.js（缓存版本 ${version}）`);
+}
+
 function routePath(segments = []) {
   if (!segments.length) return "/";
   return `/${segments.map((segment) => encodeURIComponent(String(segment))).join("/")}/`;
@@ -812,6 +872,7 @@ async function main() {
   }
   writeVersionedDataModule();
   const html = writeVersionedIndex(dataVersion);
+  writeServiceWorker(dataVersion);
   const homeHtml = writeHomePage(html, logs);
   writeRouteIndexes(homeHtml, members, logs);
   writeMemberPages(html, members, logs);

@@ -45,6 +45,10 @@
 - [x] **筛选切换全部卡片重建** — 改用 DocumentFragment + replaceChildren（`lib/renderer.mjs`）
 - [x] **Prism + KaTeX（~600KB）同步加载** — 改为 Prism 与 KaTeX 并行加载（`lib/renderer.mjs`）
 - [ ] **热力图 365 单元格每次重建** — 可通过 CSS class 更新优化，当前影响较小
+- [x] **学习路线首屏重复拉 JSON 重渲染** — 预渲染内容被丢弃、每次直链都重新拉 roadmap.json/节点 JSON 并整页重建；已改为构建时写入 `data-route`/`data-members` 标记，首屏命中预渲染内容时零 JSON 请求（`scripts/generate-data.js`, `lib/renderer.mjs`, `lib/data.mjs`）
+- [x] **KaTeX/Prism CSS 无条件加载** — JS 已按内容条件加载，CSS（~25KB）仍在 shell 无条件 `<link>`；已改为与 JS 一起按需注入（`index.html`, `lib/renderer.mjs`）
+- [x] **表单模块静态加载** — `form.mjs`（含 tag-catalog/log-schema 依赖 ~57KB）被 app.js 顶层静态导入，学习路线等页面也全量加载；已改为按需动态导入，非学习路线页面空闲时预加载（`app.js`）
+- [x] **无 Service Worker** — 静态资源与数据 JSON 受 GitHub Pages/Vercel 默认缓存策略限制；已新增构建期生成 `sw.js`（缓存版本随代码+数据哈希+构建时间自动失效），导航网络优先、静态资源缓存优先，二次访问秒开且可离线（`scripts/generate-data.js`, `app.js`）
 - [x] **标签筛选栏/云每次重建** — 切队员时跳过全局标签重渲染（`lib/renderer.mjs`）
 - [x] **后台 refresh timer 无休眠** — visibilitychange 事件暂停/恢复（`lib/data.mjs`）
 - [ ] **构建脚本同步 I/O** — 数据集较小，保持同步 I/O 可接受

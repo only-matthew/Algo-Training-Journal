@@ -1,0 +1,25 @@
+name: QQ Bot Remind
+
+on:
+  workflow_dispatch:
+  # ⚠️ QQ 平台自 2025-04-21 起不再提供「主动推送」，定时主动发消息会被拒绝。
+  # 若你的机器人已验证具备主动推送权限，取消下面注释并调整时间（UTC）：
+  # schedule:
+  #   - cron: "0 12 * * *"   # 每天 20:00（UTC+8）
+
+jobs:
+  remind:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: "24"
+      - name: Send QQ group reminder
+        run: node bot/remind.mjs
+        env:
+          QQ_APP_ID: ${{ secrets.QQ_APP_ID }}
+          QQ_CLIENT_SECRET: ${{ secrets.QQ_CLIENT_SECRET }}
+          QQ_GROUP_OPENID: ${{ secrets.QQ_GROUP_OPENID }}

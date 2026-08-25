@@ -22,6 +22,13 @@ function withForm() {
   initTheme();
   initPageNavigation();
 
+  // 0.5 Service Worker：缓存静态资源与数据 JSON，二次访问秒开、离线可用
+  if ("serviceWorker" in navigator && window.location.protocol === "https:") {
+    navigator.serviceWorker
+      .register("/sw.js", { updateViaCache: "none" })
+      .catch((error) => console.warn("Service Worker 注册失败:", error));
+  }
+
   // 1. Auth
   await initSession();
 

@@ -65,6 +65,7 @@
 - 题目详情使用 Marked 渲染 GFM Markdown，支持标题、列表、表格、链接和代码块。
 - 使用 Prism 提供 C++ 语法高亮，使用 KaTeX 渲染 `$...$` 与 `$$...$$` LaTeX 公式。
 - 支持浅色/深色主题和移动端响应式布局。
+- 通过 Service Worker（`sw.js`）缓存静态资源与数据 JSON：二次访问秒开、断网可浏览已访问页面；缓存版本随构建自动失效，发布后不会命中旧资源。
 
 ### 训练分析与错题复盘
 
@@ -296,6 +297,45 @@ AI 概括不需要把模型密钥写入前端或仓库；`workers/wrangler.toml`
 ### GitHub Pages
 
 仓库设置中选择 **Settings → Pages → Source = GitHub Actions**。
+
+## QQ 机器人（群提醒）
+
+> ⚠️ 重要：QQ 开放平台自 **2025-04-21** 起不再提供「主动推送」能力（[消息推送策略调整通知](https://q.qq.com/miniapp#/news/detail/974e66a946a5e54c441ca983585a7aab)），机器人无法定时直接给群发消息。因此本项目的 QQ 机器人采用**被动回复**模式：群成员 `@机器人` + 指令，机器人即时回复。
+
+支持指令（在群里 @机器人 后发送）：
+
+| 指令 | 回复内容 |
+| --- | --- |
+| `今日复习` / `复习` | 今日复习队列（含逾期高亮），数据来自站点 `data/overview.json` |
+| `今日打卡` / `打卡` | 今日各成员打卡情况（已打卡/未打卡） |
+| `统计` / `近30天` | 近 30 天训练统计 |
+| `帮助` | 指令列表 |
+
+### 机器人配置（q.qq.com 控制台）
+
+1. 创建机器人应用，记录 **AppID**、**ClientSecret**（应用详情 → 开发设置）。
+2. 获取**机器人令牌**（开发设置 → 机器人令牌，用于 WebSocket 鉴权）。
+3. 开启「群聊消息接收」事件订阅（`GROUP_AND_C2C_EVENT` 类事件，控制台 → 开发设置 → 消息接收）。
+4. 把机器人拉进目标 QQ 群。
+
+### 运行监听（需常驻进程，pm2 / systemd / nohup 均可）
+
+```bash
+QQ_APP_ID=xxx QQ_CLIENT_SECRET=xxx QQ_BOT_TOKEN=xxx QQ_BOT_NAME=机器人昵称 \
+node bot/listen.mjs
+```
+
+首次运行后在群里 `@机器人` 发任意消息，控制台会打印该群的 `group_openid`（后续配置其他用途需要）。连接断开会自动重连。
+
+### 一次性提醒脚本（主动推送，受平台策略限制）
+
+`bot/remind.mjs` 生成「今日复习 + 近 30 天统计」文本并发送到指定群，可用于已验证主动推送权限的场景或手动巡检：
+
+```bash
+QQ_APP_ID=xxx QQ_CLIENT_SECRET=xxx QQ_GROUP_OPENID=xxx node bot/remind.mjs
+```
+
+GitHub Actions 工作流 [.github/workflows/qq-remind.yml](.github/workflows/qq-remind.yml) 可手动触发；若你的机器人具备主动推送权限，取消其中的 `schedule` 注释即可定时执行，需在仓库 Secrets 配置 `QQ_APP_ID`、`QQ_CLIENT_SECRET`、`QQ_GROUP_OPENID`。
 
 ## 本地开发
 
