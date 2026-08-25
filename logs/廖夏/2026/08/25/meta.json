@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-25T21:25:38.306+08:00",
+  "problems": [
+    {
+      "id": "0949130d-f8b3-459e-9e3d-b208c6619229",
+      "name": "[USACO1.3] 混合牛奶 Mixing Milk",
+      "platform": "洛谷",
+      "problemNumber": "P1208",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "排序",
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
