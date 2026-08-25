@@ -1,0 +1,165 @@
+{
+  "id": "algo-sorting",
+  "title": "排序",
+  "listId": "算法1-2",
+  "group": "算法1",
+  "difficulty": 3,
+  "prerequisites": [],
+  "wiki": "https://oi-wiki.org/basic/sort-intro/",
+  "tags": [
+    "排序",
+    "贪心"
+  ],
+  "description": "掌握常用排序算法与 sort 应用，理解排序在解题中的预处理作用。",
+  "noiLevels": [
+    "入门级",
+    "提高级"
+  ],
+  "lanqiao": [
+    "大学C组"
+  ],
+  "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》2.8 · NOI 大纲·入门级/提高级 · 蓝桥杯·大学C组",
+  "oiTree": [],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P1271",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1177",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1923",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1059",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1093",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1781",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2676",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1116",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1152",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1068",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5143",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1104",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1012",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "339A",
+      "name": "Helpful Maths",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1092B",
+      "name": "Teams Forming",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1535A",
+      "name": "Fair Playoff",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "sortings"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,353 @@
+{
+  "id": "ds-set",
+  "title": "集合",
+  "listId": "数据结构1-3",
+  "group": "数据结构1",
+  "difficulty": 4,
+  "prerequisites": [
+    "ds-linear-list",
+    "algo-sorting"
+  ],
+  "wiki": "https://oi-wiki.org/ds/dsu/",
+  "tags": [
+    "并查集",
+    "哈希表"
+  ],
+  "description": "掌握哈希表、并查集与 STL 集合容器的使用，维护元素关系。",
+  "noiLevels": [
+    "入门级",
+    "提高级"
+  ],
+  "lanqiao": [
+    "大学B组"
+  ],
+  "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》4.1 · NOI 大纲·入门级/提高级 · 蓝桥杯·大学B组",
+  "oiTree": [
+    "并查集 (Union-Find)（路径压缩 / 按秩合并）"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P1551",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1536",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3370",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3405",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5250",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5266",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1102",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1918",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1525",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1621",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1892",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1955",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4305",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3879",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2814",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1520D",
+      "name": "Same Differences",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "data structures",
+        "hashing",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1335C",
+      "name": "Two Teams Composing",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "implementation",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "HDU",
+      "number": "1213",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "3038",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1182",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "2524",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1611",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1703",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "2236",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "2492",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1988",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "3635",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "1856",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "1272",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "1325",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "1198",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "2586",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "6109",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1111",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3958",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4185",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2024",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1197",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1196",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    }
+  ]
+}

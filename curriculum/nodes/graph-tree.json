@@ -1,0 +1,423 @@
+{
+  "id": "graph-tree",
+  "title": "树",
+  "listId": "图论2-1",
+  "group": "图论2",
+  "difficulty": 6,
+  "prerequisites": [
+    "ds-binary-tree",
+    "ds-graph-basics",
+    "algo-divide-conquer-doubling"
+  ],
+  "wiki": "https://oi-wiki.org/graph/tree-basic/",
+  "tags": [
+    "树",
+    "LCA",
+    "树链剖分"
+  ],
+  "description": "掌握树的遍历、直径、重心、LCA 与树上差分等基础树上算法。",
+  "noiLevels": [
+    "提高级"
+  ],
+  "lanqiao": [
+    "大学B组"
+  ],
+  "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》4.7/4.8/4.9/4.10/10.6 · NOI 大纲·提高级 · 蓝桥杯·大学B组",
+  "oiTree": [
+    "LCA (最近公共祖先)（倍增法 / Tarjan 离线 / RMQ (ST表)）",
+    "树链剖分",
+    "点分治"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P5908",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1099",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1395",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3379",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3128",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3384",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3038",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3976",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2052",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5666",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5588",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5536",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5836",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1351",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4408",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3398",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2680",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1600",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3178",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4092",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4116",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3313",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1592C",
+      "name": "Bakry and Partitioning",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "trees",
+        "dfs and similar",
+        "bitmasks"
+      ]
+    },
+    {
+      "platform": "POJ",
+      "number": "3107",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3629",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "2586",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "2874",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "4912",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1967",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3938",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4281",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1741",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3806",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6329",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2056",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3345",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4183",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5306",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2634",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2664",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3714",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4149",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3241",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4075",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4292",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2486",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2146",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2590",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    }
+  ]
+}

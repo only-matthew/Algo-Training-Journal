@@ -1,0 +1,476 @@
+{
+  "id": "algo-divide-conquer-doubling",
+  "title": "分治与倍增",
+  "listId": "算法2-3",
+  "group": "算法2",
+  "difficulty": 5,
+  "prerequisites": [
+    "algo-recurrence-recursion",
+    "algo-sorting"
+  ],
+  "wiki": "https://oi-wiki.org/basic/divide-and-conquer/",
+  "tags": [
+    "分治",
+    "倍增"
+  ],
+  "description": "掌握分治与倍增两大思想，应用于排序、逆序对与区间查询。",
+  "noiLevels": [
+    "提高级"
+  ],
+  "lanqiao": [
+    "大学B组"
+  ],
+  "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》2.5/2.9 · 刘汝佳《算法竞赛入门经典》高效算法设计 · NOI 大纲·提高级 · 蓝桥杯·大学B组",
+  "oiTree": [
+    "ST 表 (稀疏表)（静态 RMQ）",
+    "树上倍增",
+    "分治构造"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P1177",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1908",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1966",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1226",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1045",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1115",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2880",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7167",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2415",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1257",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1228",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2345",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3509",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3517",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4155",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1816",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6648",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7562",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1385D",
+      "name": "a-Good String",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "divide and conquer",
+        "dfs and similar"
+      ]
+    },
+    {
+      "platform": "HDU",
+      "number": "5443",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "6107",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3865",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5465",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3295",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2251",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1198",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5012",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5344",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2048",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "4911",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "2388",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1593",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1923",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1498",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1010",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1854",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "2506",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "2083",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3810",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3157",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2487",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4690",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3206",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "120",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1605",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1152",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "11134",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "11054",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1606",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "11572",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1471",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1451",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "714",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "10954",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "12627",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    }
+  ]
+}

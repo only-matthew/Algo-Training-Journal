@@ -1,0 +1,320 @@
+{
+  "id": "math-basics",
+  "title": "基础数学问题",
+  "listId": "数学1",
+  "group": "数学1",
+  "difficulty": 3,
+  "prerequisites": [],
+  "wiki": "https://oi-wiki.org/math/binary-exponentiation/",
+  "tags": [
+    "数论",
+    "gcd",
+    "快速幂"
+  ],
+  "description": "掌握进制转换、质数判定与筛法、gcd 等基础数论工具。",
+  "noiLevels": [
+    "入门级"
+  ],
+  "lanqiao": [
+    "大学C组"
+  ],
+  "ref": "洛谷·深入浅出 · NOI 大纲·入门级 · 蓝桥杯·大学C组",
+  "oiTree": [
+    "快速幂"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P1143",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1469",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1100",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1017",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1866",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2822",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2789",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3913",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2638",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1246",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2926",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3383",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1835",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1029",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1072",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1069",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1572",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4057",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1414",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2651",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2660",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3601",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1403",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1593",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "122A",
+      "name": "Lucky Division",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "brute force"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1327A",
+      "name": "Sum of Odd Integers",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1370A",
+      "name": "Maximum GCD",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1372B",
+      "name": "Omkar and Last Class of Math",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1603A",
+      "name": "Di-visible Confusion",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1526B",
+      "name": "I Hate 1111",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1325B",
+      "name": "CopyCopyCopyCopyCopy",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1550A",
+      "name": "Find The Array",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math",
+        "constructive algorithms"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,322 @@
+{
+  "id": "algo-binary-search",
+  "title": "二分查找与二分答案",
+  "listId": "算法1-6",
+  "group": "算法1",
+  "difficulty": 4,
+  "prerequisites": [
+    "algo-sorting",
+    "algo-recurrence-recursion"
+  ],
+  "wiki": "https://oi-wiki.org/basic/binary/",
+  "tags": [
+    "二分",
+    "二分答案"
+  ],
+  "description": "掌握二分查找与二分答案的单调性判定，解决最优化问题。",
+  "noiLevels": [
+    "入门级",
+    "提高级"
+  ],
+  "lanqiao": [
+    "大学C组"
+  ],
+  "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》2.3/2.4 · NOI 大纲·入门级/提高级 · 蓝桥杯·大学C组",
+  "oiTree": [
+    "二分答案",
+    "三分求极值"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P2249",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1102",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1873",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1024",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1678",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2440",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2678",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3853",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1182",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1163",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3743",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "474B",
+      "name": "Worms",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "binary search"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1201C",
+      "name": "Maximum Median",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1538C",
+      "name": "Number of Pairs",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "two pointers"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1436C",
+      "name": "Binary Search",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "combinatorics"
+      ]
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1462",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1824",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "POJ",
+      "number": "3122",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1419",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1083",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1314",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1868",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1493",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "6231",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "4135",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "POJ",
+      "number": "3258",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1905",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3382",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "3400",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3745",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1883",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "POJ",
+      "number": "3301",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "3747",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1018",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    }
+  ]
+}

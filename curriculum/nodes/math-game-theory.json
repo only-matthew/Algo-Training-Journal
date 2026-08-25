@@ -1,0 +1,126 @@
+{
+  "id": "math-game-theory",
+  "title": "博弈论",
+  "listId": "数学2-5",
+  "group": "数学2",
+  "difficulty": 8,
+  "prerequisites": [
+    "math-combinatorics",
+    "dp-intro"
+  ],
+  "wiki": "https://oi-wiki.org/math/game-theory/",
+  "tags": [
+    "博弈论",
+    "SG函数",
+    "Nim"
+  ],
+  "description": "掌握 SG 函数、Nim 游戏与巴什博弈、威佐夫博弈、斐波那契博弈等经典博弈模型。",
+  "noiLevels": [
+    "提高级",
+    "NOI级"
+  ],
+  "lanqiao": [
+    "大学A组"
+  ],
+  "ref": "NOI 大纲·提高级/NOI级 · 蓝桥杯·大学A组",
+  "oiTree": [
+    "SG 函数",
+    "Nim 游戏",
+    "巴什博弈",
+    "威佐夫博弈",
+    "斐波那契博弈"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P2197",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "Nim 游戏模板"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1247",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "取火柴游戏"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2252",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "威佐夫博弈"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1290",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "欧几里得的游戏"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4018",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "巴什博弈变式"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "276B",
+      "name": "Little Girl and Game",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "games"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1404B",
+      "name": "Tree Tag",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "games",
+        "trees"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1472D",
+      "name": "Even-Odd Game",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "games",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1451D",
+      "name": "Circle Game",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "games",
+        "math"
+      ]
+    }
+  ]
+}

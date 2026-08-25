@@ -1,0 +1,359 @@
+{
+  "id": "ds-linear-list",
+  "title": "线性表",
+  "listId": "数据结构1-1",
+  "group": "数据结构1",
+  "difficulty": 3,
+  "prerequisites": [],
+  "wiki": "https://oi-wiki.org/ds/linked-list/",
+  "tags": [
+    "栈",
+    "队列",
+    "链表"
+  ],
+  "description": "掌握栈、队列、链表等线性结构的实现与应用场景。",
+  "noiLevels": [
+    "入门级"
+  ],
+  "lanqiao": [
+    "大学C组"
+  ],
+  "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》1.1/1.2/1.3 · 刘汝佳《算法竞赛入门经典》C++与STL入门 · NOI 大纲·入门级 · 蓝桥杯·大学C组",
+  "oiTree": [
+    "栈",
+    "队列",
+    "链表"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P3156",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3613",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1449",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1996",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1160",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1540",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2058",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1241",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4387",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2234",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1579E1",
+      "name": "Permutation Minimization by Deque",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1579E2",
+      "name": "Array Optimization by Deque",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "data structures",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1886",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "1003",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1440",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2032",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1714",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2629",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2422",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3957",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1725",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2776",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "1062",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2947",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5788",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1739",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1981",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1175",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "10474",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "101",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "10815",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "156",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "12096",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "540",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "136",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "400",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1592",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "207",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "814",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "221",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    }
+  ]
+}

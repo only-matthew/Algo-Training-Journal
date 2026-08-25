@@ -22,8 +22,12 @@ let toDateString;
 let toUtc8;
 let problemStableKey;
 let problemDetailHtml;
+let originalProblemUrl;
 let updatedLabel;
 let relatedSectionHtml;
+let roadmapOverviewHtml;
+let roadmapPhaseHtml;
+let roadmapNodeHtml;
 let SITE_ORIGIN;
 let SITE_NAME;
 
@@ -279,7 +283,7 @@ function daysAgo(days) {
 function appVersion() {
   return crypto
     .createHash("sha256")
-    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs", "lib/constants.mjs", "lib/problem-detail.mjs", "lib/auth.mjs", "lib/theme.mjs", "lib/form.mjs", "lib/renderer.mjs", "lib/router.mjs", "lib/data.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
+    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs", "lib/constants.mjs", "lib/problem-detail.mjs", "lib/roadmap.mjs", "lib/auth.mjs", "lib/theme.mjs", "lib/form.mjs", "lib/renderer.mjs", "lib/router.mjs", "lib/data.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
     .digest("hex")
     .slice(0, 12);
 }
@@ -352,7 +356,7 @@ function replaceHeadMetadata(html, { title, description, canonical, robots = "in
 
 function showOnlyPage(html, pageId) {
   const $ = cheerio.load(html);
-  const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page"];
+  const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page", "roadmap-page"];
   for (const id of pageIds) {
     const section = $(`#${id}`);
     section.removeClass("active");
@@ -480,11 +484,12 @@ function writeProblemPages(html, logs, problemIndex) {
   }
 }
 
-function writeCrawlerFiles(members, logs) {
+function writeCrawlerFiles(members, logs, extraEntries = []) {
   const entries = [
     { segments: [], lastmod: logs[0]?.date || new Date().toISOString().slice(0, 10) },
     ...members.map((member) => ({ segments: memberSegments(member), lastmod: logs.find((log) => log.member === member)?.date })),
     ...logs.map((log) => ({ segments: problemSegments(log), lastmod: log.date })),
+    ...extraEntries,
   ];
   const urls = entries.map(({ segments, lastmod }) => `  <url>\n    <loc>${escapeXml(absoluteUrl(segments))}</loc>${lastmod ? `\n    <lastmod>${escapeXml(lastmod)}</lastmod>` : ""}\n  </url>`).join("\n");
   fs.writeFileSync(path.join(OUTPUT_DIR, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`, "utf8");
@@ -593,11 +598,170 @@ function buildReviewQueue(logs) {
     .sort((a, b) => a.reviewDue.localeCompare(b.reviewDue) || a.member.localeCompare(b.member, "zh-CN"));
 }
 
+// ============================================================
+// 学习路线（curriculum/ → site/data/roadmap*.json + /roadmap/ 预渲染页）
+// ============================================================
+
+// 读取 curriculum/，与日志交叉匹配计算进度，返回 { roadmapData, nodeDataById }；
+// curriculum/ 缺失或校验失败时返回 null（不阻塞其余构建）。
+async function generateRoadmapData(logs) {
+  const curriculumDir = path.join(ROOT, "curriculum");
+  if (!fs.existsSync(curriculumDir)) {
+    console.warn("curriculum/ 不存在，跳过学习路线数据生成。");
+    return null;
+  }
+  let curriculum;
+  let problemKey;
+  let buildMatchIndex;
+  let computeNodeStats;
+  let computePhaseStats;
+  try {
+    ({ readCurriculum, validateCurriculum, problemKey, buildMatchIndex, computeNodeStats, computePhaseStats } = await import("./curriculum.mjs"));
+    curriculum = readCurriculum("curriculum");
+    validateCurriculum(curriculum);
+  } catch (error) {
+    console.error(`学习路线数据读取/校验失败，跳过生成：${error.message}`);
+    return null;
+  }
+
+  const { phases, nodes } = curriculum;
+  const matchIndex = buildMatchIndex(logs);
+  const members = [...new Set(logs.map((log) => log.member))].sort((a, b) => a.localeCompare(b, "zh-CN"));
+  const generatedAt = new Date().toISOString();
+  const nodeDataById = new Map();
+
+  for (const [id, node] of nodes) {
+    const stats = computeNodeStats(node, matchIndex);
+    const problems = node.problems.map((problem) => {
+      const doneBy = (matchIndex.get(problemKey(problem.platform, problem.number)) || []).map((entry) => ({
+        member: entry.member,
+        date: entry.date,
+        reviewStatus: entry.reviewStatus || "none",
+        problemId: entry.problemId,
+        problemName: entry.problem,
+      }));
+      return {
+        platform: problem.platform,
+        number: problem.number,
+        name: problem.name || "",
+        source: problem.source || "",
+        role: problem.role || "",
+        note: problem.note || "",
+        ...(problem.rating != null ? { rating: problem.rating } : {}),
+        ...(problem.tags && problem.tags.length ? { tags: problem.tags } : {}),
+        url: originalProblemUrl ? originalProblemUrl(problem.platform, problem.number, problem.name) : "",
+        doneBy,
+      };
+    });
+    nodeDataById.set(id, {
+      schemaVersion: 1,
+      generatedAt,
+      phase: { id: "", title: "" },
+      node: {
+        id,
+        title: node.title,
+        listId: node.listId || "",
+        group: node.group || "",
+        difficulty: node.difficulty,
+        prerequisites: node.prerequisites || [],
+        wiki: node.wiki || "",
+        tags: node.tags || [],
+        description: node.description || "",
+        ref: node.ref || "",
+        noiLevels: node.noiLevels || [],
+        lanqiao: node.lanqiao || [],
+        oiTree: node.oiTree || [],
+      },
+      stats,
+      problems,
+    });
+  }
+
+  const phaseData = phases.map((phase) => {
+    const phaseNodes = phase.nodes.map((id) => nodes.get(id)).filter(Boolean);
+    const nodeSummaries = phase.nodes
+      .map((id) => {
+        const data = nodeDataById.get(id);
+        return data ? { ...data.node, stats: data.stats } : null;
+      })
+      .filter(Boolean);
+    for (const id of phase.nodes) {
+      const data = nodeDataById.get(id);
+      if (data) data.phase = { id: phase.id, title: phase.title };
+    }
+    return {
+      id: phase.id,
+      index: phase.index,
+      title: phase.title,
+      subtitle: phase.subtitle || "",
+      goal: phase.goal || "",
+      milestone: phase.milestone || "",
+      reference: phase.reference || "",
+      difficulty: phase.difficulty || [],
+      stats: computePhaseStats(phaseNodes, matchIndex),
+      nodes: nodeSummaries,
+    };
+  });
+
+  const overallStats = computePhaseStats([...nodes.values()], matchIndex);
+  const roadmapData = {
+    schemaVersion: 1,
+    generatedAt,
+    members,
+    totalProblems: overallStats.totalProblems,
+    totalDone: overallStats.done,
+    totalMastered: overallStats.mastered,
+    totalReview: overallStats.review,
+    stats: overallStats,
+    phases: phaseData,
+  };
+  return { roadmapData, nodeDataById };
+}
+
+// 写入 site/data/roadmap*.json（需在 site/ 清空重建之后调用）
+function writeRoadmapData(roadmapData, nodeDataById) {
+  writeJson(path.join("data", "roadmap.json"), roadmapData);
+  for (const [id, nodeData] of nodeDataById) {
+    writeJson(path.join("data", "roadmap", "nodes", `${id}.json`), nodeData);
+  }
+}
+
+// 预渲染 /roadmap/ 三级页面
+async function generateRoadmapPages(html, roadmapData, nodeDataById) {
+  try {
+    ({ roadmapOverviewHtml, roadmapPhaseHtml, roadmapNodeHtml } = await import("../lib/roadmap.mjs"));
+  } catch (error) {
+    console.error(`lib/roadmap.mjs 不可用，跳过学习路线页面生成：${error.message}`);
+    return;
+  }
+
+  function roadmapPage(title, description, segments, contentHtml) {
+    const page = replaceHeadMetadata(showOnlyPage(html, "roadmap-page"), {
+      title: `${title} · ${SITE_NAME}`,
+      description,
+      canonical: absoluteUrl(segments),
+    });
+    const $ = cheerio.load(page);
+    $("#roadmap-content").html(contentHtml);
+    writeRouteIndex(addSelfClosingVoids($.html()), segments);
+  }
+
+  roadmapPage("学习路线", "算法知识树、分阶段训练路线与题单进度。", ["roadmap"], roadmapOverviewHtml(roadmapData, "all"));
+  for (const phase of roadmapData.phases) {
+    roadmapPage(phase.title, `学习路线 · ${phase.title}`, ["roadmap", phase.id], roadmapPhaseHtml(roadmapData, phase.id, "all"));
+    for (const node of phase.nodes) {
+      const nodeData = nodeDataById.get(node.id);
+      if (!nodeData) continue;
+      roadmapPage(node.title, `学习路线 · ${phase.title} · ${node.title}`, ["roadmap", phase.id, node.id], roadmapNodeHtml(nodeData, "all"));
+    }
+  }
+}
+
 async function main() {
   ({ normalizeMeta, problemStableKey } = await import("../lib/log-schema.mjs"));
   ({ escapeHtml } = await import("../lib/render-safety.mjs"));
   ({ toDateString, toUtc8, SITE_ORIGIN: siteOrigin, SITE_NAME: siteName } = await import("../lib/constants.mjs"));
-  ({ problemDetailHtml, updatedLabel, relatedSectionHtml } = await import("../lib/problem-detail.mjs"));
+  ({ problemDetailHtml, originalProblemUrl, updatedLabel, relatedSectionHtml } = await import("../lib/problem-detail.mjs"));
   SITE_ORIGIN = siteOrigin;
   SITE_NAME = siteName;
   const { members, logs } = readLogs();
@@ -616,7 +780,13 @@ async function main() {
     recent30,
   };
   const problemIndex = await buildProblemIndex(logs);
-  const dataVersion = crypto.createHash("sha256").update(JSON.stringify(fullData)).digest("hex").slice(0, 12);
+  const roadmapResult = await generateRoadmapData(logs);
+  const roadmapData = roadmapResult?.roadmapData || null;
+  const roadmapNodeData = roadmapResult?.nodeDataById || new Map();
+  const dataVersion = crypto.createHash("sha256")
+    .update(JSON.stringify(fullData) + (roadmapData ? JSON.stringify(roadmapData) : ""))
+    .digest("hex")
+    .slice(0, 12);
 
   const resolved = path.resolve(OUTPUT_DIR);
   const expected = path.resolve(path.join(ROOT, "site"));
@@ -631,7 +801,7 @@ async function main() {
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   copyFile("style.css");
   writeVersionedApp();
-  for (const moduleName of ["log-schema.mjs", "tag-catalog.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "problem-detail.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
+  for (const moduleName of ["log-schema.mjs", "tag-catalog.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "problem-detail.mjs", "roadmap.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
     writeVersionedModule(`lib/${moduleName}`);
   }
   writeVersionedDataModule();
@@ -640,7 +810,17 @@ async function main() {
   writeRouteIndexes(homeHtml, members, logs);
   writeMemberPages(html, members, logs);
   writeProblemPages(html, logs, problemIndex);
-  writeCrawlerFiles(members, logs);
+  if (roadmapData) {
+    writeRoadmapData(roadmapData, roadmapNodeData);
+    await generateRoadmapPages(html, roadmapData, roadmapNodeData);
+  }
+  writeCrawlerFiles(members, logs, roadmapData ? [
+    { segments: ["roadmap"], lastmod: roadmapData.generatedAt.slice(0, 10) },
+    ...roadmapData.phases.flatMap((phase) => [
+      { segments: ["roadmap", phase.id], lastmod: roadmapData.generatedAt.slice(0, 10) },
+      ...phase.nodes.map((node) => ({ segments: ["roadmap", phase.id, node.id], lastmod: roadmapData.generatedAt.slice(0, 10) })),
+    ]),
+  ] : []);
   if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
   fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");
   writeJson(path.join("data", "overview.json"), overviewData);

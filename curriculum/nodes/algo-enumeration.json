@@ -1,0 +1,269 @@
+{
+  "id": "algo-enumeration",
+  "title": "暴力枚举",
+  "listId": "算法1-3",
+  "group": "算法1",
+  "difficulty": 3,
+  "prerequisites": [],
+  "wiki": "https://oi-wiki.org/basic/enumerate/",
+  "tags": [
+    "枚举",
+    "暴力"
+  ],
+  "description": "枚举所有可能状态，配合剪枝与数学推导降低复杂度。",
+  "noiLevels": [
+    "入门级"
+  ],
+  "lanqiao": [
+    "大学C组"
+  ],
+  "ref": "洛谷·深入浅出 · 刘汝佳《算法竞赛入门经典》暴力求解法 · NOI 大纲·入门级 · 蓝桥杯·大学C组",
+  "oiTree": [],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P2241",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2089",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1618",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1036",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1157",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1706",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1088",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3392",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3654",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1217",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1149",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3799",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2392",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2036",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1399C",
+      "name": "Boats Competition",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "brute force"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1343A",
+      "name": "Candies",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1487A",
+      "name": "Arena",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "brute force"
+      ]
+    },
+    {
+      "platform": "UVA",
+      "number": "725",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "11059",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "10976",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "524",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "129",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "140",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1354",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "10603",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1601",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "11212",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "12325",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1343",
+      "name": "",
+      "source": "刘汝佳·算法竞赛入门经典",
+      "role": "练习",
+      "note": ""
+    }
+  ]
+}

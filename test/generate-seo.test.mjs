@@ -98,7 +98,14 @@ test("generator emits crawlable member and problem pages", () => {
   assert.equal(formAuthImport, appAuthImport);
 
   const urlCount = (sitemap.match(/<url>/g) || []).length;
-  assert.equal(urlCount, 1 + journal.members.length + journal.logs.length);
+  let roadmapEntryCount = 0;
+  try {
+    const roadmap = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "roadmap.json"), "utf8"));
+    roadmapEntryCount = 1 + roadmap.phases.reduce((sum, phase) => sum + 1 + phase.nodes.length, 0);
+  } catch {
+    // curriculum/ 缺失时不生成 roadmap，跳过其 sitemap 计数
+  }
+  assert.equal(urlCount, 1 + journal.members.length + journal.logs.length + roadmapEntryCount);
   assert.ok(sitemap.includes(`https://train.xialiao.org${problemRoute}`));
   assert.match(robots, /Sitemap: https:\/\/train\.xialiao\.org\/sitemap\.xml/);
 });

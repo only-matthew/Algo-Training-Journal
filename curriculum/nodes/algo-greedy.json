@@ -1,0 +1,359 @@
+{
+  "id": "algo-greedy",
+  "title": "贪心",
+  "listId": "算法1-5",
+  "group": "算法1",
+  "difficulty": 4,
+  "prerequisites": [
+    "algo-sorting",
+    "algo-enumeration"
+  ],
+  "wiki": "https://oi-wiki.org/basic/greedy/",
+  "tags": [
+    "贪心",
+    "排序"
+  ],
+  "description": "掌握贪心策略的证明与常见模型，学会排序后按最优顺序决策。",
+  "noiLevels": [
+    "入门级"
+  ],
+  "lanqiao": [
+    "大学C组"
+  ],
+  "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》2.10 · NOI 大纲·入门级 · 蓝桥杯·大学C组",
+  "oiTree": [
+    "活动选择问题",
+    "霍夫曼编码"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P2240",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1223",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1803",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1090",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3817",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1106",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1478",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5019",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1208",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1094",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4995",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4447",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1080",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1328A",
+      "name": "Divisibility Problem",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "489C",
+      "name": "Given Length and Sum of Digits...",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "546B",
+      "name": "Soldier and Badges",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1343C",
+      "name": "Alternating Subsequence",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1618D",
+      "name": "Array and Operations",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1635C",
+      "name": "Differential Sorting",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1642C",
+      "name": "Great Sequence",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1490E",
+      "name": "Accidental Victory",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1539C",
+      "name": "Stable Groups",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1654C",
+      "name": "Alice and the Cake",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1409B",
+      "name": "Minimum Product",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1360C",
+      "name": "Similar Pairs",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "HDU",
+      "number": "2037",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "1338",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "1789",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "4310",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "5747",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1199",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2672",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2123",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5521",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    }
+  ]
+}

@@ -3,7 +3,7 @@ import { currentRoute, migrateLegacyHashRoute, initPageNavigation } from "./lib/
 import { initSession, login, logout } from "./lib/auth.mjs";
 import { openModal, closeModal, addProblem, markFormEdited, handleSubmit, onDateChange, openImportPanel, closeImportPanel, runImport, addImportedToForm } from "./lib/form.mjs";
 import { apiRequest } from "./lib/journal-api.js";
-import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initShellRenderer, startRefreshTimer, doRefresh } from "./lib/data.mjs";
+import { journalRenderer, ensureOverviewJournal, ensureFullJournal, ensureRoadmap, initShellRenderer, startRefreshTimer, doRefresh } from "./lib/data.mjs";
 
 // ============================================================
 // Bootstrap
@@ -81,6 +81,8 @@ import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initShellRen
     const route = currentRoute();
     if (route === "analysis" || route === "report" || route === "review" || route.startsWith("member/")) {
       await ensureFullJournal();
+    } else if (route === "roadmap" || route.startsWith("roadmap/")) {
+      await ensureRoadmap();
     } else if (route.startsWith("problem/")) {
       initShellRenderer();
     } else {

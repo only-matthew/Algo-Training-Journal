@@ -1,0 +1,159 @@
+{
+  "note": "Codeforces 补充题单：source=Codeforces·精选 为人工精选经典题（题名/rating/标签为 CF 官方值）；可由 scripts/fetch-codeforces.js 联网拉取扩充（source=Codeforces·API）。convert-curriculum.js 按节点合并去重并富化既有 CF 题。",
+  "algo-simulation-bigint": [
+    { "number": "1182B", "name": "Plus from Picture", "rating": 1200, "tags": ["implementation"], "source": "Codeforces·精选" },
+    { "number": "1498A", "name": "GCD Sum", "rating": 1100, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
+    { "number": "1368A", "name": "C+=", "rating": 1100, "tags": ["math"], "source": "Codeforces·精选" }
+  ],
+  "algo-sorting": [
+    { "number": "339A", "name": "Helpful Maths", "rating": 800, "tags": ["sortings"], "source": "Codeforces·精选" },
+    { "number": "1092B", "name": "Teams Forming", "rating": 1000, "tags": ["sortings"], "source": "Codeforces·精选" },
+    { "number": "1535A", "name": "Fair Playoff", "rating": 800, "tags": ["sortings"], "source": "Codeforces·精选" }
+  ],
+  "algo-enumeration": [
+    { "number": "1399C", "name": "Boats Competition", "rating": 1200, "tags": ["brute force"], "source": "Codeforces·精选" },
+    { "number": "1343A", "name": "Candies", "rating": 900, "tags": ["brute force", "math"], "source": "Codeforces·精选" },
+    { "number": "1487A", "name": "Arena", "rating": 900, "tags": ["brute force"], "source": "Codeforces·精选" }
+  ],
+  "algo-recurrence-recursion": [
+    { "number": "1385D", "name": "a-Good String", "rating": 1500, "tags": ["divide and conquer", "dfs and similar"], "source": "Codeforces·精选" }
+  ],
+  "algo-greedy": [
+    { "number": "1328A", "name": "Divisibility Problem", "rating": 800, "tags": ["math"], "source": "Codeforces·精选" },
+    { "number": "489C", "name": "Given Length and Sum of Digits...", "rating": 1400, "tags": ["greedy"], "source": "Codeforces·精选" },
+    { "number": "546B", "name": "Soldier and Badges", "rating": 1200, "tags": ["greedy"], "source": "Codeforces·精选" },
+    { "number": "1343C", "name": "Alternating Subsequence", "rating": 1200, "tags": ["greedy"], "source": "Codeforces·精选" },
+    { "number": "1618D", "name": "Array and Operations", "rating": 1300, "tags": ["greedy", "math"], "source": "Codeforces·精选" },
+    { "number": "1635C", "name": "Differential Sorting", "rating": 1400, "tags": ["constructive algorithms", "greedy"], "source": "Codeforces·精选" },
+    { "number": "1642C", "name": "Great Sequence", "rating": 1300, "tags": ["greedy", "math"], "source": "Codeforces·精选" },
+    { "number": "1490E", "name": "Accidental Victory", "rating": 1400, "tags": ["binary search", "greedy"], "source": "Codeforces·精选" },
+    { "number": "1539C", "name": "Stable Groups", "rating": 1300, "tags": ["greedy", "sortings"], "source": "Codeforces·精选" },
+    { "number": "1654C", "name": "Alice and the Cake", "rating": 1600, "tags": ["constructive algorithms", "greedy"], "source": "Codeforces·精选" },
+    { "number": "1409B", "name": "Minimum Product", "rating": 1100, "tags": ["greedy", "math"], "source": "Codeforces·精选" },
+    { "number": "1360C", "name": "Similar Pairs", "rating": 1200, "tags": ["brute force", "greedy", "sortings"], "source": "Codeforces·精选" }
+  ],
+  "algo-binary-search": [
+    { "number": "474B", "name": "Worms", "rating": 1200, "tags": ["binary search"], "source": "Codeforces·精选" },
+    { "number": "1201C", "name": "Maximum Median", "rating": 1400, "tags": ["binary search", "greedy"], "source": "Codeforces·精选" },
+    { "number": "1538C", "name": "Number of Pairs", "rating": 1300, "tags": ["binary search", "two pointers"], "source": "Codeforces·精选" },
+    { "number": "1436C", "name": "Binary Search", "rating": 1600, "tags": ["binary search", "combinatorics"], "source": "Codeforces·精选" }
+  ],
+  "math-basics": [
+    { "number": "122A", "name": "Lucky Division", "rating": 1000, "tags": ["brute force"], "source": "Codeforces·精选" },
+    { "number": "1327A", "name": "Sum of Odd Integers", "rating": 1100, "tags": ["math"], "source": "Codeforces·精选" },
+    { "number": "1370A", "name": "Maximum GCD", "rating": 800, "tags": ["math"], "source": "Codeforces·精选" },
+    { "number": "1372B", "name": "Omkar and Last Class of Math", "rating": 1300, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
+    { "number": "1603A", "name": "Di-visible Confusion", "rating": 1200, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
+    { "number": "1526B", "name": "I Hate 1111", "rating": 1400, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
+    { "number": "1325B", "name": "CopyCopyCopyCopyCopy", "rating": 800, "tags": ["implementation", "sortings"], "source": "Codeforces·精选" },
+    { "number": "1550A", "name": "Find The Array", "rating": 800, "tags": ["math", "constructive algorithms"], "source": "Codeforces·精选" }
+  ],
+  "algo-prefix-diff-discretize": [
+    { "number": "466C", "name": "Number of Ways", "rating": 1700, "tags": ["data structures", "two pointers"], "source": "Codeforces·精选" },
+    { "number": "1426D", "name": "Non-zero Segments", "rating": 1500, "tags": ["greedy", "two pointers"], "source": "Codeforces·精选" },
+    { "number": "1555C", "name": "Coin Rows", "rating": 1300, "tags": ["dp", "greedy"], "source": "Codeforces·精选" },
+    { "number": "1462D", "name": "Add to Neighbour and Remove", "rating": 1400, "tags": ["brute force", "greedy"], "source": "Codeforces·精选" },
+    { "number": "1398C", "name": "Good Subarrays", "rating": 1600, "tags": ["data structures", "math"], "source": "Codeforces·精选" }
+  ],
+  "algo-optimization-tricks": [
+    { "number": "1352D", "name": "Alice, Bob and Candies", "rating": 1300, "tags": ["two pointers", "implementation"], "source": "Codeforces·精选" },
+    { "number": "1582C", "name": "Grandma Capa Knits a Scarf", "rating": 1500, "tags": ["strings", "two pointers"], "source": "Codeforces·精选" },
+    { "number": "1133C", "name": "Balanced Team", "rating": 1200, "tags": ["sortings", "two pointers"], "source": "Codeforces·精选" },
+    { "number": "1367C", "name": "Social Distance", "rating": 1300, "tags": ["greedy", "math"], "source": "Codeforces·精选" },
+    { "number": "1598C", "name": "Delete Two Elements", "rating": 1600, "tags": ["math", "sortings", "two pointers"], "source": "Codeforces·精选" }
+  ],
+  "algo-divide-conquer-doubling": [
+    { "number": "1385D", "name": "a-Good String", "rating": 1500, "tags": ["divide and conquer", "dfs and similar"], "source": "Codeforces·精选" }
+  ],
+  "algo-search-basics": [
+    { "number": "1490D", "name": "Permutation Transformation", "rating": 1300, "tags": ["dfs and similar", "trees"], "source": "Codeforces·精选" }
+  ],
+  "search-advanced": [
+    { "number": "1607F", "name": "Robot on the Board 2", "rating": 1900, "tags": ["dfs and similar", "dp"], "source": "Codeforces·精选" },
+    { "number": "888E", "name": "Maximum Subsequence", "rating": 1900, "tags": ["meet-in-the-middle", "bitmasks"], "source": "Codeforces·精选" }
+  ],
+  "string-basics": [
+    { "number": "1615C", "name": "Menorah", "rating": 1500, "tags": ["strings", "math"], "source": "Codeforces·精选" },
+    { "number": "1473B", "name": "String LCM", "rating": 1300, "tags": ["strings", "math"], "source": "Codeforces·精选" },
+    { "number": "1632A", "name": "ABC", "rating": 800, "tags": ["strings"], "source": "Codeforces·精选" }
+  ],
+  "string-advanced": [
+    { "number": "432D", "name": "Prefixes and Suffixes", "rating": 2000, "tags": ["strings"], "source": "Codeforces·精选" }
+  ],
+  "ds-linear-list": [
+    { "number": "1579E1", "name": "Permutation Minimization by Deque", "rating": 1300, "tags": ["data structures", "greedy"], "source": "Codeforces·精选" },
+    { "number": "1579E2", "name": "Array Optimization by Deque", "rating": 1700, "tags": ["data structures", "greedy"], "source": "Codeforces·精选" }
+  ],
+  "ds-binary-tree": [
+    { "number": "1436D", "name": "Bandit in a City", "rating": 1900, "tags": ["trees", "greedy"], "source": "Codeforces·精选" },
+    { "number": "1325C", "name": "Ehab and Path-etic MEXs", "rating": 1500, "tags": ["constructive algorithms", "greedy", "trees"], "source": "Codeforces·精选" }
+  ],
+  "ds-set": [
+    { "number": "1520D", "name": "Same Differences", "rating": 1200, "tags": ["data structures", "hashing", "math"], "source": "Codeforces·精选" },
+    { "number": "1335C", "name": "Two Teams Composing", "rating": 1200, "tags": ["implementation", "sortings"], "source": "Codeforces·精选" }
+  ],
+  "ds-graph-basics": [
+    { "number": "1638C", "name": "Inversion Graph", "rating": 1400, "tags": ["dsu", "graphs"], "source": "Codeforces·精选" },
+    { "number": "1559C", "name": "Mocha and Hiking", "rating": 1200, "tags": ["constructive algorithms", "graphs"], "source": "Codeforces·精选" }
+  ],
+  "ds-heap-bit": [
+    { "number": "1498B", "name": "Box Fitting", "rating": 1300, "tags": ["data structures", "greedy", "sortings"], "source": "Codeforces·精选" },
+    { "number": "1526C2", "name": "Potions (Hard Version)", "rating": 1600, "tags": ["data structures", "greedy"], "source": "Codeforces·精选" }
+  ],
+  "ds-segtree": [
+    { "number": "339D", "name": "Xenia and Bit Operations", "rating": 1700, "tags": ["data structures"], "source": "Codeforces·精选" },
+    { "number": "380C", "name": "Sereja and Brackets", "rating": 1700, "tags": ["data structures", "dp"], "source": "Codeforces·精选" },
+    { "number": "1547F", "name": "Array Stabilization (GCD version)", "rating": 1900, "tags": ["binary search", "data structures", "number theory"], "source": "Codeforces·精选" }
+  ],
+  "graph-tree": [
+    { "number": "1592C", "name": "Bakry and Partitioning", "rating": 1700, "tags": ["trees", "dfs and similar", "bitmasks"], "source": "Codeforces·精选" }
+  ],
+  "graph-shortest-path": [
+    { "number": "20C", "name": "Dijkstra?", "rating": 1800, "tags": ["shortest paths"], "source": "Codeforces·精选" },
+    { "number": "601A", "name": "The Two Routes", "rating": 1600, "tags": ["graphs", "shortest paths"], "source": "Codeforces·精选" },
+    { "number": "1196F", "name": "K-th Path", "rating": 1900, "tags": ["graphs", "shortest paths"], "source": "Codeforces·精选" }
+  ],
+  "graph-connectivity": [
+    { "number": "1139C", "name": "Edgy Trees", "rating": 1500, "tags": ["dsu", "graphs", "math"], "source": "Codeforces·精选" }
+  ],
+  "dp-intro": [
+    { "number": "455A", "name": "Boredom", "rating": 1500, "tags": ["dp"], "source": "Codeforces·精选" },
+    { "number": "327A", "name": "Flipping Game", "rating": 1200, "tags": ["dp", "brute force"], "source": "Codeforces·精选" },
+    { "number": "1350B", "name": "Orac and Models", "rating": 1400, "tags": ["dp", "number theory"], "source": "Codeforces·精选" }
+  ],
+  "dp-linear": [
+    { "number": "1625C", "name": "Road Optimization", "rating": 1800, "tags": ["dp"], "source": "Codeforces·精选" },
+    { "number": "1452D", "name": "Radio Towers", "rating": 1600, "tags": ["dp", "math"], "source": "Codeforces·精选" },
+    { "number": "1108D", "name": "Diverse Garland", "rating": 1300, "tags": ["dp", "greedy"], "source": "Codeforces·精选" }
+  ],
+  "dp-interval": [
+    { "number": "1132F", "name": "Clear the String", "rating": 1800, "tags": ["dp"], "source": "Codeforces·精选" },
+    { "number": "1373D", "name": "Maximum Sum on Even Positions", "rating": 1600, "tags": ["dp", "greedy"], "source": "Codeforces·精选" }
+  ],
+  "dp-tree-graph": [
+    { "number": "1324F", "name": "Maximum White Subtree", "rating": 1800, "tags": ["dp", "trees"], "source": "Codeforces·精选" },
+    { "number": "1437D", "name": "Minimal Height Tree", "rating": 1500, "tags": ["greedy", "trees"], "source": "Codeforces·精选" }
+  ],
+  "dp-bitmask": [
+    { "number": "165E", "name": "Compatible Numbers", "rating": 1700, "tags": ["bitmasks", "dp"], "source": "Codeforces·精选" }
+  ],
+  "math-number-theory": [
+    { "number": "1294C", "name": "Product of Three Numbers", "rating": 1300, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
+    { "number": "1475A", "name": "Odd Divisor", "rating": 900, "tags": ["math", "number theory"], "source": "Codeforces·精选" }
+  ],
+  "math-combinatorics": [
+    { "number": "1475C", "name": "Ball in Berland", "rating": 1400, "tags": ["combinatorics", "math"], "source": "Codeforces·精选" },
+    { "number": "478B", "name": "Random Teams", "rating": 1300, "tags": ["combinatorics", "math"], "source": "Codeforces·精选" },
+    { "number": "1512E", "name": "Permutation by Sum", "rating": 1600, "tags": ["combinatorics", "constructive algorithms", "greedy"], "source": "Codeforces·精选" }
+  ],
+  "math-probability": [
+    { "number": "1461C", "name": "Random Events", "rating": 1600, "tags": ["math", "probabilities"], "source": "Codeforces·精选" }
+  ],
+  "math-linear-algebra": [
+    { "number": "1182E", "name": "Product Oriented Recurrence", "rating": 2100, "tags": ["math", "matrices"], "source": "Codeforces·精选" }
+  ],
+  "math-game-theory": [
+    { "number": "1472D", "name": "Even-Odd Game", "rating": 1200, "tags": ["games", "greedy"], "source": "Codeforces·精选" },
+    { "number": "1451D", "name": "Circle Game", "rating": 1700, "tags": ["games", "math"], "source": "Codeforces·精选" }
+  ]
+}

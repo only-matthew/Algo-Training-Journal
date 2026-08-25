@@ -1,0 +1,97 @@
+{
+  "id": "ds-block-mo",
+  "title": "分块与莫队",
+  "listId": "数据结构2-4",
+  "group": "数据结构2",
+  "difficulty": 8,
+  "prerequisites": [
+    "ds-segtree",
+    "ds-heap-bit"
+  ],
+  "wiki": "https://oi-wiki.org/misc/mo-algo/",
+  "tags": [
+    "分块",
+    "莫队算法"
+  ],
+  "description": "掌握根号分块思想与莫队算法，处理离线区间查询与带修改问题。",
+  "noiLevels": [
+    "提高级",
+    "NOI级"
+  ],
+  "lanqiao": [
+    "大学A组"
+  ],
+  "ref": "NOI 大纲·提高级/NOI级 · 蓝桥杯·大学A组",
+  "oiTree": [
+    "分块 (莫队算法基础)",
+    "莫队算法"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P1972",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "HH的项链（莫队模板）"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1494",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "小Z的袜子"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2709",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "小B的询问"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1903",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "数颜色（带修莫队）"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2801",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": "教主的魔法（分块）"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1000F",
+      "name": "One Occurrence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 2000,
+      "tags": [
+        "data structures",
+        "mo"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "877F",
+      "name": "Ann and Books",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 2200,
+      "tags": [
+        "mo",
+        "data structures"
+      ]
+    }
+  ]
+}

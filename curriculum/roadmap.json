@@ -1,0 +1,182 @@
+[
+  {
+    "id": "phase-0",
+    "index": 0,
+    "title": "基础算法",
+    "subtitle": "模拟与高精度、排序、枚举、递推递归、贪心与二分",
+    "goal": "掌握基础算法思想与常见套路，具备独立分析并解决中等难度题目的能力。",
+    "milestone": "完成基础算法题单，能熟练进行贪心与二分建模。",
+    "difficulty": [
+      3,
+      5
+    ],
+    "reference": "参考：罗勇军《算法竞赛》第 2 章 基本算法 · 刘汝佳《算法竞赛入门经典》第 7 章 暴力求解法 · NOI 大纲·入门级",
+    "nodes": [
+      "algo-simulation-bigint",
+      "algo-sorting",
+      "algo-enumeration",
+      "algo-recurrence-recursion",
+      "algo-greedy",
+      "algo-binary-search",
+      "math-basics"
+    ]
+  },
+  {
+    "id": "phase-1",
+    "index": 1,
+    "title": "搜索与基础数据结构",
+    "subtitle": "DFS/BFS 搜索、线性表、二叉树、集合并查集与图的基本应用",
+    "goal": "理解搜索框架与基础数据结构的原理，能运用它们解决图与集合类问题。",
+    "milestone": "完成搜索与基础数据结构题单，独立实现栈队列链表与并查集。",
+    "difficulty": [
+      3,
+      7
+    ],
+    "reference": "参考：罗勇军《算法竞赛》第 1、3 章 · 刘汝佳《算法竞赛入门经典》第 6 章 数据结构基础 · NOI 大纲·入门级/提高级",
+    "nodes": [
+      "algo-search-basics",
+      "ds-linear-list",
+      "ds-binary-tree",
+      "ds-set",
+      "ds-graph-basics"
+    ]
+  },
+  {
+    "id": "phase-2",
+    "index": 2,
+    "title": "中级算法与数据结构",
+    "subtitle": "前缀和差分离散化、优化技巧、分治倍增、字符串算法、进阶搜索与线段树",
+    "goal": "掌握中级算法与数据结构，形成从暴力到优化的问题解决能力。",
+    "milestone": "完成中级题单，线段树与 KMP/Trie 等字符串算法运用熟练。",
+    "difficulty": [
+      5,
+      8
+    ],
+    "reference": "参考：罗勇军《算法竞赛》第 2、4、9 章 · 刘汝佳《算法竞赛入门经典》第 8 章 高效算法设计 · NOI 大纲·提高级",
+    "nodes": [
+      "algo-prefix-diff-discretize",
+      "algo-optimization-tricks",
+      "algo-divide-conquer-doubling",
+      "string-basics",
+      "search-advanced",
+      "ds-heap-bit",
+      "ds-segtree"
+    ]
+  },
+  {
+    "id": "phase-3",
+    "index": 3,
+    "title": "动态规划",
+    "subtitle": "从 DP 引入到线性、区间、树图、状压 DP 及优化技巧",
+    "goal": "建立完整的动态规划思维，掌握经典模型并能识别与套用。",
+    "milestone": "完成各阶段 DP 题单，能独立推导状态转移并优化复杂度。",
+    "difficulty": [
+      4,
+      8
+    ],
+    "reference": "参考：罗勇军《算法竞赛》第 5 章 动态规划 · NOI 大纲·入门级/提高级 · 蓝桥杯·大学 B 组",
+    "nodes": [
+      "dp-intro",
+      "dp-linear",
+      "dp-interval",
+      "dp-tree-graph",
+      "dp-bitmask",
+      "dp-optimization"
+    ]
+  },
+  {
+    "id": "phase-4",
+    "index": 4,
+    "title": "图论",
+    "subtitle": "树、最短路、最小生成树与连通性",
+    "goal": "掌握图论核心算法，能对实际问题进行图论建模。",
+    "milestone": "完成图论题单，最短路与 Tarjan 系列算法熟练运用。",
+    "difficulty": [
+      6,
+      8
+    ],
+    "reference": "参考：罗勇军《算法竞赛》第 4、10 章 · NOI 大纲·提高级 · 蓝桥杯·大学 B 组",
+    "nodes": [
+      "graph-tree",
+      "graph-shortest-path",
+      "graph-mst",
+      "graph-connectivity"
+    ]
+  },
+  {
+    "id": "phase-5",
+    "index": 5,
+    "title": "数学进阶",
+    "subtitle": "进阶数论、组合数学、概率统计、基础线性代数与博弈论",
+    "goal": "构建竞赛数学知识体系，能解决数论与计数类综合问题。",
+    "milestone": "完成数学进阶题单，数论与组合计数工具运用自如。",
+    "difficulty": [
+      7,
+      9
+    ],
+    "reference": "参考：罗勇军《算法竞赛》第 6、7 章 · 刘汝佳《算法竞赛入门经典》第 10 章 数学概念与方法 · NOI 大纲·提高级",
+    "nodes": [
+      "math-number-theory",
+      "math-combinatorics",
+      "math-probability",
+      "math-linear-algebra",
+      "math-game-theory"
+    ]
+  },
+  {
+    "id": "phase-6",
+    "index": 6,
+    "title": "高级专题",
+    "subtitle": "线段树进阶、计算几何、字符串进阶、网络流与分块莫队等 NOI 级专题",
+    "goal": "掌握高级数据结构与专题算法，具备冲击 NOI 级难题的能力。",
+    "milestone": "完成高级专题题单，能综合运用多种高级技巧解题。",
+    "difficulty": [
+      8,
+      10
+    ],
+    "reference": "参考：罗勇军《算法竞赛》第 4、8、9、10 章高阶内容 · NOI 大纲·NOI 级 · 蓝桥杯·大学 A 组",
+    "nodes": [
+      "ds-segtree-advanced",
+      "math-geometry",
+      "string-advanced",
+      "graph-network-flow",
+      "ds-block-mo"
+    ]
+  },
+  {
+    "id": "phase-7",
+    "index": 7,
+    "title": "NOI 竞赛大纲（2025）",
+    "subtitle": "按 CCF《NOI 竞赛大纲（2025 年修订版）》分级：入门级（CSP-J）/ 提高级（NOIP·CSP-S）/ NOI 级",
+    "goal": "对照 NOI 大纲三级知识清单自检，明确各级别应掌握的知识点与配套练习。",
+    "milestone": "完成各级知识清单题单，覆盖对应级别全部考点。",
+    "difficulty": [
+      1,
+      10
+    ],
+    "reference": "依据：CCF《NOI 竞赛大纲（2025 年修订版）》",
+    "nodes": [
+      "noi-basic",
+      "noi-intermediate",
+      "noi-advanced"
+    ]
+  },
+  {
+    "id": "phase-8",
+    "index": 8,
+    "title": "蓝桥杯考点（第十七届）",
+    "subtitle": "按《第十七届蓝桥杯大赛软件赛竞赛大纲》分大学 C / B / A 组考点清单",
+    "goal": "对照蓝桥杯三组考点清单训练，覆盖各组别竞赛考点。",
+    "milestone": "完成各组考点题单，按组别难度递进刷题。",
+    "difficulty": [
+      1,
+      10
+    ],
+    "reference": "依据：《第十七届蓝桥杯大赛软件赛竞赛大纲》",
+    "nodes": [
+      "lq-c",
+      "lq-b",
+      "lq-a"
+    ]
+  }
+]

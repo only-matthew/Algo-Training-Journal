@@ -75,8 +75,18 @@
 - 团队错题本支持按队员、状态和标签过滤。
 - 训练明细支持勾选题目并批量导出。
 - 题目详情页展示"全队同题记录"：按平台+题号聚合，同一道题被谁、何时做过、当前复盘状态一目了然，方便二刷对比。
-### 导出与分享
 
+### 学习路线与题单
+
+- 顶部导航提供「📚 学习路线」：一棵算法知识树 + 分阶段学习路线 + 知识点题单，三个视角共用同一份数据。
+- 知识树合并自多份公开资料：洛谷《深入浅出》题单（40 个模块约 800 题）、罗勇军《算法竞赛》（每节点精选 25 题）、刘汝佳《算法竞赛入门经典》（每节点精选 12 题）、OI 知识树（`know-tree/tree.txt`，相同知识点自动合并进节点，缺失专题另建节点）、CCF《NOI 竞赛大纲 2025》与《蓝桥杯大纲》分级知识清单分支。
+- 每个知识点节点标注：NOI 大纲难度系数（1-10）、前置依赖、OI-Wiki 文档链接、教材参考（`ref`）、OI 知识树覆盖明细（`oiTree`）、以及题目列表（来源、例题/练习、CF 难度 ★rating 与算法标签）。
+- 学习路线分 10 个阶段：语言基础 → 基础算法 → 搜索与基础数据结构 → 中级算法与数据结构 → 动态规划 → 图论 → 数学进阶 → 高级专题 → NOI 大纲分级 → 蓝桥杯组别考点，每阶段含目标、里程碑与教材章节参考。
+- 题单进度与训练日志自动关联：构建时用「平台+题号」把题单题目与全队日志交叉匹配，每道题显示完成者、复习状态并直达题目详情；总览/阶段/题单三级页面支持全队/个人切换。
+- Codeforces 内容增强：`curriculum/cf-supplement.json` 内置精选 CF 题单（含官方题名、rating 与算法标签）；`scripts/fetch-codeforces.js` 可联网调用 Codeforces 官方 API（`problemset.problems`，含算法标签体系），按知识点映射与难度区间自动扩充题单。
+- 修改路线内容：编辑 `know-tree/` 源文件后运行 `node scripts/convert-curriculum.js --force` 重新生成 `curriculum/`，或直接编辑 `curriculum/*.json`；然后 `npm run generate` 重建站点。
+
+### 导出与分享
 - 题目详情页支持导出为 Markdown、PDF（打印友好的 HTML）或 LaTeX 文件。
 - 训练分析页支持勾选多道题目，批量导出为 Markdown、PDF 或 LaTeX；Markdown 和 LaTeX 单次最多 500 题，PDF 单次最多 100 题。
 - PDF 导出窗口会加载 Prism C++ 语法高亮，并将长代码行自动换行，避免打印或另存为 PDF 时截断。
@@ -330,18 +340,24 @@ npx serve site
 │   ├── log-schema.mjs            # 日志校验、清洗和永久 ID 规则
 │   ├── problem-detail.mjs        # 题目详情正文共享模板（构建与浏览器共用）
 │   ├── render-safety.mjs         # 安全的 Markdown、链接和公式文本渲染
-│   ├── renderer.mjs             # UI 渲染、导出与热力图
+│   ├── renderer.mjs             # UI 渲染、导出与热力图（含学习路线渲染器）
+│   ├── roadmap.mjs              # 学习路线共享 HTML 模板（构建预渲染与浏览器共用）
 │   ├── router.mjs               # 客户端路由与历史栈管理
 │   └── theme.mjs                # 浅色/深色主题切换
+├── curriculum/                  # 学习路线数据（roadmap.json + nodes/*.json + cf-supplement.json）
+├── know-tree/                   # 学习路线源资料（洛谷/罗勇军/刘汝佳/NOI大纲/蓝桥杯/OI知识树）
 ├── logs/                          # 按成员和日期组织的训练源数据
 ├── scripts/
 │   ├── backfill-updated-at.js     # 从 git 提交历史回填 updatedAt
+│   ├── convert-curriculum.js      # 从 know-tree/ 源资料生成 curriculum/（含 OI 树合并与 CF 补充合并）
+│   ├── fetch-codeforces.js        # 调用 Codeforces API 扩充 CF 题单（需要能访问 CF 的网络）
 │   ├── generate-data.js          # 聚合 logs/、计算统计并生成 site/ 与路由入口
 │   ├── migrate-date-layout.js    # YYYY-MM-DD → YYYY/MM/DD
 │   ├── migrate-logs.js           # 旧单文件 Markdown 格式迁移
 │   └── verify-import-live.mjs    # 本地真实网络验证自动导入（人工运行，不进 CI）
 ├── test/
 │   ├── aggregation.test.mjs      # 同题聚合与复习队列构建测试
+│   ├── curriculum.test.mjs       # 学习路线数据读取/校验/匹配/统计测试
 │   ├── generate-seo.test.mjs    # SEO 与构建产物测试
 │   ├── journal-api.test.mjs      # 浏览器端 API client 测试
 │   ├── log-schema.test.mjs       # Schema、日期、标签、复习日期和稳定 key 测试

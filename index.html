@@ -44,6 +44,7 @@
       <button class="page-nav-btn active" type="button" data-page="overview-page">总览</button>
       <button class="page-nav-btn" type="button" data-page="analysis-page">训练分析</button>
       <button class="page-nav-btn" type="button" data-page="review-page">错题本</button>
+      <button class="page-nav-btn" type="button" data-page="roadmap-page">📚 学习路线</button>
     </nav>
 
     <section id="overview-page" class="page-view active">
@@ -236,6 +237,25 @@
         <p id="analysis-summary" class="hint"></p>
         <div id="analysis-records" class="records record-grid"></div>
       </section>
+    </section>
+
+    <section id="roadmap-page" class="page-view" hidden>
+      <header class="header">
+        <div>
+          <h1>学习路线</h1>
+          <p class="subtitle">算法知识树 · 分阶段训练 · 题单进度</p>
+        </div>
+        <div class="filter">
+          <label for="roadmap-member">查看对象</label>
+          <select id="roadmap-member" class="form-input">
+            <option value="all">全队</option>
+          </select>
+        </div>
+      </header>
+      <div class="detail-toolbar" id="roadmap-toolbar" hidden>
+        <a class="back-link" href="/roadmap/">← 返回学习路线</a>
+      </div>
+      <div id="roadmap-content"><p class="hint">加载中...</p></div>
     </section>
 
     <section id="member-page" class="page-view" hidden>

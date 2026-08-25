@@ -1,0 +1,286 @@
+{
+  "id": "algo-optimization-tricks",
+  "title": "常见优化技巧",
+  "listId": "算法2-2",
+  "group": "算法2",
+  "difficulty": 5,
+  "prerequisites": [
+    "algo-prefix-diff-discretize",
+    "algo-binary-search"
+  ],
+  "wiki": "https://oi-wiki.org/misc/two-pointer/",
+  "tags": [
+    "双指针",
+    "单调队列",
+    "单调栈"
+  ],
+  "description": "掌握双指针、单调栈/队列等优化手段，降低枚举与查询复杂度。",
+  "noiLevels": [
+    "提高级"
+  ],
+  "lanqiao": [
+    "大学B组"
+  ],
+  "ref": "洛谷·深入浅出 · 罗勇军《算法竞赛》2.2 · NOI 大纲·提高级 · 蓝桥杯·大学B组",
+  "oiTree": [],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P1102",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1638",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1115",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7072",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2671",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4147",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2866",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1950",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2032",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2216",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "11572",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4653",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3143",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7910",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1578",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3467",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1886",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2880",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1714",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1725",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1352D",
+      "name": "Alice, Bob and Candies",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "two pointers",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1582C",
+      "name": "Grandma Capa Knits a Scarf",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "strings",
+        "two pointers"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1133C",
+      "name": "Balanced Team",
+      "source": "Codeforces",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "sortings",
+        "two pointers"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1367C",
+      "name": "Social Distance",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1598C",
+      "name": "Delete Two Elements",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "math",
+        "sortings",
+        "two pointers"
+      ]
+    },
+    {
+      "platform": "HDU",
+      "number": "2029",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "例题",
+      "note": ""
+    },
+    {
+      "platform": "POJ",
+      "number": "3061",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "2566",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    },
+    {
+      "platform": "HDU",
+      "number": "5358",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "习题",
+      "note": ""
+    }
+  ]
+}

@@ -1,0 +1,254 @@
+{
+  "id": "math-geometry",
+  "title": "计算几何",
+  "listId": "数学3",
+  "group": "数学2",
+  "difficulty": 8,
+  "prerequisites": [
+    "math-linear-algebra",
+    "graph-tree"
+  ],
+  "wiki": "https://oi-wiki.org/geometry/",
+  "tags": [
+    "计算几何",
+    "凸包",
+    "旋转卡壳",
+    "几何"
+  ],
+  "description": "掌握向量叉积、线段相交、多边形、凸包、旋转卡壳与半平面交等计算几何工具。",
+  "noiLevels": [
+    "NOI级"
+  ],
+  "lanqiao": [
+    "大学A组"
+  ],
+  "ref": "罗勇军《算法竞赛》8.1/8.2/8.3/8.4/8.5/8.6/8.7 · NOI 大纲·NOI级 · 蓝桥杯·大学A组",
+  "oiTree": [
+    "向量（点积 (Dot) / 叉积 (Cross) / 旋转）",
+    "直线 / 线段",
+    "圆",
+    "多边形（三角形 / 凸包 (Graham Scan, Andrew) / 半平面交）",
+    "最近点对",
+    "旋转卡壳",
+    "三角剖分",
+    "扫描线"
+  ],
+  "problems": [
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "2031",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1039",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1301",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1584",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1696",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1113",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2287",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3829",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4557",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5403",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3187",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "3851",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4357",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3256",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2600",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4196",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3297",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4250",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5328",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "3463",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "3799",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "OpenJ_Bailian",
+      "number": "1765",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2061",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "1606",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "SPOJ",
+      "number": "SUBWAYPL",
+      "name": "",
+      "source": "罗勇军·算法竞赛",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2742",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1452",
+      "name": "",
+      "source": "洛谷",
+      "role": "练习",
+      "note": ""
+    }
+  ]
+}

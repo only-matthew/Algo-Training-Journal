@@ -1,0 +1,118 @@
+{
+  "id": "math-probability",
+  "title": "概率与统计",
+  "listId": "数学2-3",
+  "group": "数学2",
+  "difficulty": 8,
+  "prerequisites": [
+    "math-number-theory",
+    "dp-linear"
+  ],
+  "wiki": "https://oi-wiki.org/dp/probability/",
+  "tags": [
+    "概率",
+    "期望",
+    "概率DP"
+  ],
+  "description": "掌握概率与期望的计算，处理期望 DP 与概率模型问题。",
+  "noiLevels": [
+    "提高级",
+    "NOI级"
+  ],
+  "lanqiao": [
+    "大学A组"
+  ],
+  "ref": "洛谷·深入浅出 · NOI 大纲·提高级/NOI级 · 蓝桥杯·大学A组",
+  "oiTree": [
+    "随机变量",
+    "期望",
+    "概率 DP"
+  ],
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "P2719",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1654",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "280C",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "UVA",
+      "number": "11181",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1365",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4316",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1297",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2111",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1850",
+      "name": "",
+      "source": "洛谷深入浅出",
+      "role": "练习",
+      "note": ""
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1461C",
+      "name": "Random Events",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "math",
+        "probabilities"
+      ]
+    }
+  ]
+}
