@@ -42,6 +42,154 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1547E",
+      "name": "Air Conditioners",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "shortest paths",
+        "two pointers"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1526A",
+      "name": "Mean Inequality",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1472F",
+      "name": "Nezzar and Hidden Permutations",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 2100,
+      "tags": [
+        "constructive algorithms",
+        "graphs",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1404A",
+      "name": "Balanced Bitstring",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1330B",
+      "name": "Dreamoon Likes Permutations",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "data structures",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1282A",
+      "name": "Temporarily unavailable",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1583A",
+      "name": "Windblume Ode",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1538B",
+      "name": "Friends and Candies",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1498C",
+      "name": "Planar Reflections",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "dp",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1462C",
+      "name": "Unique Number",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1397B",
+      "name": "Power Sequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "brute force",
+        "math"
+      ]
+    },
+    {
       "platform": "洛谷",
       "number": "P3805",
       "name": "",

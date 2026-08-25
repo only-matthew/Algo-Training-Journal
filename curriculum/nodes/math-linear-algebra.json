@@ -141,6 +141,151 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1534A",
+      "name": "Colour the Flag",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1521A",
+      "name": "Nastia and Nearly Good Numbers",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1467A",
+      "name": "Wizard of Orz",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1427C",
+      "name": "The Hard Work of Paparazzi",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1900,
+      "tags": [
+        "brute force",
+        "dp"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1366B",
+      "name": "Shuffle",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1294C",
+      "name": "Product of Three Numbers",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1546B",
+      "name": "AquaMoon and Stolen String",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1512D",
+      "name": "Corrupted Array",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1469A",
+      "name": "Regular Bracket Sequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1392A",
+      "name": "Omkar and Password",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1346B",
+      "name": "Carousel",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ]
+    },
+    {
       "platform": "POJ",
       "number": "3070",
       "name": "",

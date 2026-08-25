@@ -220,6 +220,170 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1611E1",
+      "name": "Escape The Maze (easy version)",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1900,
+      "tags": [
+        "dfs and similar",
+        "dp",
+        "greedy",
+        "trees"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1574B",
+      "name": "Combinatorics Homework",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "combinatorics",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1551B2",
+      "name": "Wonderful Coloring - 2",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "data structures",
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1506E",
+      "name": "Restoring the Permutation",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1450B",
+      "name": "Balls of Steel",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "brute force",
+        "geometry",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1399D",
+      "name": "Binary String To Subsequences",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "dp",
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1607E",
+      "name": "Robot in a Hallway",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 2100,
+      "tags": [
+        "data structures",
+        "dp",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1574C",
+      "name": "Slay the Dragon",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "binary search",
+        "data structures",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1511B",
+      "name": "GCD Length",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1463A",
+      "name": "Dungeon",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1418A",
+      "name": "Buying Torches",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1340A",
+      "name": "Nastya and Rice",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ]
+    },
+    {
       "platform": "POJ",
       "number": "3107",
       "name": "",

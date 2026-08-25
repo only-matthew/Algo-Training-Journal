@@ -154,6 +154,110 @@
         "divide and conquer",
         "dfs and similar"
       ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1601A",
+      "name": "Array Elimination",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "bitmasks",
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1573A",
+      "name": "Countdown",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1617A",
+      "name": "Forbidden Subsequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "sortings",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1623A",
+      "name": "Character Encoding",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1660A",
+      "name": "Vasya and Coins",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1651A",
+      "name": "Playoff",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1637A",
+      "name": "Sorting Parts",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1626A",
+      "name": "Equidistant Letters",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "sortings",
+        "strings"
+      ]
     }
   ]
 }

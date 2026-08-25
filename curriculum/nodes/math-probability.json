@@ -113,6 +113,165 @@
         "math",
         "probabilities"
       ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1540A",
+      "name": "Great Graphs",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1504A",
+      "name": "Decline of the Party",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1486B",
+      "name": "Eastern Exhibition",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1419B",
+      "name": "Chess Tournament",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1360C",
+      "name": "Similar Pairs",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1335A",
+      "name": "Candies and Two Sisters",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1556C",
+      "name": "Compressed Bracket Sequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1499B",
+      "name": "Binary Removals",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1471B",
+      "name": "Strange List",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1433C",
+      "name": "Dominant Character",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1388B",
+      "name": "Captain Flint and a Long Voyage",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "bitmasks",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1333B",
+      "name": "Kind Anton",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ]
     }
   ]
 }

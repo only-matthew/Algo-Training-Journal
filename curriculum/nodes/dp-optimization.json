@@ -184,6 +184,165 @@
       "note": ""
     },
     {
+      "platform": "Codeforces",
+      "number": "1523B",
+      "name": "Lord of the Values",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1481B",
+      "name": "New Colony",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "brute force",
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1444A",
+      "name": "Division",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1408B",
+      "name": "Arrays Sum",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1350A",
+      "name": "Orac and Factors",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1296C",
+      "name": "Yet Another Walking Robot",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1536D",
+      "name": "Omkar and Medians",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "data structures",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1483B",
+      "name": "Danny and the List",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1452C",
+      "name": "Two Brackets",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1396A",
+      "name": "Multiples of Length",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1369B",
+      "name": "AccurateLee",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1328D",
+      "name": "Carousel",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "dp",
+        "greedy",
+        "math"
+      ]
+    },
+    {
       "platform": "洛谷",
       "number": "P3287",
       "name": "",

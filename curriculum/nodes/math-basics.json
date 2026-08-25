@@ -315,6 +315,201 @@
         "math",
         "constructive algorithms"
       ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1520A",
+      "name": "Do Not Be Distracted!",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1509A",
+      "name": "Average Height",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1485A",
+      "name": "Add and Divide",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "brute force",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1438B",
+      "name": "Valerii Against Everyone",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1395A",
+      "name": "Boboniu Chats with Du",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1364A",
+      "name": "XXX",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1359A",
+      "name": "Berland Poker",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "greedy",
+        "math",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1342A",
+      "name": "Road To Zero",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1343B",
+      "name": "Balanced Array",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1326A",
+      "name": "Bad Ugly Numbers",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1312A",
+      "name": "Two Regular Polygons",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "geometry",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1296A",
+      "name": "Array with Odd Sum",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1294A",
+      "name": "Collecting Coins",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1283A",
+      "name": "Minutes Before the New Year",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1249A",
+      "name": "Yet Another Dividing into Teams",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math",
+        "sortings"
+      ]
     }
   ]
 }

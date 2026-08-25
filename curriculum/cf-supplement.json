@@ -1,159 +1,5248 @@
 {
-  "note": "Codeforces 补充题单：source=Codeforces·精选 为人工精选经典题（题名/rating/标签为 CF 官方值）；可由 scripts/fetch-codeforces.js 联网拉取扩充（source=Codeforces·API）。convert-curriculum.js 按节点合并去重并富化既有 CF 题。",
-  "algo-simulation-bigint": [
-    { "number": "1182B", "name": "Plus from Picture", "rating": 1200, "tags": ["implementation"], "source": "Codeforces·精选" },
-    { "number": "1498A", "name": "GCD Sum", "rating": 1100, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
-    { "number": "1368A", "name": "C+=", "rating": 1100, "tags": ["math"], "source": "Codeforces·精选" }
-  ],
-  "algo-sorting": [
-    { "number": "339A", "name": "Helpful Maths", "rating": 800, "tags": ["sortings"], "source": "Codeforces·精选" },
-    { "number": "1092B", "name": "Teams Forming", "rating": 1000, "tags": ["sortings"], "source": "Codeforces·精选" },
-    { "number": "1535A", "name": "Fair Playoff", "rating": 800, "tags": ["sortings"], "source": "Codeforces·精选" }
-  ],
-  "algo-enumeration": [
-    { "number": "1399C", "name": "Boats Competition", "rating": 1200, "tags": ["brute force"], "source": "Codeforces·精选" },
-    { "number": "1343A", "name": "Candies", "rating": 900, "tags": ["brute force", "math"], "source": "Codeforces·精选" },
-    { "number": "1487A", "name": "Arena", "rating": 900, "tags": ["brute force"], "source": "Codeforces·精选" }
-  ],
-  "algo-recurrence-recursion": [
-    { "number": "1385D", "name": "a-Good String", "rating": 1500, "tags": ["divide and conquer", "dfs and similar"], "source": "Codeforces·精选" }
-  ],
-  "algo-greedy": [
-    { "number": "1328A", "name": "Divisibility Problem", "rating": 800, "tags": ["math"], "source": "Codeforces·精选" },
-    { "number": "489C", "name": "Given Length and Sum of Digits...", "rating": 1400, "tags": ["greedy"], "source": "Codeforces·精选" },
-    { "number": "546B", "name": "Soldier and Badges", "rating": 1200, "tags": ["greedy"], "source": "Codeforces·精选" },
-    { "number": "1343C", "name": "Alternating Subsequence", "rating": 1200, "tags": ["greedy"], "source": "Codeforces·精选" },
-    { "number": "1618D", "name": "Array and Operations", "rating": 1300, "tags": ["greedy", "math"], "source": "Codeforces·精选" },
-    { "number": "1635C", "name": "Differential Sorting", "rating": 1400, "tags": ["constructive algorithms", "greedy"], "source": "Codeforces·精选" },
-    { "number": "1642C", "name": "Great Sequence", "rating": 1300, "tags": ["greedy", "math"], "source": "Codeforces·精选" },
-    { "number": "1490E", "name": "Accidental Victory", "rating": 1400, "tags": ["binary search", "greedy"], "source": "Codeforces·精选" },
-    { "number": "1539C", "name": "Stable Groups", "rating": 1300, "tags": ["greedy", "sortings"], "source": "Codeforces·精选" },
-    { "number": "1654C", "name": "Alice and the Cake", "rating": 1600, "tags": ["constructive algorithms", "greedy"], "source": "Codeforces·精选" },
-    { "number": "1409B", "name": "Minimum Product", "rating": 1100, "tags": ["greedy", "math"], "source": "Codeforces·精选" },
-    { "number": "1360C", "name": "Similar Pairs", "rating": 1200, "tags": ["brute force", "greedy", "sortings"], "source": "Codeforces·精选" }
-  ],
   "algo-binary-search": [
-    { "number": "474B", "name": "Worms", "rating": 1200, "tags": ["binary search"], "source": "Codeforces·精选" },
-    { "number": "1201C", "name": "Maximum Median", "rating": 1400, "tags": ["binary search", "greedy"], "source": "Codeforces·精选" },
-    { "number": "1538C", "name": "Number of Pairs", "rating": 1300, "tags": ["binary search", "two pointers"], "source": "Codeforces·精选" },
-    { "number": "1436C", "name": "Binary Search", "rating": 1600, "tags": ["binary search", "combinatorics"], "source": "Codeforces·精选" }
-  ],
-  "math-basics": [
-    { "number": "122A", "name": "Lucky Division", "rating": 1000, "tags": ["brute force"], "source": "Codeforces·精选" },
-    { "number": "1327A", "name": "Sum of Odd Integers", "rating": 1100, "tags": ["math"], "source": "Codeforces·精选" },
-    { "number": "1370A", "name": "Maximum GCD", "rating": 800, "tags": ["math"], "source": "Codeforces·精选" },
-    { "number": "1372B", "name": "Omkar and Last Class of Math", "rating": 1300, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
-    { "number": "1603A", "name": "Di-visible Confusion", "rating": 1200, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
-    { "number": "1526B", "name": "I Hate 1111", "rating": 1400, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
-    { "number": "1325B", "name": "CopyCopyCopyCopyCopy", "rating": 800, "tags": ["implementation", "sortings"], "source": "Codeforces·精选" },
-    { "number": "1550A", "name": "Find The Array", "rating": 800, "tags": ["math", "constructive algorithms"], "source": "Codeforces·精选" }
-  ],
-  "algo-prefix-diff-discretize": [
-    { "number": "466C", "name": "Number of Ways", "rating": 1700, "tags": ["data structures", "two pointers"], "source": "Codeforces·精选" },
-    { "number": "1426D", "name": "Non-zero Segments", "rating": 1500, "tags": ["greedy", "two pointers"], "source": "Codeforces·精选" },
-    { "number": "1555C", "name": "Coin Rows", "rating": 1300, "tags": ["dp", "greedy"], "source": "Codeforces·精选" },
-    { "number": "1462D", "name": "Add to Neighbour and Remove", "rating": 1400, "tags": ["brute force", "greedy"], "source": "Codeforces·精选" },
-    { "number": "1398C", "name": "Good Subarrays", "rating": 1600, "tags": ["data structures", "math"], "source": "Codeforces·精选" }
-  ],
-  "algo-optimization-tricks": [
-    { "number": "1352D", "name": "Alice, Bob and Candies", "rating": 1300, "tags": ["two pointers", "implementation"], "source": "Codeforces·精选" },
-    { "number": "1582C", "name": "Grandma Capa Knits a Scarf", "rating": 1500, "tags": ["strings", "two pointers"], "source": "Codeforces·精选" },
-    { "number": "1133C", "name": "Balanced Team", "rating": 1200, "tags": ["sortings", "two pointers"], "source": "Codeforces·精选" },
-    { "number": "1367C", "name": "Social Distance", "rating": 1300, "tags": ["greedy", "math"], "source": "Codeforces·精选" },
-    { "number": "1598C", "name": "Delete Two Elements", "rating": 1600, "tags": ["math", "sortings", "two pointers"], "source": "Codeforces·精选" }
+    {
+      "number": "474B",
+      "name": "Worms",
+      "rating": 1200,
+      "tags": [
+        "binary search"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1201C",
+      "name": "Maximum Median",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1538C",
+      "name": "Number of Pairs",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1436C",
+      "name": "Binary Search",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "combinatorics"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1358D",
+      "name": "The Best Vacation",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "brute force",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1462E1",
+      "name": "Close Tuples (easy version)",
+      "rating": 1500,
+      "tags": [
+        "binary search",
+        "combinatorics",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1490E",
+      "name": "Accidental Victory",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1537D",
+      "name": "Balanced Bitstring",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1395B",
+      "name": "M. Beautiful Paintings",
+      "rating": 1000,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1602A",
+      "name": "Two Subsequences",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1594A",
+      "name": "Consecutive Sum Riddle",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1543A",
+      "name": "Exciting Bets",
+      "rating": 900,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1506B",
+      "name": "Partial Replacement",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    }
   ],
   "algo-divide-conquer-doubling": [
-    { "number": "1385D", "name": "a-Good String", "rating": 1500, "tags": ["divide and conquer", "dfs and similar"], "source": "Codeforces·精选" }
+    {
+      "number": "1385D",
+      "name": "a-Good String",
+      "rating": 1500,
+      "tags": [
+        "divide and conquer",
+        "dfs and similar"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1607D",
+      "name": "Blue-Red Permutation",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1547C",
+      "name": "Pair Programming",
+      "rating": 1200,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1486A",
+      "name": "Shifting Stacks",
+      "rating": 900,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1428A",
+      "name": "Box is Pull",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1398B",
+      "name": "Substring Removal Game",
+      "rating": 800,
+      "tags": [
+        "games",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1380A",
+      "name": "Three Indices",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "data structures"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1354A",
+      "name": "Alarm Clock",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1325A",
+      "name": "EhAb AnD gCd",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "algo-enumeration": [
+    {
+      "number": "1399C",
+      "name": "Boats Competition",
+      "rating": 1200,
+      "tags": [
+        "brute force"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1343A",
+      "name": "Candies",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1487A",
+      "name": "Arena",
+      "rating": 900,
+      "tags": [
+        "brute force"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1512A",
+      "name": "Spy Detected!",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1472B",
+      "name": "Fair Division",
+      "rating": 800,
+      "tags": [
+        "dp",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1353B",
+      "name": "Two Arrays And Swaps",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1466A",
+      "name": "Bovine Dilemma",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "geometry",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1366A",
+      "name": "Shovels and Swords",
+      "rating": 1100,
+      "tags": [
+        "binary search",
+        "brute force",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1341B",
+      "name": "Nastya and Door",
+      "rating": 1300,
+      "tags": [
+        "brute force",
+        "dp",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1400A",
+      "name": "String Similarity",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1363A",
+      "name": "Odd Selection",
+      "rating": 1100,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1385A",
+      "name": "Three Pairwise Maximums",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1490B",
+      "name": "Balanced Remainders",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1474A",
+      "name": "Puzzle From the Future",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1525B",
+      "name": "Permutation Chain",
+      "rating": 1000,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1554A",
+      "name": "Cherry",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1569A",
+      "name": "Balanced Substring",
+      "rating": 900,
+      "tags": [
+        "strings",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "algo-greedy": [
+    {
+      "number": "1328A",
+      "name": "Divisibility Problem",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "489C",
+      "name": "Given Length and Sum of Digits...",
+      "rating": 1400,
+      "tags": [
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "546B",
+      "name": "Soldier and Badges",
+      "rating": 1200,
+      "tags": [
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1343C",
+      "name": "Alternating Subsequence",
+      "rating": 1200,
+      "tags": [
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1618D",
+      "name": "Array and Operations",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1635C",
+      "name": "Differential Sorting",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1642C",
+      "name": "Great Sequence",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1490E",
+      "name": "Accidental Victory",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1539C",
+      "name": "Stable Groups",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1654C",
+      "name": "Alice and the Cake",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1409B",
+      "name": "Minimum Product",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1360C",
+      "name": "Similar Pairs",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1598B",
+      "name": "Groups",
+      "rating": 1300,
+      "tags": [
+        "brute force",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1547B",
+      "name": "Alphabetical Strings",
+      "rating": 1000,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1560B",
+      "name": "Who's Opposite?",
+      "rating": 900,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1559A",
+      "name": "Mocha and Math",
+      "rating": 900,
+      "tags": [
+        "bitmasks",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1584B",
+      "name": "Coloring Rectangles",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1610A",
+      "name": "Anti Light's Cell Grid",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1612A",
+      "name": "Distance",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1592A",
+      "name": "Gamer Hemose",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1606B",
+      "name": "Update Files",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1552A",
+      "name": "Subsequence Permutation",
+      "rating": 800,
+      "tags": [
+        "sortings",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1527A",
+      "name": "And Then There Were K",
+      "rating": 800,
+      "tags": [
+        "bitmasks",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1506A",
+      "name": "Strange Table",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1476A",
+      "name": "K-divisible Sum",
+      "rating": 1000,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1451A",
+      "name": "Subtract or Divide",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1435A",
+      "name": "Finding Sasuke",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1419A",
+      "name": "Digit Game",
+      "rating": 900,
+      "tags": [
+        "games",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1401A",
+      "name": "Distance and Axis",
+      "rating": 900,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1373A",
+      "name": "Donut Shops",
+      "rating": 1000,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1360B",
+      "name": "Honest Coach",
+      "rating": 900,
+      "tags": [
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1348A",
+      "name": "Phoenix and Balance",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1339A",
+      "name": "Filling Diamonds",
+      "rating": 900,
+      "tags": [
+        "dp",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1333A",
+      "name": "Little Artem",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "algo-optimization-tricks": [
+    {
+      "number": "1352D",
+      "name": "Alice, Bob and Candies",
+      "rating": 1300,
+      "tags": [
+        "two pointers",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1582C",
+      "name": "Grandma Capa Knits a Scarf",
+      "rating": 1500,
+      "tags": [
+        "strings",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1133C",
+      "name": "Balanced Team",
+      "rating": 1200,
+      "tags": [
+        "sortings",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1367C",
+      "name": "Social Distance",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1598C",
+      "name": "Delete Two Elements",
+      "rating": 1600,
+      "tags": [
+        "math",
+        "sortings",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1598D",
+      "name": "Training Session",
+      "rating": 1700,
+      "tags": [
+        "combinatorics",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1555D",
+      "name": "Say No to Palindromes",
+      "rating": 1600,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "dp",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1538A",
+      "name": "Stone Game",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1473A",
+      "name": "Replacing Elements",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1427A",
+      "name": "Avoiding Zero",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1391A",
+      "name": "Suborrays",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1368B",
+      "name": "Codeforces Subsequences",
+      "rating": 1500,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1345A",
+      "name": "Puzzle Pieces",
+      "rating": 900,
+      "tags": [
+        "geometry",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "algo-prefix-diff-discretize": [
+    {
+      "number": "466C",
+      "name": "Number of Ways",
+      "rating": 1700,
+      "tags": [
+        "data structures",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1426D",
+      "name": "Non-zero Segments",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1555C",
+      "name": "Coin Rows",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1462D",
+      "name": "Add to Neighbour and Remove",
+      "rating": 1400,
+      "tags": [
+        "brute force",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1398C",
+      "name": "Good Subarrays",
+      "rating": 1600,
+      "tags": [
+        "data structures",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1472E",
+      "name": "Correct Placement",
+      "rating": 1700,
+      "tags": [
+        "binary search",
+        "data structures",
+        "dp",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1428B",
+      "name": "Belted Rooms",
+      "rating": 1200,
+      "tags": [
+        "graphs",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1437B",
+      "name": "Reverse Binary Strings",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1450A",
+      "name": "Avoid Trygub",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1514A",
+      "name": "Perfectly Imperfect Array",
+      "rating": 800,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1529A",
+      "name": "Eshag Loves Big Arrays",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1542B",
+      "name": "Plus and Multiply",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "algo-recurrence-recursion": [
+    {
+      "number": "1385D",
+      "name": "a-Good String",
+      "rating": 1500,
+      "tags": [
+        "divide and conquer",
+        "dfs and similar"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1601A",
+      "name": "Array Elimination",
+      "rating": 1300,
+      "tags": [
+        "bitmasks",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1573A",
+      "name": "Countdown",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1617A",
+      "name": "Forbidden Subsequence",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "sortings",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1623A",
+      "name": "Character Encoding",
+      "rating": 900,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1660A",
+      "name": "Vasya and Coins",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1651A",
+      "name": "Playoff",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1637A",
+      "name": "Sorting Parts",
+      "rating": 800,
+      "tags": [
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1626A",
+      "name": "Equidistant Letters",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "sortings",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    }
   ],
   "algo-search-basics": [
-    { "number": "1490D", "name": "Permutation Transformation", "rating": 1300, "tags": ["dfs and similar", "trees"], "source": "Codeforces·精选" }
+    {
+      "number": "1490D",
+      "name": "Permutation Transformation",
+      "rating": 1300,
+      "tags": [
+        "dfs and similar",
+        "trees"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1519D",
+      "name": "Maximum Sum of Products",
+      "rating": 1600,
+      "tags": [
+        "brute force",
+        "dp",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1560D",
+      "name": "Make a Power of Two",
+      "rating": 1300,
+      "tags": [
+        "brute force",
+        "dp",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1608A",
+      "name": "Find Array",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1553A",
+      "name": "Digits Sum",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1547A",
+      "name": "Shortest Path with Obstacle",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1507A",
+      "name": "Meximum Array",
+      "rating": 1600,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1452A",
+      "name": "Avoiding Zero",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    }
   ],
-  "search-advanced": [
-    { "number": "1607F", "name": "Robot on the Board 2", "rating": 1900, "tags": ["dfs and similar", "dp"], "source": "Codeforces·精选" },
-    { "number": "888E", "name": "Maximum Subsequence", "rating": 1900, "tags": ["meet-in-the-middle", "bitmasks"], "source": "Codeforces·精选" }
+  "algo-simulation-bigint": [
+    {
+      "number": "1182B",
+      "name": "Plus from Picture",
+      "rating": 1200,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1498A",
+      "name": "GCD Sum",
+      "rating": 1100,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1368A",
+      "name": "C+=",
+      "rating": 1100,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1360A",
+      "name": "Minimal Square",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1352A",
+      "name": "Sum of Round Numbers",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1433A",
+      "name": "Boring Apartments",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1399A",
+      "name": "Remove Smallest",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1382A",
+      "name": "Common Subsequence",
+      "rating": 800,
+      "tags": [
+        "brute force"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1426A",
+      "name": "Floor Number",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1374A",
+      "name": "Required Remainder",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1371A",
+      "name": "Magical Sticks",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1367A",
+      "name": "Short Substrings",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1409A",
+      "name": "Yet Another Two Integers Problem",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1462A",
+      "name": "Favorite Sequence",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1405A",
+      "name": "Permutation Forgery",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1551A",
+      "name": "Polycarp and Coins",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1535B",
+      "name": "Array Reodering",
+      "rating": 1300,
+      "tags": [
+        "sortings",
+        "brute force",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1582A",
+      "name": "Luntik and Concerts",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
   ],
-  "string-basics": [
-    { "number": "1615C", "name": "Menorah", "rating": 1500, "tags": ["strings", "math"], "source": "Codeforces·精选" },
-    { "number": "1473B", "name": "String LCM", "rating": 1300, "tags": ["strings", "math"], "source": "Codeforces·精选" },
-    { "number": "1632A", "name": "ABC", "rating": 800, "tags": ["strings"], "source": "Codeforces·精选" }
-  ],
-  "string-advanced": [
-    { "number": "432D", "name": "Prefixes and Suffixes", "rating": 2000, "tags": ["strings"], "source": "Codeforces·精选" }
-  ],
-  "ds-linear-list": [
-    { "number": "1579E1", "name": "Permutation Minimization by Deque", "rating": 1300, "tags": ["data structures", "greedy"], "source": "Codeforces·精选" },
-    { "number": "1579E2", "name": "Array Optimization by Deque", "rating": 1700, "tags": ["data structures", "greedy"], "source": "Codeforces·精选" }
-  ],
-  "ds-binary-tree": [
-    { "number": "1436D", "name": "Bandit in a City", "rating": 1900, "tags": ["trees", "greedy"], "source": "Codeforces·精选" },
-    { "number": "1325C", "name": "Ehab and Path-etic MEXs", "rating": 1500, "tags": ["constructive algorithms", "greedy", "trees"], "source": "Codeforces·精选" }
-  ],
-  "ds-set": [
-    { "number": "1520D", "name": "Same Differences", "rating": 1200, "tags": ["data structures", "hashing", "math"], "source": "Codeforces·精选" },
-    { "number": "1335C", "name": "Two Teams Composing", "rating": 1200, "tags": ["implementation", "sortings"], "source": "Codeforces·精选" }
-  ],
-  "ds-graph-basics": [
-    { "number": "1638C", "name": "Inversion Graph", "rating": 1400, "tags": ["dsu", "graphs"], "source": "Codeforces·精选" },
-    { "number": "1559C", "name": "Mocha and Hiking", "rating": 1200, "tags": ["constructive algorithms", "graphs"], "source": "Codeforces·精选" }
-  ],
-  "ds-heap-bit": [
-    { "number": "1498B", "name": "Box Fitting", "rating": 1300, "tags": ["data structures", "greedy", "sortings"], "source": "Codeforces·精选" },
-    { "number": "1526C2", "name": "Potions (Hard Version)", "rating": 1600, "tags": ["data structures", "greedy"], "source": "Codeforces·精选" }
-  ],
-  "ds-segtree": [
-    { "number": "339D", "name": "Xenia and Bit Operations", "rating": 1700, "tags": ["data structures"], "source": "Codeforces·精选" },
-    { "number": "380C", "name": "Sereja and Brackets", "rating": 1700, "tags": ["data structures", "dp"], "source": "Codeforces·精选" },
-    { "number": "1547F", "name": "Array Stabilization (GCD version)", "rating": 1900, "tags": ["binary search", "data structures", "number theory"], "source": "Codeforces·精选" }
-  ],
-  "graph-tree": [
-    { "number": "1592C", "name": "Bakry and Partitioning", "rating": 1700, "tags": ["trees", "dfs and similar", "bitmasks"], "source": "Codeforces·精选" }
-  ],
-  "graph-shortest-path": [
-    { "number": "20C", "name": "Dijkstra?", "rating": 1800, "tags": ["shortest paths"], "source": "Codeforces·精选" },
-    { "number": "601A", "name": "The Two Routes", "rating": 1600, "tags": ["graphs", "shortest paths"], "source": "Codeforces·精选" },
-    { "number": "1196F", "name": "K-th Path", "rating": 1900, "tags": ["graphs", "shortest paths"], "source": "Codeforces·精选" }
-  ],
-  "graph-connectivity": [
-    { "number": "1139C", "name": "Edgy Trees", "rating": 1500, "tags": ["dsu", "graphs", "math"], "source": "Codeforces·精选" }
-  ],
-  "dp-intro": [
-    { "number": "455A", "name": "Boredom", "rating": 1500, "tags": ["dp"], "source": "Codeforces·精选" },
-    { "number": "327A", "name": "Flipping Game", "rating": 1200, "tags": ["dp", "brute force"], "source": "Codeforces·精选" },
-    { "number": "1350B", "name": "Orac and Models", "rating": 1400, "tags": ["dp", "number theory"], "source": "Codeforces·精选" }
-  ],
-  "dp-linear": [
-    { "number": "1625C", "name": "Road Optimization", "rating": 1800, "tags": ["dp"], "source": "Codeforces·精选" },
-    { "number": "1452D", "name": "Radio Towers", "rating": 1600, "tags": ["dp", "math"], "source": "Codeforces·精选" },
-    { "number": "1108D", "name": "Diverse Garland", "rating": 1300, "tags": ["dp", "greedy"], "source": "Codeforces·精选" }
-  ],
-  "dp-interval": [
-    { "number": "1132F", "name": "Clear the String", "rating": 1800, "tags": ["dp"], "source": "Codeforces·精选" },
-    { "number": "1373D", "name": "Maximum Sum on Even Positions", "rating": 1600, "tags": ["dp", "greedy"], "source": "Codeforces·精选" }
-  ],
-  "dp-tree-graph": [
-    { "number": "1324F", "name": "Maximum White Subtree", "rating": 1800, "tags": ["dp", "trees"], "source": "Codeforces·精选" },
-    { "number": "1437D", "name": "Minimal Height Tree", "rating": 1500, "tags": ["greedy", "trees"], "source": "Codeforces·精选" }
+  "algo-sorting": [
+    {
+      "number": "339A",
+      "name": "Helpful Maths",
+      "rating": 800,
+      "tags": [
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1092B",
+      "name": "Teams Forming",
+      "rating": 1000,
+      "tags": [
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1535A",
+      "name": "Fair Playoff",
+      "rating": 800,
+      "tags": [
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1370B",
+      "name": "GCD Compression",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1328B",
+      "name": "K-th Beautiful String",
+      "rating": 1300,
+      "tags": [
+        "combinatorics",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1546A",
+      "name": "AquaMoon and Strange Sort",
+      "rating": 1300,
+      "tags": [
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1541B",
+      "name": "Pleasant Pairs",
+      "rating": 1100,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1365B",
+      "name": "Trouble Sort",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1433B",
+      "name": "Yet Another Bookshelf",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1593B",
+      "name": "Make it Divisible by 25",
+      "rating": 1100,
+      "tags": [
+        "math",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1407A",
+      "name": "Ahahahahahahahaha",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1447B",
+      "name": "Numbers Box",
+      "rating": 1000,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1512B",
+      "name": "Almost Rectangle",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1537A",
+      "name": "Arithmetic Array",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1388A",
+      "name": "Captain Flint and Crew Recruitment",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "greedy",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    }
   ],
   "dp-bitmask": [
-    { "number": "165E", "name": "Compatible Numbers", "rating": 1700, "tags": ["bitmasks", "dp"], "source": "Codeforces·精选" }
+    {
+      "number": "165E",
+      "name": "Compatible Numbers",
+      "rating": 1700,
+      "tags": [
+        "bitmasks",
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1559D1",
+      "name": "Mocha and Diana (Easy Version)",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "dsu",
+        "graphs"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1427B",
+      "name": "Chess Cheater",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1392B",
+      "name": "Omkar and Last Class of Math",
+      "rating": 1300,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1349A",
+      "name": "Orac and LCM",
+      "rating": 1700,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1328C",
+      "name": "Ternary XOR",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1296B",
+      "name": "Food Buying",
+      "rating": 900,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1583C",
+      "name": "Planar Reflections",
+      "rating": 1800,
+      "tags": [
+        "dp",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1562C",
+      "name": "Rings",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1513C",
+      "name": "Add One",
+      "rating": 1600,
+      "tags": [
+        "dp",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1469B",
+      "name": "Red and Blue",
+      "rating": 1200,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1421B",
+      "name": "Putting Bricks in the Wall",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1355C",
+      "name": "Count Triangles",
+      "rating": 1500,
+      "tags": [
+        "binary search",
+        "implementation",
+        "math",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    }
   ],
-  "math-number-theory": [
-    { "number": "1294C", "name": "Product of Three Numbers", "rating": 1300, "tags": ["math", "number theory"], "source": "Codeforces·精选" },
-    { "number": "1475A", "name": "Odd Divisor", "rating": 900, "tags": ["math", "number theory"], "source": "Codeforces·精选" }
+  "dp-interval": [
+    {
+      "number": "1132F",
+      "name": "Clear the String",
+      "rating": 1800,
+      "tags": [
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1373D",
+      "name": "Maximum Sum on Even Positions",
+      "rating": 1600,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1400D",
+      "name": "Favorite Sequence",
+      "rating": 1600,
+      "tags": [
+        "brute force",
+        "data structures",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1343E",
+      "name": "Weights Distributing",
+      "rating": 1700,
+      "tags": [
+        "graphs",
+        "shortest paths"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1324D",
+      "name": "Pair of Topics",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "data structures",
+        "sortings",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1311D",
+      "name": "Three Integers",
+      "rating": 1800,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1294E",
+      "name": "Obtain a Permutation",
+      "rating": 1500,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1285B",
+      "name": "Just Eat It!",
+      "rating": 1100,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1367D",
+      "name": "Task On The Board",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1334C",
+      "name": "Circle of Monsters",
+      "rating": 1400,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1324E",
+      "name": "Sleeping Schedule",
+      "rating": 1600,
+      "tags": [
+        "dp",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1294D",
+      "name": "MEX maximizing",
+      "rating": 1600,
+      "tags": [
+        "data structures",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1283D",
+      "name": "Christmas Trees",
+      "rating": 1500,
+      "tags": [
+        "bfs",
+        "data structures",
+        "greedy",
+        "implementation",
+        "shortest paths"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "dp-intro": [
+    {
+      "number": "455A",
+      "name": "Boredom",
+      "rating": 1500,
+      "tags": [
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "327A",
+      "name": "Flipping Game",
+      "rating": 1200,
+      "tags": [
+        "dp",
+        "brute force"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1350B",
+      "name": "Orac and Models",
+      "rating": 1400,
+      "tags": [
+        "dp",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1355A",
+      "name": "Sequence with Digits",
+      "rating": 1200,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1430A",
+      "name": "Number of Apartments",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1420B",
+      "name": "Rock and Lever",
+      "rating": 1200,
+      "tags": [
+        "bitmasks",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1384B",
+      "name": "Koa and the Beach",
+      "rating": 1600,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1365A",
+      "name": "Matrix Game",
+      "rating": 1100,
+      "tags": [
+        "games",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1351A",
+      "name": "A+B (Trial Problem)",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1343C",
+      "name": "Alternating Subsequence",
+      "rating": 1200,
+      "tags": [
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1327B",
+      "name": "Princesses and Princes",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "dp-linear": [
+    {
+      "number": "1625C",
+      "name": "Road Optimization",
+      "rating": 1800,
+      "tags": [
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1452D",
+      "name": "Radio Towers",
+      "rating": 1600,
+      "tags": [
+        "dp",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1108D",
+      "name": "Diverse Garland",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1547D",
+      "name": "Co-growing Sequence",
+      "rating": 1300,
+      "tags": [
+        "bitmasks",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1475B",
+      "name": "New Year's Number",
+      "rating": 900,
+      "tags": [
+        "dp",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1437C",
+      "name": "Chef Monocarp",
+      "rating": 1800,
+      "tags": [
+        "dp",
+        "flows",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1372C",
+      "name": "Omkar and Baseball",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1334B",
+      "name": "Middle Class",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1295A",
+      "name": "Display The Number",
+      "rating": 900,
+      "tags": [
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "dp-optimization": [
+    {
+      "number": "1523B",
+      "name": "Lord of the Values",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1481B",
+      "name": "New Colony",
+      "rating": 1300,
+      "tags": [
+        "brute force",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1444A",
+      "name": "Division",
+      "rating": 1500,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1408B",
+      "name": "Arrays Sum",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1350A",
+      "name": "Orac and Factors",
+      "rating": 900,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1296C",
+      "name": "Yet Another Walking Robot",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1536D",
+      "name": "Omkar and Medians",
+      "rating": 1700,
+      "tags": [
+        "data structures",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1483B",
+      "name": "Danny and the List",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1452C",
+      "name": "Two Brackets",
+      "rating": 1100,
+      "tags": [
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1396A",
+      "name": "Multiples of Length",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1369B",
+      "name": "AccurateLee",
+      "rating": 1200,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1328D",
+      "name": "Carousel",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "dp",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "dp-tree-graph": [
+    {
+      "number": "1324F",
+      "name": "Maximum White Subtree",
+      "rating": 1800,
+      "tags": [
+        "dp",
+        "trees"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1437D",
+      "name": "Minimal Height Tree",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "trees"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1470A",
+      "name": "Strange Birthday Party",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "dp",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1455B",
+      "name": "Jumps",
+      "rating": 1200,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1409D",
+      "name": "Decrease the Sum of Digits",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1363B",
+      "name": "Subsequence Hate",
+      "rating": 1400,
+      "tags": [
+        "dp",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1327C",
+      "name": "Basketball Exercise",
+      "rating": 1500,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1283C",
+      "name": "New Year and Ascent Sequence",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "dp",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1612D",
+      "name": "X-Magic Pair",
+      "rating": 1600,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1552D",
+      "name": "Array Differentiation",
+      "rating": 1600,
+      "tags": [
+        "bitmasks",
+        "brute force",
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1506D",
+      "name": "Epic Transformation",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1461B",
+      "name": "Find the Spruce",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1382C1",
+      "name": "Prefix Flip (Easy Version)",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1335E1",
+      "name": "Three Blocks Palindrome (easy version)",
+      "rating": 1500,
+      "tags": [
+        "brute force",
+        "dp",
+        "implementation",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "ds-binary-tree": [
+    {
+      "number": "1325C",
+      "name": "Ehab and Path-etic MEXs",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "trees"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1618C",
+      "name": "Paint the Array",
+      "rating": 1100,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1594C",
+      "name": "Make Them Equal",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1553C",
+      "name": "Penalty",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1509B",
+      "name": "TMT Document",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1487B",
+      "name": "Cat Cycle",
+      "rating": 1200,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1454C",
+      "name": "Array Destruction",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1389A",
+      "name": "LCM Problem",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1375A",
+      "name": "Sign Flipping",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "ds-block-mo": [
+    {
+      "number": "1559D2",
+      "name": "Mocha and Diana (Hard Version)",
+      "rating": 1900,
+      "tags": [
+        "constructive algorithms",
+        "dsu",
+        "graphs"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1515C",
+      "name": "Phoenix and Towers",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1466C",
+      "name": "Canine poetry",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "greedy",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1409C",
+      "name": "Yet Another Array Restoration",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1379A",
+      "name": "Acacius and String",
+      "rating": 1500,
+      "tags": [
+        "brute force",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1342B",
+      "name": "Binary Period",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1567B",
+      "name": "MEXor Mixup",
+      "rating": 1100,
+      "tags": [
+        "bitmasks",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1520C",
+      "name": "Do Not Try This Problem",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1455D",
+      "name": "Sequence and Swaps",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1408C",
+      "name": "Binary Search Reconstruction",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1344B",
+      "name": "Monopole Magnets",
+      "rating": 1800,
+      "tags": [
+        "constructive algorithms",
+        "dfs and similar",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "ds-graph-basics": [
+    {
+      "number": "1638C",
+      "name": "Inversion Graph",
+      "rating": 1400,
+      "tags": [
+        "dsu",
+        "graphs"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1559C",
+      "name": "Mocha and Hiking",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "graphs"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1583B",
+      "name": "Omkar and Heavenly Tree",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "trees"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1593D1",
+      "name": "All are Same",
+      "rating": 1000,
+      "tags": [
+        "brute force",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1609A",
+      "name": "Divide and Multiply",
+      "rating": 900,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1614A",
+      "name": "Divan and a New Project",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1620A",
+      "name": "Not Shading",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1632B",
+      "name": "Roof Construction",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1642B",
+      "name": "Power Walking",
+      "rating": 900,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1647A",
+      "name": "Madoka and Math Dad",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "ds-heap-bit": [
+    {
+      "number": "1498B",
+      "name": "Box Fitting",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1526C2",
+      "name": "Potions (Hard Version)",
+      "rating": 1600,
+      "tags": [
+        "data structures",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1547F",
+      "name": "Array Stabilization (GCD version)",
+      "rating": 1900,
+      "tags": [
+        "binary search",
+        "data structures",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1443C",
+      "name": "The Delivery Dilemma",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1418C",
+      "name": "Mortal Kombat Tower",
+      "rating": 1500,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1369C",
+      "name": "RationalLee",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1341C",
+      "name": "Nastya and Strange Generator",
+      "rating": 1300,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1315A",
+      "name": "Dead Pixel",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1560E",
+      "name": "Polycarp and String Transformation",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1526C",
+      "name": "Potions (Easy Version)",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1485B",
+      "name": "Replace and Keep Sorted",
+      "rating": 1300,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1430D",
+      "name": "Permutation Restoration",
+      "rating": 1600,
+      "tags": [
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1379C",
+      "name": "Choosing flowers",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "data structures",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1341D",
+      "name": "Nastya and Scoreboard",
+      "rating": 1700,
+      "tags": [
+        "bitmasks",
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "ds-linear-list": [
+    {
+      "number": "1579E1",
+      "name": "Permutation Minimization by Deque",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1579E2",
+      "name": "Array Optimization by Deque",
+      "rating": 1700,
+      "tags": [
+        "data structures",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1598A",
+      "name": "Computer Game",
+      "rating": 1000,
+      "tags": [
+        "brute force",
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1607B",
+      "name": "Odd Grasshopper",
+      "rating": 900,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1619A",
+      "name": "Square String?",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1624A",
+      "name": "Plus One on the Subset",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1631A",
+      "name": "Min Max Swap",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1633A",
+      "name": "Div. 7",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1634A",
+      "name": "Reverse and Concatenate",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1644A",
+      "name": "Doors and Keys",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1646A",
+      "name": "Square Counting",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1656A",
+      "name": "Good Pairs",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "ds-segtree": [
+    {
+      "number": "339D",
+      "name": "Xenia and Bit Operations",
+      "rating": 1700,
+      "tags": [
+        "data structures"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "380C",
+      "name": "Sereja and Brackets",
+      "rating": 1700,
+      "tags": [
+        "data structures",
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1547F",
+      "name": "Array Stabilization (GCD version)",
+      "rating": 1900,
+      "tags": [
+        "binary search",
+        "data structures",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1582D",
+      "name": "Vupsen, Pupsen and 0",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1554B",
+      "name": "Cobb",
+      "rating": 1400,
+      "tags": [
+        "brute force",
+        "data structures",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1497B",
+      "name": "M-arrays",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1454D",
+      "name": "Number into Sequence",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1401B",
+      "name": "Ternary Sequence",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1335D",
+      "name": "Anti-Sudoku",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1560F2",
+      "name": "Nearest Beautiful Number (hard version)",
+      "rating": 1900,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1541C",
+      "name": "Going Home",
+      "rating": 1800,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1498D",
+      "name": "Bananas in a Microwave",
+      "rating": 2100,
+      "tags": [
+        "dp",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1462F",
+      "name": "The Treasure of The Segments",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "data structures",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1398D",
+      "name": "Colored Rectangles",
+      "rating": 1800,
+      "tags": [
+        "dp",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "ds-segtree-advanced": [
+    {
+      "number": "1557B",
+      "name": "Moamen and k-subarrays",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1504B",
+      "name": "Flip the Bits",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1462E2",
+      "name": "Close Tuples (hard version)",
+      "rating": 1700,
+      "tags": [
+        "binary search",
+        "combinatorics",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1367B",
+      "name": "Even Array",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1326B",
+      "name": "Maximums",
+      "rating": 1000,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1303A",
+      "name": "Erasing Zeroes",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1594F",
+      "name": "Ideal Farm",
+      "rating": 2000,
+      "tags": [
+        "constructive algorithms",
+        "flows",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1555C",
+      "name": "Coin Rows",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1515D",
+      "name": "Phoenix and Socks",
+      "rating": 1800,
+      "tags": [
+        "data structures",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1436E",
+      "name": "Complicated Computations",
+      "rating": 2100,
+      "tags": [
+        "data structures",
+        "implementation",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1352G",
+      "name": "Special Permutation",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "ds-set": [
+    {
+      "number": "1520D",
+      "name": "Same Differences",
+      "rating": 1200,
+      "tags": [
+        "data structures",
+        "hashing",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1335C",
+      "name": "Two Teams Composing",
+      "rating": 1200,
+      "tags": [
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1638B",
+      "name": "Odd Swap Sort",
+      "rating": 1100,
+      "tags": [
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1613B",
+      "name": "Absent Remainder",
+      "rating": 1000,
+      "tags": [
+        "sortings",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1593C",
+      "name": "Save More Mice",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1579B",
+      "name": "Shifting Sort",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1555B",
+      "name": "Reverse String",
+      "rating": 1400,
+      "tags": [
+        "brute force",
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1515A",
+      "name": "Phoenix and Gold",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1480B",
+      "name": "The Great Hero",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1462B",
+      "name": "Last Year's Substring",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "graph-connectivity": [
+    {
+      "number": "1139C",
+      "name": "Edgy Trees",
+      "rating": 1500,
+      "tags": [
+        "dsu",
+        "graphs",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1513B",
+      "name": "AND Sequences",
+      "rating": 1700,
+      "tags": [
+        "bitmasks",
+        "combinatorics",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1475D",
+      "name": "Cleaning the Phone",
+      "rating": 1800,
+      "tags": [
+        "binary search",
+        "dp",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1422A",
+      "name": "Floor Number",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1382B",
+      "name": "Sequential Nim",
+      "rating": 1100,
+      "tags": [
+        "games",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1332B",
+      "name": "Composite Coloring",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1549B",
+      "name": "Gregor and the Pawn Game",
+      "rating": 1000,
+      "tags": [
+        "games",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1487C",
+      "name": "Minimum Ties",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1428C",
+      "name": "ABBB",
+      "rating": 1100,
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1374D",
+      "name": "Zero Remainder Array",
+      "rating": 1400,
+      "tags": [
+        "data structures",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1329A",
+      "name": "Dreamoon Likes Coloring",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "graph-mst": [
+    {
+      "number": "1483A",
+      "name": "Reachable Numbers",
+      "rating": 1100,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1439A2",
+      "name": "Fighting Monsters",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1408A",
+      "name": "Circle Coloring",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1346A",
+      "name": "Amr and Music",
+      "rating": 900,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1285A",
+      "name": "Mezo Playing Zoma",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1556B",
+      "name": "Take Your Places!",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1496A",
+      "name": "Split it!",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1478A",
+      "name": "Nezzar and Colorful Balls",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1424A",
+      "name": "Di-visible Confusion",
+      "rating": 1100,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1370C",
+      "name": "Number Game",
+      "rating": 1100,
+      "tags": [
+        "games",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "graph-network-flow": [
+    {
+      "number": "1439A2",
+      "name": "Fighting Monsters",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1379B",
+      "name": "Dubious Cyrpto",
+      "rating": 1600,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1355B",
+      "name": "Young Explorers",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1313A",
+      "name": "Fast Food Restaurant",
+      "rating": 900,
+      "tags": [
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1538D",
+      "name": "Another Problem About Dividing Numbers",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1474B",
+      "name": "Different Divisors",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1423A",
+      "name": "Echidna",
+      "rating": 1900,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1368C",
+      "name": "Integer Sequence Dividing",
+      "rating": 1000,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "graph-shortest-path": [
+    {
+      "number": "20C",
+      "name": "Dijkstra?",
+      "rating": 1800,
+      "tags": [
+        "shortest paths"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "601A",
+      "name": "The Two Routes",
+      "rating": 1600,
+      "tags": [
+        "graphs",
+        "shortest paths"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1196F",
+      "name": "K-th Path",
+      "rating": 1900,
+      "tags": [
+        "graphs",
+        "shortest paths"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1615B",
+      "name": "And It's Non-Zero",
+      "rating": 1500,
+      "tags": [
+        "bitmasks",
+        "brute force",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1511D",
+      "name": "Min Cost String",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1478B",
+      "name": "Neighbor Grid",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1433D",
+      "name": "Districts Connection",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "trees"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1372A",
+      "name": "Omkar and Completion",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1336A",
+      "name": "Linova and Kingdom",
+      "rating": 1600,
+      "tags": [
+        "dfs and similar",
+        "dp",
+        "greedy",
+        "sortings",
+        "trees"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "graph-tree": [
+    {
+      "number": "1592C",
+      "name": "Bakry and Partitioning",
+      "rating": 1700,
+      "tags": [
+        "trees",
+        "dfs and similar",
+        "bitmasks"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1611E1",
+      "name": "Escape The Maze (easy version)",
+      "rating": 1900,
+      "tags": [
+        "dfs and similar",
+        "dp",
+        "greedy",
+        "trees"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1574B",
+      "name": "Combinatorics Homework",
+      "rating": 1100,
+      "tags": [
+        "combinatorics",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1551B2",
+      "name": "Wonderful Coloring - 2",
+      "rating": 1400,
+      "tags": [
+        "data structures",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1506E",
+      "name": "Restoring the Permutation",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1450B",
+      "name": "Balls of Steel",
+      "rating": 1000,
+      "tags": [
+        "brute force",
+        "geometry",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1399D",
+      "name": "Binary String To Subsequences",
+      "rating": 1500,
+      "tags": [
+        "dp",
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1607E",
+      "name": "Robot in a Hallway",
+      "rating": 2100,
+      "tags": [
+        "data structures",
+        "dp",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1574C",
+      "name": "Slay the Dragon",
+      "rating": 1500,
+      "tags": [
+        "binary search",
+        "data structures",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1511B",
+      "name": "GCD Length",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1463A",
+      "name": "Dungeon",
+      "rating": 1100,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1418A",
+      "name": "Buying Torches",
+      "rating": 1000,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1340A",
+      "name": "Nastya and Rice",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "math-basics": [
+    {
+      "number": "122A",
+      "name": "Lucky Division",
+      "rating": 1000,
+      "tags": [
+        "brute force"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1327A",
+      "name": "Sum of Odd Integers",
+      "rating": 1100,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1370A",
+      "name": "Maximum GCD",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1372B",
+      "name": "Omkar and Last Class of Math",
+      "rating": 1300,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1603A",
+      "name": "Di-visible Confusion",
+      "rating": 1200,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1526B",
+      "name": "I Hate 1111",
+      "rating": 1400,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1325B",
+      "name": "CopyCopyCopyCopyCopy",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1550A",
+      "name": "Find The Array",
+      "rating": 800,
+      "tags": [
+        "math",
+        "constructive algorithms"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1520A",
+      "name": "Do Not Be Distracted!",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1509A",
+      "name": "Average Height",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1485A",
+      "name": "Add and Divide",
+      "rating": 1100,
+      "tags": [
+        "brute force",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1438B",
+      "name": "Valerii Against Everyone",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1395A",
+      "name": "Boboniu Chats with Du",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1364A",
+      "name": "XXX",
+      "rating": 1000,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1359A",
+      "name": "Berland Poker",
+      "rating": 1000,
+      "tags": [
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1342A",
+      "name": "Road To Zero",
+      "rating": 1000,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1343B",
+      "name": "Balanced Array",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1326A",
+      "name": "Bad Ugly Numbers",
+      "rating": 1000,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1312A",
+      "name": "Two Regular Polygons",
+      "rating": 800,
+      "tags": [
+        "geometry",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1296A",
+      "name": "Array with Odd Sum",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1294A",
+      "name": "Collecting Coins",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1283A",
+      "name": "Minutes Before the New Year",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1249A",
+      "name": "Yet Another Dividing into Teams",
+      "rating": 800,
+      "tags": [
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    }
   ],
   "math-combinatorics": [
-    { "number": "1475C", "name": "Ball in Berland", "rating": 1400, "tags": ["combinatorics", "math"], "source": "Codeforces·精选" },
-    { "number": "478B", "name": "Random Teams", "rating": 1300, "tags": ["combinatorics", "math"], "source": "Codeforces·精选" },
-    { "number": "1512E", "name": "Permutation by Sum", "rating": 1600, "tags": ["combinatorics", "constructive algorithms", "greedy"], "source": "Codeforces·精选" }
-  ],
-  "math-probability": [
-    { "number": "1461C", "name": "Random Events", "rating": 1600, "tags": ["math", "probabilities"], "source": "Codeforces·精选" }
-  ],
-  "math-linear-algebra": [
-    { "number": "1182E", "name": "Product Oriented Recurrence", "rating": 2100, "tags": ["math", "matrices"], "source": "Codeforces·精选" }
+    {
+      "number": "1475C",
+      "name": "Ball in Berland",
+      "rating": 1400,
+      "tags": [
+        "combinatorics",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "478B",
+      "name": "Random Teams",
+      "rating": 1300,
+      "tags": [
+        "combinatorics",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1512E",
+      "name": "Permutation by Sum",
+      "rating": 1600,
+      "tags": [
+        "combinatorics",
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1560C",
+      "name": "Infinity Table",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1515B",
+      "name": "Phoenix and Puzzle",
+      "rating": 1200,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1473C",
+      "name": "No More Inversions",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1436B",
+      "name": "Prime Square",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1381A",
+      "name": "Common Prefixes",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1348B",
+      "name": "Phoenix and Beauty",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1530B",
+      "name": "Putting Plates",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1496B",
+      "name": "Array Restoring",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1454A",
+      "name": "Special Permutation",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1407B",
+      "name": "Big Vova",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1343A",
+      "name": "Candies",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1303B",
+      "name": "National Project",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
   ],
   "math-game-theory": [
-    { "number": "1472D", "name": "Even-Odd Game", "rating": 1200, "tags": ["games", "greedy"], "source": "Codeforces·精选" },
-    { "number": "1451D", "name": "Circle Game", "rating": 1700, "tags": ["games", "math"], "source": "Codeforces·精选" }
+    {
+      "number": "1472D",
+      "name": "Even-Odd Game",
+      "rating": 1200,
+      "tags": [
+        "games",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1451D",
+      "name": "Circle Game",
+      "rating": 1700,
+      "tags": [
+        "games",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1512C",
+      "name": "A-B Palindrome",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1472C",
+      "name": "Long Jumps",
+      "rating": 1100,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1426C",
+      "name": "Increase and Copy",
+      "rating": 1100,
+      "tags": [
+        "binary search",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1374C",
+      "name": "Move Brackets",
+      "rating": 1000,
+      "tags": [
+        "greedy",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1331A",
+      "name": "Red-Blue Shuffle",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1288A",
+      "name": "Deadline",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1562A",
+      "name": "The Miracle and the Sleeper",
+      "rating": 900,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1511A",
+      "name": "Review Site",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1455C",
+      "name": "Ping-pong",
+      "rating": 1000,
+      "tags": [
+        "games",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1386A",
+      "name": "LGM or Not",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1323A",
+      "name": "Even Subset Sum Problem",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "math-geometry": [
+    {
+      "number": "1556A",
+      "name": "A Variety of Operations",
+      "rating": 1000,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1521B",
+      "name": "Nastia and a Good Array",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1468A",
+      "name": "LaIS",
+      "rating": 1900,
+      "tags": [
+        "dp",
+        "data structures"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1436C",
+      "name": "Binary Search",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "combinatorics"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1352E",
+      "name": "Special Elements",
+      "rating": 1500,
+      "tags": [
+        "brute force",
+        "data structures",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1296D",
+      "name": "Kill Anton",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1578B",
+      "name": "Burning Midnight Oil",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1528A",
+      "name": "Paxful",
+      "rating": 1000,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1493A",
+      "name": "Anti-knapsack",
+      "rating": 900,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1451B",
+      "name": "Non-Substring Subsequence",
+      "rating": 900,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1406A",
+      "name": "Subset Mex",
+      "rating": 900,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "math-linear-algebra": [
+    {
+      "number": "1182E",
+      "name": "Product Oriented Recurrence",
+      "rating": 2100,
+      "tags": [
+        "math",
+        "matrices"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1534A",
+      "name": "Colour the Flag",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1521A",
+      "name": "Nastia and Nearly Good Numbers",
+      "rating": 1000,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1467A",
+      "name": "Wizard of Orz",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1427C",
+      "name": "The Hard Work of Paparazzi",
+      "rating": 1900,
+      "tags": [
+        "brute force",
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1366B",
+      "name": "Shuffle",
+      "rating": 1300,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1294C",
+      "name": "Product of Three Numbers",
+      "rating": 1300,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1546B",
+      "name": "AquaMoon and Stolen String",
+      "rating": 1300,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1512D",
+      "name": "Corrupted Array",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1469A",
+      "name": "Regular Bracket Sequence",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1392A",
+      "name": "Omkar and Password",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1346B",
+      "name": "Carousel",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "math-number-theory": [
+    {
+      "number": "1294C",
+      "name": "Product of Three Numbers",
+      "rating": 1300,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1475A",
+      "name": "Odd Divisor",
+      "rating": 900,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1471A",
+      "name": "Strange Partition",
+      "rating": 900,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1452B",
+      "name": "Toy Blocks",
+      "rating": 1400,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1420A",
+      "name": "Cubes Sorting",
+      "rating": 900,
+      "tags": [
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1397A",
+      "name": "Juggling Letters",
+      "rating": 800,
+      "tags": [
+        "strings",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1389B",
+      "name": "Array Walk",
+      "rating": 1600,
+      "tags": [
+        "dp",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1352F",
+      "name": "Binary String Reconstruction",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1344A",
+      "name": "Hilbert's Hotel",
+      "rating": 1200,
+      "tags": [
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1313C",
+      "name": "Ski Resort",
+      "rating": 1200,
+      "tags": [
+        "binary search",
+        "combinatorics",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1566C",
+      "name": "MAX-MEX Cut",
+      "rating": 1100,
+      "tags": [
+        "dp",
+        "greedy",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1543B",
+      "name": "Customising the Track",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1504C",
+      "name": "Balance the Bits",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1447C",
+      "name": "Knapsack",
+      "rating": 1400,
+      "tags": [
+        "greedy",
+        "math",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1400C",
+      "name": "Binary String Reconstruction",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1345B",
+      "name": "Card Constructions",
+      "rating": 1100,
+      "tags": [
+        "binary search",
+        "brute force",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "math-probability": [
+    {
+      "number": "1461C",
+      "name": "Random Events",
+      "rating": 1600,
+      "tags": [
+        "math",
+        "probabilities"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1540A",
+      "name": "Great Graphs",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1504A",
+      "name": "Decline of the Party",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1486B",
+      "name": "Eastern Exhibition",
+      "rating": 1200,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1419B",
+      "name": "Chess Tournament",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1360C",
+      "name": "Similar Pairs",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "greedy",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1335A",
+      "name": "Candies and Two Sisters",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1556C",
+      "name": "Compressed Bracket Sequence",
+      "rating": 1700,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1499B",
+      "name": "Binary Removals",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1471B",
+      "name": "Strange List",
+      "rating": 1100,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1433C",
+      "name": "Dominant Character",
+      "rating": 1200,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1388B",
+      "name": "Captain Flint and a Long Voyage",
+      "rating": 900,
+      "tags": [
+        "bitmasks",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1333B",
+      "name": "Kind Anton",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "note": "Codeforces 补充题单：source=Codeforces·精选 为人工精选经典题（题名/rating/标签为 CF 官方值）；可由 scripts/fetch-codeforces.js 联网拉取扩充（source=Codeforces·API）。convert-curriculum.js 按节点合并去重并富化既有 CF 题。",
+  "search-advanced": [
+    {
+      "number": "1607F",
+      "name": "Robot on the Board 2",
+      "rating": 1900,
+      "tags": [
+        "dfs and similar",
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "888E",
+      "name": "Maximum Subsequence",
+      "rating": 1900,
+      "tags": [
+        "meet-in-the-middle",
+        "bitmasks"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1516C",
+      "name": "Baby Ehab Partitions Again",
+      "rating": 1700,
+      "tags": [
+        "bitmasks",
+        "dp",
+        "greedy",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1466D",
+      "name": "13th Labour of Heracles",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1415B",
+      "name": "Repainting Street",
+      "rating": 1100,
+      "tags": [
+        "brute force",
+        "greedy"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1371B",
+      "name": "Magical Calendar",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1343D",
+      "name": "Constant Palindrome Sum",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "math",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1330A",
+      "name": "Dreamoon and Ranking Collection",
+      "rating": 900,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1611D",
+      "name": "Weights Assignment For Tree Edges",
+      "rating": 1900,
+      "tags": [
+        "constructive algorithms",
+        "trees"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1598E",
+      "name": "Staircases",
+      "rating": 1800,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1552C",
+      "name": "Maximize the Intersections",
+      "rating": 1800,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1491B",
+      "name": "Array Sharpening",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1455A",
+      "name": "Strange Functions",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1427C",
+      "name": "The Hard Work of Paparazzi",
+      "rating": 1900,
+      "tags": [
+        "brute force",
+        "dp"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "string-advanced": [
+    {
+      "number": "432D",
+      "name": "Prefixes and Suffixes",
+      "rating": 2000,
+      "tags": [
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1547E",
+      "name": "Air Conditioners",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "shortest paths",
+        "two pointers"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1526A",
+      "name": "Mean Inequality",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1472F",
+      "name": "Nezzar and Hidden Permutations",
+      "rating": 2100,
+      "tags": [
+        "constructive algorithms",
+        "graphs",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1404A",
+      "name": "Balanced Bitstring",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1330B",
+      "name": "Dreamoon Likes Permutations",
+      "rating": 1400,
+      "tags": [
+        "data structures",
+        "implementation",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1282A",
+      "name": "Temporarily unavailable",
+      "rating": 800,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1583A",
+      "name": "Windblume Ode",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1538B",
+      "name": "Friends and Candies",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1498C",
+      "name": "Planar Reflections",
+      "rating": 1700,
+      "tags": [
+        "dp",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1462C",
+      "name": "Unique Number",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "greedy",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1397B",
+      "name": "Power Sequence",
+      "rating": 1300,
+      "tags": [
+        "brute force",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    }
+  ],
+  "string-basics": [
+    {
+      "number": "1615C",
+      "name": "Menorah",
+      "rating": 1500,
+      "tags": [
+        "strings",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1473B",
+      "name": "String LCM",
+      "rating": 1300,
+      "tags": [
+        "strings",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1632A",
+      "name": "ABC",
+      "rating": 800,
+      "tags": [
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1633B",
+      "name": "Minority",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1611B",
+      "name": "Team Composition: Programmers and Mathematicians",
+      "rating": 900,
+      "tags": [
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1591A",
+      "name": "Life of a Flower",
+      "rating": 900,
+      "tags": [
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1567A",
+      "name": "Domino Disaster",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "strings"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1547C",
+      "name": "Pair Programming",
+      "rating": 1200,
+      "tags": [
+        "greedy",
+        "implementation"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1536A",
+      "name": "Omkar and Bad Story",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1520B",
+      "name": "Ordinary Numbers",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "math"
+      ],
+      "source": "Codeforces·精选"
+    },
+    {
+      "number": "1497A",
+      "name": "Meximization",
+      "rating": 900,
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "sortings"
+      ],
+      "source": "Codeforces·精选"
+    }
   ]
 }

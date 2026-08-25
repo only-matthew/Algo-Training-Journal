@@ -251,6 +251,120 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1598D",
+      "name": "Training Session",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "combinatorics",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1555D",
+      "name": "Say No to Palindromes",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "dp",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1538A",
+      "name": "Stone Game",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "greedy",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1473A",
+      "name": "Replacing Elements",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "math",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1427A",
+      "name": "Avoiding Zero",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1391A",
+      "name": "Suborrays",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1368B",
+      "name": "Codeforces Subsequences",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "brute force",
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1345A",
+      "name": "Puzzle Pieces",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "geometry",
+        "implementation",
+        "math"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "2029",
       "name": "",

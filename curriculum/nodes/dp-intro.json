@@ -183,6 +183,111 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1355A",
+      "name": "Sequence with Digits",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1430A",
+      "name": "Number of Apartments",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1420B",
+      "name": "Rock and Lever",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "bitmasks",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1384B",
+      "name": "Koa and the Beach",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1365A",
+      "name": "Matrix Game",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "games",
+        "greedy",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1351A",
+      "name": "A+B (Trial Problem)",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1343C",
+      "name": "Alternating Subsequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1327B",
+      "name": "Princesses and Princes",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "greedy"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "2602",
       "name": "",

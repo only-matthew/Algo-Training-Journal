@@ -242,6 +242,195 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1471A",
+      "name": "Strange Partition",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1452B",
+      "name": "Toy Blocks",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1420A",
+      "name": "Cubes Sorting",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "math",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1397A",
+      "name": "Juggling Letters",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "strings",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1389B",
+      "name": "Array Walk",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "dp",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1352F",
+      "name": "Binary String Reconstruction",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1344A",
+      "name": "Hilbert's Hotel",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1313C",
+      "name": "Ski Resort",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "binary search",
+        "combinatorics",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1566C",
+      "name": "MAX-MEX Cut",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "dp",
+        "greedy",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1543B",
+      "name": "Customising the Track",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1504C",
+      "name": "Balance the Bits",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1447C",
+      "name": "Knapsack",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "greedy",
+        "math",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1400C",
+      "name": "Binary String Reconstruction",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1345B",
+      "name": "Card Constructions",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "binary search",
+        "brute force",
+        "math"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "5512",
       "name": "",

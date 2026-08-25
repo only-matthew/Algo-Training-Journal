@@ -147,6 +147,158 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1400D",
+      "name": "Favorite Sequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "brute force",
+        "data structures",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1343E",
+      "name": "Weights Distributing",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "graphs",
+        "shortest paths"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1324D",
+      "name": "Pair of Topics",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "data structures",
+        "sortings",
+        "two pointers"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1311D",
+      "name": "Three Integers",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1800,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1294E",
+      "name": "Obtain a Permutation",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1285B",
+      "name": "Just Eat It!",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "dp",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1367D",
+      "name": "Task On The Board",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1334C",
+      "name": "Circle of Monsters",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1324E",
+      "name": "Sleeping Schedule",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "dp",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1294D",
+      "name": "MEX maximizing",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "data structures",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1283D",
+      "name": "Christmas Trees",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "bfs",
+        "data structures",
+        "greedy",
+        "implementation",
+        "shortest paths"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "2476",
       "name": "",

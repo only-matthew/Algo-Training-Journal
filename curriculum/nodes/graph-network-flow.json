@@ -32,6 +32,111 @@
   ],
   "problems": [
     {
+      "platform": "Codeforces",
+      "number": "1439A2",
+      "name": "Fighting Monsters",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1379B",
+      "name": "Dubious Cyrpto",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1355B",
+      "name": "Young Explorers",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1313A",
+      "name": "Fast Food Restaurant",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1538D",
+      "name": "Another Problem About Dividing Numbers",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1474B",
+      "name": "Different Divisors",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1423A",
+      "name": "Echidna",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1900,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1368C",
+      "name": "Integer Sequence Dividing",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "math"
+      ]
+    },
+    {
       "platform": "洛谷",
       "number": "P3376",
       "name": "",

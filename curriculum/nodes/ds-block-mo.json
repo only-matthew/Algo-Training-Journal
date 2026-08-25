@@ -92,6 +92,158 @@
         "mo",
         "data structures"
       ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1559D2",
+      "name": "Mocha and Diana (Hard Version)",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1900,
+      "tags": [
+        "constructive algorithms",
+        "dsu",
+        "graphs"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1515C",
+      "name": "Phoenix and Towers",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1466C",
+      "name": "Canine poetry",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "greedy",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1409C",
+      "name": "Yet Another Array Restoration",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1379A",
+      "name": "Acacius and String",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "brute force",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1342B",
+      "name": "Binary Period",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1567B",
+      "name": "MEXor Mixup",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "bitmasks",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1520C",
+      "name": "Do Not Try This Problem",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1455D",
+      "name": "Sequence and Swaps",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1408C",
+      "name": "Binary Search Reconstruction",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1344B",
+      "name": "Monopole Magnets",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1800,
+      "tags": [
+        "constructive algorithms",
+        "dfs and similar",
+        "greedy",
+        "implementation"
+      ]
     }
   ]
 }

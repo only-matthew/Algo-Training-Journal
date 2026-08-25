@@ -167,6 +167,123 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1358D",
+      "name": "The Best Vacation",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "brute force",
+        "two pointers"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1462E1",
+      "name": "Close Tuples (easy version)",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "binary search",
+        "combinatorics",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1490E",
+      "name": "Accidental Victory",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "binary search",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1537D",
+      "name": "Balanced Bitstring",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1395B",
+      "name": "M. Beautiful Paintings",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1602A",
+      "name": "Two Subsequences",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1594A",
+      "name": "Consecutive Sum Riddle",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1543A",
+      "name": "Exciting Bets",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1506B",
+      "name": "Partial Replacement",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
       "platform": "洛谷",
       "number": "P1462",
       "name": "",

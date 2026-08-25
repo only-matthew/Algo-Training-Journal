@@ -237,6 +237,101 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1472E",
+      "name": "Correct Placement",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "binary search",
+        "data structures",
+        "dp",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1428B",
+      "name": "Belted Rooms",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "graphs",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1437B",
+      "name": "Reverse Binary Strings",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1450A",
+      "name": "Avoid Trygub",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1514A",
+      "name": "Perfectly Imperfect Array",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1529A",
+      "name": "Eshag Loves Big Arrays",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1542B",
+      "name": "Plus and Multiply",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "1556",
       "name": "",

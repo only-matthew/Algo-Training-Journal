@@ -186,6 +186,170 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1470A",
+      "name": "Strange Birthday Party",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "dp",
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1455B",
+      "name": "Jumps",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1409D",
+      "name": "Decrease the Sum of Digits",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1363B",
+      "name": "Subsequence Hate",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "dp",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1327C",
+      "name": "Basketball Exercise",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "dp",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1283C",
+      "name": "New Year and Ascent Sequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "dp",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1612D",
+      "name": "X-Magic Pair",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1552D",
+      "name": "Array Differentiation",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "bitmasks",
+        "brute force",
+        "dp"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1506D",
+      "name": "Epic Transformation",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "data structures",
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1461B",
+      "name": "Find the Spruce",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1382C1",
+      "name": "Prefix Flip (Easy Version)",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1335E1",
+      "name": "Three Blocks Palindrome (easy version)",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "brute force",
+        "dp",
+        "implementation",
+        "two pointers"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "1520",
       "name": "",

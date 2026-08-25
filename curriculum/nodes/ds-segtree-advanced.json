@@ -133,6 +133,152 @@
       "note": ""
     },
     {
+      "platform": "Codeforces",
+      "number": "1557B",
+      "name": "Moamen and k-subarrays",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1504B",
+      "name": "Flip the Bits",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1462E2",
+      "name": "Close Tuples (hard version)",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "binary search",
+        "combinatorics",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1367B",
+      "name": "Even Array",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1326B",
+      "name": "Maximums",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1303A",
+      "name": "Erasing Zeroes",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1594F",
+      "name": "Ideal Farm",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 2000,
+      "tags": [
+        "constructive algorithms",
+        "flows",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1555C",
+      "name": "Coin Rows",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "dp",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1515D",
+      "name": "Phoenix and Socks",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1800,
+      "tags": [
+        "data structures",
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1436E",
+      "name": "Complicated Computations",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 2100,
+      "tags": [
+        "data structures",
+        "implementation",
+        "two pointers"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1352G",
+      "name": "Special Permutation",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "4417",
       "name": "",

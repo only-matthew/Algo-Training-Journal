@@ -121,6 +121,149 @@
         "games",
         "math"
       ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1512C",
+      "name": "A-B Palindrome",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1472C",
+      "name": "Long Jumps",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "dp",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1426C",
+      "name": "Increase and Copy",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "binary search",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1374C",
+      "name": "Move Brackets",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "greedy",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1331A",
+      "name": "Red-Blue Shuffle",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1288A",
+      "name": "Deadline",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "binary search",
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1562A",
+      "name": "The Miracle and the Sleeper",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1511A",
+      "name": "Review Site",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1455C",
+      "name": "Ping-pong",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1000,
+      "tags": [
+        "games",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1386A",
+      "name": "LGM or Not",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1323A",
+      "name": "Even Subset Sum Problem",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ]
     }
   ]
 }

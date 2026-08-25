@@ -200,6 +200,167 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1559D1",
+      "name": "Mocha and Diana (Easy Version)",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "dsu",
+        "graphs"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1427B",
+      "name": "Chess Cheater",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1392B",
+      "name": "Omkar and Last Class of Math",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1349A",
+      "name": "Orac and LCM",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1700,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1328C",
+      "name": "Ternary XOR",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1296B",
+      "name": "Food Buying",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1583C",
+      "name": "Planar Reflections",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1800,
+      "tags": [
+        "dp",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1562C",
+      "name": "Rings",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1513C",
+      "name": "Add One",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "dp",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1469B",
+      "name": "Red and Blue",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "dp",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1421B",
+      "name": "Putting Bricks in the Wall",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1355C",
+      "name": "Count Triangles",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "binary search",
+        "implementation",
+        "math",
+        "two pointers"
+      ]
+    },
+    {
       "platform": "OpenJ_Bailian",
       "number": "2411",
       "name": "",

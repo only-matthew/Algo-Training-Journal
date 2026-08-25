@@ -105,19 +105,6 @@
     },
     {
       "platform": "Codeforces",
-      "number": "1436D",
-      "name": "Bandit in a City",
-      "source": "Codeforces·精选",
-      "role": "练习",
-      "note": "",
-      "rating": 1900,
-      "tags": [
-        "trees",
-        "greedy"
-      ]
-    },
-    {
-      "platform": "Codeforces",
       "number": "1325C",
       "name": "Ehab and Path-etic MEXs",
       "source": "Codeforces·精选",
@@ -128,6 +115,115 @@
         "constructive algorithms",
         "greedy",
         "trees"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1618C",
+      "name": "Paint the Array",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1594C",
+      "name": "Make Them Equal",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1553C",
+      "name": "Penalty",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "brute force",
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1509B",
+      "name": "TMT Document",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation",
+        "strings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1487B",
+      "name": "Cat Cycle",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1454C",
+      "name": "Array Destruction",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "data structures",
+        "greedy",
+        "implementation",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1389A",
+      "name": "LCM Problem",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1375A",
+      "name": "Sign Flipping",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "constructive algorithms",
+        "math"
       ]
     },
     {

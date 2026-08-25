@@ -202,6 +202,85 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1547D",
+      "name": "Co-growing Sequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "bitmasks",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1475B",
+      "name": "New Year's Number",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "dp",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1437C",
+      "name": "Chef Monocarp",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1800,
+      "tags": [
+        "dp",
+        "flows",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1372C",
+      "name": "Omkar and Baseball",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "constructive algorithms",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1334B",
+      "name": "Middle Class",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1295A",
+      "name": "Display The Number",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 900,
+      "tags": [
+        "greedy"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "1712",
       "name": "",

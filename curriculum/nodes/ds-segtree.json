@@ -193,6 +193,159 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1582D",
+      "name": "Vupsen, Pupsen and 0",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1554B",
+      "name": "Cobb",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "brute force",
+        "data structures",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1497B",
+      "name": "M-arrays",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "data structures",
+        "greedy",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1454D",
+      "name": "Number into Sequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1400,
+      "tags": [
+        "constructive algorithms",
+        "math",
+        "number theory"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1401B",
+      "name": "Ternary Sequence",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "greedy",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1335D",
+      "name": "Anti-Sudoku",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1560F2",
+      "name": "Nearest Beautiful Number (hard version)",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1900,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1541C",
+      "name": "Going Home",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1800,
+      "tags": [
+        "brute force",
+        "implementation",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1498D",
+      "name": "Bananas in a Microwave",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 2100,
+      "tags": [
+        "dp",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1462F",
+      "name": "The Treasure of The Segments",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "binary search",
+        "data structures",
+        "sortings"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1398D",
+      "name": "Colored Rectangles",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1800,
+      "tags": [
+        "dp",
+        "greedy",
+        "sortings"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "4027",
       "name": "",

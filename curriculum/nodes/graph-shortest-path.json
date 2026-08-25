@@ -219,6 +219,90 @@
       ]
     },
     {
+      "platform": "Codeforces",
+      "number": "1615B",
+      "name": "And It's Non-Zero",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1500,
+      "tags": [
+        "bitmasks",
+        "brute force",
+        "math"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1511D",
+      "name": "Min Cost String",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1300,
+      "tags": [
+        "constructive algorithms",
+        "greedy"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1478B",
+      "name": "Neighbor Grid",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1200,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1433D",
+      "name": "Districts Connection",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1100,
+      "tags": [
+        "constructive algorithms",
+        "greedy",
+        "trees"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1372A",
+      "name": "Omkar and Completion",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 800,
+      "tags": [
+        "constructive algorithms",
+        "implementation"
+      ]
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1336A",
+      "name": "Linova and Kingdom",
+      "source": "Codeforces·精选",
+      "role": "练习",
+      "note": "",
+      "rating": 1600,
+      "tags": [
+        "dfs and similar",
+        "dp",
+        "greedy",
+        "sortings",
+        "trees"
+      ]
+    },
+    {
       "platform": "HDU",
       "number": "1385",
       "name": "",
