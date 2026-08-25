@@ -7,7 +7,12 @@ preview_urls = false
 
 # 使用 `npx wrangler secret put` 配置：
 # GITHUB_CLIENT_ID、GITHUB_CLIENT_SECRET、SESSION_SECRET（至少 32 字节随机值）
+# QQ_APP_ID、QQ_CLIENT_SECRET、QQ_BOT_SECRET（QQ 机器人 Webhook 用，见 workers/qq-bot.mjs）
 # 第三方 LLM 密钥也必须通过 Worker Secret 或 AI Gateway BYOK 配置，不得写入前端或本文件。
+
+[vars]
+QQ_DATA_URL = "https://train.xialiao.org"
+QQ_BOT_NAME = ""
 
 [[routes]]
 pattern = "algo-oauth.xialiao.org"

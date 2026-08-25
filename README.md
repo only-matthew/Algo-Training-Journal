@@ -311,14 +311,35 @@ AI 概括不需要把模型密钥写入前端或仓库；`workers/wrangler.toml`
 | `统计` / `近30天` | 近 30 天训练统计 |
 | `帮助` | 指令列表 |
 
-### 机器人配置（q.qq.com 控制台）
+### 推荐方案：Webhook + Cloudflare Worker（免费边缘计算，无需服务器）
 
-1. 创建机器人应用，记录 **AppID**、**ClientSecret**（应用详情 → 开发设置）。
-2. 获取**机器人令牌**（开发设置 → 机器人令牌，用于 WebSocket 鉴权）。
-3. 开启「群聊消息接收」事件订阅（`GROUP_AND_C2C_EVENT` 类事件，控制台 → 开发设置 → 消息接收）。
-4. 把机器人拉进目标 QQ 群。
+QQ 官方 Webhook 把事件 POST 到 HTTPS 端点，事件接收不需要常驻连接（官方已建议 WebSocket 链路逐步下线、迁移 Webhook）。本项目把 Webhook 处理接在现有 Cloudflare Worker（`algo-oauth`）上：
 
-### 运行监听（需常驻进程，pm2 / systemd / nohup 均可）
+- 回调地址：`https://algo-oauth.xialiao.org/api/qq-bot`（已在 q.qq.com 控制台 → 开发设置 → 消息接收 选择 **Webhook** 后填入）
+- 实现：[workers/qq-bot.mjs](workers/qq-bot.mjs)（ed25519 签名验证 + 回调地址验证 + 事件处理 + 被动回复）
+
+**部署 Worker 并配置密钥**（本机执行）：
+
+```bash
+cd workers
+npx wrangler deploy
+npx wrangler secret put QQ_APP_ID          # 机器人 AppID
+npx wrangler secret put QQ_CLIENT_SECRET   # 客户端密钥
+npx wrangler secret put QQ_BOT_SECRET      # Bot Secret（Webhook 签名用，控制台-开发设置）
+```
+
+可选变量（`wrangler.toml [vars]`）：`QQ_BOT_NAME`（机器人昵称，用于剔除群消息里的 @提及）、`QQ_DATA_URL`（默认 `https://train.xialiao.org`）。
+
+**控制台配置**：
+
+1. [q.qq.com](https://q.qq.com) 机器人应用 → 开发设置 → 记录 **AppID / ClientSecret / Bot Secret**。
+2. 消息接收方式选择 **Webhook**，回调地址填 `https://algo-oauth.xialiao.org/api/qq-bot`，等待平台回调验证通过（Worker 已实现 op 13 验证）。
+3. 订阅「群聊消息」事件（`GROUP_AND_C2C_EVENT`），把机器人拉进目标 QQ 群。
+4. 群里发 `@机器人 帮助` 验证。
+
+### 备选方案：本地常驻 WebSocket 监听（无需 Worker，但需常驻进程）
+
+若不想用 Worker，也可以在自己的电脑 / VPS 上用 pm2 / systemd 跑 WebSocket 监听（事件链路 24 年底前仍可用）：
 
 ```bash
 QQ_APP_ID=xxx QQ_CLIENT_SECRET=xxx QQ_BOT_TOKEN=xxx QQ_BOT_NAME=机器人昵称 \

@@ -1,5 +1,6 @@
 import { isDateString, LOG_LIMITS, metaFromProblems, validateLogInput } from "../lib/log-schema.mjs";
 import { toUtc8 } from "../lib/constants.mjs";
+import { handleQqBotWebhook } from "./qq-bot.mjs";
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
@@ -522,13 +523,18 @@ async function handleImport(request, user) {
 }
 
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors(request) });
 
     try {
       const authResponse = await handleAuth(request, env);
       if (authResponse) return authResponse;
+
+      // QQ 机器人 Webhook：服务端回调，ed25519 签名鉴权，不经过登录会话/Origin/CSRF
+      if (url.pathname === "/api/qq-bot" && request.method === "POST") {
+        return handleQqBotWebhook(request, env, ctx);
+      }
 
       const origin = request.headers.get("Origin");
       if (origin && !ORIGINS.has(origin)) return json(request, { error: "不允许的请求来源" }, 403);

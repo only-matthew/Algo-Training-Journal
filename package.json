@@ -11,12 +11,14 @@
     "backfill:updated-at": "node scripts/backfill-updated-at.js",
     "migrate:date-layout": "node scripts/migrate-date-layout.js",
     "test": "node --test",
-    "check": "node --check app.js && node --check lib/journal-api.js && node --check lib/log-schema.mjs && node --check lib/tag-catalog.mjs && node --check lib/render-safety.mjs && node --check lib/constants.mjs && node --check lib/problem-detail.mjs && node --check lib/roadmap.mjs && node --check lib/auth.mjs && node --check lib/theme.mjs && node --check lib/form.mjs && node --check lib/renderer.mjs && node --check lib/router.mjs && node --check lib/data.mjs && node --check workers/oauth.mjs && node --check scripts/generate-data.js && node --check scripts/curriculum.mjs && node --check scripts/convert-curriculum.js && node --check scripts/fetch-codeforces.js && node --check scripts/build-cf-curated.mjs && node --check scripts/migrate-date-layout.js && node --check scripts/migrate-logs.js && node --check bot/qq-bot.mjs && node --check bot/qq-message.mjs && node --check bot/listen.mjs && node --check bot/remind.mjs && node --test && npm run generate"
+    "check": "node --check app.js && node --check lib/journal-api.js && node --check lib/log-schema.mjs && node --check lib/tag-catalog.mjs && node --check lib/render-safety.mjs && node --check lib/constants.mjs && node --check lib/problem-detail.mjs && node --check lib/roadmap.mjs && node --check lib/auth.mjs && node --check lib/theme.mjs && node --check lib/form.mjs && node --check lib/renderer.mjs && node --check lib/router.mjs && node --check lib/data.mjs && node --check workers/oauth.mjs && node --check workers/qq-bot.mjs && node --check scripts/generate-data.js && node --check scripts/curriculum.mjs && node --check scripts/convert-curriculum.js && node --check scripts/fetch-codeforces.js && node --check scripts/build-cf-curated.mjs && node --check scripts/migrate-date-layout.js && node --check scripts/migrate-logs.js && node --check bot/qq-bot.mjs && node --check bot/qq-message.mjs && node --check bot/listen.mjs && node --check bot/remind.mjs && node --test && npm run generate"
   },
   "devDependencies": {
     "wrangler": "^4.114.0"
   },
   "dependencies": {
+    "@noble/ed25519": "^3.1.0",
+    "@noble/hashes": "^2.3.0",
     "cheerio": "^1.2.0",
     "marked": "^18.0.7"
   }
