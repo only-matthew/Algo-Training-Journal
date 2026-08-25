@@ -95,12 +95,12 @@ export async function qqAiReply(question, env) {
       apiKey: env.QQ_LLM_API_KEY,
       model: env.QQ_LLM_MODEL || "deepseek-chat",
       messages,
-      maxTokens: 600,
+      maxTokens: 1500,
       temperature: 0.6,
     });
   } else if (env.AI) {
     const result = await env.AI.run(env.QQ_LLM_MODEL || "@cf/qwen/qwen3-30b-a3b-fp8", {
-      max_tokens: 600,
+      max_tokens: 1500,
       temperature: 0.6,
       messages,
     });

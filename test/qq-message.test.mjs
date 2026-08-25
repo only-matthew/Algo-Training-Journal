@@ -81,3 +81,29 @@ test("buildReply AI 指令：有 aiReply 时调用、无时返回提示、异常
   assert.ok((await buildReply("AI 测试", fetchers, { aiReply: async () => { throw new Error("boom"); } })).includes("AI 出错了"));
   assert.equal(await buildReply("随便聊聊", fetchers, { aiReply }), null);
 });
+
+test("buildReply 点评：进度数据喂给 LLM，失败回退纯数据", async () => {
+  const fetchers = { overview: async () => overview, roadmap: async () => roadmap };
+
+  // 正常：数据 + AI 点评
+  const captured = [];
+  const reply = await buildReply("点评", fetchers, {
+    aiReply: async (question) => { captured.push(question); return "大家基础还不牢，先把基础算法阶段补齐。"; },
+  });
+  assert.ok(reply.includes("知识树进度"));
+  assert.ok(reply.includes("💬 大家基础还不牢"));
+  assert.ok(captured[0].includes("每名成员")); // 提示词里带了进度数据
+  assert.ok(captured[0].includes("排序"));
+
+  // AI 失败：回退纯数据 + 失败说明
+  const fallback = await buildReply("AI点评", fetchers, {
+    aiReply: async () => { throw new Error("timeout"); },
+  });
+  assert.ok(fallback.includes("知识树进度"));
+  assert.ok(fallback.includes("AI 点评失败：timeout"));
+
+  // 未配置 AI：直接返回纯数据
+  const noAi = await buildReply("解读", fetchers, {});
+  assert.ok(noAi.includes("知识树进度"));
+  assert.ok(!noAi.includes("💬"));
+});

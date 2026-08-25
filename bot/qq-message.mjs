@@ -53,7 +53,7 @@ export function buildStatsMessage(overview) {
   return `📊 近 30 天统计（${recent.start || ""} ~ ${recent.end || ""}）\n${allLine}${lines.join("\n")}`;
 }
 
-export const HELP_TEXT = `🤖 训练日志助手指令\n· 今日复习 / 复习：今日复习队列\n· 今日打卡 / 打卡：今日打卡情况\n· 统计 / 近30天：近 30 天统计\n· 知识树 / 进度：知识树当前进度与下一步\n· AI <问题>：AI 教练答疑（如：AI 图论怎么学）\n· 帮助：显示本列表`;
+export const HELP_TEXT = `🤖 训练日志助手指令\n· 今日复习 / 复习：今日复习队列\n· 今日打卡 / 打卡：今日打卡情况\n· 统计 / 近30天：近 30 天统计\n· 知识树 / 进度：知识树当前进度与下一步\n· 点评 / AI进度：用 AI 解读当前进度\n· AI <问题>：AI 教练答疑（如：AI 图论怎么学）\n· 帮助：显示本列表`;
 
 const COMMAND_RE = /^(今日复习|复习|复习队列|待复习|今日打卡|打卡|今天打卡|出勤|统计|近30天|近三十天|近况|汇总|知识树|进度|督促|树|节点|帮助|help|菜单|指令)/i;
 
@@ -134,6 +134,18 @@ export async function buildReply(content, fetchers, opts = {}) {
   }
   if (/^(知识树|进度|督促|树|节点)/.test(cmdText)) {
     return buildTreeProgressMessage(await fetchers.roadmap());
+  }
+  // 点评：把知识树进度数据喂给 LLM 解读；LLM 不可用/失败时回退纯数据
+  if (/^(点评|解读|分析进度|ai进度|ai点评)/i.test(cmdText)) {
+    const summary = buildTreeProgressMessage(await fetchers.roadmap());
+    if (!aiReply) return summary;
+    const prompt = `以下是队伍知识树进度数据（每名成员：当前阶段、已覆盖知识点数、下一步要覆盖的知识点；全队覆盖情况）：\n${summary}\n\n请用 3-5 句话点评整体进度：哪里做得不错、主要问题是什么、下一步大家该重点做什么。语气鼓励但直率，不要复述数据、不要用表格。`;
+    try {
+      const ai = await aiReply(prompt);
+      return ai && ai.trim() ? `${summary}\n\n💬 ${ai}` : summary;
+    } catch (error) {
+      return `${summary}\n\n（AI 点评失败：${error.message}）`;
+    }
   }
   if (/^(帮助|help|菜单|指令)/.test(cmdText)) {
     return HELP_TEXT;

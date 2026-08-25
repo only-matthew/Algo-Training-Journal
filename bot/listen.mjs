@@ -77,7 +77,7 @@ async function aiReply(question) {
       { role: "system", content: "你是算法竞赛教练（ICPC/NOI/蓝桥杯方向），熟悉 C++ 算法与数据结构。用简洁中文回答，必要时给简短代码片段；回答控制在 300 字以内；不确定时明确说明。" },
       { role: "user", content: `${question}\n/no_think` },
     ],
-    maxTokens: 600,
+    maxTokens: 1500,
     temperature: 0.6,
   });
   return content ? content.replace(/\s+/g, " ").trim().slice(0, 1500) : "AI 指令未配置：请设置 QQ_LLM_API_KEY。";
