@@ -40,130 +40,146 @@
     {
       "platform": "洛谷",
       "number": "P1219",
-      "name": "",
+      "name": "[USACO1.5] 八皇后 Checker Challenge",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2392",
-      "name": "",
+      "name": "kkksc03 考前临时抱佛脚",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1443",
-      "name": "",
+      "name": "马的遍历",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1135",
-      "name": "",
+      "name": "奇怪的电梯",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2895",
-      "name": "",
+      "name": "[USACO08FEB] Meteor Shower S",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1036",
-      "name": "",
+      "name": "[NOIP 2002 普及组] 选数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P2036",
-      "name": "",
+      "name": "[COCI 2008/2009 #2] PERKET",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1433",
-      "name": "",
+      "name": "吃奶酪",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1605",
-      "name": "",
+      "name": "迷宫",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1019",
-      "name": "",
+      "name": "[NOIP 2000 提高组] 单词接龙（疑似错题）",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1101",
-      "name": "",
+      "name": "单词方阵",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P2404",
-      "name": "",
+      "name": "自然数的拆分问题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1596",
-      "name": "",
+      "name": "[USACO10OCT] Lake Counting S",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1162",
-      "name": "",
+      "name": "填涂颜色",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1032",
-      "name": "",
+      "name": "[NOIP 2002 提高组] 字串变换（疑似错题）",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1825",
-      "name": "",
+      "name": "[USACO11OPEN] Corn Maze S",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "Codeforces",
@@ -274,42 +290,47 @@
     {
       "platform": "洛谷",
       "number": "P5194",
-      "name": "",
+      "name": "[USACO05DEC] Scales S",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P5440",
-      "name": "",
+      "name": "【XR-2】奇迹",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1378",
-      "name": "",
+      "name": "油滴扩展",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3956",
-      "name": "",
+      "name": "[NOIP 2017 普及组] 棋盘",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1126",
-      "name": "",
+      "name": "[CERC1996] 机器人搬重物",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "OpenJ_Bailian",
@@ -402,10 +423,11 @@
     {
       "platform": "洛谷",
       "number": "P1514",
-      "name": "",
+      "name": "[NOIP 2010 提高组] 引水入城",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "HDU",
@@ -442,18 +464,20 @@
     {
       "platform": "洛谷",
       "number": "P1506",
-      "name": "",
+      "name": "拯救 oibh 总部",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1649",
-      "name": "",
+      "name": "[USACO07OCT] Obstacle Course S",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "OpenJ_Bailian",

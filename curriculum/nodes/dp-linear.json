@@ -42,138 +42,155 @@
     {
       "platform": "洛谷",
       "number": "P1020",
-      "name": "",
+      "name": "[NOIP 1999 提高组] 导弹拦截",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2285",
-      "name": "",
+      "name": "[HNOI2004] 打鼹鼠",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1725",
-      "name": "",
+      "name": "琪露诺",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4933",
-      "name": "",
+      "name": "大师",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1874",
-      "name": "",
+      "name": "快速求和",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2758",
-      "name": "",
+      "name": "编辑距离",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1439",
-      "name": "",
+      "name": "两个排列的最长公共子序列",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2679",
-      "name": "",
+      "name": "[NOIP 2015 提高组] 子串",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1004",
-      "name": "",
+      "name": "[NOIP 2000 提高组] 方格取数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1091",
-      "name": "",
+      "name": "[NOIP 2004 提高组] 合唱队形",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1435",
-      "name": "",
+      "name": "[IOI 2000] 回文字串",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1854",
-      "name": "",
+      "name": "[IOI 1999] 花店橱窗布置",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1833",
-      "name": "",
+      "name": "樱花",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2340",
-      "name": "",
+      "name": "[USACO03FALL] Cow Exhibition G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1541",
-      "name": "",
+      "name": "[NOIP 2010 提高组] 乌龟棋",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4310",
-      "name": "",
+      "name": "绝世好题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3147",
-      "name": "",
+      "name": "[USACO16OPEN] 262144 P",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "Codeforces",
@@ -303,18 +320,20 @@
     {
       "platform": "洛谷",
       "number": "P1776",
-      "name": "",
+      "name": "宝物筛选",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2347",
-      "name": "",
+      "name": "[NOIP 1996 提高组] 砝码称重",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "HDU",
@@ -343,66 +362,74 @@
     {
       "platform": "洛谷",
       "number": "P1216",
-      "name": "",
+      "name": "[IOI 1994 / USACO1.5] 数字三角形 Number Triangles",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1095",
-      "name": "",
+      "name": "[NOIP 2007 普及组] 守望者的逃离",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1868",
-      "name": "",
+      "name": "饥饿的奶牛",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2501",
-      "name": "",
+      "name": "[HAOI2006] 数字序列",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3336",
-      "name": "",
+      "name": "[ZJOI2013] 话旧",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "洛谷",
       "number": "P3558",
-      "name": "",
+      "name": "[POI 2013] BAJ-Bytecomputer",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P4158",
-      "name": "",
+      "name": "[SCOI2009] 粉刷匠",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P5301",
-      "name": "",
+      "name": "[GXOI/GZOI2019] 宝牌一大堆",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "OpenJ_Bailian",
@@ -471,26 +498,29 @@
     {
       "platform": "洛谷",
       "number": "P2602",
-      "name": "",
+      "name": "[ZJOI2010] 数字计数",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2657",
-      "name": "",
+      "name": "[SCOI2009] windy 数",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P4124",
-      "name": "",
+      "name": "[CQOI2016] 手机号码",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     }
   ]
 }

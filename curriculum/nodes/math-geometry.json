@@ -247,42 +247,47 @@
     {
       "platform": "洛谷",
       "number": "P2287",
-      "name": "",
+      "name": "[HNOI2004] 最佳包裹",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3829",
-      "name": "",
+      "name": "[SHOI2012] 信用卡凸包",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P4557",
-      "name": "",
+      "name": "[JSOI2018] 战争",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P5403",
-      "name": "",
+      "name": "[CTS2019] 田野",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "洛谷",
       "number": "P3187",
-      "name": "",
+      "name": "[HNOI2007] 最小矩形覆盖",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "OpenJ_Bailian",
@@ -295,58 +300,65 @@
     {
       "platform": "洛谷",
       "number": "P4357",
-      "name": "",
+      "name": "[CQOI2016] K 远点对",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3256",
-      "name": "",
+      "name": "[JLOI2013] 赛车",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P2600",
-      "name": "",
+      "name": "[ZJOI2008] 瞭望塔",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P4196",
-      "name": "",
+      "name": "【模板】半平面交 / [CQOI2006] 凸多边形",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3297",
-      "name": "",
+      "name": "[SDOI2013] 逃考",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "洛谷",
       "number": "P4250",
-      "name": "",
+      "name": "[SCOI2015] 小凸想跑步",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "洛谷",
       "number": "P5328",
-      "name": "",
+      "name": "[ZJOI2019] 浙江省选",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "OpenJ_Bailian",
@@ -375,10 +387,11 @@
     {
       "platform": "洛谷",
       "number": "P2061",
-      "name": "",
+      "name": "[USACO07OPEN] City Horizon S",
       "source": "罗勇军·算法竞赛",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "UVA",
@@ -399,18 +412,20 @@
     {
       "platform": "洛谷",
       "number": "P2742",
-      "name": "",
+      "name": "【模板】二维凸包 / [USACO5.1] 圈奶牛Fencing the Cows",
       "source": "洛谷",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1452",
-      "name": "",
+      "name": "[USACO03FALL] Beauty Contest G",
       "source": "洛谷",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     }
   ]
 }

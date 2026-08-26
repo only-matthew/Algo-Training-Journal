@@ -42,154 +42,173 @@
     {
       "platform": "洛谷",
       "number": "P2513",
-      "name": "",
+      "name": "[HAOI2009] 逆序对数列",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "Codeforces",
       "number": "708E",
-      "name": "",
+      "name": "Student's Camp",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3800",
-      "name": "",
+      "name": "Power 收集",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
       "number": "833B",
-      "name": "",
+      "name": "The Bakery",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P5785",
-      "name": "",
+      "name": "[SDOI2012] 任务安排",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P3648",
-      "name": "",
+      "name": "[APIO2014] 序列分割",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P4027",
-      "name": "",
+      "name": "[NOI2007] 货币兑换",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "AtCoder",
       "number": "arc081_d",
-      "name": "",
+      "name": "[ARC081F] Flip and Rectangles",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P5464",
-      "name": "",
+      "name": "缩小社交圈",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P4099",
-      "name": "",
+      "name": "[HEOI2013] SAO",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3572",
-      "name": "",
+      "name": "[POI 2014] PTA-Little Bird",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2254",
-      "name": "",
+      "name": "[NOI2005] 瑰丽华尔兹",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P2569",
-      "name": "",
+      "name": "[SCOI2010] 股票交易",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1973",
-      "name": "",
+      "name": "[NOI2011] NOI 嘉年华",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P5504",
-      "name": "",
+      "name": "[JSOI2011] 柠檬",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P1912",
-      "name": "",
+      "name": "[NOI2009] 诗人小G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3195",
-      "name": "",
+      "name": "[HNOI2008] 玩具装箱",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P5468",
-      "name": "",
+      "name": "[NOI2019] 回家路线",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "AtCoder",
       "number": "arc066_d",
-      "name": "",
+      "name": "[ARC066F] Contest with Drinks Hard",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "Codeforces",
@@ -353,90 +372,101 @@
     {
       "platform": "洛谷",
       "number": "P3287",
-      "name": "",
+      "name": "[SCOI2014] 方伯伯的玉米田",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P2605",
-      "name": "",
+      "name": "[ZJOI2010] 基站选址",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P2627",
-      "name": "",
+      "name": "[USACO11OPEN] Mowing the Lawn G",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1776",
-      "name": "",
+      "name": "宝物筛选",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1725",
-      "name": "",
+      "name": "琪露诺",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3957",
-      "name": "",
+      "name": "[NOIP 2017 普及组] 跳房子",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3089",
-      "name": "",
+      "name": "[USACO13NOV] Pogo-Cow S",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3522",
-      "name": "",
+      "name": "[POI 2011] TEM-Temperature",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4544",
-      "name": "",
+      "name": "[USACO10NOV] Buying Feed G",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P5665",
-      "name": "",
+      "name": "[CSP-S 2019] 划分",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P4852",
-      "name": "",
+      "name": "yyf hates choukapai",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "OpenJ_Bailian",
@@ -505,50 +535,56 @@
     {
       "platform": "洛谷",
       "number": "P2900",
-      "name": "",
+      "name": "[USACO08MAR] Land Acquisition G",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P3628",
-      "name": "",
+      "name": "[APIO2010] 特别行动队",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P4360",
-      "name": "",
+      "name": "[CEOI 2004] 锯木厂选址",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P2305",
-      "name": "",
+      "name": "[NOI2014] 购票",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "洛谷",
       "number": "P4072",
-      "name": "",
+      "name": "[SDOI2016] 征途",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P1880",
-      "name": "",
+      "name": "[NOI1995] 石子合并",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     }
   ]
 }

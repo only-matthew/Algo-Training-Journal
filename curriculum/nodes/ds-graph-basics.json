@@ -48,82 +48,92 @@
     {
       "platform": "洛谷",
       "number": "P5318",
-      "name": "",
+      "name": "【深基18.例3】查找文献",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P3916",
-      "name": "",
+      "name": "图的遍历",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1113",
-      "name": "",
+      "name": "[USACO02FEB] 杂务",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P4017",
-      "name": "",
+      "name": "最大食物链计数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1807",
-      "name": "",
+      "name": "最长路",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1127",
-      "name": "",
+      "name": "词链",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2853",
-      "name": "",
+      "name": "[USACO06DEC] Cow Picnic S",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1363",
-      "name": "",
+      "name": "幻象迷宫",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1347",
-      "name": "",
+      "name": "[ECNA 2001] 排序",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1983",
-      "name": "",
+      "name": "[NOIP 2013 普及组] 车站分级",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
@@ -267,42 +277,47 @@
     {
       "platform": "洛谷",
       "number": "P1685",
-      "name": "",
+      "name": "游览",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3243",
-      "name": "",
+      "name": "[HNOI2015] 菜肴制作",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1038",
-      "name": "",
+      "name": "[NOIP 2003 提高组] 神经网络",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4934",
-      "name": "",
+      "name": "礼物",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P2597",
-      "name": "",
+      "name": "[ZJOI2012] 灾难",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "OpenJ_Bailian",

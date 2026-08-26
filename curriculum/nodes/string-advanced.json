@@ -206,10 +206,11 @@
     {
       "platform": "洛谷",
       "number": "P3805",
-      "name": "",
+      "name": "【模板】Manacher",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "HDU",
@@ -222,18 +223,20 @@
     {
       "platform": "洛谷",
       "number": "P1659",
-      "name": "",
+      "name": "[国家集训队] 拉拉队排练",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P4555",
-      "name": "",
+      "name": "[国家集训队] 最长双回文串",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "HDU",
@@ -246,34 +249,38 @@
     {
       "platform": "洛谷",
       "number": "P5496",
-      "name": "",
+      "name": "【模板】回文树 / 回文自动机（PAM）",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3649",
-      "name": "",
+      "name": "[APIO2014] 回文串",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P4287",
-      "name": "",
+      "name": "[SHOI2011] 双倍回文",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P4762",
-      "name": "",
+      "name": "[CERC2014] Virus synthesis",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "HDU",
@@ -326,90 +333,101 @@
     {
       "platform": "洛谷",
       "number": "P3808",
-      "name": "",
+      "name": "AC 自动机（简单版）",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P3796",
-      "name": "",
+      "name": "AC 自动机（简单版 II）",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P5357",
-      "name": "",
+      "name": "【模板】AC 自动机",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P2414",
-      "name": "",
+      "name": "[NOI2011] 阿狸的打字机",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3966",
-      "name": "",
+      "name": "[TJOI2013] 单词",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P3311",
-      "name": "",
+      "name": "[SDOI2014] 数数",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P4052",
-      "name": "",
+      "name": "[JSOI2007] 文本生成器",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P5599",
-      "name": "",
+      "name": "【XR-4】文本编辑器",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "洛谷",
       "number": "P3121",
-      "name": "",
+      "name": "[USACO15FEB] Censoring G",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P2444",
-      "name": "",
+      "name": "[POI 2000 R1] 病毒",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P3809",
-      "name": "",
+      "name": "【模板】后缀排序",
       "source": "洛谷",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     }
   ]
 }

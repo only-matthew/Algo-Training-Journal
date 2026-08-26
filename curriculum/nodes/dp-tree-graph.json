@@ -32,138 +32,155 @@
     {
       "platform": "洛谷",
       "number": "P1352",
-      "name": "",
+      "name": "没有上司的舞会",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2015",
-      "name": "",
+      "name": "二叉苹果树",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2014",
-      "name": "",
+      "name": "[CTSC1997] 选课",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1613",
-      "name": "",
+      "name": "跑路",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P6772",
-      "name": "",
+      "name": "[NOI2020] 美食家",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P4316",
-      "name": "",
+      "name": "绿豆蛙的归宿",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2656",
-      "name": "",
+      "name": "采蘑菇",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1040",
-      "name": "",
+      "name": "[NOIP 2003 提高组] 加分二叉树",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1122",
-      "name": "",
+      "name": "最大子树和",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2016",
-      "name": "",
+      "name": "[SEERC 2000] 战略游戏",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2585",
-      "name": "",
+      "name": "[ZJOI2006] 三色二叉树",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1273",
-      "name": "",
+      "name": "[CHCI 2002 Final Exam #2] 有线电视网",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2515",
-      "name": "",
+      "name": "[HAOI2010] 软件安装",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2986",
-      "name": "",
+      "name": "[USACO10MAR] Great Cow Gathering G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3953",
-      "name": "",
+      "name": "[NOIP 2017 提高组] 逛公园",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P7077",
-      "name": "",
+      "name": "[CSP-S 2020] 函数调用",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P7516",
-      "name": "",
+      "name": "[省选联考 2021 A/B 卷] 图函数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "Codeforces",
@@ -414,66 +431,74 @@
     {
       "platform": "洛谷",
       "number": "P4322",
-      "name": "",
+      "name": "[JSOI2016] 最佳团体",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3047",
-      "name": "",
+      "name": "[USACO12FEB] Nearby Cows G",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3698",
-      "name": "",
+      "name": "[CQOI2017] 小Q的棋盘",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P5658",
-      "name": "",
+      "name": "[CSP-S 2019] 括号树",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2607",
-      "name": "",
+      "name": "[ZJOI2008] 骑士",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3177",
-      "name": "",
+      "name": "[HAOI2015] 树上染色",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P4395",
-      "name": "",
+      "name": "[BalticOI 2003] Gem 气垫车 (Day 1)",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4516",
-      "name": "",
+      "name": "[JSOI2018] 潜入行动",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     }
   ]
 }

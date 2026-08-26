@@ -96,7 +96,7 @@ test("fetchLuoguProblems parses name, official difficulty and description from o
     name: "【模板】网络最大流",
     platform: "洛谷",
     problemNumber: "P3376",
-    difficulty: "省选/NOI-",
+    difficulty: "提高+/省选-",
     description: "给定网络，求最大流。\n\n数据范围较大。",
   });
   assert.ok(!problems[0].description.includes("[object Object]"), "description must not be [object Object]");
@@ -109,8 +109,8 @@ test("fetchLuoguProblems falls back to raw string content without breaking", asy
 });
 
 test("fetchLuoguProblems maps all official difficulty levels", async () => {
-  const expected = ["暂无评定", "入门", "普及-", "普及/提高-", "普及+/提高", "提高+/省选-", "省选/NOI-", "NOI/NOI+/CTSC"];
-  for (let difficulty = 0; difficulty <= 7; difficulty += 1) {
+  const expected = ["暂无评定", "入门", "普及-", "普及", "普及+/提高-", "提高", "提高+/省选-", "省选/NOI-", "NOI/NOI+/CTS"];
+  for (let difficulty = 0; difficulty <= 8; difficulty += 1) {
     const fetchImpl = async () => new Response(luoguPage({ pid: "P1001", name: "A+B Problem", difficulty }));
     const [problem] = await fetchLuoguProblems("P1001", { fetchImpl });
     assert.equal(problem.difficulty, expected[difficulty], `difficulty ${difficulty}`);
@@ -133,7 +133,7 @@ test("fetchLuoguProblems handles multiple numbers and falls back on failure", as
   const problems = await fetchLuoguProblems("p1001 P3376", { fetchImpl });
   assert.deepEqual(problems, [
     { name: "P1001", platform: "洛谷", problemNumber: "P1001", difficulty: "未标注", description: "" },
-    { name: "【模板】网络最大流", platform: "洛谷", problemNumber: "P3376", difficulty: "省选/NOI-", description: "" },
+    { name: "【模板】网络最大流", platform: "洛谷", problemNumber: "P3376", difficulty: "提高+/省选-", description: "" },
   ]);
 });
 

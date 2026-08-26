@@ -39,154 +39,173 @@
     {
       "platform": "洛谷",
       "number": "P4779",
-      "name": "",
+      "name": "【模板】单源最短路径（标准版）",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P4568",
-      "name": "",
+      "name": "[JLOI2011] 飞行路线",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3385",
-      "name": "",
+      "name": "【模板】负环",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P5960",
-      "name": "",
+      "name": "【模板】差分约束",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2865",
-      "name": "",
+      "name": "[USACO06NOV] Roadblocks G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2910",
-      "name": "",
+      "name": "[USACO08OPEN] Clear And Present Danger S",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "B3611",
-      "name": "",
+      "name": "【模板】传递闭包",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1144",
-      "name": "",
+      "name": "最短路计数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1875",
-      "name": "",
+      "name": "佳佳的魔法药水【数据有误】",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1462",
-      "name": "",
+      "name": "通往奥格瑞玛的道路",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1073",
-      "name": "",
+      "name": "[NOIP 2009 提高组] 最优贸易",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1993",
-      "name": "",
+      "name": "小 K 的农场",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3275",
-      "name": "",
+      "name": "[SCOI2011] 糖果",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P6464",
-      "name": "",
+      "name": "[传智杯 #2 决赛] 传送门",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3403",
-      "name": "",
+      "name": "跳楼机",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1119",
-      "name": "",
+      "name": "灾后重建",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1037",
-      "name": "",
+      "name": "[NOIP 2002 普及组] 产生数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2419",
-      "name": "",
+      "name": "[USACO08JAN] Cow Contest S",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2047",
-      "name": "",
+      "name": "[NOI2007] 社交网络",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
@@ -321,10 +340,11 @@
     {
       "platform": "洛谷",
       "number": "P1613",
-      "name": "",
+      "name": "跑路",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "HDU",
@@ -353,90 +373,101 @@
     {
       "platform": "洛谷",
       "number": "P2868",
-      "name": "",
+      "name": "[USACO07DEC] Sightseeing Cows G",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1730",
-      "name": "",
+      "name": "最小密度路径",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3371",
-      "name": "",
+      "name": "【模板】单源最短路径（弱化版）",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P5905",
-      "name": "",
+      "name": "【模板】全源最短路（Johnson）",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1522",
-      "name": "",
+      "name": "[USACO2.4] 牛的旅行 Cow Tours",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1266",
-      "name": "",
+      "name": "[BalticOI 2002] 速度限制",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3238",
-      "name": "",
+      "name": "[HNOI2014] 道路堵塞",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "洛谷",
       "number": "P5304",
-      "name": "",
+      "name": "[GXOI/GZOI2019] 旅行者",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2294",
-      "name": "",
+      "name": "[HNOI2005] 狡猾的商人",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4926",
-      "name": "",
+      "name": "[1007] 倍杀测量者",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P5590",
-      "name": "",
+      "name": "赛车游戏",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "HDU",
@@ -505,10 +536,11 @@
     {
       "platform": "洛谷",
       "number": "P2881",
-      "name": "",
+      "name": "[USACO07MAR]      Ranking      the      Cows      G",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     }
   ]
 }

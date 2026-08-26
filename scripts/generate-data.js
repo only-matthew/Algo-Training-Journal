@@ -758,6 +758,7 @@ async function generateRoadmapData(logs) {
         role: problem.role || "",
         note: problem.note || "",
         ...(problem.rating != null ? { rating: problem.rating } : {}),
+        ...(problem.difficulty ? { difficulty: problem.difficulty } : {}),
         ...(problem.tags && problem.tags.length ? { tags: problem.tags } : {}),
         url: originalProblemUrl ? originalProblemUrl(problem.platform, problem.number, problem.name) : "",
         doneBy,

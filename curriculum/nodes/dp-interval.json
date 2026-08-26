@@ -33,98 +33,110 @@
     {
       "platform": "洛谷",
       "number": "P1435",
-      "name": "",
+      "name": "[IOI 2000] 回文字串",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1775",
-      "name": "",
+      "name": "石子合并（弱化版）",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "Codeforces",
       "number": "607B",
-      "name": "",
+      "name": "Zuma",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3205",
-      "name": "",
+      "name": "[HNOI2010] 合唱队",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1880",
-      "name": "",
+      "name": "[NOI1995] 石子合并",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1140",
-      "name": "",
+      "name": "[ICPC 2001 Taejon R] 相似基因",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P4170",
-      "name": "",
+      "name": "[CQOI2007] 涂色",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P4290",
-      "name": "",
+      "name": "[HAOI2008] 玩具取名",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1063",
-      "name": "",
+      "name": "[NOIP 2006 提高组] 能量项链",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1070",
-      "name": "",
+      "name": "[NOIP 2009 普及组] 道路游戏",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P4342",
-      "name": "",
+      "name": "[IOI 1998] Polygon",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1220",
-      "name": "",
+      "name": "关路灯",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
@@ -330,34 +342,38 @@
     {
       "platform": "洛谷",
       "number": "P3146",
-      "name": "",
+      "name": "[USACO16OPEN] 248 G",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1005",
-      "name": "",
+      "name": "[NOIP 2007 提高组] 矩阵取数游戏",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4302",
-      "name": "",
+      "name": "[SCOI2003] 字符串折叠",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2466",
-      "name": "",
+      "name": "[SDOI2008] Sue 的小球",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     }
   ]
 }

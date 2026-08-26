@@ -31,122 +31,137 @@
     {
       "platform": "洛谷",
       "number": "P1255",
-      "name": "",
+      "name": "数楼梯",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1002",
-      "name": "",
+      "name": "[NOIP 2002 普及组] 过河卒",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1044",
-      "name": "",
+      "name": "[NOIP 2003 普及组] 栈",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1028",
-      "name": "",
+      "name": "[NOIP 2001 普及组] 数的计算",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1464",
-      "name": "",
+      "name": "[PacNW 1999] Function",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1928",
-      "name": "",
+      "name": "外星密码",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2437",
-      "name": "",
+      "name": "蜜蜂路线",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1164",
-      "name": "",
+      "name": "小 A 点菜",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1036",
-      "name": "",
+      "name": "[NOIP 2002 普及组] 选数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1990",
-      "name": "",
+      "name": "覆盖墙壁",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P3612",
-      "name": "",
+      "name": "[USACO17JAN] Secret Cow Code S",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1259",
-      "name": "",
+      "name": "黑白棋子的移动",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1010",
-      "name": "",
+      "name": "[NOIP 1998 普及组] 幂次方",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1228",
-      "name": "",
+      "name": "地毯填补问题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1498",
-      "name": "",
+      "name": "南蛮图腾",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "Codeforces",

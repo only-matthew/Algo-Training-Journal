@@ -39,42 +39,47 @@
     {
       "platform": "洛谷",
       "number": "P2197",
-      "name": "",
+      "name": "【模板】Nim 游戏",
       "source": "洛谷",
       "role": "练习",
-      "note": "Nim 游戏模板"
+      "note": "Nim 游戏模板",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1247",
-      "name": "",
+      "name": "取火柴游戏",
       "source": "洛谷",
       "role": "练习",
-      "note": "取火柴游戏"
+      "note": "取火柴游戏",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2252",
-      "name": "",
+      "name": "【模板】威佐夫博弈 / [SHOI2002] 取石子游戏",
       "source": "洛谷",
       "role": "练习",
-      "note": "威佐夫博弈"
+      "note": "威佐夫博弈",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P1290",
-      "name": "",
+      "name": "欧几里德的游戏",
       "source": "洛谷",
       "role": "练习",
-      "note": "欧几里得的游戏"
+      "note": "欧几里得的游戏",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4018",
-      "name": "",
+      "name": "Roy&October之取石子",
       "source": "洛谷",
       "role": "练习",
-      "note": "巴什博弈变式"
+      "note": "巴什博弈变式",
+      "difficulty": "普及"
     },
     {
       "platform": "Codeforces",

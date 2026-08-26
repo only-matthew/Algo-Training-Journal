@@ -36,146 +36,164 @@
     {
       "platform": "洛谷",
       "number": "P8218",
-      "name": "",
+      "name": "【深进1.例1】求区间和",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1719",
-      "name": "",
+      "name": "最大加权矩形",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1314",
-      "name": "",
+      "name": "[NOIP 2011 提高组] 聪明的质监员",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2367",
-      "name": "",
+      "name": "语文成绩",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P3397",
-      "name": "",
+      "name": "地毯",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1496",
-      "name": "",
+      "name": "火烧赤壁",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1955",
-      "name": "",
+      "name": "[NOI2015] 程序自动分析",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1884",
-      "name": "",
+      "name": "[USACO12FEB] Overplanting S",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2004",
-      "name": "",
+      "name": "领地选择",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P3017",
-      "name": "",
+      "name": "[USACO11MAR] Brownie Slicing G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3406",
-      "name": "",
+      "name": "海底高铁",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1083",
-      "name": "",
+      "name": "[NOIP 2012 提高组] 借教室",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2882",
-      "name": "",
+      "name": "[USACO07MAR] Face The Right Way G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4552",
-      "name": "",
+      "name": "[Poetize6] IncDec Sequence",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3029",
-      "name": "",
+      "name": "[USACO11NOV] Cow Lineup S",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1904",
-      "name": "",
+      "name": "天际线",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P4375",
-      "name": "",
+      "name": "[USACO18OPEN] Out of Sorts G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P5937",
-      "name": "",
+      "name": "[CEOI 1999] Parity Game",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
@@ -348,10 +366,11 @@
     {
       "platform": "洛谷",
       "number": "P2879",
-      "name": "",
+      "name": "[USACO07JAN] Tallest Cow S",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "HDU",
@@ -372,26 +391,29 @@
     {
       "platform": "洛谷",
       "number": "P3948",
-      "name": "",
+      "name": "数据结构",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P3131",
-      "name": "",
+      "name": "[USACO16JAN] Subsequences Summing to Sevens S",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P2280",
-      "name": "",
+      "name": "[HNOI2003] 激光炸弹",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "HDU",
@@ -444,26 +466,29 @@
     {
       "platform": "洛谷",
       "number": "P1052",
-      "name": "",
+      "name": "[NOIP 2005 提高组] 过河",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2097",
-      "name": "",
+      "name": "资料分发 1",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P2652",
-      "name": "",
+      "name": "同花顺",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     }
   ]
 }

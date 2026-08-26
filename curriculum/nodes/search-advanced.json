@@ -48,122 +48,137 @@
     {
       "platform": "洛谷",
       "number": "P1036",
-      "name": "",
+      "name": "[NOIP 2002 普及组] 选数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1433",
-      "name": "",
+      "name": "吃奶酪",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1120",
-      "name": "",
+      "name": "[CERC 1995] 小木棍",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1763",
-      "name": "",
+      "name": "埃及分数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "Codeforces",
       "number": "525E",
-      "name": "",
+      "name": "Anya and Cubes",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1379",
-      "name": "",
+      "name": "八数码难题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P5507",
-      "name": "",
+      "name": "机关",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2324",
-      "name": "",
+      "name": "[SCOI2005] 骑士精神",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1074",
-      "name": "",
+      "name": "[NOIP 2009 提高组] 靶形数独",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1312",
-      "name": "",
+      "name": "[NOIP 2011 提高组] Mayan 游戏",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3959",
-      "name": "",
+      "name": "[NOIP 2017 提高组] 宝藏",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P2960",
-      "name": "",
+      "name": "[USACO09OCT] Invasion of the Milkweed G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "Codeforces",
       "number": "912E",
-      "name": "",
+      "name": "Prime Gift",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P4799",
-      "name": "",
+      "name": "[CEOI 2015] 世界冰球锦标赛 (Day2)",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1078",
-      "name": "",
+      "name": "[NOIP 2012 普及组] 文化之旅（疑似错题）",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
@@ -368,10 +383,11 @@
     {
       "platform": "洛谷",
       "number": "P1118",
-      "name": "",
+      "name": "[USACO06FEB] Backward Digit Sums G/S",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "HDU",
@@ -496,10 +512,11 @@
     {
       "platform": "洛谷",
       "number": "P1032",
-      "name": "",
+      "name": "[NOIP 2002 提高组] 字串变换（疑似错题）",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "OpenJ_Bailian",
@@ -512,18 +529,20 @@
     {
       "platform": "洛谷",
       "number": "P3067",
-      "name": "",
+      "name": "[USACO12OPEN] Balanced Cow Subsets G",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P5195",
-      "name": "",
+      "name": "[USACO05DEC] Knights of Ni S",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "OpenJ_Bailian",

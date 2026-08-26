@@ -56,98 +56,110 @@
     {
       "platform": "洛谷",
       "number": "P1962",
-      "name": "",
+      "name": "斐波那契数列",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2455",
-      "name": "",
+      "name": "[SDOI2006] 线性方程组",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2520",
-      "name": "",
+      "name": "[HAOI2011] 向量",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1349",
-      "name": "",
+      "name": "广义斐波那契数列",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1939",
-      "name": "",
+      "name": "矩阵加速（数列）",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2447",
-      "name": "",
+      "name": "[SDOI2010] 外星千足虫",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P7112",
-      "name": "",
+      "name": "【模板】行列式求值",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3216",
-      "name": "",
+      "name": "[HNOI2011] 数学作业",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P4910",
-      "name": "",
+      "name": "帕秋莉的手环",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2151",
-      "name": "",
+      "name": "[SDOI2009] HH 去散步",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P4035",
-      "name": "",
+      "name": "[JSOI2008] 球形空间产生器",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2973",
-      "name": "",
+      "name": "[USACO10HOL] Driving Out the Piggies G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "Codeforces",
@@ -334,26 +346,29 @@
     {
       "platform": "洛谷",
       "number": "P1306",
-      "name": "",
+      "name": "斐波那契公约数",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2044",
-      "name": "",
+      "name": "[NOI2012] 随机数生成器",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P5175",
-      "name": "",
+      "name": "数列",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "HDU",
@@ -414,74 +429,83 @@
     {
       "platform": "洛谷",
       "number": "P3390",
-      "name": "",
+      "name": "【模板】矩阵快速幂",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4783",
-      "name": "",
+      "name": "【模板】矩阵求逆",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P4000",
-      "name": "",
+      "name": "斐波那契数列",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3758",
-      "name": "",
+      "name": "[TJOI2017] 可乐",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4967",
-      "name": "",
+      "name": "黑暗打击",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P5343",
-      "name": "",
+      "name": "【XR-1】分块",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P5337",
-      "name": "",
+      "name": "[TJOI2019] 甲苯先生的字符串",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P5303",
-      "name": "",
+      "name": "[GXOI/GZOI2019] 逼死强迫症",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P3389",
-      "name": "",
+      "name": "【模板】高斯消元法",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "OpenJ_Bailian",
@@ -502,10 +526,11 @@
     {
       "platform": "洛谷",
       "number": "P4387",
-      "name": "",
+      "name": "【深基15.习9】验证栈序列",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     }
   ]
 }

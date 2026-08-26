@@ -37,42 +37,47 @@
     {
       "platform": "洛谷",
       "number": "P1972",
-      "name": "",
+      "name": "[SDOI2009] HH 的项链",
       "source": "洛谷",
       "role": "练习",
-      "note": "HH的项链（莫队模板）"
+      "note": "HH的项链（莫队模板）",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1494",
-      "name": "",
+      "name": "[国家集训队] 小 Z 的袜子",
       "source": "洛谷",
       "role": "练习",
-      "note": "小Z的袜子"
+      "note": "小Z的袜子",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2709",
-      "name": "",
+      "name": "【模板】莫队 / 小 B 的询问",
       "source": "洛谷",
       "role": "练习",
-      "note": "小B的询问"
+      "note": "小B的询问",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1903",
-      "name": "",
+      "name": "【模板】带修莫队 / [国家集训队] 数颜色 / 维护队列",
       "source": "洛谷",
       "role": "练习",
-      "note": "数颜色（带修莫队）"
+      "note": "数颜色（带修莫队）",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P2801",
-      "name": "",
+      "name": "教主的魔法",
       "source": "洛谷",
       "role": "练习",
-      "note": "教主的魔法（分块）"
+      "note": "教主的魔法（分块）",
+      "difficulty": "提高"
     },
     {
       "platform": "Codeforces",

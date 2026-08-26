@@ -42,146 +42,164 @@
     {
       "platform": "洛谷",
       "number": "P1177",
-      "name": "",
+      "name": "【模板】排序",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1908",
-      "name": "",
+      "name": "逆序对",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1966",
-      "name": "",
+      "name": "[NOIP 2013 提高组] 火柴排队",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1226",
-      "name": "",
+      "name": "【模板】快速幂",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1045",
-      "name": "",
+      "name": "[NOIP 2003 普及组] 麦森数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1115",
-      "name": "",
+      "name": "最大子段和",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P2880",
-      "name": "",
+      "name": "[USACO07JAN] Balanced Lineup G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P7167",
-      "name": "",
+      "name": "[eJOI 2020] Fountain (Day1)",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2415",
-      "name": "",
+      "name": "集合求和",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1257",
-      "name": "",
+      "name": "平面上的最接近点对",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1228",
-      "name": "",
+      "name": "地毯填补问题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2345",
-      "name": "",
+      "name": "[USACO04OPEN] MooFest G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P3509",
-      "name": "",
+      "name": "[POI 2010] ZAB-Frog",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3517",
-      "name": "",
+      "name": "[POI 2011] WYK-Plot",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "NOI/NOI+/CTS"
     },
     {
       "platform": "洛谷",
       "number": "P4155",
-      "name": "",
+      "name": "[SCOI2015] 国旗计划",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1816",
-      "name": "",
+      "name": "忠诚",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P6648",
-      "name": "",
+      "name": "[CCC 2019] Triangle: The Data Structure",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P7562",
-      "name": "",
+      "name": "[JOISC 2021] イベント巡り 2 (Event Hopping 2) (Day4)",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "Codeforces",
@@ -322,66 +340,74 @@
     {
       "platform": "洛谷",
       "number": "P3865",
-      "name": "",
+      "name": "【模板】ST 表 & RMQ 问题",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P5465",
-      "name": "",
+      "name": "[PKUSC2018] 星际穿越",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3295",
-      "name": "",
+      "name": "[SCOI2016] 萌萌哒",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P2251",
-      "name": "",
+      "name": "质量检测",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1198",
-      "name": "",
+      "name": "[JSOI2008] 最大数",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P5012",
-      "name": "",
+      "name": "水の数列",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P5344",
-      "name": "",
+      "name": "【XR-1】逛森林",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P2048",
-      "name": "",
+      "name": "[NOI2010] 超级钢琴",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "HDU",
@@ -402,34 +428,38 @@
     {
       "platform": "洛谷",
       "number": "P1593",
-      "name": "",
+      "name": "因子和",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1923",
-      "name": "",
+      "name": "【深基9.例4】求第 k 小的数",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1498",
-      "name": "",
+      "name": "南蛮图腾",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1010",
-      "name": "",
+      "name": "[NOIP 1998 普及组] 幂次方",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "OpenJ_Bailian",
@@ -458,42 +488,47 @@
     {
       "platform": "洛谷",
       "number": "P3810",
-      "name": "",
+      "name": "【模板】三维偏序 / 陌上花开",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P3157",
-      "name": "",
+      "name": "[CQOI2011] 动态逆序对",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P2487",
-      "name": "",
+      "name": "[SDOI2011] 拦截导弹",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P4690",
-      "name": "",
+      "name": "[Ynoi Easy Round 2016] 镜中的昆虫",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P3206",
-      "name": "",
+      "name": "[HNOI2010] 城市建设",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "UVA",
@@ -546,10 +581,11 @@
     {
       "platform": "UVA",
       "number": "11572",
-      "name": "",
+      "name": "唯一的雪花 Unique Snowflakes",
       "source": "刘汝佳·算法竞赛入门经典",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "UVA",

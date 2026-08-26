@@ -405,6 +405,24 @@ function loadCfSupplement() {
   }
 }
 
+// 读取 curriculum/luogu-problem-meta.json（洛谷官方题名/难度，scripts/fetch-luogu-meta.mjs 生成）。
+// 返回 Map<"平台|题号", { name, difficulty }>；文件缺失或解析失败时返回空 Map（不影响生成）。
+function loadLuoguMeta() {
+  const metaFile = path.join(ROOT, "curriculum", "luogu-problem-meta.json");
+  if (!fs.existsSync(metaFile)) return new Map();
+  try {
+    const raw = JSON.parse(fs.readFileSync(metaFile, "utf8"));
+    const map = new Map();
+    for (const p of raw.problems || []) {
+      if (p && p.platform && p.number) map.set(`${p.platform}|${p.number}`, p);
+    }
+    return map;
+  } catch (error) {
+    console.warn(`[warn] luogu-problem-meta.json 解析失败，跳过富化：${error.message}`);
+    return new Map();
+  }
+}
+
 // 解析 OI 知识树 tree.txt（## 一级 → ### 二级 → #### 主题 → #####/###### 细节），
 // 返回 { 主题标题 → 叶子细节数组 }（只保留有映射的主题）
 function parseOiTree() {
@@ -1284,6 +1302,7 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails, syllabusMe
   const nodes = [];
   const problemsByNode = new Map();
   const cfSupplement = loadCfSupplement();
+  const luoguMeta = loadLuoguMeta();
 
   // 汇总某节点的 NOI/蓝桥杯算法标签（合并去重、排序）与级别/组别（原有标注 ∪ 标签推导）
   function nodeSyllabus(nodeId) {
@@ -1303,19 +1322,27 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails, syllabusMe
   for (const meta of NODE_META) {
     const problems = [];
     const byKey = new Map();
-    // push 支持富化：同一道题已存在时，补充 name/rating/tags（保留先来的 source/role）
+    // push 支持富化：同一道题已存在时，补充 name/rating/tags/difficulty（保留先来的 source/role）。
+    // 洛谷题单富化：从 luogu-problem-meta.json 按「平台|题号」补齐官方题名与难度（任意来源的洛谷题都生效）。
     const push = (platform, number, source, role, note, extra = {}) => {
+      const metaEntry = luoguMeta.get(platform + "|" + number);
+      if (metaEntry) {
+        if (!extra.name && metaEntry.name) extra = { ...extra, name: metaEntry.name };
+        if (extra.difficulty == null && metaEntry.difficulty) extra = { ...extra, difficulty: metaEntry.difficulty };
+      }
       const key = platform + "|" + number;
       const existing = byKey.get(key);
       if (existing) {
         if (!existing.name && extra.name) existing.name = extra.name;
         if (existing.rating == null && extra.rating != null) existing.rating = extra.rating;
         if ((!existing.tags || !existing.tags.length) && extra.tags && extra.tags.length) existing.tags = extra.tags;
+        if (existing.difficulty == null && extra.difficulty) existing.difficulty = extra.difficulty;
         return;
       }
       const problem = { platform, number, name: extra.name || "", source, role, note: note || "" };
       if (extra.rating != null) problem.rating = extra.rating;
       if (extra.tags && extra.tags.length) problem.tags = extra.tags;
+      if (extra.difficulty) problem.difficulty = extra.difficulty;
       byKey.set(key, problem);
       problems.push(problem);
     };
@@ -1406,17 +1433,24 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails, syllabusMe
     const problems = [];
     const byKey = new Map();
     const push = (platform, number, source, role, note, extra = {}) => {
+      const metaEntry = luoguMeta.get(platform + "|" + number);
+      if (metaEntry) {
+        if (!extra.name && metaEntry.name) extra = { ...extra, name: metaEntry.name };
+        if (extra.difficulty == null && metaEntry.difficulty) extra = { ...extra, difficulty: metaEntry.difficulty };
+      }
       const key = platform + "|" + number;
       const existing = byKey.get(key);
       if (existing) {
         if (!existing.name && extra.name) existing.name = extra.name;
         if (existing.rating == null && extra.rating != null) existing.rating = extra.rating;
         if ((!existing.tags || !existing.tags.length) && extra.tags && extra.tags.length) existing.tags = extra.tags;
+        if (existing.difficulty == null && extra.difficulty) existing.difficulty = extra.difficulty;
         return;
       }
       const problem = { platform, number, name: extra.name || "", source, role, note: note || "" };
       if (extra.rating != null) problem.rating = extra.rating;
       if (extra.tags && extra.tags.length) problem.tags = extra.tags;
+      if (extra.difficulty) problem.difficulty = extra.difficulty;
       byKey.set(key, problem);
       problems.push(problem);
     };

@@ -1,0 +1,4723 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-08-26T08:54:23.390Z",
+  "note": "洛谷官方题名与难度。难度为官方《题目难度体系》当前 8 级：0 暂无评定 / 1 入门 / 2 普及- / 3 普及 / 4 普及+/提高- / 5 提高 / 6 提高+/省选- / 7 省选/NOI- / 8 NOI/NOI+/CTS",
+  "problems": [
+    {
+      "platform": "洛谷",
+      "number": "B3611",
+      "name": "【模板】传递闭包",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1002",
+      "name": "[NOIP 2002 普及组] 过河卒",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1004",
+      "name": "[NOIP 2000 提高组] 方格取数",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1005",
+      "name": "[NOIP 2007 提高组] 矩阵取数游戏",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1009",
+      "name": "[NOIP 1998 普及组] 阶乘之和",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1010",
+      "name": "[NOIP 1998 普及组] 幂次方",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1012",
+      "name": "[NOIP 1998 提高组] 拼数",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1017",
+      "name": "[NOIP 2000 提高组] 进制转换",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1019",
+      "name": "[NOIP 2000 提高组] 单词接龙（疑似错题）",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1020",
+      "name": "[NOIP 1999 提高组] 导弹拦截",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1024",
+      "name": "[NOIP 2001 提高组] 一元三次方程求解",
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1028",
+      "name": "[NOIP 2001 普及组] 数的计算",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1029",
+      "name": "[NOIP 2001 普及组] 最大公约数和最小公倍数问题",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1030",
+      "name": "[NOIP 2001 普及组] 求先序排列",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1032",
+      "name": "[NOIP 2002 提高组] 字串变换（疑似错题）",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1036",
+      "name": "[NOIP 2002 普及组] 选数",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1037",
+      "name": "[NOIP 2002 普及组] 产生数",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1038",
+      "name": "[NOIP 2003 提高组] 神经网络",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1040",
+      "name": "[NOIP 2003 提高组] 加分二叉树",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1042",
+      "name": "[NOIP 2003 普及组] 乒乓球",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1044",
+      "name": "[NOIP 2003 普及组] 栈",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1045",
+      "name": "[NOIP 2003 普及组] 麦森数",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1048",
+      "name": "[NOIP 2005 普及组] 采药",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1049",
+      "name": "[NOIP 2001 普及组] 装箱问题",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1052",
+      "name": "[NOIP 2005 提高组] 过河",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1059",
+      "name": "[NOIP 2006 普及组] 明明的随机数",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1063",
+      "name": "[NOIP 2006 提高组] 能量项链",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1064",
+      "name": "[NOIP 2006 提高组] 金明的预算方案",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1065",
+      "name": "[NOIP 2006 提高组] 作业调度方案",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1067",
+      "name": "[NOIP 2009 普及组] 多项式输出",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1068",
+      "name": "[NOIP 2009 普及组] 分数线划定",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1069",
+      "name": "[NOIP 2009 普及组] 细胞分裂",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1070",
+      "name": "[NOIP 2009 普及组] 道路游戏",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1072",
+      "name": "[NOIP 2009 提高组] Hankson 的趣味题",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1073",
+      "name": "[NOIP 2009 提高组] 最优贸易",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1074",
+      "name": "[NOIP 2009 提高组] 靶形数独",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1077",
+      "name": "[NOIP 2012 普及组] 摆花",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1078",
+      "name": "[NOIP 2012 普及组] 文化之旅（疑似错题）",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1080",
+      "name": "[NOIP 2012 提高组] 国王游戏",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1082",
+      "name": "[NOIP 2012 提高组] 同余方程",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1083",
+      "name": "[NOIP 2012 提高组] 借教室",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1087",
+      "name": "[NOIP 2004 普及组] FBI 树",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1088",
+      "name": "[NOIP 2004 普及组] 火星人",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1090",
+      "name": "[NOIP 2004 提高组] 合并果子",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1091",
+      "name": "[NOIP 2004 提高组] 合唱队形",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1093",
+      "name": "[NOIP 2007 普及组] 奖学金",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1094",
+      "name": "[NOIP 2007 普及组] 纪念品分组",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1095",
+      "name": "[NOIP 2007 普及组] 守望者的逃离",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1098",
+      "name": "[NOIP 2007 提高组] 字符串的展开",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1099",
+      "name": "[NOIP 2007 提高组] 树网的核",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1100",
+      "name": "高低位交换",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1101",
+      "name": "单词方阵",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1102",
+      "name": "A-B 数对",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1104",
+      "name": "生日",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1106",
+      "name": "删数问题",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1111",
+      "name": "修复公路",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1113",
+      "name": "[USACO02FEB] 杂务",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1115",
+      "name": "最大子段和",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1116",
+      "name": "车厢重组",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1118",
+      "name": "[USACO06FEB] Backward Digit Sums G/S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1119",
+      "name": "灾后重建",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1120",
+      "name": "[CERC 1995] 小木棍",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1122",
+      "name": "最大子树和",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1126",
+      "name": "[CERC1996] 机器人搬重物",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1127",
+      "name": "词链",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1129",
+      "name": "[ZJOI2007] 矩阵游戏",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1135",
+      "name": "奇怪的电梯",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1140",
+      "name": "[ICPC 2001 Taejon R] 相似基因",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1143",
+      "name": "进制转换",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1144",
+      "name": "最短路计数",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1149",
+      "name": "[NOIP 2008 提高组] 火柴棒等式",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1152",
+      "name": "欢乐的跳",
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1157",
+      "name": "组合的输出",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1160",
+      "name": "队列安排",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1162",
+      "name": "填涂颜色",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1163",
+      "name": "银行贷款",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1164",
+      "name": "小 A 点菜",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1168",
+      "name": "中位数",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1175",
+      "name": "表达式的转换",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1177",
+      "name": "【模板】排序",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1182",
+      "name": "数列分段 Section II",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1185",
+      "name": "绘制二叉树",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1194",
+      "name": "买礼物",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1195",
+      "name": "口袋的天空",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1196",
+      "name": "[NOI2002] 银河英雄传说",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1197",
+      "name": "[JSOI2008] 星球大战",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1198",
+      "name": "[JSOI2008] 最大数",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1199",
+      "name": "[NOIP 2010 普及组] 三国游戏",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1208",
+      "name": "[USACO1.3] 混合牛奶 Mixing Milk",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1216",
+      "name": "[IOI 1994 / USACO1.5] 数字三角形 Number Triangles",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1217",
+      "name": "[USACO1.5] 回文质数 Prime Palindromes",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1219",
+      "name": "[USACO1.5] 八皇后 Checker Challenge",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1220",
+      "name": "关路灯",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1223",
+      "name": "排队接水",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1226",
+      "name": "【模板】快速幂",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1228",
+      "name": "地毯填补问题",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1229",
+      "name": "遍历问题",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1241",
+      "name": "括号序列",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1246",
+      "name": "[ECNA 1995] 编码",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1247",
+      "name": "取火柴游戏",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1249",
+      "name": "最大乘积",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1253",
+      "name": "扶苏的问题",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1255",
+      "name": "数楼梯",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1257",
+      "name": "平面上的最接近点对",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1259",
+      "name": "黑白棋子的移动",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1262",
+      "name": "[POI 1996 R3] 间谍网络",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1266",
+      "name": "[BalticOI 2002] 速度限制",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1271",
+      "name": "【深基9.例1】选举学生会",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1273",
+      "name": "[CHCI 2002 Final Exam #2] 有线电视网",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1287",
+      "name": "盒子与球",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1290",
+      "name": "欧几里德的游戏",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1297",
+      "name": "[国家集训队] 单选错位",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1303",
+      "name": "A*B Problem",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1305",
+      "name": "新二叉树",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1306",
+      "name": "斐波那契公约数",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1312",
+      "name": "[NOIP 2011 提高组] Mayan 游戏",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1313",
+      "name": "[NOIP 2011 提高组] 计算系数",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1314",
+      "name": "[NOIP 2011 提高组] 聪明的质监员",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1328",
+      "name": "[NOIP 2014 提高组] 生活大爆炸版石头剪刀布",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1333",
+      "name": "瑞瑞的木棍",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1341",
+      "name": "无序字母对",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1347",
+      "name": "[ECNA 2001] 排序",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1349",
+      "name": "广义斐波那契数列",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1351",
+      "name": "[NOIP 2014 提高组] 联合权值",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1352",
+      "name": "没有上司的舞会",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1357",
+      "name": "花园",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1363",
+      "name": "幻象迷宫",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1364",
+      "name": "医院设置",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1365",
+      "name": "WJMZBMR打osu! / Easy",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1378",
+      "name": "油滴扩展",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1379",
+      "name": "八数码难题",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1395",
+      "name": "会议",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1396",
+      "name": "营救",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1403",
+      "name": "[AHOI2005] 约数研究",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1407",
+      "name": "[国家集训队] 稳定婚姻",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1414",
+      "name": "又是毕业季II",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1419",
+      "name": "寻找段落",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1433",
+      "name": "吃奶酪",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1434",
+      "name": "[SHOI2002] 滑雪",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1435",
+      "name": "[IOI 2000] 回文字串",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1438",
+      "name": "无聊的数列",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1439",
+      "name": "两个排列的最长公共子序列",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1440",
+      "name": "求m区间内的最小值",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1441",
+      "name": "砝码称重",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1443",
+      "name": "马的遍历",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1449",
+      "name": "后缀表达式",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1450",
+      "name": "[HAOI2008] 硬币购物",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1452",
+      "name": "[USACO03FALL] Beauty Contest G",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1462",
+      "name": "通往奥格瑞玛的道路",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1464",
+      "name": "[PacNW 1999] Function",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1469",
+      "name": "找筷子",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1470",
+      "name": "[IOI 1996 / USACO2.3] 最长前缀 Longest Prefix",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1471",
+      "name": "方差",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1478",
+      "name": "陶陶摘苹果（升级版）",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1481",
+      "name": "魔族密码",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1493",
+      "name": "分梨子",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1494",
+      "name": "[国家集训队] 小 Z 的袜子",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1495",
+      "name": "【模板】中国剩余定理（CRT）/ 曹冲养猪",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1496",
+      "name": "火烧赤壁",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1498",
+      "name": "南蛮图腾",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1506",
+      "name": "拯救 oibh 总部",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1514",
+      "name": "[NOIP 2010 提高组] 引水入城",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1516",
+      "name": "青蛙的约会",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1518",
+      "name": "[USACO2.4] 两只塔姆沃斯牛 The Tamworth Two",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1522",
+      "name": "[USACO2.4] 牛的旅行 Cow Tours",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1525",
+      "name": "[NOIP 2010 提高组] 关押罪犯",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1536",
+      "name": "村村通",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1540",
+      "name": "[NOIP 2010 提高组] 机器翻译",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1541",
+      "name": "[NOIP 2010 提高组] 乌龟棋",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1550",
+      "name": "[USACO08OCT] Watering Hole G",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1551",
+      "name": "亲戚",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1558",
+      "name": "色板游戏",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1559",
+      "name": "运动员最佳匹配问题",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1563",
+      "name": "[NOIP 2016 提高组] 玩具谜题",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1572",
+      "name": "计算分数",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1578",
+      "name": "[WC2002] 奶牛浴场",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1591",
+      "name": "阶乘数码",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1593",
+      "name": "因子和",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1596",
+      "name": "[USACO10OCT] Lake Counting S",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1600",
+      "name": "[NOIP 2016 提高组] 天天爱跑步",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1601",
+      "name": "高精度加法",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1605",
+      "name": "迷宫",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1613",
+      "name": "跑路",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1616",
+      "name": "疯狂的采药",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1618",
+      "name": "三连击（升级版）",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1621",
+      "name": "集合",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1631",
+      "name": "序列合并",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1637",
+      "name": "三元上升子序列",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1638",
+      "name": "逛画展",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1641",
+      "name": "[SCOI2010] 生成字符串",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1649",
+      "name": "[USACO07OCT] Obstacle Course S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1654",
+      "name": "OSU!",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1655",
+      "name": "小朋友的球",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1656",
+      "name": "炸铁路",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1659",
+      "name": "[国家集训队] 拉拉队排练",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1678",
+      "name": "烦恼的高考志愿",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1680",
+      "name": "奇怪的分组",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1685",
+      "name": "游览",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1706",
+      "name": "全排列问题",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1714",
+      "name": "切蛋糕",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1719",
+      "name": "最大加权矩形",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1722",
+      "name": "矩阵 II",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1725",
+      "name": "琪露诺",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1730",
+      "name": "最小密度路径",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1739",
+      "name": "表达式括号匹配",
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1763",
+      "name": "埃及分数",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1774",
+      "name": "最接近神的人",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1775",
+      "name": "石子合并（弱化版）",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1776",
+      "name": "宝物筛选",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1781",
+      "name": "宇宙总统",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1786",
+      "name": "帮贡排序",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1801",
+      "name": "黑匣子",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1802",
+      "name": "5 倍经验日",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1803",
+      "name": "凌乱的yyy / 线段覆盖",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1807",
+      "name": "最长路",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1816",
+      "name": "忠诚",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1824",
+      "name": "[USACO05FEB] 进击的奶牛 Aggressive Cows G",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1825",
+      "name": "[USACO11OPEN] Corn Maze S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1827",
+      "name": "[USACO3.4] 美国血统 American Heritage",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1833",
+      "name": "樱花",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1835",
+      "name": "素数密度",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1850",
+      "name": "[NOIP 2016 提高组] 换教室",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1854",
+      "name": "[IOI 1999] 花店橱窗布置",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1866",
+      "name": "编号",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1868",
+      "name": "饥饿的奶牛",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1873",
+      "name": "[COCI 2011/2012 #5] EKO / 砍树",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1874",
+      "name": "快速求和",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1875",
+      "name": "佳佳的魔法药水【数据有误】",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1878",
+      "name": "舞蹈课",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1879",
+      "name": "[USACO06NOV] Corn Fields G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1880",
+      "name": "[NOI1995] 石子合并",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1883",
+      "name": "【模板】三分 / 函数 / [ICPC 2010 Chengdu R] Error Curves",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1884",
+      "name": "[USACO12FEB] Overplanting S",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1886",
+      "name": "【模板】单调队列 / 滑动窗口",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1890",
+      "name": "gcd 区间",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1892",
+      "name": "[BalticOI 2003] 团伙 (Day 2)",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1896",
+      "name": "[SCOI2005] 互不侵犯",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1903",
+      "name": "【模板】带修莫队 / [国家集训队] 数颜色 / 维护队列",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1904",
+      "name": "天际线",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1908",
+      "name": "逆序对",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1912",
+      "name": "[NOI2009] 诗人小G",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1918",
+      "name": "保龄球",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1923",
+      "name": "【深基9.例4】求第 k 小的数",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1928",
+      "name": "外星密码",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1939",
+      "name": "矩阵加速（数列）",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1950",
+      "name": "长方形",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1955",
+      "name": "[NOI2015] 程序自动分析",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1962",
+      "name": "斐波那契数列",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1966",
+      "name": "[NOIP 2013 提高组] 火柴排队",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1967",
+      "name": "[NOIP 2013 提高组] 货车运输",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1972",
+      "name": "[SDOI2009] HH 的项链",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1973",
+      "name": "[NOI2011] NOI 嘉年华",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1975",
+      "name": "[国家集训队] 排队",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1976",
+      "name": "鸡蛋饼",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1981",
+      "name": "[NOIP 2013 普及组] 表达式求值",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1983",
+      "name": "[NOIP 2013 普及组] 车站分级",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1990",
+      "name": "覆盖墙壁",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1991",
+      "name": "无线通讯网",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1993",
+      "name": "小 K 的农场",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1996",
+      "name": "约瑟夫问题",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2004",
+      "name": "领地选择",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2014",
+      "name": "[CTSC1997] 选课",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2015",
+      "name": "二叉苹果树",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2016",
+      "name": "[SEERC 2000] 战略游戏",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2024",
+      "name": "[NOI2001] 食物链",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2032",
+      "name": "扫描",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2036",
+      "name": "[COCI 2008/2009 #2] PERKET",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2044",
+      "name": "[NOI2012] 随机数生成器",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2047",
+      "name": "[NOI2007] 社交网络",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2048",
+      "name": "[NOI2010] 超级钢琴",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2052",
+      "name": "[NOI2011] 道路修建",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2056",
+      "name": "[ZJOI2007] 捉迷藏",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2058",
+      "name": "[NOIP 2016 普及组] 海港",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2061",
+      "name": "[USACO07OPEN] City Horizon S",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2065",
+      "name": "[TJOI2011] 卡片",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2071",
+      "name": "座位安排",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2085",
+      "name": "最小函数值",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2089",
+      "name": "烤鸡",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2097",
+      "name": "资料分发 1",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2111",
+      "name": "考场奇遇",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2121",
+      "name": "拆地毯",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2123",
+      "name": "皇后游戏",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2146",
+      "name": "[NOI2015] 软件包管理器",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2150",
+      "name": "[NOI2015] 寿司晚宴",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2151",
+      "name": "[SDOI2009] HH 去散步",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2152",
+      "name": "[SDOI2009] SuperGCD",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2157",
+      "name": "[SDOI2009] 学校食堂",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2158",
+      "name": "[SDOI2008] 仪仗队",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2161",
+      "name": "[SHOI2009] 会场预约",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2167",
+      "name": "[SDOI2009] Bill的挑战",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2168",
+      "name": "[NOI2015] 荷马史诗",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2196",
+      "name": "[NOIP 1996 提高组] 挖地雷",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2197",
+      "name": "【模板】Nim 游戏",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2216",
+      "name": "[HAOI2007] 理想的正方形",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2234",
+      "name": "[HNOI2002] 营业额统计",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2240",
+      "name": "【深基12.例1】部分背包问题",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2241",
+      "name": "统计方形（数据加强版）",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2249",
+      "name": "【深基13.例1】查找",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2251",
+      "name": "质量检测",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2252",
+      "name": "【模板】威佐夫博弈 / [SHOI2002] 取石子游戏",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2254",
+      "name": "[NOI2005] 瑰丽华尔兹",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2261",
+      "name": "[CQOI2007] 余数求和",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2272",
+      "name": "[ZJOI2007] 最大半连通子图",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2280",
+      "name": "[HNOI2003] 激光炸弹",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2285",
+      "name": "[HNOI2004] 打鼹鼠",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2287",
+      "name": "[HNOI2004] 最佳包裹",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2290",
+      "name": "[HNOI2004] 树的计数",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2292",
+      "name": "[HNOI2004] L 语言",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2294",
+      "name": "[HNOI2005] 狡猾的商人",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2303",
+      "name": "[SDOI2012] Longge 的问题",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2305",
+      "name": "[NOI2014] 购票",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2324",
+      "name": "[SCOI2005] 骑士精神",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2340",
+      "name": "[USACO03FALL] Cow Exhibition G",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2341",
+      "name": "[USACO03FALL / HAOI2006] 受欢迎的牛 G",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2345",
+      "name": "[USACO04OPEN] MooFest G",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2347",
+      "name": "[NOIP 1996 提高组] 砝码称重",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2367",
+      "name": "语文成绩",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2375",
+      "name": "[NOI2014] 动物园",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2392",
+      "name": "kkksc03 考前临时抱佛脚",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2396",
+      "name": "yyy loves Maths VII",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2398",
+      "name": "GCD SUM",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2404",
+      "name": "自然数的拆分问题",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2414",
+      "name": "[NOI2011] 阿狸的打字机",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2415",
+      "name": "集合求和",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2419",
+      "name": "[USACO08JAN] Cow Contest S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2421",
+      "name": "[NOI2002] 荒岛野人",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2422",
+      "name": "良好的感觉",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2423",
+      "name": "[HEOI2012] 朋友圈",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2437",
+      "name": "蜜蜂路线",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2440",
+      "name": "木材加工",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2444",
+      "name": "[POI 2000 R1] 病毒",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2447",
+      "name": "[SDOI2010] 外星千足虫",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2455",
+      "name": "[SDOI2006] 线性方程组",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2466",
+      "name": "[SDOI2008] Sue 的小球",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2468",
+      "name": "[SDOI2010] 粟粟的书架",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2472",
+      "name": "[SCOI2007] 蜥蜴",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2473",
+      "name": "[SCOI2008] 奖励关",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2480",
+      "name": "[SDOI2010] 古代猪文",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2486",
+      "name": "[SDOI2011] 染色",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2487",
+      "name": "[SDOI2011] 拦截导弹",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2501",
+      "name": "[HAOI2006] 数字序列",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2513",
+      "name": "[HAOI2009] 逆序对数列",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2515",
+      "name": "[HAOI2010] 软件安装",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2520",
+      "name": "[HAOI2011] 向量",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2532",
+      "name": "[AHOI2012] 树屋阶梯",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2567",
+      "name": "[SCOI2010] 幸运数字",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2568",
+      "name": "GCD",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2569",
+      "name": "[SCOI2010] 股票交易",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2572",
+      "name": "[SCOI2010] 序列操作",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2580",
+      "name": "于是他错误的点名开始了",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2585",
+      "name": "[ZJOI2006] 三色二叉树",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2590",
+      "name": "[ZJOI2008] 树的统计",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2597",
+      "name": "[ZJOI2012] 灾难",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2600",
+      "name": "[ZJOI2008] 瞭望塔",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2602",
+      "name": "[ZJOI2010] 数字计数",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2605",
+      "name": "[ZJOI2010] 基站选址",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2607",
+      "name": "[ZJOI2008] 骑士",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2613",
+      "name": "【模板】有理数取余",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2617",
+      "name": "Dynamic Rankings",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2622",
+      "name": "关灯问题 II",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2627",
+      "name": "[USACO11OPEN] Mowing the Lawn G",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2629",
+      "name": "好消息，坏消息",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2633",
+      "name": "Count on a tree",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2634",
+      "name": "[国家集训队] 聪聪可可",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2638",
+      "name": "安全系统",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2651",
+      "name": "添加括号III",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2652",
+      "name": "同花顺",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2656",
+      "name": "采蘑菇",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2657",
+      "name": "[SCOI2009] windy 数",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2660",
+      "name": "zzc 种田",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2664",
+      "name": "树上游戏",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2670",
+      "name": "[NOIP 2015 普及组] 扫雷游戏",
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2671",
+      "name": "[NOIP 2015 普及组] 求和",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2672",
+      "name": "[NOIP 2015 普及组] 推销员",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2675",
+      "name": "《瞿葩的数字游戏》T3-三角圣地",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2676",
+      "name": "[USACO07DEC] Bookshelf B",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2678",
+      "name": "[NOIP 2015 提高组] 跳石头",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2679",
+      "name": "[NOIP 2015 提高组] 子串",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2680",
+      "name": "[NOIP 2015 提高组] 运输计划",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2700",
+      "name": "逐个击破",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2704",
+      "name": "[NOI2001] 炮兵阵地",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2709",
+      "name": "【模板】莫队 / 小 B 的询问",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2719",
+      "name": "搞笑世界杯",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2731",
+      "name": "[USACO3.3] 骑马修栅栏 Riding the Fences",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2742",
+      "name": "【模板】二维凸包 / [USACO5.1] 圈奶牛Fencing the Cows",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2746",
+      "name": "[IOI 1996 / USACO5.3] 校园网 Network of Schools",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2754",
+      "name": "[CTSC1999] 家园 / 星际转移问题",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2756",
+      "name": "飞行员配对方案问题",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2758",
+      "name": "编辑距离",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2761",
+      "name": "软件补丁问题",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2763",
+      "name": "试题库问题",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2764",
+      "name": "最小路径覆盖问题",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2765",
+      "name": "魔术球问题",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2766",
+      "name": "最长不下降子序列问题",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2776",
+      "name": "[SDOI2007] 小组队列",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2789",
+      "name": "直线交点数",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2801",
+      "name": "教主的魔法",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2805",
+      "name": "[NOI2009] 植物大战僵尸",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2814",
+      "name": "家谱",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2822",
+      "name": "[NOIP 2016 提高组] 组合数问题",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2825",
+      "name": "[HEOI2016/TJOI2016] 游戏",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2827",
+      "name": "[NOIP 2016 提高组] 蚯蚓",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2831",
+      "name": "[NOIP 2016 提高组] 愤怒的小鸟",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2839",
+      "name": "[国家集训队] middle",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2853",
+      "name": "[USACO06DEC] Cow Picnic S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2860",
+      "name": "[USACO06JAN] Redundant Paths G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2863",
+      "name": "[USACO06JAN] The Cow Prom S",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2865",
+      "name": "[USACO06NOV] Roadblocks G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2866",
+      "name": "[USACO06NOV] Bad Hair Day S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2868",
+      "name": "[USACO07DEC] Sightseeing Cows G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2872",
+      "name": "[USACO07DEC] Building Roads S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2879",
+      "name": "[USACO07JAN] Tallest Cow S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2880",
+      "name": "[USACO07JAN] Balanced Lineup G",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2881",
+      "name": "[USACO07MAR]      Ranking      the      Cows      G",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2882",
+      "name": "[USACO07MAR] Face The Right Way G",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2895",
+      "name": "[USACO08FEB] Meteor Shower S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2900",
+      "name": "[USACO08MAR] Land Acquisition G",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2910",
+      "name": "[USACO08OPEN] Clear And Present Danger S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2922",
+      "name": "[USACO08DEC] Secret Message G",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2926",
+      "name": "[USACO08DEC] Patting Heads S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2947",
+      "name": "[USACO09MAR] Look Up S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2960",
+      "name": "[USACO09OCT] Invasion of the Milkweed G",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2973",
+      "name": "[USACO10HOL] Driving Out the Piggies G",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2986",
+      "name": "[USACO10MAR] Great Cow Gathering G",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3017",
+      "name": "[USACO11MAR] Brownie Slicing G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3029",
+      "name": "[USACO11NOV] Cow Lineup S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3033",
+      "name": "[USACO11NOV] Cow Steeplechase G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3038",
+      "name": "[USACO11DEC] Grass Planting G",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3045",
+      "name": "[USACO12FEB] Cow Coupons G",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3047",
+      "name": "[USACO12FEB] Nearby Cows G",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3065",
+      "name": "[USACO12DEC] First! G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3067",
+      "name": "[USACO12OPEN] Balanced Cow Subsets G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3089",
+      "name": "[USACO13NOV] Pogo-Cow S",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3092",
+      "name": "[USACO13NOV] No Change G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3121",
+      "name": "[USACO15FEB] Censoring G",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3128",
+      "name": "[USACO15DEC] Max Flow P",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3131",
+      "name": "[USACO16JAN] Subsequences Summing to Sevens S",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3143",
+      "name": "[USACO16OPEN] Diamond Collector S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3146",
+      "name": "[USACO16OPEN] 248 G",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3147",
+      "name": "[USACO16OPEN] 262144 P",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3156",
+      "name": "【深基15.例1】询问学号",
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3157",
+      "name": "[CQOI2011] 动态逆序对",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3168",
+      "name": "[CQOI2015] 任务查询系统",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3177",
+      "name": "[HAOI2015] 树上染色",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3178",
+      "name": "[HAOI2015] 树上操作",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3187",
+      "name": "[HNOI2007] 最小矩形覆盖",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3195",
+      "name": "[HNOI2008] 玩具装箱",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3197",
+      "name": "[HNOI2008] 越狱",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3200",
+      "name": "[HNOI2009] 有趣的数列",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3203",
+      "name": "[HNOI2010] 弹飞绵羊",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3205",
+      "name": "[HNOI2010] 合唱队",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3206",
+      "name": "[HNOI2010] 城市建设",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3214",
+      "name": "[HNOI2011] 卡农",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3216",
+      "name": "[HNOI2011] 数学作业",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3223",
+      "name": "[HNOI2012] 排队",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3228",
+      "name": "[HNOI2013] 数列",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3238",
+      "name": "[HNOI2014] 道路堵塞",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3241",
+      "name": "[HNOI2015] 开店",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3243",
+      "name": "[HNOI2015] 菜肴制作",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3256",
+      "name": "[JLOI2013] 赛车",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3270",
+      "name": "[JLOI2016] 成绩比较",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3275",
+      "name": "[SCOI2011] 糖果",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3287",
+      "name": "[SCOI2014] 方伯伯的玉米田",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3293",
+      "name": "[SCOI2016] 美味",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3294",
+      "name": "[SCOI2016] 背单词",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3295",
+      "name": "[SCOI2016] 萌萌哒",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3297",
+      "name": "[SDOI2013] 逃考",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3302",
+      "name": "[SDOI2013] 森林",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3311",
+      "name": "[SDOI2014] 数数",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3313",
+      "name": "[SDOI2014] 旅行",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3336",
+      "name": "[ZJOI2013] 话旧",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3345",
+      "name": "[ZJOI2015] 幻想乡战略游戏",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3349",
+      "name": "[ZJOI2016] 小星星",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3366",
+      "name": "【模板】最小生成树",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3368",
+      "name": "【模板】树状数组 2",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3369",
+      "name": "【模板】普通平衡树",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3370",
+      "name": "【模板】字符串哈希",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3371",
+      "name": "【模板】单源最短路径（弱化版）",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3372",
+      "name": "【模板】线段树 1",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3373",
+      "name": "【模板】线段树 2",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3374",
+      "name": "【模板】树状数组 1",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3375",
+      "name": "【模板】KMP",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3376",
+      "name": "【模板】网络最大流",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3378",
+      "name": "【模板】堆",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3379",
+      "name": "【模板】最近公共祖先（LCA）",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3380",
+      "name": "【模板】树套树",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3381",
+      "name": "【模板】最小费用最大流",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3382",
+      "name": "三分",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3383",
+      "name": "【模板】线性筛素数",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3384",
+      "name": "【模板】重链剖分 / 树链剖分",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3385",
+      "name": "【模板】负环",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3386",
+      "name": "【模板】二分图最大匹配",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3387",
+      "name": "【模板】缩点 / 强连通分量",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3388",
+      "name": "【模板】割点（割顶）",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3389",
+      "name": "【模板】高斯消元法",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3390",
+      "name": "【模板】矩阵快速幂",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3392",
+      "name": "涂条纹",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3396",
+      "name": "哈希冲突",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3397",
+      "name": "地毯",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3398",
+      "name": "仓鼠找 sugar",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3402",
+      "name": "【模板】可持久化并查集",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3403",
+      "name": "跳楼机",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3405",
+      "name": "[USACO16DEC] Cities and States S",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3406",
+      "name": "海底高铁",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3435",
+      "name": "[POI 2006] OKR-Periods of Words",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3467",
+      "name": "[POI 2008] PLA-Postering",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3469",
+      "name": "[POI 2008] BLO-Blockade",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3501",
+      "name": "[POI 2010] ANT-Antisymmetry",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3509",
+      "name": "[POI 2010] ZAB-Frog",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3517",
+      "name": "[POI 2011] WYK-Plot",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3522",
+      "name": "[POI 2011] TEM-Temperature",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3558",
+      "name": "[POI 2013] BAJ-Bytecomputer",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3572",
+      "name": "[POI 2014] PTA-Little Bird",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3586",
+      "name": "[POI 2015 R2] 物流 Logistics",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3601",
+      "name": "签到题",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3605",
+      "name": "[USACO17JAN] Promotion Counting P",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3612",
+      "name": "[USACO17JAN] Secret Cow Code S",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3613",
+      "name": "【深基15.例2】寄包柜",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3623",
+      "name": "[APIO2008] 免费道路",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3628",
+      "name": "[APIO2010] 特别行动队",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3629",
+      "name": "[APIO2010] 巡逻",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3648",
+      "name": "[APIO2014] 序列分割",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3649",
+      "name": "[APIO2014] 回文串",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3654",
+      "name": "First Step (ファーストステップ)",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3694",
+      "name": "邦邦的大合唱站队",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3698",
+      "name": "[CQOI2017] 小Q的棋盘",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3710",
+      "name": "方方方的数据结构",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3714",
+      "name": "[BJOI2017] 树的难题",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3726",
+      "name": "[AHOI2017/HNOI2017] 抛硬币",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3731",
+      "name": "[HAOI2017] 新型城市化",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3743",
+      "name": "小鸟的设备",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3745",
+      "name": "[六省联考 2017] 期末考试",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3758",
+      "name": "[TJOI2017] 可乐",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3783",
+      "name": "[SDOI2017] 天才黑客",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3796",
+      "name": "AC 自动机（简单版 II）",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3799",
+      "name": "小 Y 拼木棒",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3800",
+      "name": "Power 收集",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3805",
+      "name": "【模板】Manacher",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3806",
+      "name": "【模板】点分治",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3807",
+      "name": "【模板】卢卡斯定理 / Lucas 定理",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3808",
+      "name": "AC 自动机（简单版）",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3809",
+      "name": "【模板】后缀排序",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3810",
+      "name": "【模板】三维偏序 / 陌上花开",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3811",
+      "name": "【模板】模意义下的乘法逆元",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3817",
+      "name": "小 A 的糖果",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3825",
+      "name": "[NOI2017] 游戏",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3829",
+      "name": "[SHOI2012] 信用卡凸包",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3834",
+      "name": "【模板】可持久化线段树 2（静态区间第 k 小）",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3835",
+      "name": "【模板】可持久化平衡树",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3842",
+      "name": "[TJOI2007] 线段",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3853",
+      "name": "[TJOI2007] 路标设置",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3861",
+      "name": "拆分",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3863",
+      "name": "序列",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3865",
+      "name": "【模板】ST 表 & RMQ 问题",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3870",
+      "name": "[TJOI2009] 开关",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3879",
+      "name": "[TJOI2010] 阅读理解",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3884",
+      "name": "[JLOI2009] 二叉树问题",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3913",
+      "name": "车的攻击",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3916",
+      "name": "图的遍历",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3919",
+      "name": "【模板】可持久化线段树 1（可持久化数组）",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3938",
+      "name": "斐波那契",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3948",
+      "name": "数据结构",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3953",
+      "name": "[NOIP 2017 提高组] 逛公园",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3956",
+      "name": "[NOIP 2017 普及组] 棋盘",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3957",
+      "name": "[NOIP 2017 普及组] 跳房子",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3958",
+      "name": "[NOIP 2017 提高组] 奶酪",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3959",
+      "name": "[NOIP 2017 提高组] 宝藏",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3960",
+      "name": "[NOIP 2017 提高组] 列队",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3966",
+      "name": "[TJOI2013] 单词",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3976",
+      "name": "[TJOI2015] 旅游",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3978",
+      "name": "[TJOI2015] 概率论",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4000",
+      "name": "斐波那契数列",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4014",
+      "name": "分配问题",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4017",
+      "name": "最大食物链计数",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4018",
+      "name": "Roy&October之取石子",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4027",
+      "name": "[NOI2007] 货币兑换",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4035",
+      "name": "[JSOI2008] 球形空间产生器",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4045",
+      "name": "[JSOI2009] 密码",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4047",
+      "name": "[JSOI2010] 部落划分",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4052",
+      "name": "[JSOI2007] 文本生成器",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4053",
+      "name": "[JSOI2007] 建筑抢修",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4054",
+      "name": "[JSOI2009] 计数问题",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4057",
+      "name": "[Code+#1] 晨跑",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4071",
+      "name": "[SDOI2016] 排列计数",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4072",
+      "name": "[SDOI2016] 征途",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4075",
+      "name": "[SDOI2016] 模式字符串",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4092",
+      "name": "[HEOI2016/TJOI2016] 树",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4093",
+      "name": "[HEOI2016/TJOI2016] 序列",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4099",
+      "name": "[HEOI2013] SAO",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4113",
+      "name": "[HEOI2012] 采花",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4116",
+      "name": "Qtree3",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4124",
+      "name": "[CQOI2016] 手机号码",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4139",
+      "name": "上帝与集合的正确用法",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4145",
+      "name": "上帝造题的七分钟 2 / 花神游历各国",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4147",
+      "name": "玉蟾宫",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4149",
+      "name": "[IOI 2011] Race",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4155",
+      "name": "[SCOI2015] 国旗计划",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4158",
+      "name": "[SCOI2009] 粉刷匠",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4170",
+      "name": "[CQOI2007] 涂色",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4180",
+      "name": "[BJWC2010] 严格次小生成树",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4183",
+      "name": "[USACO18JAN] Cow at Large P",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4185",
+      "name": "[USACO18JAN] MooTube G",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4196",
+      "name": "【模板】半平面交 / [CQOI2006] 凸多边形",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4250",
+      "name": "[SCOI2015] 小凸想跑步",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4281",
+      "name": "[AHOI2008] 紧急集合 / 聚会",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4287",
+      "name": "[SHOI2011] 双倍回文",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4290",
+      "name": "[HAOI2008] 玩具取名",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4292",
+      "name": "[WC2010] 重建计划",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4302",
+      "name": "[SCOI2003] 字符串折叠",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4305",
+      "name": "[JLOI2011] 不重复数字",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4310",
+      "name": "绝世好题",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4316",
+      "name": "绿豆蛙的归宿",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4322",
+      "name": "[JSOI2016] 最佳团体",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4336",
+      "name": "[SHOI2016] 黑暗前的幻想乡",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4342",
+      "name": "[IOI 1998] Polygon",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4345",
+      "name": "[SHOI2015] 超能粒子炮·改",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4357",
+      "name": "[CQOI2016] K 远点对",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4360",
+      "name": "[CEOI 2004] 锯木厂选址",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4363",
+      "name": "[九省联考 2018] 一双木棋 chess",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4375",
+      "name": "[USACO18OPEN] Out of Sorts G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4387",
+      "name": "【深基15.习9】验证栈序列",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4391",
+      "name": "[BalticOI 2009] Radio Transmission 无线传输",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4395",
+      "name": "[BalticOI 2003] Gem 气垫车 (Day 1)",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4407",
+      "name": "[JSOI2009] 电子字典",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4408",
+      "name": "[NOI2003] 逃学的小孩 / 数据生成器",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4447",
+      "name": "[AHOI2018初中组] 分组",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4448",
+      "name": "[AHOI2018初中组] 球球的排列",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4479",
+      "name": "[BJWC2018] 第k大斜率",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4484",
+      "name": "[BJWC2018] 最长上升子序列",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4491",
+      "name": "[HAOI2018] 染色",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4513",
+      "name": "小白逛公园",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4514",
+      "name": "上帝造题的七分钟",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4516",
+      "name": "[JSOI2018] 潜入行动",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4544",
+      "name": "[USACO10NOV] Buying Feed G",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4549",
+      "name": "【模板】裴蜀定理",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4551",
+      "name": "最长异或路径",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4552",
+      "name": "[Poetize6] IncDec Sequence",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4555",
+      "name": "[国家集训队] 最长双回文串",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4557",
+      "name": "[JSOI2018] 战争",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4559",
+      "name": "[JSOI2018] 列队",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4568",
+      "name": "[JLOI2011] 飞行路线",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4587",
+      "name": "[FJOI2016] 神秘数",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4592",
+      "name": "[TJOI2018] 异或",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4602",
+      "name": "[CTSC2018] 混合果汁",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4606",
+      "name": "[SDOI2018] 战略游戏",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4617",
+      "name": "[COCI 2017/2018 #5] Planinarenje",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4618",
+      "name": "[SDOI2018] 原题识别",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4630",
+      "name": "[APIO2018] 铁人两项",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4653",
+      "name": "[CEOI 2017] Sure Bet",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4683",
+      "name": "[IOI 2008] Type Printer",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4690",
+      "name": "[Ynoi Easy Round 2016] 镜中的昆虫",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4715",
+      "name": "【深基16.例1】淘汰赛",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4735",
+      "name": "最大异或和",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4762",
+      "name": "[CERC2014] Virus synthesis",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4769",
+      "name": "[NOI2018] 冒泡排序",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4779",
+      "name": "【模板】单源最短路径（标准版）",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4782",
+      "name": "【模板】2-SAT",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4783",
+      "name": "【模板】矩阵求逆",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4799",
+      "name": "[CEOI 2015] 世界冰球锦标赛 (Day2)",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4819",
+      "name": "[中山市选] 杀人游戏",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4824",
+      "name": "[USACO15FEB] Censoring S",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4852",
+      "name": "yyf hates choukapai",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4910",
+      "name": "帕秋莉的手环",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4913",
+      "name": "【深基16.例3】二叉树深度",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4924",
+      "name": "[1007] 魔法少女小Scarlet",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4925",
+      "name": "[1007] Scarlet 的字符串不可能这么可爱",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4926",
+      "name": "[1007] 倍杀测量者",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4931",
+      "name": "[MtOI2018] 情侣？给我烧了！（加强版）",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4933",
+      "name": "大师",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4934",
+      "name": "礼物",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4942",
+      "name": "小凯的数字",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4951",
+      "name": "[USACO01OPEN] Earthquake",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4967",
+      "name": "黑暗打击",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4995",
+      "name": "跳跳！",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5005",
+      "name": "中国象棋 - 摆上马",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5012",
+      "name": "水の数列",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5018",
+      "name": "[NOIP 2018 普及组] 对称二叉树",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5019",
+      "name": "[NOIP 2018 提高组] 铺设道路",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5025",
+      "name": "[SNOI2017] 炸弹",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5055",
+      "name": "【模板】可持久化文艺平衡树",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5076",
+      "name": "【深基16.例7】普通二叉树（简化版）",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5091",
+      "name": "【模板】扩展欧拉定理",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5143",
+      "name": "攀爬者",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5175",
+      "name": "数列",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5194",
+      "name": "[USACO05DEC] Scales S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5195",
+      "name": "[USACO05DEC] Knights of Ni S",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5250",
+      "name": "【深基17.例5】木材仓库",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5266",
+      "name": "【深基17.例6】学籍管理",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5270",
+      "name": "无论怎样神树大人都会删库跑路",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5283",
+      "name": "[十二省联考 2019] 异或粽子",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5301",
+      "name": "[GXOI/GZOI2019] 宝牌一大堆",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5303",
+      "name": "[GXOI/GZOI2019] 逼死强迫症",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5304",
+      "name": "[GXOI/GZOI2019] 旅行者",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5306",
+      "name": "[COCI 2018/2019 #5] Transport",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5318",
+      "name": "【深基18.例3】查找文献",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5328",
+      "name": "[ZJOI2019] 浙江省选",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5337",
+      "name": "[TJOI2019] 甲苯先生的字符串",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5339",
+      "name": "[TJOI2019] 唱、跳、rap和篮球",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5343",
+      "name": "【XR-1】分块",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5344",
+      "name": "【XR-1】逛森林",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5357",
+      "name": "【模板】AC 自动机",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5369",
+      "name": "[PKUSC2018] 最大前缀和",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5395",
+      "name": "第二类斯特林数·行",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5400",
+      "name": "[CTS2019] 随机立方体",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5403",
+      "name": "[CTS2019] 田野",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5410",
+      "name": "【模板】扩展 KMP / exKMP（Z 函数）",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5435",
+      "name": "基于值域预处理的快速 GCD",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5436",
+      "name": "【XR-2】缘分",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5440",
+      "name": "【XR-2】奇迹",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5445",
+      "name": "[APIO2019] 路灯",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5464",
+      "name": "缩小社交圈",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5465",
+      "name": "[PKUSC2018] 星际穿越",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5468",
+      "name": "[NOI2019] 回家路线",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5496",
+      "name": "【模板】回文树 / 回文自动机（PAM）",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5504",
+      "name": "[JSOI2011] 柠檬",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5505",
+      "name": "[JSOI2011] 分特产",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5507",
+      "name": "机关",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5520",
+      "name": "[yLOI2019] 青原樱",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5521",
+      "name": "[yLOI2019] 梅深不见冬",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5522",
+      "name": "[yLOI2019] 棠梨煎雪",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5536",
+      "name": "【XR-3】核心城市",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5537",
+      "name": "【XR-3】系统设计",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5588",
+      "name": "小猪佩奇爬树",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5590",
+      "name": "赛车游戏",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5596",
+      "name": "【XR-4】题",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5597",
+      "name": "【XR-4】复读",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5599",
+      "name": "【XR-4】文本编辑器",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5658",
+      "name": "[CSP-S 2019] 括号树",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5664",
+      "name": "[CSP-S 2019] Emiya 家今天的饭",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5665",
+      "name": "[CSP-S 2019] 划分",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5666",
+      "name": "[CSP-S 2019] 树的重心",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5677",
+      "name": "[GZOI2017] 配对统计",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5785",
+      "name": "[SDOI2012] 任务安排",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5788",
+      "name": "【模板】单调栈",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5836",
+      "name": "[USACO19DEC] Milk Visits S",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5905",
+      "name": "【模板】全源最短路（Johnson）",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5908",
+      "name": "猫猫和企鹅",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5937",
+      "name": "[CEOI 1999] Parity Game",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5960",
+      "name": "【模板】差分约束",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6066",
+      "name": "[USACO05JAN] Watchcow S",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6242",
+      "name": "【模板】线段树 3（区间最值操作、区间历史最值）",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6329",
+      "name": "【模板】点分树 / 震波",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6464",
+      "name": "[传智杯 #2 决赛] 传送门",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6492",
+      "name": "[COCI 2010/2011 #6] STEP",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6583",
+      "name": "回首过去",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6628",
+      "name": "[省选联考 2020 B 卷] 丁香之路",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6648",
+      "name": "[CCC 2019] Triangle: The Data Structure",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6772",
+      "name": "[NOI2020] 美食家",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6824",
+      "name": "「EZEC-4」可乐",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7072",
+      "name": "[CSP-J 2020] 直播获奖",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7077",
+      "name": "[CSP-S 2020] 函数调用",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7112",
+      "name": "【模板】行列式求值",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7167",
+      "name": "[eJOI 2020] Fountain (Day1)",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7516",
+      "name": "[省选联考 2021 A/B 卷] 图函数",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7562",
+      "name": "[JOISC 2021] イベント巡り 2 (Event Hopping 2) (Day4)",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7737",
+      "name": "[NOI2021] 庆典",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7910",
+      "name": "[CSP-J 2021] 插入排序",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8218",
+      "name": "【深进1.例1】求区间和",
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "AtCoder",
+      "number": "agc012_e",
+      "name": "[AGC012E] Camel and Oases",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "AtCoder",
+      "number": "arc066_d",
+      "name": "[ARC066F] Contest with Drinks Hard",
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "AtCoder",
+      "number": "arc081_d",
+      "name": "[ARC081F] Flip and Rectangles",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1000E",
+      "name": "We Need More Bosses",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1120D",
+      "name": "Power Tree",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "11D",
+      "name": "A Simple Task",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1209E2",
+      "name": "Rotate Columns (hard version)",
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1245D",
+      "name": "Shichikuji and Power Grid",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1278F",
+      "name": "Cards",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "1332E",
+      "name": "Height All the Same",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "19D",
+      "name": "Points",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "25E",
+      "name": "Test",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "280C",
+      "name": "Game on Tree",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "487E",
+      "name": "Tourists",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "525E",
+      "name": "Anya and Cubes",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "582A",
+      "name": "GCD Table",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "607B",
+      "name": "Zuma",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "632D",
+      "name": "Longest Subsequence",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "687B",
+      "name": "Remainders Game",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "708E",
+      "name": "Student's Camp",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "757B",
+      "name": "Bash's Big Day",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "776B",
+      "name": "Sherlock and his girlfriend",
+      "difficulty": "普及"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "833B",
+      "name": "The Bakery",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "912E",
+      "name": "Prime Gift",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "960F",
+      "name": "Pathwalks",
+      "difficulty": "提高"
+    },
+    {
+      "platform": "Codeforces",
+      "number": "961G",
+      "name": "Partitions",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "UVA",
+      "number": "11181",
+      "name": "条件概率 Probability|Given",
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "UVA",
+      "number": "11572",
+      "name": "唯一的雪花 Unique Snowflakes",
+      "difficulty": "普及"
+    }
+  ]
+}

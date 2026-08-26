@@ -1779,6 +1779,27 @@ textarea.form-input {
   color: #b45309;
 }
 
+/* 洛谷官方难度徽标（8 级，颜色对应洛谷帮助中心《题目难度体系》） */
+.roadmap-luogu-difficulty {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #fff;
+  background: #9ca3af; /* 0 暂无评定 */
+  vertical-align: middle;
+}
+.roadmap-luogu-difficulty[data-level="1"] { background: #ef4444; } /* 入门 */
+.roadmap-luogu-difficulty[data-level="2"] { background: #f97316; } /* 普及- */
+.roadmap-luogu-difficulty[data-level="3"] { background: #d97706; } /* 普及 */
+.roadmap-luogu-difficulty[data-level="4"] { background: #22c55e; } /* 普及+/提高- */
+.roadmap-luogu-difficulty[data-level="5"] { background: #06b6d4; } /* 提高 */
+.roadmap-luogu-difficulty[data-level="6"] { background: #3b82f6; } /* 提高+/省选- */
+.roadmap-luogu-difficulty[data-level="7"] { background: #a855f7; } /* 省选/NOI- */
+.roadmap-luogu-difficulty[data-level="8"] { background: #111827; } /* NOI/NOI+/CTS */
+
 .roadmap-problem-tags {
   display: inline-flex;
   flex-wrap: wrap;

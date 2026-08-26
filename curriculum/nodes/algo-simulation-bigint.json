@@ -34,130 +34,146 @@
     {
       "platform": "洛谷",
       "number": "P1042",
-      "name": "",
+      "name": "[NOIP 2003 普及组] 乒乓球",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P2670",
-      "name": "",
+      "name": "[NOIP 2015 普及组] 扫雷游戏",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "入门"
     },
     {
       "platform": "洛谷",
       "number": "P1563",
-      "name": "",
+      "name": "[NOIP 2016 提高组] 玩具谜题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1601",
-      "name": "",
+      "name": "高精度加法",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1303",
-      "name": "",
+      "name": "A*B Problem",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1009",
-      "name": "",
+      "name": "[NOIP 1998 普及组] 阶乘之和",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P4924",
-      "name": "",
+      "name": "[1007] 魔法少女小Scarlet",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1328",
-      "name": "",
+      "name": "[NOIP 2014 提高组] 生活大爆炸版石头剪刀布",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1518",
-      "name": "",
+      "name": "[USACO2.4] 两只塔姆沃斯牛 The Tamworth Two",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1067",
-      "name": "",
+      "name": "[NOIP 2009 普及组] 多项式输出",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1098",
-      "name": "",
+      "name": "[NOIP 2007 提高组] 字符串的展开",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1065",
-      "name": "",
+      "name": "[NOIP 2006 提高组] 作业调度方案",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1786",
-      "name": "",
+      "name": "帮贡排序",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1591",
-      "name": "",
+      "name": "阶乘数码",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1249",
-      "name": "",
+      "name": "最大乘积",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1045",
-      "name": "",
+      "name": "[NOIP 2003 普及组] 麦森数",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "Codeforces",

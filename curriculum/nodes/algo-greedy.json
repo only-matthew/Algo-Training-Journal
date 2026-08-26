@@ -35,106 +35,119 @@
     {
       "platform": "洛谷",
       "number": "P2240",
-      "name": "",
+      "name": "【深基12.例1】部分背包问题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1223",
-      "name": "",
+      "name": "排队接水",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1803",
-      "name": "",
+      "name": "凌乱的yyy / 线段覆盖",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1090",
-      "name": "",
+      "name": "[NOIP 2004 提高组] 合并果子",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P3817",
-      "name": "",
+      "name": "小 A 的糖果",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1106",
-      "name": "",
+      "name": "删数问题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1478",
-      "name": "",
+      "name": "陶陶摘苹果（升级版）",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P5019",
-      "name": "",
+      "name": "[NOIP 2018 提高组] 铺设道路",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1208",
-      "name": "",
+      "name": "[USACO1.3] 混合牛奶 Mixing Milk",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1094",
-      "name": "",
+      "name": "[NOIP 2007 普及组] 纪念品分组",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P4995",
-      "name": "",
+      "name": "跳跳！",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P4447",
-      "name": "",
+      "name": "[AHOI2018初中组] 分组",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1080",
-      "name": "",
+      "name": "[NOIP 2012 提高组] 国王游戏",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "Codeforces",
@@ -621,34 +634,38 @@
     {
       "platform": "洛谷",
       "number": "P1199",
-      "name": "",
+      "name": "[NOIP 2010 普及组] 三国游戏",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2672",
-      "name": "",
+      "name": "[NOIP 2015 普及组] 推销员",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2123",
-      "name": "",
+      "name": "皇后游戏",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P5521",
-      "name": "",
+      "name": "[yLOI2019] 梅深不见冬",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     }
   ]
 }

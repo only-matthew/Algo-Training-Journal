@@ -42,82 +42,92 @@
     {
       "platform": "洛谷",
       "number": "P3156",
-      "name": "",
+      "name": "【深基15.例1】询问学号",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "入门"
     },
     {
       "platform": "洛谷",
       "number": "P3613",
-      "name": "",
+      "name": "【深基15.例2】寄包柜",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1449",
-      "name": "",
+      "name": "后缀表达式",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1996",
-      "name": "",
+      "name": "约瑟夫问题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1160",
-      "name": "",
+      "name": "队列安排",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1540",
-      "name": "",
+      "name": "[NOIP 2010 提高组] 机器翻译",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P2058",
-      "name": "",
+      "name": "[NOIP 2016 普及组] 海港",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1241",
-      "name": "",
+      "name": "括号序列",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P4387",
-      "name": "",
+      "name": "【深基15.习9】验证栈序列",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2234",
-      "name": "",
+      "name": "[HNOI2002] 营业额统计",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "Codeforces",
@@ -272,10 +282,11 @@
     {
       "platform": "洛谷",
       "number": "P1886",
-      "name": "",
+      "name": "【模板】单调队列 / 滑动窗口",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "HDU",
@@ -288,66 +299,74 @@
     {
       "platform": "洛谷",
       "number": "P1440",
-      "name": "",
+      "name": "求m区间内的最小值",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2032",
-      "name": "",
+      "name": "扫描",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1714",
-      "name": "",
+      "name": "切蛋糕",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2629",
-      "name": "",
+      "name": "好消息，坏消息",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2422",
-      "name": "",
+      "name": "良好的感觉",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3957",
-      "name": "",
+      "name": "[NOIP 2017 普及组] 跳房子",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1725",
-      "name": "",
+      "name": "琪露诺",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2776",
-      "name": "",
+      "name": "[SDOI2007] 小组队列",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "HDU",
@@ -360,42 +379,47 @@
     {
       "platform": "洛谷",
       "number": "P2947",
-      "name": "",
+      "name": "[USACO09MAR] Look Up S",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P5788",
-      "name": "",
+      "name": "【模板】单调栈",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1739",
-      "name": "",
+      "name": "表达式括号匹配",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "入门"
     },
     {
       "platform": "洛谷",
       "number": "P1981",
-      "name": "",
+      "name": "[NOIP 2013 普及组] 表达式求值",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1175",
-      "name": "",
+      "name": "表达式的转换",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "UVA",

@@ -61,178 +61,200 @@
     {
       "platform": "洛谷",
       "number": "P1516",
-      "name": "",
+      "name": "青蛙的约会",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P4942",
-      "name": "",
+      "name": "小凯的数字",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P3811",
-      "name": "",
+      "name": "【模板】模意义下的乘法逆元",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1495",
-      "name": "",
+      "name": "【模板】中国剩余定理（CRT）/ 曹冲养猪",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P3861",
-      "name": "",
+      "name": "拆分",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P5091",
-      "name": "",
+      "name": "【模板】扩展欧拉定理",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2568",
-      "name": "",
+      "name": "GCD",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2303",
-      "name": "",
+      "name": "[SDOI2012] Longge 的问题",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1082",
-      "name": "",
+      "name": "[NOIP 2012 提高组] 同余方程",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P4549",
-      "name": "",
+      "name": "【模板】裴蜀定理",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2421",
-      "name": "",
+      "name": "[NOI2002] 荒岛野人",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2613",
-      "name": "",
+      "name": "【模板】有理数取余",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
       "number": "757B",
-      "name": "",
+      "name": "Bash's Big Day",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "Codeforces",
       "number": "776B",
-      "name": "",
+      "name": "Sherlock and his girlfriend",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2152",
-      "name": "",
+      "name": "[SDOI2009] SuperGCD",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "Codeforces",
       "number": "632D",
-      "name": "",
+      "name": "Longest Subsequence",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
       "number": "582A",
-      "name": "",
+      "name": "GCD Table",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
       "number": "687B",
-      "name": "",
+      "name": "Remainders Game",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2261",
-      "name": "",
+      "name": "[CQOI2007] 余数求和",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2158",
-      "name": "",
+      "name": "[SDOI2008] 仪仗队",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P6583",
-      "name": "",
+      "name": "回首过去",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P4139",
-      "name": "",
+      "name": "上帝与集合的正确用法",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "Codeforces",
@@ -532,58 +554,65 @@
     {
       "platform": "洛谷",
       "number": "P2398",
-      "name": "",
+      "name": "GCD SUM",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P1890",
-      "name": "",
+      "name": "gcd 区间",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P5435",
-      "name": "",
+      "name": "基于值域预处理的快速 GCD",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "洛谷",
       "number": "P5436",
-      "name": "",
+      "name": "【XR-2】缘分",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1029",
-      "name": "",
+      "name": "[NOIP 2001 普及组] 最大公约数和最小公倍数问题",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1414",
-      "name": "",
+      "name": "又是毕业季II",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1072",
-      "name": "",
+      "name": "[NOIP 2009 提高组] Hankson 的趣味题",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "OpenJ_Bailian",
@@ -732,10 +761,11 @@
     {
       "platform": "UVA",
       "number": "11181",
-      "name": "",
+      "name": "条件概率 Probability|Given",
       "source": "刘汝佳·算法竞赛入门经典",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "UVA",

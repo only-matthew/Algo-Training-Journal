@@ -371,8 +371,9 @@ export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, days 
   return problems;
 }
 
-// 洛谷官方难度分级（与 _lfe/config 的 problemDifficulty 一致，减号统一为 ASCII）
-const LUOGU_DIFFICULTY = { 0: "暂无评定", 1: "入门", 2: "普及-", 3: "普及/提高-", 4: "普及+/提高", 5: "提高+/省选-", 6: "省选/NOI-", 7: "NOI/NOI+/CTSC" };
+// 洛谷官方难度分级（洛谷帮助中心《题目难度体系》当前 8 级，减号统一为 ASCII）：
+// 0 暂无评定 | 1 入门 | 2 普及- | 3 普及 | 4 普及+/提高- | 5 提高 | 6 提高+/省选- | 7 省选/NOI- | 8 NOI/NOI+/CTS
+const LUOGU_DIFFICULTY = { 0: "暂无评定", 1: "入门", 2: "普及-", 3: "普及", 4: "普及+/提高-", 5: "提高", 6: "提高+/省选-", 7: "省选/NOI-", 8: "NOI/NOI+/CTS" };
 
 function htmlToText(html) {
   return String(html || "")

@@ -28,6 +28,14 @@
 - [x] **导入输入框过窄** — `.import-input-row` 由 flex 改为 grid（`1fr auto auto`），实测输入框宽度从 26px 修复为占满面板
 - [x] **测试** — `test/oauth-import.test.mjs`（CF 3 天窗口/去重/非 AC 过滤/翻页、洛谷难度与题面解析、错误处理与输入校验）；`test/tag-normalize.test.mjs`（CF 标签合并）；`scripts/verify-import-live.mjs` 本地真实网络全链路验证（鉴权/CSRF/Origin + 真实 Codeforces API 与洛谷页面，无需登录与密钥，不进 CI）
 
+### 4. 洛谷题单显示官方题名与难度
+
+- [x] **数据抓取** — `scripts/fetch-luogu-meta.mjs` 批量抓取洛谷官方题名与难度（复用导入的 `C3VK` cookie 握手 + `lentille-context` 解析；洛谷约 300 次/窗口匿名风控，支持 `--skip-existing --concurrency 1 --delay 2500` 慢速断点续抓），结果写入 `curriculum/luogu-problem-meta.json`（`scripts/fetch-luogu-meta.mjs`）
+- [x] **批量应用** — `scripts/apply-luogu-meta.mjs` 按「平台|题号」把题名/难度填入 `curriculum/nodes/*.json` 空位，可重复执行（`scripts/apply-luogu-meta.mjs`）
+- [x] **生成期富化** — `convert-curriculum.js` 重新生成节点时自动按 meta 富化任意来源洛谷题的题名与难度（`scripts/convert-curriculum.js`）
+- [x] **题单展示** — 题目行新增洛谷官方难度徽标（8 级配色，`lib/roadmap.mjs`、`style.css`），构建数据透传 `difficulty`（`scripts/generate-data.js`）
+- [x] **难度体系同步** — 洛谷官方难度标签更新为当前 8 级（入门/普及-/普及/普及+/提高-/提高/提高+/省选-/省选/NOI-/NOI/NOI+/CTS），Worker 导入与表单选项同步（`workers/oauth.mjs`、`lib/form.mjs`）
+
 ## 安全
 
 - [x] **缺少 CSP 头** — 无 Content-Security-Policy，存在 XSS 风险（`index.html`）

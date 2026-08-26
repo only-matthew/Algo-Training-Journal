@@ -37,90 +37,101 @@
     {
       "platform": "洛谷",
       "number": "P3366",
-      "name": "",
+      "name": "【模板】最小生成树",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1194",
-      "name": "",
+      "name": "买礼物",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P4180",
-      "name": "",
+      "name": "[BJWC2010] 严格次小生成树",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高+/省选-"
     },
     {
       "platform": "洛谷",
       "number": "P1396",
-      "name": "",
+      "name": "营救",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1195",
-      "name": "",
+      "name": "口袋的天空",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1550",
-      "name": "",
+      "name": "[USACO08OCT] Watering Hole G",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1967",
-      "name": "",
+      "name": "[NOIP 2013 提高组] 货车运输",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "洛谷",
       "number": "P2700",
-      "name": "",
+      "name": "逐个击破",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
       "number": "1245D",
-      "name": "",
+      "name": "Shichikuji and Power Grid",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P3623",
-      "name": "",
+      "name": "[APIO2008] 免费道路",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "Codeforces",
       "number": "1120D",
-      "name": "",
+      "name": "Power Tree",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "省选/NOI-"
     },
     {
       "platform": "Codeforces",
@@ -254,10 +265,11 @@
     {
       "platform": "洛谷",
       "number": "P4951",
-      "name": "",
+      "name": "[USACO01OPEN] Earthquake",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "HDU",
@@ -374,34 +386,38 @@
     {
       "platform": "洛谷",
       "number": "P2872",
-      "name": "",
+      "name": "[USACO07DEC] Building Roads S",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1991",
-      "name": "",
+      "name": "无线通讯网",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P4047",
-      "name": "",
+      "name": "[JSOI2010] 部落划分",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P2121",
-      "name": "",
+      "name": "拆地毯",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     }
   ]
 }

@@ -36,90 +36,101 @@
     {
       "platform": "洛谷",
       "number": "P2249",
-      "name": "",
+      "name": "【深基13.例1】查找",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1102",
-      "name": "",
+      "name": "A-B 数对",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1873",
-      "name": "",
+      "name": "[COCI 2011/2012 #5] EKO / 砍树",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P1024",
-      "name": "",
+      "name": "[NOIP 2001 提高组] 一元三次方程求解",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "入门"
     },
     {
       "platform": "洛谷",
       "number": "P1678",
-      "name": "",
+      "name": "烦恼的高考志愿",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P2440",
-      "name": "",
+      "name": "木材加工",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P2678",
-      "name": "",
+      "name": "[NOIP 2015 提高组] 跳石头",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P3853",
-      "name": "",
+      "name": "[TJOI2007] 路标设置",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1182",
-      "name": "",
+      "name": "数列分段 Section II",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1163",
-      "name": "",
+      "name": "银行贷款",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "洛谷",
       "number": "P3743",
-      "name": "",
+      "name": "小鸟的设备",
       "source": "洛谷深入浅出",
       "role": "练习",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "Codeforces",
@@ -292,18 +303,20 @@
     {
       "platform": "洛谷",
       "number": "P1462",
-      "name": "",
+      "name": "通往奥格瑞玛的道路",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1824",
-      "name": "",
+      "name": "[USACO05FEB] 进击的奶牛 Aggressive Cows G",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及-"
     },
     {
       "platform": "POJ",
@@ -316,42 +329,47 @@
     {
       "platform": "洛谷",
       "number": "P1419",
-      "name": "",
+      "name": "寻找段落",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1083",
-      "name": "",
+      "name": "[NOIP 2012 提高组] 借教室",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1314",
-      "name": "",
+      "name": "[NOIP 2011 提高组] 聪明的质监员",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "洛谷",
       "number": "P1868",
-      "name": "",
+      "name": "饥饿的奶牛",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1493",
-      "name": "",
+      "name": "分梨子",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "提高"
     },
     {
       "platform": "HDU",
@@ -388,10 +406,11 @@
     {
       "platform": "洛谷",
       "number": "P3382",
-      "name": "",
+      "name": "三分",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "HDU",
@@ -404,18 +423,20 @@
     {
       "platform": "洛谷",
       "number": "P3745",
-      "name": "",
+      "name": "[六省联考 2017] 期末考试",
       "source": "罗勇军·算法竞赛",
       "role": "例题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及+/提高-"
     },
     {
       "platform": "洛谷",
       "number": "P1883",
-      "name": "",
+      "name": "【模板】三分 / 函数 / [ICPC 2010 Chengdu R] Error Curves",
       "source": "罗勇军·算法竞赛",
       "role": "习题",
-      "note": ""
+      "note": "",
+      "difficulty": "普及"
     },
     {
       "platform": "POJ",
