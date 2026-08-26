@@ -1,9 +1,13 @@
 // bot/qq-message.mjs
 // 从站点数据（data/overview.json）构建 QQ 群提醒/回复文本。
 
-// 当前 UTC+8 日期（站点数据与训练日志均按 UTC+8）
+// UTC+8 的日界小时：日界设在凌晨 4 点（而非 0 点），凌晨 0~3 点仍算前一天，
+// 这样 8.27 凌晨 1 点提交的日志会归为 8.26，能被「今日打卡」正确统计。
+const DAY_BOUNDARY_HOUR_UTC8 = 4;
+
+// 当前「今日」日期（UTC+8，日界 04:00）；站点数据与训练日志均按 UTC+8
 export function todayUtc8() {
-  return new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
+  return new Date(Date.now() + (8 - DAY_BOUNDARY_HOUR_UTC8) * 3600 * 1000).toISOString().slice(0, 10);
 }
 
 // 今日复习队列（含逾期高亮）
