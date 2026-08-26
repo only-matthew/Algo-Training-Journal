@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-26T23:55:03.715+08:00",
+  "problems": [
+    {
+      "id": "e317ac19-36f7-42cc-822a-2e7f4943a350",
+      "name": "[NOIP 2007 普及组] 纪念品分组",
+      "platform": "洛谷",
+      "problemNumber": "P1094",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "贪心",
+        "排序",
+        "双指针"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "169282a7-878c-42f2-af07-da034a86a62f",
+      "name": "跳跳！",
+      "platform": "洛谷",
+      "problemNumber": "P4995",
+      "difficulty": "普及-",
+      "tags": [
+        "贪心",
+        "排序",
+        "双指针"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
