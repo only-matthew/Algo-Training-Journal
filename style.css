@@ -1671,29 +1671,53 @@ textarea.form-input {
 }
 
 .roadmap-problem-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 12px;
   margin-top: 12px;
 }
 
-.roadmap-problem-row {
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  padding: 10px 14px;
-  background: var(--card);
+.roadmap-problem-card {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  align-items: baseline;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: var(--card);
 }
 
-.roadmap-problem-main {
-  flex: 1 1 220px;
+.roadmap-problem-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 10px;
+}
+
+.roadmap-problem-card-head .roadmap-problem-number {
+  margin: 0;
 }
 
 .roadmap-problem-name {
+  margin: 0;
   font-weight: 600;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.roadmap-problem-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.roadmap-problem-done {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
 }
 
 .roadmap-problem-name a {
@@ -1892,6 +1916,9 @@ textarea.form-input {
 
 @media (max-width: 720px) {
   .roadmap-node-grid {
+    grid-template-columns: 1fr;
+  }
+  .roadmap-problem-list {
     grid-template-columns: 1fr;
   }
 }
