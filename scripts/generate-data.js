@@ -28,6 +28,9 @@ let relatedSectionHtml;
 let roadmapOverviewHtml;
 let roadmapPhaseHtml;
 let roadmapNodeHtml;
+let tagPageHtml;
+let tagIndexHtml;
+let cfTagToChinese;
 let SITE_ORIGIN;
 let SITE_NAME;
 
@@ -283,7 +286,7 @@ function daysAgo(days) {
 function appVersion() {
   return crypto
     .createHash("sha256")
-    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs", "lib/constants.mjs", "lib/problem-detail.mjs", "lib/roadmap.mjs", "lib/auth.mjs", "lib/theme.mjs", "lib/form.mjs", "lib/renderer.mjs", "lib/router.mjs", "lib/data.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
+    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs", "lib/constants.mjs", "lib/problem-detail.mjs", "lib/roadmap.mjs", "lib/cf-tag-map.mjs", "lib/auth.mjs", "lib/theme.mjs", "lib/form.mjs", "lib/renderer.mjs", "lib/router.mjs", "lib/data.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
     .digest("hex")
     .slice(0, 12);
 }
@@ -416,7 +419,7 @@ function replaceHeadMetadata(html, { title, description, canonical, robots = "in
 
 function showOnlyPage(html, pageId) {
   const $ = cheerio.load(html);
-  const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page", "roadmap-page"];
+  const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page", "roadmap-page", "tag-page"];
   for (const id of pageIds) {
     const section = $(`#${id}`);
     section.removeClass("active");
@@ -442,8 +445,23 @@ function memberSegments(member) {
   return ["member", member];
 }
 
+// 训练记录摘要：标签索引 records 与节点 relatedRecords 共用的元素形状
+function recordSummary(log) {
+  return {
+    member: log.member,
+    date: log.date,
+    problemId: String(log.problemId || log.problemIndex || 0),
+    problem: log.problem,
+    problemNumber: log.problemNumber || "",
+    platform: log.platform || "",
+    difficulty: log.difficulty || "",
+    tags: log.tags || [],
+    reviewStatus: log.reviewStatus || "none",
+  };
+}
+
 function recordCardHtml(log) {
-  const tags = (log.tags || []).map((tag) => `<span class="tag-chip">${escapeHtml(tag)}</span>`).join("");
+  const tags = (log.tags || []).map((tag) => `<a class="tag-chip" href="/tags/${encodeURIComponent(tag)}/">${escapeHtml(tag)}</a>`).join("");
   const reviewLabels = { todo: "待复习", mastered: "已掌握" };
   const review = reviewLabels[log.reviewStatus]
     ? `<span class="review-chip ${escapeHtml(log.reviewStatus)}">${reviewLabels[log.reviewStatus]}</span>`
@@ -689,9 +707,41 @@ async function generateRoadmapData(logs) {
   const members = [...new Set(logs.map((log) => log.member))].sort((a, b) => a.localeCompare(b, "zh-CN"));
   const generatedAt = new Date().toISOString();
   const nodeDataById = new Map();
+  const nodeStatsById = new Map();
+
+  // 全量日志标签计数（非近 30 天）：供节点 tagHits 与标签索引使用
+  const logTagCounts = new Map();
+  for (const log of logs) {
+    for (const tag of new Set(log.tags || [])) {
+      logTagCounts.set(tag, (logTagCounts.get(tag) || 0) + 1);
+    }
+  }
+
+  // 节点 → 阶段（id/title）映射，供标签索引 nodes 元素取 phase 信息
+  const phaseOfNode = new Map();
+  for (const phase of phases) {
+    for (const nodeId of phase.nodes || []) phaseOfNode.set(nodeId, { id: phase.id, title: phase.title });
+  }
 
   for (const [id, node] of nodes) {
     const stats = computeNodeStats(node, matchIndex);
+    nodeStatsById.set(id, stats);
+    // 节点富化：tagHits = 节点标签去重后在日志中的命中数之和；
+    // relatedRecords = 全量日志中带节点标签、但题目不在本节点题单内的记录摘要（date 降序，上限 50）
+    const nodeTagSet = new Set(node.tags || []);
+    const tagHits = [...nodeTagSet].reduce((sum, tag) => sum + (logTagCounts.get(tag) || 0), 0);
+    const nodeProblemKeys = new Set(
+      node.problems.map((problem) => problemKey(problem.platform, problem.number)).filter(Boolean),
+    );
+    const relatedRecords = logs
+      .filter((log) => {
+        if (!(log.tags || []).some((tag) => nodeTagSet.has(tag))) return false;
+        const key = problemKey(log.platform, log.problemNumber);
+        return !(key && nodeProblemKeys.has(key));
+      })
+      .map(recordSummary)
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, 50);
     const problems = node.problems.map((problem) => {
       const doneBy = (matchIndex.get(problemKey(problem.platform, problem.number)) || []).map((entry) => ({
         member: entry.member,
@@ -733,6 +783,8 @@ async function generateRoadmapData(logs) {
         noiLabels: node.noiLabels || [],
         lanqiaoLabels: node.lanqiaoLabels || [],
         oiTree: node.oiTree || [],
+        tagHits,
+        relatedRecords,
       },
       stats,
       problems,
@@ -744,7 +796,10 @@ async function generateRoadmapData(logs) {
     const nodeSummaries = phase.nodes
       .map((id) => {
         const data = nodeDataById.get(id);
-        return data ? { ...data.node, stats: data.stats } : null;
+        if (!data) return null;
+        // 节点摘要只带 tagHits，不带 relatedRecords（避免 roadmap.json 膨胀）
+        const { relatedRecords, ...nodeSummary } = data.node;
+        return { ...nodeSummary, stats: data.stats };
       })
       .filter(Boolean);
     for (const id of phase.nodes) {
@@ -777,7 +832,81 @@ async function generateRoadmapData(logs) {
     stats: overallStats,
     phases: phaseData,
   };
-  return { roadmapData, nodeDataById };
+  // ---- 标签索引（tag-index.json + /tags/ 页数据源） ----
+  // 标签全集：日志全部标签 ∪ 所有节点 node.tags ∪ 所有节点题目的 CF 标签经 cfTagToChinese 映射后的中文（去重）
+  const tagSet = new Set();
+  for (const log of logs) {
+    for (const tag of log.tags || []) tagSet.add(tag);
+  }
+  for (const node of nodes.values()) {
+    for (const tag of node.tags || []) tagSet.add(tag);
+  }
+  for (const node of nodes.values()) {
+    for (const problem of node.problems || []) {
+      for (const tag of problem.tags || []) {
+        const mapped = cfTagToChinese(tag);
+        if (mapped) tagSet.add(mapped);
+      }
+    }
+  }
+
+  // tag → 记录摘要（全量日志，date 降序，上限 300）
+  const tagRecords = new Map();
+  for (const tag of tagSet) tagRecords.set(tag, []);
+  for (const log of logs) {
+    for (const tag of new Set(log.tags || [])) {
+      const list = tagRecords.get(tag);
+      if (list) list.push(recordSummary(log));
+    }
+  }
+  for (const list of tagRecords.values()) {
+    list.sort((a, b) => b.date.localeCompare(a.date));
+    if (list.length > 300) list.length = 300;
+  }
+
+  // tag → 覆盖节点（node.tags 含该标签，或该节点任一题目的任一 CF 标签映射后等于该标签）。
+  // 同一节点对同一标签只记一次（先用 Set 收集节点命中的所有标签，再逐标签 push）。
+  const tagNodes = new Map();
+  for (const tag of tagSet) tagNodes.set(tag, []);
+  for (const [id, node] of nodes) {
+    const phase = phaseOfNode.get(id) || { id: "", title: "" };
+    const stats = nodeStatsById.get(id) || { done: 0, totalProblems: 0, pct: 0 };
+    const entry = {
+      phaseId: phase.id,
+      phaseTitle: phase.title,
+      nodeId: id,
+      nodeTitle: node.title,
+      difficulty: node.difficulty,
+      nodeTags: node.tags || [],
+      done: stats.done,
+      total: stats.totalProblems,
+      pct: stats.pct,
+    };
+    const matched = new Set();
+    for (const tag of node.tags || []) matched.add(tag);
+    for (const problem of node.problems || []) {
+      for (const tag of problem.tags || []) {
+        const mapped = cfTagToChinese(tag);
+        if (mapped) matched.add(mapped);
+      }
+    }
+    for (const tag of matched) tagNodes.get(tag)?.push(entry);
+  }
+
+  const tagIndex = {
+    schemaVersion: 1,
+    generatedAt,
+    tags: [...tagSet]
+      .map((tag) => ({
+        tag,
+        recordCount: (tagRecords.get(tag) || []).length,
+        records: tagRecords.get(tag) || [],
+        nodes: tagNodes.get(tag) || [],
+      }))
+      .sort((a, b) => b.recordCount - a.recordCount || a.tag.localeCompare(b.tag, "zh-CN")),
+  };
+
+  return { roadmapData, nodeDataById, tagIndex };
 }
 
 // 写入 site/data/roadmap*.json（需在 site/ 清空重建之后调用）
@@ -788,10 +917,15 @@ function writeRoadmapData(roadmapData, nodeDataById) {
   }
 }
 
+// 写入 site/data/tag-index.json（需在 site/ 清空重建之后调用）
+function writeTagIndex(tagIndex) {
+  writeJson(path.join("data", "tag-index.json"), tagIndex);
+}
+
 // 预渲染 /roadmap/ 三级页面
 async function generateRoadmapPages(html, roadmapData, nodeDataById) {
   try {
-    ({ roadmapOverviewHtml, roadmapPhaseHtml, roadmapNodeHtml } = await import("../lib/roadmap.mjs"));
+    ({ roadmapOverviewHtml, roadmapPhaseHtml, roadmapNodeHtml, tagPageHtml, tagIndexHtml } = await import("../lib/roadmap.mjs"));
   } catch (error) {
     console.error(`lib/roadmap.mjs 不可用，跳过学习路线页面生成：${error.message}`);
     return;
@@ -823,11 +957,75 @@ async function generateRoadmapPages(html, roadmapData, nodeDataById) {
   }
 }
 
+// 预渲染 /tags/ 索引页与每个标签页（真实静态页面，SEO 待遇与题目页同等）。
+// 磁盘目录用原始中文标签名（与 /member/<中文>/ 一致），href/canonical/sitemap 走 routePath/absoluteUrl 编码。
+async function generateTagPages(html, tagIndex, roadmapData) {
+  if (!tagPageHtml || !tagIndexHtml) {
+    try {
+      ({ tagPageHtml, tagIndexHtml } = await import("../lib/roadmap.mjs"));
+    } catch (error) {
+      console.error(`lib/roadmap.mjs 不可用，跳过标签页生成：${error.message}`);
+      return;
+    }
+  }
+
+  // /tags/ 索引页
+  const indexDescription = "ICPC 算法训练日志的题目标签索引，每个标签聚合训练记录与知识树覆盖。";
+  let indexPage = showOnlyPage(html, "tag-page");
+  indexPage = replaceHeadMetadata(indexPage, {
+    title: `标签索引 · ${SITE_NAME}`,
+    description: indexDescription,
+    canonical: absoluteUrl(["tags"]),
+    jsonLd: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "标签索引",
+      url: absoluteUrl(["tags"]),
+      description: indexDescription,
+    },
+  });
+  const $index = cheerio.load(indexPage);
+  $index("#tag-content").attr("data-route", "tags");
+  $index("#tag-content").html(tagIndexHtml(tagIndex));
+  $index("#tag-page-title").text("标签索引");
+  $index("#tag-page-subtitle").text(`共 ${tagIndex.tags.length} 个标签`);
+  writeRouteIndex(addSelfClosingVoids($index.html()), ["tags"]);
+
+  // 每个标签页（标签全集均生成，含 0 记录的知识树标签）
+  for (const entry of tagIndex.tags) {
+    const tag = entry.tag;
+    const recordCount = entry.recordCount;
+    const nodeCount = entry.nodes.length;
+    const description = `${tag} 的训练记录与知识树覆盖：${recordCount} 条记录、${nodeCount} 个知识树节点。`;
+    let page = showOnlyPage(html, "tag-page");
+    page = replaceHeadMetadata(page, {
+      title: `${tag} · 标签 · ${SITE_NAME}`,
+      description,
+      canonical: absoluteUrl(["tags", tag]),
+      jsonLd: {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: `${tag} · 标签`,
+        url: absoluteUrl(["tags", tag]),
+        description,
+      },
+    });
+    const $ = cheerio.load(page);
+    // data-tag 用原始中文，前端 decodeURIComponent 后比对
+    $("#tag-content").attr("data-tag", tag);
+    $("#tag-content").html(tagPageHtml(entry));
+    $("#tag-page-title").text(tag);
+    $("#tag-page-subtitle").text(`${recordCount} 条训练记录 · ${nodeCount} 个知识树节点覆盖`);
+    writeRouteIndex(addSelfClosingVoids($.html()), ["tags", tag]);
+  }
+}
+
 async function main() {
   ({ normalizeMeta, problemStableKey } = await import("../lib/log-schema.mjs"));
   ({ escapeHtml } = await import("../lib/render-safety.mjs"));
   ({ toDateString, toUtc8, SITE_ORIGIN: siteOrigin, SITE_NAME: siteName } = await import("../lib/constants.mjs"));
   ({ problemDetailHtml, originalProblemUrl, updatedLabel, relatedSectionHtml } = await import("../lib/problem-detail.mjs"));
+  ({ cfTagToChinese } = await import("../lib/cf-tag-map.mjs"));
   SITE_ORIGIN = siteOrigin;
   SITE_NAME = siteName;
   const { members, logs } = readLogs();
@@ -849,8 +1047,13 @@ async function main() {
   const roadmapResult = await generateRoadmapData(logs);
   const roadmapData = roadmapResult?.roadmapData || null;
   const roadmapNodeData = roadmapResult?.nodeDataById || new Map();
+  const tagIndex = roadmapResult?.tagIndex || null;
   const dataVersion = crypto.createHash("sha256")
-    .update(JSON.stringify(fullData) + (roadmapData ? JSON.stringify(roadmapData) : ""))
+    .update(
+      JSON.stringify(fullData)
+        + (roadmapData ? JSON.stringify(roadmapData) : "")
+        + (tagIndex ? JSON.stringify(tagIndex) : ""),
+    )
     .digest("hex")
     .slice(0, 12);
 
@@ -867,7 +1070,7 @@ async function main() {
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   copyFile("style.css");
   writeVersionedApp();
-  for (const moduleName of ["log-schema.mjs", "tag-catalog.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "problem-detail.mjs", "roadmap.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
+  for (const moduleName of ["log-schema.mjs", "tag-catalog.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "problem-detail.mjs", "roadmap.mjs", "cf-tag-map.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
     writeVersionedModule(`lib/${moduleName}`);
   }
   writeVersionedDataModule();
@@ -879,7 +1082,9 @@ async function main() {
   writeProblemPages(html, logs, problemIndex);
   if (roadmapData) {
     writeRoadmapData(roadmapData, roadmapNodeData);
+    writeTagIndex(tagIndex);
     await generateRoadmapPages(html, roadmapData, roadmapNodeData);
+    await generateTagPages(html, tagIndex, roadmapData);
   }
   writeCrawlerFiles(members, logs, roadmapData ? [
     { segments: ["roadmap"], lastmod: roadmapData.generatedAt.slice(0, 10) },
@@ -887,6 +1092,8 @@ async function main() {
       { segments: ["roadmap", phase.id], lastmod: roadmapData.generatedAt.slice(0, 10) },
       ...phase.nodes.map((node) => ({ segments: ["roadmap", phase.id, node.id], lastmod: roadmapData.generatedAt.slice(0, 10) })),
     ]),
+    { segments: ["tags"], lastmod: roadmapData.generatedAt.slice(0, 10) },
+    ...tagIndex.tags.map((entry) => ({ segments: ["tags", entry.tag], lastmod: roadmapData.generatedAt.slice(0, 10) })),
   ] : []);
   if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
   fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");

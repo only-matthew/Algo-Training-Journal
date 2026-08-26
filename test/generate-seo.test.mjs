@@ -105,7 +105,29 @@ test("generator emits crawlable member and problem pages", () => {
   } catch {
     // curriculum/ 缺失时不生成 roadmap，跳过其 sitemap 计数
   }
-  assert.equal(urlCount, 1 + journal.members.length + journal.logs.length + roadmapEntryCount);
+  let tagEntryCount = 0;
+  let tagIndex = null;
+  try {
+    tagIndex = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "tag-index.json"), "utf8"));
+    tagEntryCount = 1 + tagIndex.tags.length;
+  } catch {
+    // curriculum/ 缺失时不生成标签索引，跳过其 sitemap 计数
+  }
+  assert.equal(urlCount, 1 + journal.members.length + journal.logs.length + roadmapEntryCount + tagEntryCount);
   assert.ok(sitemap.includes(`https://train.xialiao.org${problemRoute}`));
   assert.match(robots, /Sitemap: https:\/\/train\.xialiao\.org\/sitemap\.xml/);
+
+  // 标签页与题目页同等可爬取：预渲染静态页 + canonical + JSON-LD（有 curriculum 时校验）
+  if (tagIndex && tagIndex.tags.length > 0) {
+    const first = tagIndex.tags[0];
+    const tagRoute = routePath(["tags", first.tag]);
+    const tagPage = fs.readFileSync(path.join(siteDir, "tags", first.tag, "index.html"), "utf8");
+    assert.ok(
+      tagPage.includes(`<link rel="canonical" href="https://train.xialiao.org${tagRoute}" />`),
+      `tag page must carry canonical ${tagRoute}`,
+    );
+    assert.ok(tagPage.includes('"@type":"CollectionPage"'), "tag page must embed CollectionPage JSON-LD");
+    assert.ok(tagPage.includes(`data-tag="${first.tag}"`), "tag page must mark its prerendered tag");
+    assert.ok(tagPage.includes("条训练记录"), "tag page must be fully server-rendered");
+  }
 });

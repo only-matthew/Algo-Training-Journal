@@ -2,7 +2,7 @@ import { initTheme, toggleTheme } from "./lib/theme.mjs";
 import { currentRoute, migrateLegacyHashRoute, initPageNavigation } from "./lib/router.mjs";
 import { initSession, login, logout } from "./lib/auth.mjs";
 import { apiRequest } from "./lib/journal-api.js";
-import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initRoadmapRenderer, initShellRenderer, startRefreshTimer, doRefresh } from "./lib/data.mjs";
+import { journalRenderer, ensureOverviewJournal, ensureFullJournal, initRoadmapRenderer, initTagRenderer, initShellRenderer, startRefreshTimer, doRefresh } from "./lib/data.mjs";
 
 // 表单模块（~50KB，含 tag-catalog）按需动态导入：日志页首屏与学习路线页都不加载，
 // 仅在用户首次打开提交表单/导入面板时才拉取。
@@ -98,6 +98,9 @@ function withForm() {
     } else if (route === "roadmap" || route.startsWith("roadmap/")) {
       // 学习路线首屏直接使用预渲染 HTML（零 JSON），roadmap.json 在切换成员/刷新时按需拉取
       initRoadmapRenderer();
+    } else if (route === "tags" || route.startsWith("tags/")) {
+      // 标签页首屏直接使用预渲染 HTML（零 JSON），tag-index.json 在 SPA 跳转/刷新时按需拉取
+      initTagRenderer();
     } else if (route.startsWith("problem/")) {
       initShellRenderer();
     } else {
