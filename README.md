@@ -22,7 +22,7 @@
 项目采用“**仓库即数据库、静态站点负责展示、Worker 负责写入**”的架构：
 
 1. `logs/` 保存所有队员的训练源数据。
-2. `scripts/generate-data.js` 聚合日志并生成首页摘要、复习队列、同题聚合、全量轻量元数据、可索引的成员页与单题 HTML、单题 JSON、热力图和近 30 天统计。
+2. `scripts/generate-data.js` 聚合日志并生成首页摘要、复习队列、同题聚合、全量轻量元数据、可索引的成员页与单题 HTML、单题 JSON、标签索引（`data/tag-index.json`）与可索引的标签页（`/tags/`、`/tags/<标签>/`）、热力图和近 30 天统计。
 3. GitHub Actions 将 `site/` 发布到 GitHub Pages。
 4. Cloudflare Worker 完成 GitHub OAuth、会话校验和 Git Data API 写入。
 5. 每次网页提交产生一个 Git commit，并触发站点重新构建和部署。
@@ -61,6 +61,7 @@
 - 汇总近 30 天题数、活跃天数、周均题数、平台和难度分布。
 - 首页展示"今日复习队列"：到期待复习题按日期排序，逾期题目高亮提醒。
 - 按队员、算法标签和错题状态筛选全部训练记录。
+- 总览页提供"题目标签"筛选条（含「全部」重置与各标签计数），并带「🗂 标签索引」入口直达 `/tags/` 标签聚合页；记录卡片、知识树节点与题单问题行上的标签芯片均可点击跳转到对应标签页。
 - 训练卡片可展开查看题目描述、心得和代码。
 - 题目详情使用 Marked 渲染 GFM Markdown，支持标题、列表、表格、链接和代码块。
 - 使用 Prism 提供 C++ 语法高亮，使用 KaTeX 渲染 `$...$` 与 `$$...$$` LaTeX 公式。
@@ -84,6 +85,11 @@
 - 每个知识点节点标注：NOI 大纲难度系数（1-10）、NOI 大纲级别（入门级/提高级/NOI级）与蓝桥杯组别（大学 C/B/A 组）徽标、NOI 大纲与蓝桥杯考点覆盖标签清单、前置依赖、OI-Wiki 文档链接、教材参考（`ref`）、OI 知识树覆盖明细（`oiTree`）、以及题目列表（来源、例题/练习、CF 难度 ★rating 与算法标签）。
 - 学习路线分 7 个阶段：基础算法 → 搜索与基础数据结构 → 中级算法与数据结构 → 动态规划 → 图论 → 数学进阶 → 高级专题，每阶段含目标、里程碑与教材章节参考。
 - 题单进度与训练日志自动关联：构建时用「平台+题号」把题单题目与全队日志交叉匹配，每道题显示完成者、复习状态并直达题目详情；总览/阶段/题单三级页面支持全队/个人切换。
+- **知识树 × 题目标签打通**：
+  - 每个知识点节点按自身标签自动聚合全队日志中"带该知识点标签但不在题单内"的题目，在节点页生成「📎 相关训练记录」区，对照题单进度即可发现"学了但没练/练了但没归纳"的知识盲区。
+  - 节点卡片与知识树行显示该节点标签在全队日志中的命中热度徽标（📎 相关记录 N）。
+  - 每个标签拥有独立的静态聚合页 `/tags/<标签>/`：同时展示该标签的训练记录、覆盖它的知识树节点（含各节点进度）与「在总览中按此标签筛选」入口；`/tags/` 索引页汇总全部标签的记录数与节点覆盖数。记录卡片、知识树节点、题单问题行与题目详情页的标签芯片全部链接到对应标签页。
+  - 构建期生成 `data/tag-index.json`（标签 → 训练记录 + 知识树节点覆盖），并预渲染全部标签页；Codeforces 题目的英文算法标签（如 `greedy`、`sortings`）经 `lib/cf-tag-map.mjs` 映射为中文规范标签后，与日志中文标签同源显示与跳转。
 - Codeforces 内容增强：`curriculum/cf-supplement.json` 内置精选 CF 题单（含官方题名、rating 与算法标签）；`scripts/fetch-codeforces.js` 可联网调用 Codeforces 官方 API（`problemset.problems`，含算法标签体系），按知识点映射与难度区间自动扩充题单。
 - 修改路线内容：编辑 `know-tree/` 源文件后运行 `node scripts/convert-curriculum.js --force` 重新生成 `curriculum/`，或直接编辑 `curriculum/*.json`；然后 `npm run generate` 重建站点。
 
@@ -97,12 +103,14 @@
 
 - 每名队员拥有个人主页，可查看累计统计、热力图和全部训练题目。
 - 每道题拥有可直接访问和分享的独立详情 URL；构建产物已包含题名、题目描述、题解与代码，无需等待 JavaScript 加载即可被搜索引擎读取。
-- 构建时生成 `sitemap.xml`、`robots.txt`、canonical、页面摘要和 Schema.org `Article` 结构化数据，帮助搜索引擎发现并正确归一化题目 URL。
-- 页面采用标准 URL 路径，并由构建脚本生成 GitHub Pages 可直接访问的静态入口，例如：
+- 每个标签同样拥有独立静态页：`/tags/` 标签索引与 `/tags/<标签>/` 聚合页（训练记录 + 知识树节点覆盖），内容全部构建期预渲染，不依赖 JavaScript。
+- 构建时生成 `sitemap.xml`、`robots.txt`、canonical、页面摘要和 Schema.org 结构化数据（题目页 `Article`、成员页/标签页 `CollectionPage`），帮助搜索引擎发现并正确归一化题目与标签 URL；题目页与标签页均以标准 URL 路径生成 GitHub Pages 可直接访问的静态入口，例如：
 
 ```text
 /member/廖夏/
 /problem/廖夏/2026-07-24/题目永久ID/
+/tags/
+/tags/贪心/
 ```
 
 ## 使用方式
@@ -397,6 +405,7 @@ npx serve site
 │   └── workflows/deploy.yml      # GitHub Pages 构建与部署
 ├── lib/
 │   ├── auth.mjs                  # GitHub 登录状态与会话管理
+│   ├── cf-tag-map.mjs            # Codeforces 英文算法标签 → 中文规范标签映射
 │   ├── constants.mjs             # 日期、平台、状态等共享常量
 │   ├── data.mjs                  # 数据加载、缓存与自动刷新
 │   ├── form.mjs                  # 日志提交表单与草稿管理
@@ -404,8 +413,8 @@ npx serve site
 │   ├── log-schema.mjs            # 日志校验、清洗和永久 ID 规则
 │   ├── problem-detail.mjs        # 题目详情正文共享模板（构建与浏览器共用）
 │   ├── render-safety.mjs         # 安全的 Markdown、链接和公式文本渲染
-│   ├── renderer.mjs             # UI 渲染、导出与热力图（含学习路线渲染器）
-│   ├── roadmap.mjs              # 学习路线共享 HTML 模板（构建预渲染与浏览器共用）
+│   ├── renderer.mjs             # UI 渲染、导出与热力图（含学习路线/标签页渲染器）
+│   ├── roadmap.mjs              # 学习路线与标签页共享 HTML 模板（构建预渲染与浏览器共用）
 │   ├── router.mjs               # 客户端路由与历史栈管理
 │   └── theme.mjs                # 浅色/深色主题切换
 ├── curriculum/                  # 学习路线数据（roadmap.json + nodes/*.json + cf-supplement.json）
@@ -443,9 +452,9 @@ npx serve site
 └── site/                           # 构建产物，已被 .gitignore 忽略
 ```
 
-各模块之间通过明确的数据边界协作：`logs/` 是唯一源数据，`lib/log-schema.mjs`、`lib/tag-catalog.mjs`、`lib/problem-detail.mjs` 由前端、Worker 与生成脚本按需共享，`site/` 只作为可重新生成的部署产物，不应直接维护。
+各模块之间通过明确的数据边界协作：`logs/` 是唯一源数据，`lib/log-schema.mjs`、`lib/tag-catalog.mjs`、`lib/cf-tag-map.mjs`、`lib/problem-detail.mjs` 由前端、Worker 与生成脚本按需共享，`site/` 只作为可重新生成的部署产物，不应直接维护。
 
-构建后的数据按用途拆分：`site/data/overview.json` 只包含近 30 天题目、首屏统计与全量「今日复习队列」，`site/data/all.json` 包含全部轻量题目元数据（含复习日期），`site/data/problems/<成员>/<日期>/<题目ID>.json` 保存单题描述、题解、代码与同题历史（`related`）。首页不下载正文；分析与错题本按需加载全量元数据；成员页和题目详情页拥有可直接索引的预渲染 HTML，浏览器交互或刷新时仍可从对应 JSON 更新内容。
+构建后的数据按用途拆分：`site/data/overview.json` 只包含近 30 天题目、首屏统计与全量「今日复习队列」，`site/data/all.json` 包含全部轻量题目元数据（含复习日期），`site/data/roadmap.json` 与 `site/data/roadmap/nodes/*.json` 驱动学习路线（节点 JSON 还带 `tagHits` 热度与 `relatedRecords` 相关记录），`site/data/tag-index.json` 记录每个标签的训练记录与知识树节点覆盖、驱动 `/tags/` 标签页，`site/data/problems/<成员>/<日期>/<题目ID>.json` 保存单题描述、题解、代码与同题历史（`related`）。首页不下载正文；分析与错题本按需加载全量元数据；成员页、题目详情页与标签页拥有可直接索引的预渲染 HTML，浏览器交互或刷新时仍可从对应 JSON 更新内容。
 
 ## 当前边界
 
