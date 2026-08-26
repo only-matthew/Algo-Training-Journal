@@ -1063,7 +1063,8 @@ textarea.form-input {
 }
 
 @media (max-width: 560px) {
-  .record-grid {
+  .record-grid,
+  .roadmap-phase-list {
     grid-template-columns: 1fr;
   }
 
@@ -1472,35 +1473,72 @@ textarea.form-input {
   color: var(--muted);
 }
 
+/* 阶段卡片：与首页题目卡片同款的网格布局（略大），内容保持完整 */
 .roadmap-phase-list {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
   margin-bottom: 24px;
 }
 
+.roadmap-phase-card {
+  display: flex;
+  flex-direction: column;
+  margin: 0; /* .card 自带 margin-bottom，网格内由 gap 承担间距 */
+  padding: 14px 16px;
+  min-width: 0;
+}
+
 .roadmap-phase-card h3 {
-  margin: 0 0 6px;
-}
-
-.roadmap-phase-card .roadmap-phase-goal {
-  color: var(--muted);
-  font-size: 14px;
-  margin: 4px 0;
-}
-
-.roadmap-phase-card .roadmap-phase-milestone {
-  font-size: 13px;
-  color: var(--muted);
-  margin: 2px 0 8px;
+  margin: 0 0 4px;
+  font-size: 16.5px;
 }
 
 .roadmap-phase-card .roadmap-phase-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px 10px;
   align-items: center;
-  margin-top: 10px;
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.roadmap-phase-card .roadmap-phase-meta p {
+  margin: 0;
+}
+
+.roadmap-phase-card .roadmap-difficulty-range {
+  font-weight: 600;
+}
+
+.roadmap-phase-card .roadmap-phase-count {
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.roadmap-phase-card .roadmap-phase-goal {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 0 0 6px;
+}
+
+.roadmap-phase-card .roadmap-phase-milestone {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin: 0 0 6px;
+}
+
+.roadmap-phase-card .roadmap-phase-ref {
+  font-size: 11px;
+  line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+.roadmap-phase-card .roadmap-progress {
+  margin-top: auto;
 }
 
 .roadmap-node-grid {
