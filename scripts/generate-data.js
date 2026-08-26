@@ -487,6 +487,7 @@ function writeHomePage(html, logs) {
   });
   const $ = cheerio.load(withMeta);
   $("#records").html(cards);
+  $("#site-total-badge").text(`全队共 ${logs.length} 题`).removeClass("loading-value");
   const output = addSelfClosingVoids($.html());
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), output, "utf8");
   return output;
@@ -1039,6 +1040,7 @@ async function main() {
     schemaVersion: 3,
     generatedAt,
     members,
+    totalLogs: logs.length, // 全队自建站以来的总刷题数（首页标题徽标）
     logs: summaryLogs.filter((log) => log.date >= daysAgo(29)),
     reviewQueue: buildReviewQueue(logs),
     heatmap,
