@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-26T14:09:59.009+08:00",
+  "problems": [
+    {
+      "id": "b07cdee4-29eb-40c8-96b7-11776871f2c5",
+      "name": "[NOIP 2003 普及组] 乒乓球",
+      "platform": "洛谷",
+      "problemNumber": "P1042",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
