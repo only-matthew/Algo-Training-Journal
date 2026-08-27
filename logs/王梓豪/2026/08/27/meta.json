@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-27T23:03:07.520+08:00",
+  "problems": [
+    {
+      "id": "19871f98-e7a7-4044-a4b6-6c4b2785ba12",
+      "name": "[NOIP 2003 普及组] 麦森数",
+      "platform": "洛谷",
+      "problemNumber": "P1045",
+      "difficulty": "普及",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
