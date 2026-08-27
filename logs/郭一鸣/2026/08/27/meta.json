@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-27T13:53:31.797+08:00",
+  "problems": [
+    {
+      "id": "59f46e59-8bb6-4d8d-83b9-8375f0ec49ea",
+      "name": "凌乱的yyy / 线段覆盖",
+      "platform": "洛谷",
+      "problemNumber": "P1803",
+      "difficulty": "普及-",
+      "tags": [
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
