@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-28T00:01:23.992+08:00",
+  "problems": [
+    {
+      "id": "e850b905-7e18-48f1-9472-f855248b845d",
+      "name": "Plus from Picture",
+      "platform": "Codeforces",
+      "problemNumber": "1182B",
+      "difficulty": "1200-1399",
+      "tags": [
+        "DFS",
+        "模拟",
+        "字符串"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
