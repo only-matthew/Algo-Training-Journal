@@ -120,8 +120,8 @@
 
 - [ ] **无 JSDoc 类型注释** — 函数参数和返回值无类型说明（全部 `.js`/`.mjs`）
 - [ ] **无 ESLint/Prettier 配置** — 代码风格不一致
-- [ ] **无 `jsconfig.json`** — VS Code 路径别名和模块解析不可用
-- [ ] **`npm run check` 过重** — 语法检查+测试+全量构建一体化，开发迭代慢
+- [x] **无 `.editorconfig` / `jsconfig.json`** — 已统一跨编辑器格式规则，并为 VS Code/TypeScript 服务配置 JS 模块解析。
+- [x] **`npm run check` 过重** — 拆分为 `check:syntax`、`test`、`build` 与 `verify`；`check` 保留为完整校验的兼容别名。
 - [ ] **无 watch 模式** — 开发时需全量构建
 - [ ] **限定 Node 24+** — 应支持 20/22 LTS
 - [ ] **无 `.editorconfig`** — 跨编辑器缩进/空白不一致
@@ -141,7 +141,7 @@
 
 ## 架构
 
-- [x] **前端模块变量状态混乱** — 拆分为独立模块，各自管理自身状态（`lib/auth.mjs`, `lib/form.mjs`, `lib/data.mjs`）
+- [x] **前端模块变量状态混乱** — 拆分为独立模块，各自管理自身状态；进一步引入 `lib/application.mjs` 作为协调层，使 `data.mjs`（数据仓库）与 `renderer.mjs`（视图）保持单向依赖。
 - [x] **构建脚本 `fs.rmSync` 无防护** — 添加路径校验守卫（`scripts/generate-data.js`）
 - [ ] **热点数据无请求缓存/去重** — 已有 promise 复用，可进一步增强
 - [ ] **`crypto.randomUUID` 降级有碰撞风险** — 毫秒内连续调用可能重复

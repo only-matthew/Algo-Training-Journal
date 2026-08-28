@@ -251,6 +251,15 @@ function writeVersionedModule(name) {
   fs.writeFileSync(path.join(OUTPUT_DIR, name), content, "utf8");
 }
 
+function listBrowserModuleFiles(dir = "lib") {
+  const absoluteDir = path.join(ROOT, dir);
+  return fs.readdirSync(absoluteDir, { withFileTypes: true }).flatMap((entry) => {
+    const relativePath = path.posix.join(dir, entry.name);
+    if (entry.isDirectory()) return listBrowserModuleFiles(relativePath);
+    return /\.(?:mjs|js)$/.test(entry.name) ? [relativePath] : [];
+  });
+}
+
 function copyDirRecursive(src, dest) {
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(path.join(ROOT, src), { withFileTypes: true })) {
@@ -269,10 +278,6 @@ function assetVersion(name) {
     .slice(0, 12);
 }
 
-function writeVersionedDataModule() {
-  writeVersionedModule("lib/data.mjs");
-}
-
 function logSummary({ description, takeaway, code, ...summary }) {
   return summary;
 }
@@ -284,11 +289,9 @@ function daysAgo(days) {
 }
 
 function appVersion() {
-  return crypto
-    .createHash("sha256")
-    .update(["app.js", "lib/log-schema.mjs", "lib/journal-api.js", "lib/render-safety.mjs", "lib/constants.mjs", "lib/problem-detail.mjs", "lib/roadmap.mjs", "lib/cf-tag-map.mjs", "lib/auth.mjs", "lib/theme.mjs", "lib/form.mjs", "lib/renderer.mjs", "lib/router.mjs", "lib/data.mjs"].map((name) => fs.readFileSync(path.join(ROOT, name))).join(""))
-    .digest("hex")
-    .slice(0, 12);
+  // Child modules receive their own content hash in writeVersionedModule(), so
+  // the entry module only needs to reflect app.js itself.
+  return assetVersion("app.js");
 }
 
 function writeVersionedIndex(dataVersion) {
@@ -576,19 +579,7 @@ function writeCrawlerFiles(members, logs, extraEntries = []) {
 }
 
 function writeVersionedApp() {
-  const source = fs.readFileSync(path.join(ROOT, "app.js"), "utf8");
-  const html = source
-    .replace("./lib/log-schema.mjs", `./lib/log-schema.mjs?v=${assetVersion("lib/log-schema.mjs")}`)
-    .replace("./lib/journal-api.js", `./lib/journal-api.js?v=${assetVersion("lib/journal-api.js")}`)
-    .replace("./lib/render-safety.mjs", `./lib/render-safety.mjs?v=${assetVersion("lib/render-safety.mjs")}`)
-    .replace("./lib/constants.mjs", `./lib/constants.mjs?v=${assetVersion("lib/constants.mjs")}`)
-    .replace("./lib/auth.mjs", `./lib/auth.mjs?v=${assetVersion("lib/auth.mjs")}`)
-    .replace("./lib/theme.mjs", `./lib/theme.mjs?v=${assetVersion("lib/theme.mjs")}`)
-    .replace("./lib/form.mjs", `./lib/form.mjs?v=${assetVersion("lib/form.mjs")}`)
-    .replace("./lib/renderer.mjs", `./lib/renderer.mjs?v=${assetVersion("lib/renderer.mjs")}`)
-    .replace("./lib/router.mjs", `./lib/router.mjs?v=${assetVersion("lib/router.mjs")}`)
-    .replace("./lib/data.mjs", `./lib/data.mjs?v=${assetVersion("lib/data.mjs")}`);
-  fs.writeFileSync(path.join(OUTPUT_DIR, "app.js"), html, "utf8");
+  writeVersionedModule("app.js");
 }
 
 function writeRouteIndex(html, segments) {
@@ -1073,10 +1064,7 @@ async function main() {
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   copyFile("style.css");
   writeVersionedApp();
-  for (const moduleName of ["log-schema.mjs", "tag-catalog.mjs", "journal-api.js", "render-safety.mjs", "constants.mjs", "problem-detail.mjs", "roadmap.mjs", "cf-tag-map.mjs", "auth.mjs", "theme.mjs", "form.mjs", "renderer.mjs", "router.mjs"]) {
-    writeVersionedModule(`lib/${moduleName}`);
-  }
-  writeVersionedDataModule();
+  for (const moduleName of listBrowserModuleFiles()) writeVersionedModule(moduleName);
   const html = writeVersionedIndex(dataVersion);
   writeServiceWorker(dataVersion);
   const homeHtml = writeHomePage(html, logs);

@@ -62,6 +62,7 @@ test("generator emits crawlable member and problem pages", () => {
   const robots = fs.readFileSync(path.join(siteDir, "robots.txt"), "utf8");
   const generatedApp = fs.readFileSync(path.join(siteDir, "app.js"), "utf8");
   const generatedForm = fs.readFileSync(path.join(siteDir, "lib", "form.mjs"), "utf8");
+  const generatedApplication = fs.readFileSync(path.join(siteDir, "lib", "application.mjs"), "utf8");
 
   assert.match(problemPage, new RegExp(`<title>[^<]*${log.member}[^<]*</title>`));
   assert.ok(problemPage.includes(`data-prerendered-path="${problemRoute}"`));
@@ -96,6 +97,13 @@ test("generator emits crawlable member and problem pages", () => {
   const formAuthImport = generatedForm.match(/\.\/auth\.mjs\?v=([a-f0-9]+)/)?.[1];
   assert.ok(appAuthImport);
   assert.equal(formAuthImport, appAuthImport);
+  assert.match(generatedApp, /\.\/lib\/application\.mjs\?v=[a-f0-9]+/);
+  assert.match(generatedApplication, /\.\/data\.mjs\?v=[a-f0-9]+/);
+  assert.doesNotMatch(
+    fs.readFileSync(path.join(siteDir, "lib", "data.mjs"), "utf8"),
+    /renderer\.mjs/,
+    "the data store must not depend on browser rendering",
+  );
 
   const urlCount = (sitemap.match(/<url>/g) || []).length;
   let roadmapEntryCount = 0;

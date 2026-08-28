@@ -379,8 +379,8 @@ git clone https://github.com/only-matthew/Algo-Training-Journal.git
 cd Algo-Training-Journal
 npm install
 
-# 语法检查、单元测试并生成 site/
-npm run check
+# 完整校验（语法检查、单元测试、生成 site/）
+npm run verify
 
 # 本地预览
 npx serve site
@@ -391,8 +391,9 @@ npx serve site
 | 命令 | 作用 |
 | --- | --- |
 | `npm test` | 运行 Node.js 单元测试。 |
-| `npm run generate` | 从 `logs/` 生成完整 `site/`。 |
-| `npm run check` | 检查主要脚本语法、运行测试并生成站点。 |
+| `npm run check:syntax` | 递归检查应用、构建脚本、Worker 和机器人源码的 JavaScript 语法。 |
+| `npm run build` / `npm run generate` | 从 `logs/` 生成完整 `site/`。 |
+| `npm run verify` / `npm run check` | 语法检查、单元测试并生成站点；`check` 为兼容旧 CI 的别名。 |
 | `node scripts/verify-import-live.mjs` | 本地真实网络集成测试「自动导入」：直接驱动 Worker 全链路（鉴权/CSRF/Origin + 真实请求 Codeforces 与洛谷），无需 GitHub 登录或云端密钥。 |
 | `npm run migrate:date-layout` | 将旧日期目录迁移为 `YYYY/MM/DD`。 |
 
@@ -406,9 +407,10 @@ npx serve site
 │   └── workflows/deploy.yml      # GitHub Pages 构建与部署
 ├── lib/
 │   ├── auth.mjs                  # GitHub 登录状态与会话管理
+│   ├── application.mjs            # 前端协调层：组合数据仓库、路由切换与页面渲染
 │   ├── cf-tag-map.mjs            # Codeforces 英文算法标签 → 中文规范标签映射
 │   ├── constants.mjs             # 日期、平台、状态等共享常量
-│   ├── data.mjs                  # 数据加载、缓存与自动刷新
+│   ├── data.mjs                  # 数据加载与缓存（不直接操作 DOM）
 │   ├── form.mjs                  # 日志提交表单与草稿管理
 │   ├── journal-api.js            # 浏览器端 Worker API 客户端
 │   ├── log-schema.mjs            # 日志校验、清洗和永久 ID 规则
@@ -428,6 +430,7 @@ npx serve site
 │   ├── fetch-codeforces.js        # 调用 Codeforces API 扩充 CF 题单（需要能访问 CF 的网络）
 │   ├── fetch-luogu-meta.mjs       # 批量抓取洛谷官方题名/难度 → curriculum/luogu-problem-meta.json
 │   ├── generate-data.js          # 聚合 logs/、计算统计并生成 site/ 与路由入口
+│   ├── check-syntax.mjs           # 自动发现并检查全部项目 JavaScript 源码
 │   ├── migrate-date-layout.js    # YYYY-MM-DD → YYYY/MM/DD
 │   ├── migrate-logs.js           # 旧单文件 Markdown 格式迁移
 │   └── verify-import-live.mjs    # 本地真实网络验证自动导入（人工运行，不进 CI）
@@ -447,6 +450,8 @@ npx serve site
 │   ├── oauth.mjs                 # OAuth、加密会话、受限日志 API、AI 概括与题目导入
 │   └── wrangler.toml             # Worker 配置
 ├── app.js                         # 应用入口：路由、渲染、筛选、表单和主题初始化
+├── .editorconfig                  # 跨编辑器的统一格式规则
+├── jsconfig.json                  # VS Code/TypeScript 服务的 JS 模块解析配置
 ├── index.html                     # 单页应用页面结构
 ├── style.css                      # 组件、主题与响应式样式
 ├── OPTIMIZATION.md               # 优化清单与完成状态
@@ -455,7 +460,7 @@ npx serve site
 └── site/                           # 构建产物，已被 .gitignore 忽略
 ```
 
-各模块之间通过明确的数据边界协作：`logs/` 是唯一源数据，`lib/log-schema.mjs`、`lib/tag-catalog.mjs`、`lib/cf-tag-map.mjs`、`lib/problem-detail.mjs` 由前端、Worker 与生成脚本按需共享，`site/` 只作为可重新生成的部署产物，不应直接维护。
+各模块之间通过明确的数据边界协作：`logs/` 是唯一源数据；浏览器端采用「`data.mjs` 数据仓库 → `application.mjs` 协调层 → `renderer.mjs` 视图」的单向依赖；`lib/log-schema.mjs`、`lib/tag-catalog.mjs`、`lib/cf-tag-map.mjs`、`lib/problem-detail.mjs` 由前端、Worker 与生成脚本按需共享。`site/` 只作为可重新生成的部署产物，不应直接维护。
 
 构建后的数据按用途拆分：`site/data/overview.json` 只包含近 30 天题目、首屏统计与全量「今日复习队列」，`site/data/all.json` 包含全部轻量题目元数据（含复习日期），`site/data/roadmap.json` 与 `site/data/roadmap/nodes/*.json` 驱动学习路线（节点 JSON 还带 `tagHits` 热度与 `relatedRecords` 相关记录），`site/data/tag-index.json` 记录每个标签的训练记录与知识树节点覆盖、驱动 `/tags/` 标签页，`site/data/problems/<成员>/<日期>/<题目ID>.json` 保存单题描述、题解、代码与同题历史（`related`）。首页不下载正文；分析与错题本按需加载全量元数据；成员页、题目详情页与标签页拥有可直接索引的预渲染 HTML，浏览器交互或刷新时仍可从对应 JSON 更新内容。
 
