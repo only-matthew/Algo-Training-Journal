@@ -454,7 +454,10 @@ npx serve site
 ├── jsconfig.json                  # VS Code/TypeScript 服务的 JS 模块解析配置
 ├── index.html                     # 单页应用页面结构
 ├── style.css                      # 组件、主题与响应式样式
-├── OPTIMIZATION.md               # 优化清单与完成状态
+├── docs/                          # 产品、交接与优化文档
+│   ├── PRODUCT.md                 # 一站式 ICPC 训练中心产品规划
+│   ├── HANDOFF.md                 # 当前技术交接与后续重构建议
+│   └── OPTIMIZATION.md            # 优化清单与完成状态
 ├── package.json                   # 构建、测试与迁移命令
 ├── CNAME                          # GitHub Pages 自定义域名
 └── site/                           # 构建产物，已被 .gitignore 忽略

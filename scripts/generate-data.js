@@ -683,10 +683,11 @@ async function generateRoadmapData(logs) {
   let curriculum;
   let problemKey;
   let buildMatchIndex;
+  let buildNodeTrainingEvidence;
   let computeNodeStats;
   let computePhaseStats;
   try {
-    ({ readCurriculum, validateCurriculum, problemKey, buildMatchIndex, computeNodeStats, computePhaseStats } = await import("./curriculum.mjs"));
+    ({ readCurriculum, validateCurriculum, problemKey, buildMatchIndex, buildNodeTrainingEvidence, computeNodeStats, computePhaseStats } = await import("./curriculum.mjs"));
     curriculum = readCurriculum("curriculum");
     validateCurriculum(curriculum);
   } catch (error) {
@@ -718,22 +719,22 @@ async function generateRoadmapData(logs) {
   for (const [id, node] of nodes) {
     const stats = computeNodeStats(node, matchIndex);
     nodeStatsById.set(id, stats);
-    // 节点富化：tagHits = 节点标签去重后在日志中的命中数之和；
-    // relatedRecords = 全量日志中带节点标签、但题目不在本节点题单内的记录摘要（date 降序，上限 50）
+    // 节点富化：tagHits 是标签命中热度；trainingEvidence 同时统计题单内和题单外训练，
+    // relatedRecords 保留题单外记录详情以供节点页追溯。
     const nodeTagSet = new Set(node.tags || []);
     const tagHits = [...nodeTagSet].reduce((sum, tag) => sum + (logTagCounts.get(tag) || 0), 0);
-    const nodeProblemKeys = new Set(
-      node.problems.map((problem) => problemKey(problem.platform, problem.number)).filter(Boolean),
-    );
-    const relatedRecords = logs
-      .filter((log) => {
-        if (!(log.tags || []).some((tag) => nodeTagSet.has(tag))) return false;
-        const key = problemKey(log.platform, log.problemNumber);
-        return !(key && nodeProblemKeys.has(key));
-      })
+    const evidence = buildNodeTrainingEvidence(node, logs);
+    const relatedRecords = evidence.related
       .map(recordSummary)
       .sort((a, b) => b.date.localeCompare(a.date))
       .slice(0, 50);
+    const trainingEvidence = {
+      totalRecords: evidence.totalRecords,
+      relatedRecords: evidence.relatedRecords,
+      coverage: evidence.coverage,
+      confidence: evidence.confidence,
+      byMember: evidence.byMember,
+    };
     const problems = node.problems.map((problem) => {
       const doneBy = (matchIndex.get(problemKey(problem.platform, problem.number)) || []).map((entry) => ({
         member: entry.member,
@@ -777,6 +778,7 @@ async function generateRoadmapData(logs) {
         lanqiaoLabels: node.lanqiaoLabels || [],
         oiTree: node.oiTree || [],
         tagHits,
+        trainingEvidence,
         relatedRecords,
       },
       stats,
@@ -790,7 +792,7 @@ async function generateRoadmapData(logs) {
       .map((id) => {
         const data = nodeDataById.get(id);
         if (!data) return null;
-        // 节点摘要只带 tagHits，不带 relatedRecords（避免 roadmap.json 膨胀）
+        // 节点摘要带紧凑的 trainingEvidence，不带可追溯记录正文（避免 roadmap.json 膨胀）
         const { relatedRecords, ...nodeSummary } = data.node;
         return { ...nodeSummary, stats: data.stats };
       })

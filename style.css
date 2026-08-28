@@ -1992,6 +1992,32 @@ textarea.form-input {
   background: color-mix(in srgb, var(--brand) 10%, transparent);
 }
 
+/* 知识点训练证据：与题单进度并列，提示题单外训练同样参与覆盖判断。 */
+.roadmap-evidence {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 8px;
+  color: var(--text);
+  background: color-mix(in srgb, #8b5cf6 12%, transparent);
+}
+
+.roadmap-evidence-section {
+  margin-top: 14px;
+  padding: 12px 14px;
+  border: 1px solid color-mix(in srgb, #8b5cf6 30%, var(--line));
+  border-radius: 10px;
+  background: color-mix(in srgb, #8b5cf6 5%, var(--card));
+}
+
+.roadmap-evidence-section h3,
+.roadmap-evidence-section p {
+  margin: 0;
+}
+
+.roadmap-evidence-section p + p {
+  margin-top: 6px;
+}
+
 /* 标签聚合页：知识树节点列表（ul 去列表样式、纵向排列、行间距） */
 .roadmap-node-list {
   list-style: none;

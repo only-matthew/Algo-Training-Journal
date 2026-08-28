@@ -162,6 +162,53 @@ export function computeNodeStats(node, matchIndex) {
   return computeStats(node.problems, matchIndex, node.problems.length);
 }
 
+// 为一个知识点汇总训练证据。题单内匹配说明队员完成了推荐题；带节点标签的题单外记录
+// 同样是有效训练，不应被误判为“未学习”。返回原始记录引用，调用方可按展示需求再裁剪字段。
+export function buildNodeTrainingEvidence(node, logs) {
+  const nodeTags = new Set(node.tags || []);
+  const nodeProblemKeys = new Set(
+    (node.problems || []).map((problem) => problemKey(problem.platform, problem.number)).filter(Boolean),
+  );
+  const records = [];
+  const relatedRecords = [];
+
+  for (const log of logs || []) {
+    const key = problemKey(log.platform, log.problemNumber);
+    const listed = Boolean(key && nodeProblemKeys.has(key));
+    const tagged = (log.tags || []).some((tag) => nodeTags.has(tag));
+    if (!listed && !tagged) continue;
+    records.push(log);
+    if (tagged && !listed) relatedRecords.push(log);
+  }
+
+  const statusFor = (count) => {
+    if (count === 0) return { coverage: "未接触", confidence: "无" };
+    if (count < 3) return { coverage: "已接触", confidence: "低" };
+    return { coverage: "有基础", confidence: "中" };
+  };
+  const byMemberMap = new Map();
+  for (const log of records) {
+    const member = String(log.member || "");
+    if (!member) continue;
+    const current = byMemberMap.get(member) || { member, totalRecords: 0, relatedRecords: 0 };
+    current.totalRecords += 1;
+    if (relatedRecords.includes(log)) current.relatedRecords += 1;
+    byMemberMap.set(member, current);
+  }
+  const byMember = [...byMemberMap.values()]
+    .sort((a, b) => a.member.localeCompare(b.member, "zh-CN"))
+    .map((entry) => ({ ...entry, ...statusFor(entry.totalRecords) }));
+
+  return {
+    totalRecords: records.length,
+    relatedRecords: relatedRecords.length,
+    ...statusFor(records.length),
+    byMember,
+    records,
+    related: relatedRecords,
+  };
+}
+
 // 合并所有节点题目，按 problemKey 全局去重（保留第一次出现的 problem），再按相同语义统计。
 export function computePhaseStats(nodes, matchIndex) {
   const seen = new Set();

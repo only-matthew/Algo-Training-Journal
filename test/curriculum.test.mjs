@@ -6,6 +6,7 @@ import {
   readCurriculum,
   validateCurriculum,
   buildMatchIndex,
+  buildNodeTrainingEvidence,
   computeNodeStats,
   computePhaseStats,
 } from "../scripts/curriculum.mjs";
@@ -68,6 +69,28 @@ test("computeNodeStats 统计与 byMember", () => {
   assert.equal(byMember.done, 1);
   assert.equal(byMember.review, 1);
   assert.equal(byMember.mastered, 0);
+});
+
+test("buildNodeTrainingEvidence 同时统计题单内与题单外标签训练", () => {
+  const node = {
+    ...sampleNode,
+    tags: ["模拟", "高精度"],
+  };
+  const logs = [
+    ...sampleLogs,
+    { member: "甲", date: "2026-08-03", platform: "洛谷", problemNumber: "P2000", tags: ["模拟"], problem: "题外模拟" },
+    { member: "甲", date: "2026-08-04", platform: "洛谷", problemNumber: "P2001", tags: ["高精度"], problem: "题外高精度" },
+    { member: "乙", date: "2026-08-05", platform: "洛谷", problemNumber: "P2002", tags: ["贪心"], problem: "无关题" },
+  ];
+  const evidence = buildNodeTrainingEvidence(node, logs);
+  assert.equal(evidence.totalRecords, 5); // 三条题单内训练记录 + 两条题单外标签训练
+  assert.equal(evidence.relatedRecords, 2);
+  assert.equal(evidence.coverage, "有基础");
+  assert.equal(evidence.confidence, "中");
+  assert.deepEqual(evidence.byMember, [
+    { member: "甲", totalRecords: 4, relatedRecords: 2, coverage: "有基础", confidence: "中" },
+    { member: "乙", totalRecords: 1, relatedRecords: 0, coverage: "已接触", confidence: "低" },
+  ]);
 });
 
 test("computePhaseStats 跨节点按题去重", () => {
