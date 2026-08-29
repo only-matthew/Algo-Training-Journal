@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-29T00:01:47.606+08:00",
+  "problems": [
+    {
+      "id": "547de1ec-d9a4-4cb0-9514-086f296ca53f",
+      "name": "[NOIP 2015 普及组] 扫雷游戏",
+      "platform": "洛谷",
+      "problemNumber": "P2670",
+      "difficulty": "入门",
+      "tags": [
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
