@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-29T23:21:18.693+08:00",
+  "problems": [
+    {
+      "id": "fbeaa7dd-11bd-48a7-b5a6-85de18d427c8",
+      "name": "排队接水",
+      "platform": "洛谷",
+      "problemNumber": "P1223",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
