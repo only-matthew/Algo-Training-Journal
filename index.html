@@ -140,6 +140,10 @@
           <div class="form-group"><label for="review-status">状态</label><select id="review-status" class="form-input"><option value="todo">待复习</option><option value="mastered">已掌握</option><option value="all">全部错题</option></select></div>
           <div class="form-group"><label for="review-tag">标签</label><select id="review-tag" class="form-input"><option value="all">全部标签</option></select></div>
         </div>
+        <div class="form-group">
+          <label for="review-search">搜索</label>
+          <input type="search" id="review-search" class="form-input search-input" placeholder="搜索题目、标签、平台、难度或题号..." aria-label="在错题清单中搜索" />
+        </div>
       </section>
       <section class="grid metrics">
         <article class="card"><p class="metric-label">待复习</p><p id="review-todo-count" class="metric-value loading-value">加载中</p></article>
@@ -184,6 +188,10 @@
               <button type="button" class="analysis-preset" data-range="month">本月</button>
             </div>
           </div>
+        </div>
+        <div class="form-group">
+          <label for="analysis-search">搜索</label>
+          <input type="search" id="analysis-search" class="form-input search-input" placeholder="搜索题目、标签、平台、难度或题号..." aria-label="在训练明细中搜索" />
         </div>
       </section>
 

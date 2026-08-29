@@ -2093,3 +2093,124 @@ textarea.form-input {
     width: 100%;
   }
 }
+
+/* ============================================================
+   知识点掌握度状态配色（追加块，不改写既有选择器）。
+   掌握度语义：建议复习=警示色、较熟练=强调色、其余=中性。
+   徽标（.roadmap-evidence）与证据区块（.roadmap-evidence-section）
+   均以 data-state 属性匹配；新类名统一使用 mastery- 前缀。
+   ============================================================ */
+.roadmap-evidence[data-state="建议复习"] {
+  color: #b45309;
+  background: color-mix(in srgb, #f59e0b 16%, transparent);
+  border-color: color-mix(in srgb, #f59e0b 45%, transparent);
+}
+
+.roadmap-evidence[data-state="较熟练"] {
+  color: #15803d;
+  background: color-mix(in srgb, #22c55e 16%, transparent);
+  border-color: color-mix(in srgb, #22c55e 45%, transparent);
+}
+
+.roadmap-evidence[data-state="有基础"] {
+  color: #1d4ed8;
+  background: color-mix(in srgb, #3b82f6 14%, transparent);
+  border-color: color-mix(in srgb, #3b82f6 40%, transparent);
+}
+
+.roadmap-evidence[data-state="已接触"] {
+  color: #475569;
+  background: color-mix(in srgb, #64748b 14%, transparent);
+  border-color: color-mix(in srgb, #64748b 35%, transparent);
+}
+
+.roadmap-evidence[data-state="未接触"] {
+  color: var(--muted);
+  background: color-mix(in srgb, var(--muted) 10%, transparent);
+  border-color: color-mix(in srgb, var(--muted) 25%, transparent);
+}
+
+/* 证据区块：边框与底色随状态微调，与徽标配色保持一致 */
+.roadmap-evidence-section[data-state="建议复习"] {
+  border-color: color-mix(in srgb, #f59e0b 45%, var(--line));
+  background: color-mix(in srgb, #f59e0b 7%, var(--card));
+}
+
+.roadmap-evidence-section[data-state="较熟练"] {
+  border-color: color-mix(in srgb, #22c55e 40%, var(--line));
+  background: color-mix(in srgb, #22c55e 6%, var(--card));
+}
+
+.roadmap-evidence-section[data-state="有基础"] {
+  border-color: color-mix(in srgb, #3b82f6 40%, var(--line));
+  background: color-mix(in srgb, #3b82f6 6%, var(--card));
+}
+
+.roadmap-evidence-section[data-state="已接触"],
+.roadmap-evidence-section[data-state="未接触"] {
+  border-color: color-mix(in srgb, var(--muted) 30%, var(--line));
+  background: color-mix(in srgb, var(--muted) 5%, var(--card));
+}
+
+/* 暗黑模式：提升状态色对比度 */
+[data-theme="dark"] .roadmap-evidence[data-state="建议复习"] {
+  color: #fbbf24;
+  background: color-mix(in srgb, #f59e0b 22%, transparent);
+  border-color: color-mix(in srgb, #f59e0b 50%, transparent);
+}
+
+[data-theme="dark"] .roadmap-evidence[data-state="较熟练"] {
+  color: #4ade80;
+  background: color-mix(in srgb, #22c55e 22%, transparent);
+  border-color: color-mix(in srgb, #22c55e 50%, transparent);
+}
+
+[data-theme="dark"] .roadmap-evidence[data-state="有基础"] {
+  color: #93c5fd;
+  background: color-mix(in srgb, #3b82f6 20%, transparent);
+  border-color: color-mix(in srgb, #3b82f6 45%, transparent);
+}
+
+[data-theme="dark"] .roadmap-evidence[data-state="已接触"],
+[data-theme="dark"] .roadmap-evidence[data-state="未接触"] {
+  color: #cbd5e1;
+  background: color-mix(in srgb, var(--muted) 20%, transparent);
+  border-color: color-mix(in srgb, var(--muted) 35%, transparent);
+}
+
+/* ── 复习闭环快捷操作（任务 B/C 追加，review-quick- 前缀）── */
+.review-quick-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 8px;
+}
+
+.review-quick-action {
+  padding: 2px 10px;
+  font-size: 12px;
+}
+
+/* 题目详情页快捷操作按钮与导出按钮同排 */
+.review-detail-action {
+  margin-left: 4px;
+}
+
+/* openModalForDate 定位题目块时的高亮 */
+.review-highlight {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+  border-radius: 10px;
+  transition: outline-color 0.3s ease;
+}
+
+/* 总览「加载更多」按钮 */
+.page-load-more {
+  margin: 14px auto 4px;
+  display: block;
+}
+
+/* 错题本逾期卡片：左侧警示边框 */
+.review-overdue-card {
+  border-left: 3px solid var(--danger, #dc2626) !important;
+}

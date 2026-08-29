@@ -309,6 +309,9 @@ async function handleLogsDate(request, user) {
   const url = new URL(request.url);
   const date = url.searchParams.get("date");
   if (!isDateString(date)) return json(request, { error: "日期格式无效" }, 400);
+  // 拒绝未来日期（按 UTC+8 今天比较），防止误填未来打卡
+  const today = toUtc8(new Date().toISOString()).slice(0, 10);
+  if (date > today) return json(request, { error: "不能提交未来日期的记录" }, 400);
   if (request.method === "GET") return json(request, await readLog(user, date));
   if (request.method === "PUT") return json(request, await saveLog(user, date, await readJsonBody(request)));
   if (request.method === "DELETE") return json(request, await deleteLog(user, date));

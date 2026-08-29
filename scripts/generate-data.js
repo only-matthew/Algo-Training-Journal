@@ -31,6 +31,7 @@ let roadmapNodeHtml;
 let tagPageHtml;
 let tagIndexHtml;
 let cfTagToChinese;
+let assessMastery;
 let SITE_ORIGIN;
 let SITE_NAME;
 
@@ -724,17 +725,43 @@ async function generateRoadmapData(logs) {
     const nodeTagSet = new Set(node.tags || []);
     const tagHits = [...nodeTagSet].reduce((sum, tag) => sum + (logTagCounts.get(tag) || 0), 0);
     const evidence = buildNodeTrainingEvidence(node, logs);
+    // 掌握度：整体 evidence 与 byMember 每项分别评估，referenceDate 用构建当天保证产物稳定
+    const refDate = toDateString(new Date());
+    const overallMastery = assessMastery(evidence, refDate);
+    const trainingEvidence = {
+      state: overallMastery.state,
+      confidence: overallMastery.confidence,
+      reason: overallMastery.reason,
+      action: overallMastery.action,
+      ...(overallMastery.daysSinceTraining != null ? { daysSinceTraining: overallMastery.daysSinceTraining } : {}),
+      totalRecords: evidence.totalRecords,
+      relatedRecords: evidence.relatedRecords,
+      masteredRecords: evidence.masteredRecords,
+      todoRecords: evidence.todoRecords,
+      todoDueDates: evidence.todoDueDates,
+      lastTrainedAt: evidence.lastTrainedAt,
+      byMember: evidence.byMember.map((entry) => {
+        const memberMastery = assessMastery(entry, refDate);
+        return {
+          member: entry.member,
+          totalRecords: entry.totalRecords,
+          relatedRecords: entry.relatedRecords,
+          masteredRecords: entry.masteredRecords,
+          todoRecords: entry.todoRecords,
+          todoDueDates: entry.todoDueDates,
+          lastTrainedAt: entry.lastTrainedAt,
+          state: memberMastery.state,
+          confidence: memberMastery.confidence,
+          reason: memberMastery.reason,
+          action: memberMastery.action,
+          ...(memberMastery.daysSinceTraining != null ? { daysSinceTraining: memberMastery.daysSinceTraining } : {}),
+        };
+      }),
+    };
     const relatedRecords = evidence.related
       .map(recordSummary)
       .sort((a, b) => b.date.localeCompare(a.date))
       .slice(0, 50);
-    const trainingEvidence = {
-      totalRecords: evidence.totalRecords,
-      relatedRecords: evidence.relatedRecords,
-      coverage: evidence.coverage,
-      confidence: evidence.confidence,
-      byMember: evidence.byMember,
-    };
     const problems = node.problems.map((problem) => {
       const doneBy = (matchIndex.get(problemKey(problem.platform, problem.number)) || []).map((entry) => ({
         member: entry.member,
@@ -1021,6 +1048,7 @@ async function main() {
   ({ toDateString, toUtc8, SITE_ORIGIN: siteOrigin, SITE_NAME: siteName } = await import("../lib/constants.mjs"));
   ({ problemDetailHtml, originalProblemUrl, updatedLabel, relatedSectionHtml } = await import("../lib/problem-detail.mjs"));
   ({ cfTagToChinese } = await import("../lib/cf-tag-map.mjs"));
+  ({ assessMastery } = await import("../lib/mastery.mjs"));
   SITE_ORIGIN = siteOrigin;
   SITE_NAME = siteName;
   const { members, logs } = readLogs();

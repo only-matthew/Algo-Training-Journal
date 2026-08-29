@@ -1,5 +1,107 @@
 # 优化清单
 
+## 2026-08 功能审查：当前别扭点与优化建议
+
+> 审查时间：2026-08-28。本轮只出书面报告，未改动任何代码。以下按「优先级 P0 > P1 > P2 > P3」排列，
+> 每项给出问题位置、影响、建议方案与工作量估计（S 半天内 / M 1-2 天 / L 3 天以上）。
+
+> **施工状态（2026-08-28 晚）**：P0-P3 已全部实施并通过验证（详见 `docs/CONSTRUCTION-PLAN.md` 执行记录）：
+> `npm run check:syntax` 37 文件通过、`npm test` 199/199 通过、站点构建成功、产物断言全部通过。
+> 第 0 节的「不要部署」警告已解除（`coverage/confidence` 读取已移除，`assessMastery` 已接入）。
+
+### 0. 工作区状态警示（最重要发现，先读这条）
+
+工作区有一批**未提交**的「掌握度」改动：
+
+- `scripts/curriculum.mjs`：`buildNodeTrainingEvidence` 重构为返回 `{ totalRecords, relatedRecords, masteredRecords, todoRecords, todoDueDates, lastTrainedAt, byMember, records, related }`，**不再返回 `coverage` / `confidence`**。
+- `lib/mastery.mjs`（新增）：`assessMastery(evidence, referenceDate)` 纯函数 + `test/mastery.test.mjs`（5 个用例，已通过）。
+- `test/curriculum.test.mjs`：随新输出形状更新。
+
+但接线没有完成，且存在一处**回归风险**：
+
+- `scripts/generate-data.js:731-737` 仍然读取 `evidence.coverage` / `evidence.confidence`——重构后这两个字段恒为 `undefined`，**下一次 `npm run build` 生成的 `trainingEvidence` 会丢掉覆盖度与置信度**；
+- `lib/roadmap.mjs:89-114` 的徽标/「训练证据」区块只能落到写死的 `已接触/未接触` 兜底，比重构前三档（未接触/已接触/有基础）还退化；
+- `assessMastery` 目前**没有任何调用方**。
+
+**结论：在完成第 1 项接线之前，不要提交/部署当前工作区；否则线上知识树的训练证据显示会劣化。**
+
+### 1. P0 · 完成「知识点掌握度」接线（进行中的功能，当前完全未生效）
+
+- 问题：`lib/mastery.mjs` 已实现完整规则（未接触/已接触/有基础/较熟练/建议复习 + 置信度 + 原因 + 建议动作），但站点完全没用到。
+- 建议步骤（按依赖顺序）：
+  1. `scripts/generate-data.js` 顶部 `import { assessMastery } from "../lib/mastery.mjs"`（纯函数，Node 可直接使用）；
+  2. 在 `generateRoadmapData` 内为整体 `evidence` 和 `evidence.byMember` 的每个成员各调用一次 `assessMastery(evidence, referenceDate)`，`referenceDate` 用 `toDateString(new Date())`（构建端统一传入，保证构建产物与测试稳定）；
+  3. `trainingEvidence` 写入 `{ totalRecords, relatedRecords, masteredRecords, todoRecords, todoDueDates, lastTrainedAt, state, confidence, reason, action, daysSinceTraining?, byMember }`（byMember 每项同样带 state/confidence/reason/action）；
+  4. `lib/roadmap.mjs`：`trainingEvidenceBadgeHtml` 改用 `evidence.state`（如「🧭 较熟练 · 训练 5」），`trainingEvidenceSectionHtml` 展示「当前判断 / 置信度 / 原因 / 建议动作」，并在 `style.css` 为各 state 加配色（建议复习用警示色）；
+  5. 节点页已有「📎 题单外相关训练记录」，可再按「建议动作」给每个节点输出一行可执行的下一步（未接触→从题单选 1 道基础题；建议复习→优先完成到期复习题）；
+  6. 测试：`test/mastery.test.mjs` 已覆盖纯函数；建议在 `test/curriculum.test.mjs` 补一个断言（`buildNodeTrainingEvidence` 输出含新字段），并在 `test/generate-seo.test.mjs` 补「站点 JSON 的 trainingEvidence 含 state」的回归断言，防止再次出现"构建端忘透传"。
+- 工作量：M（接线本身半天，联动展示与测试约 1-2 天）。
+
+### 2. P1 · 复习闭环断裂：全站没有任何「编辑」入口
+
+- 问题：
+  - 首页复习队列（`lib/renderer.mjs:217-243` `renderReviewQueue`）的每条只链接到题目详情页，没有任何快捷操作；
+  - 题目详情页（`index.html:304-317`）只有导出按钮，没有「编辑此题」；
+  - `docs/OPTIMIZATION.md:9` 曾记录「每题可跳转详情/编辑」，但 `lib/` 全目录 grep 不到任何编辑入口（`grep 编辑|edit|btn-edit` 无结果），README「记录 → 复习 → 掌握」闭环实际走不通；
+  - 要把一道题从「待复习」改为「已掌握」或顺延复习日期，唯一路径是：打开提交表单 → 选日期 → 在整日题目块中找到该题 → 改状态 → 整日覆盖提交。步骤多，且同一天其他题的未保存修改会被一并带出，容易误改。
+- 建议方案（二选一，先做 A）：
+  - **A（客户端方案，复用现有 API）**：在复习队列项与题目详情页加「标记已掌握」「顺延 +3 天」按钮；实现为 `loadDateLog(date)` → 找到该 `problemId` 的块并只改 `reviewStatus`/`reviewDue` → `saveDateLog(date, problems)`。每次操作产生一个 commit，与现有写入流程一致，不需要动 Worker。
+  - **B（Worker 单题接口）**：新增 `POST /api/problem/status`（仅更新 meta 中的 `reviewStatus`/`reviewDue`），payload 小、可做批量；但需要新增路由 + 测试 + 安全边界，适合与「批量操作」一起做。
+- 同时：修正 README / OPTIMIZATION.md 中「可编辑」的表述，或实现后删除该表述。
+- 工作量：A = M；B = L（含批量操作时更值）。
+
+### 3. P2 · 表单草稿仅存内存，误关即丢
+
+- 问题：`lib/form.mjs:12` 的 `dateDrafts` 是模块级 `Map`，`openModal()`（:89）与 `closeModal()`（:155-161）都会 `clear()`。用户填到一半误点关闭（即使确认了弹窗）或刷新页面，全部输入丢失；跨会话也无法恢复。
+- 建议：
+  1. 草稿持久化到 `localStorage`：key 形如 `journal-draft-<date>`（或单 key 存整个日期 Map 的 JSON），`captureProblemDrafts` 后 debounce 写入，`onDateChange` 恢复时优先读 localStorage 而非内存；
+  2. 提交成功 / 删除成功后清除对应日期的草稿（`handleSubmit` 与 `handleDelete` 已有一致位置）；
+  3. 注意容量：单日上限 1.5MB（`LOG_LIMITS.maxRequestBytes`），localStorage 通常 5MB 配额，需在写入前做大小检查，超限时退化为仅内存草稿；
+  4. 关闭模态框时不再无条件 `clear()`，改为「未提交则保留草稿，下次打开提示恢复」。
+- 工作量：M。
+
+### 4. P2 · 「训练分析」默认只显示今天，首屏体验差
+
+- 问题：`lib/renderer.mjs:707-709` 中 `analysisStart/End` 默认均为今天；单日范围时 `renderTrendChart`（:302-304）不渲染趋势图并提示"请选择更大的时间范围"，页面几乎空白，首次进入分析页观感很差。
+- 建议：默认范围改为「本月」（或近 30 天），保留「今天/本周/本月」快捷按钮；趋势图在默认范围即可展示，提示文案只在不合理范围（开始 > 结束 / 单日）出现。
+- 工作量：S。
+
+### 5. P3 · 其余功能别扭点（按性价比排序）
+
+1. **搜索只覆盖总览近 30 天**（`lib/renderer.mjs:245-271`）：分析页/错题本已加载全量 `all.json`，复用一个 `searchTerm` 过滤成本极低，建议三页共用同一搜索逻辑。
+2. **总览「近 30 天训练记录」与成员页「全部训练题目」无分页**（`scripts/generate-data.js:1037` 近 30 天无数量上限；`lib/renderer.mjs:466` 成员页全量渲染）：数据多时 DOM 节点无限堆积，建议「每页 50-100 条 + 加载更多」或按日期折叠分组。
+3. **错题本（`review-page`）无逾期/到期排序**：`renderReviewBook`（:284-295）只按状态和标签过滤，待复习题未按 `reviewDue` 升序排列、未突出逾期；建议与首页复习队列一致：逾期高亮、按到期日排序、显示逾期天数。
+4. **提交日期允许未来日期**：`workers/oauth.mjs:311` 只校验 `isDateString`（格式），表单 `submit-date` 无 `max`；误选未来日期会生成"未来打卡"。建议表单 `max=today`，Worker 侧同样拒绝 `date > today`（注意时区：按 UTC+8 的今天比较，`lib/constants.mjs` 已有 `toUtc8`）。
+5. **`btn-save` 的「更新/提交」判定靠文案**（`lib/form.mjs:658` `textContent === "更新记录"`）：文案一改即失效，改用 `setDateFormState` 里维护的状态标志（`activeFormExists` 已有现成值）。
+6. **README 快速导入段落漏了 AtCoder**：UI 有「AtCoder AC 记录」按钮且 Worker 已实现（`workers/oauth.mjs:446-521`），README:54 只写了 Codeforces 与洛谷；补充 AtCoder 说明与标签限制提示。
+7. **导航没有「标签」一级入口**：标签只能从总览标签筛选条的「🗂 标签索引」和卡片芯片进入；可在顶部导航加「🏷 标签」页，或维持现状（影响小）。
+8. **热力图 365 格每次重建**（既有清单未完成项）：影响小，可保持现状或用 CSS class 增量更新。
+
+### 6. 既有清单中仍未完成的技术债（建议排期）
+
+以下项已在下方各分区标记 `[ ]`，此处给出建议优先级：
+
+| 优先级 | 项 | 说明 |
+| --- | --- | --- |
+| 高 | `lib/renderer.mjs`（1273 行）拆分 | 按 journal/analysis/roadmap/tags/export 分模块，见 `docs/HANDOFF.md` 建议 1 |
+| 高 | 前端渲染测试 / SPA 路由测试 | 页面互切、后退、刷新目前无自动化保障 |
+| 中 | 批量操作（多题改标签/状态/难度） | 与 P1 方案 B 合并设计 |
+| 中 | 撤销删除 / 软删除 | 删除永久不可恢复，风险集中在 Worker 删除路径 |
+| 中 | 代码支持 C++ 以外的语言 | 文件扩展名固定 `.cpp`，涉及 schema + 表单 + 渲染三处 |
+| 中 | 无部署完成通知 | 提交后只有"等待约 1 分钟"，可轮询 GitHub Actions 状态或 Actions 回写 |
+| 低 | API 版本前缀 `/api/v1` | 目前无外部消费者，迁移成本低但收益也低 |
+| 低 | Worker 结构化日志 / `/health` | 便于线上排障 |
+| 低 | 开发体验：watch 模式、JSDoc、ESLint/Prettier、Node 20/22 LTS | 团队单人或双人开发时优先级低 |
+| 低 | `fetchJson` 重试/退避、路由 split 解析健壮性、`crypto.randomUUID` 碰撞、热点数据缓存 | 数据量小、影响有限 |
+
+### 7. 建议实施顺序
+
+1. **P0 掌握度接线**（第 1 项）→ 否则不能安全部署当前工作区；
+2. **P1 复习快捷操作**（第 2 项方案 A）→ 补上 README 承诺的闭环；
+3. **P2 草稿持久化 + 分析页默认范围**（第 3、4 项）→ 两处都是高频日常路径；
+4. **P3 小项**（第 5 项）按性价比逐个消化；
+5. 技术债（第 6 项）穿插在功能迭代间隙完成。
+
 ## 功能迭代（2026-08）
 
 ### 1. 错题复习队列（间隔重复）

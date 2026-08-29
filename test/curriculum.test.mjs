@@ -10,6 +10,7 @@ import {
   computeNodeStats,
   computePhaseStats,
 } from "../scripts/curriculum.mjs";
+import { assessMastery } from "../lib/mastery.mjs";
 
 test("normalizePlatform 统一平台名", () => {
   assert.equal(normalizePlatform("CodeForces"), "Codeforces");
@@ -85,12 +86,54 @@ test("buildNodeTrainingEvidence 同时统计题单内与题单外标签训练", 
   const evidence = buildNodeTrainingEvidence(node, logs);
   assert.equal(evidence.totalRecords, 5); // 三条题单内训练记录 + 两条题单外标签训练
   assert.equal(evidence.relatedRecords, 2);
-  assert.equal(evidence.coverage, "有基础");
-  assert.equal(evidence.confidence, "中");
-  assert.deepEqual(evidence.byMember, [
-    { member: "甲", totalRecords: 4, relatedRecords: 2, coverage: "有基础", confidence: "中" },
-    { member: "乙", totalRecords: 1, relatedRecords: 0, coverage: "已接触", confidence: "低" },
+  assert.equal(evidence.masteredRecords, 1);
+  assert.equal(evidence.todoRecords, 1);
+  assert.equal(evidence.lastTrainedAt, "2026-08-04");
+  // 重构后的证据不再输出 coverage / confidence（由 assessMastery 单独评估）
+  assert.ok(!("coverage" in evidence), "evidence 不应再含 coverage 键");
+  assert.ok(!("confidence" in evidence), "evidence 不应再含 confidence 键");
+  assert.deepEqual(evidence.byMember.map(({ member, totalRecords, relatedRecords, masteredRecords, todoRecords }) => ({ member, totalRecords, relatedRecords, masteredRecords, todoRecords })), [
+    { member: "甲", totalRecords: 4, relatedRecords: 2, masteredRecords: 0, todoRecords: 1 },
+    { member: "乙", totalRecords: 1, relatedRecords: 0, masteredRecords: 1, todoRecords: 0 },
   ]);
+});
+
+test("buildNodeTrainingEvidence → assessMastery 管线契约", () => {
+  const node = {
+    ...sampleNode,
+    tags: ["模拟"],
+  };
+  const logs = [
+    ...sampleLogs,
+    { member: "甲", date: "2026-08-03", platform: "洛谷", problemNumber: "P2000", tags: ["模拟"], problem: "题外模拟" },
+  ];
+  const evidence = buildNodeTrainingEvidence(node, logs);
+  const refDate = "2026-08-05";
+  const states = ["未接触", "已接触", "有基础", "较熟练", "建议复习"];
+
+  // 整体：4 条训练记录（含 1 条题单外标签匹配）→ 有基础
+  const overall = assessMastery(evidence, refDate);
+  assert.equal(overall.state, "有基础");
+  assert.equal(overall.confidence, "中");
+  assert.equal(typeof overall.reason, "string");
+  assert.ok(overall.reason.length > 0);
+  assert.equal(typeof overall.action, "string");
+  assert.ok(overall.action.length > 0);
+  assert.ok(!("coverage" in overall), "assessMastery 结果不应含 coverage 键");
+
+  // 逐成员：甲 3 条 → 有基础；乙 1 条 → 已接触
+  const byState = {};
+  for (const entry of evidence.byMember) {
+    const mastery = assessMastery(entry, refDate);
+    assert.ok(states.includes(mastery.state), `未知状态 ${mastery.state}`);
+    assert.ok(typeof mastery.confidence === "string" && mastery.confidence.length > 0);
+    assert.ok(typeof mastery.reason === "string" && mastery.reason.length > 0);
+    assert.ok(typeof mastery.action === "string" && mastery.action.length > 0);
+    assert.ok(!("coverage" in mastery), "成员掌握度不应含 coverage 键");
+    byState[entry.member] = mastery.state;
+  }
+  assert.equal(byState["甲"], "有基础");
+  assert.equal(byState["乙"], "已接触");
 });
 
 test("computePhaseStats 跨节点按题去重", () => {

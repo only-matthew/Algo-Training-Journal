@@ -181,28 +181,32 @@ export function buildNodeTrainingEvidence(node, logs) {
     if (tagged && !listed) relatedRecords.push(log);
   }
 
-  const statusFor = (count) => {
-    if (count === 0) return { coverage: "未接触", confidence: "无" };
-    if (count < 3) return { coverage: "已接触", confidence: "低" };
-    return { coverage: "有基础", confidence: "中" };
+  const summaryFor = (items) => {
+    const totalRecords = items.length;
+    const relatedRecordSet = new Set(relatedRecords);
+    const relatedCount = items.filter((item) => relatedRecordSet.has(item)).length;
+    const masteredRecords = items.filter((item) => item.reviewStatus === "mastered").length;
+    const todoRecords = items.filter((item) => item.reviewStatus === "todo").length;
+    const todoDueDates = items
+      .filter((item) => item.reviewStatus === "todo" && item.reviewDue)
+      .map((item) => String(item.reviewDue));
+    const lastTrainedAt = items.reduce((latest, item) => String(item.date || "") > latest ? String(item.date || "") : latest, "");
+    return { totalRecords, relatedRecords: relatedCount, masteredRecords, todoRecords, todoDueDates, lastTrainedAt };
   };
   const byMemberMap = new Map();
   for (const log of records) {
     const member = String(log.member || "");
     if (!member) continue;
-    const current = byMemberMap.get(member) || { member, totalRecords: 0, relatedRecords: 0 };
-    current.totalRecords += 1;
-    if (relatedRecords.includes(log)) current.relatedRecords += 1;
+    const current = byMemberMap.get(member) || [];
+    current.push(log);
     byMemberMap.set(member, current);
   }
   const byMember = [...byMemberMap.values()]
-    .sort((a, b) => a.member.localeCompare(b.member, "zh-CN"))
-    .map((entry) => ({ ...entry, ...statusFor(entry.totalRecords) }));
+    .map((items) => ({ member: String(items[0].member), ...summaryFor(items) }))
+    .sort((a, b) => a.member.localeCompare(b.member, "zh-CN"));
 
   return {
-    totalRecords: records.length,
-    relatedRecords: relatedRecords.length,
-    ...statusFor(records.length),
+    ...summaryFor(records),
     byMember,
     records,
     related: relatedRecords,

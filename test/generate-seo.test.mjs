@@ -139,3 +139,29 @@ test("generator emits crawlable member and problem pages", () => {
     assert.ok(tagPage.includes("条训练记录"), "tag page must be fully server-rendered");
   }
 });
+
+test("roadmap node trainingEvidence carries mastery state without coverage", () => {
+  const nodesDir = path.join(siteDir, "data", "roadmap", "nodes");
+  if (!fs.existsSync(nodesDir)) return; // curriculum/ 缺失时不生成 roadmap，跳过
+  const files = fs.readdirSync(nodesDir).filter((f) => f.endsWith(".json"));
+  assert.ok(files.length > 0, "site/data/roadmap/nodes/ must contain node JSON");
+  const states = ["未接触", "已接触", "有基础", "较熟练", "建议复习"];
+  let checked = 0;
+  for (const file of files.slice(0, 3)) {
+    const nodeData = JSON.parse(fs.readFileSync(path.join(nodesDir, file), "utf8"));
+    const ev = nodeData && nodeData.node && nodeData.node.trainingEvidence;
+    if (!ev) continue;
+    assert.ok(states.includes(ev.state), `${file} trainingEvidence.state 应为合法状态，实际 ${ev.state}`);
+    assert.equal(typeof ev.confidence, "string", `${file} missing confidence`);
+    assert.equal(typeof ev.reason, "string", `${file} missing reason`);
+    assert.equal(typeof ev.action, "string", `${file} missing action`);
+    assert.ok(!("coverage" in ev), `${file} must not carry coverage`);
+    assert.ok(Array.isArray(ev.byMember), `${file} byMember must be an array`);
+    for (const entry of ev.byMember) {
+      assert.ok(states.includes(entry.state), `${file} byMember entry missing valid state`);
+      assert.ok(!("coverage" in entry), `${file} byMember entry must not carry coverage`);
+    }
+    checked += 1;
+  }
+  assert.ok(checked > 0, "no node JSON exposed trainingEvidence");
+});
