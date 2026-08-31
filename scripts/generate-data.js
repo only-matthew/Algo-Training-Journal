@@ -738,7 +738,6 @@ async function generateRoadmapData(logs) {
       relatedRecords: evidence.relatedRecords,
       masteredRecords: evidence.masteredRecords,
       todoRecords: evidence.todoRecords,
-      todoDueDates: evidence.todoDueDates,
       lastTrainedAt: evidence.lastTrainedAt,
       byMember: evidence.byMember.map((entry) => {
         const memberMastery = assessMastery(entry, refDate);
@@ -748,7 +747,6 @@ async function generateRoadmapData(logs) {
           relatedRecords: entry.relatedRecords,
           masteredRecords: entry.masteredRecords,
           todoRecords: entry.todoRecords,
-          todoDueDates: entry.todoDueDates,
           lastTrainedAt: entry.lastTrainedAt,
           state: memberMastery.state,
           confidence: memberMastery.confidence,

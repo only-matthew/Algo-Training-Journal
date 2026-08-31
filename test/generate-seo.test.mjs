@@ -156,10 +156,12 @@ test("roadmap node trainingEvidence carries mastery state without coverage", () 
     assert.equal(typeof ev.reason, "string", `${file} missing reason`);
     assert.equal(typeof ev.action, "string", `${file} missing action`);
     assert.ok(!("coverage" in ev), `${file} must not carry coverage`);
+    assert.ok(!("todoDueDates" in ev), `${file} must not expose raw todoDueDates`);
     assert.ok(Array.isArray(ev.byMember), `${file} byMember must be an array`);
     for (const entry of ev.byMember) {
       assert.ok(states.includes(entry.state), `${file} byMember entry missing valid state`);
       assert.ok(!("coverage" in entry), `${file} byMember entry must not carry coverage`);
+      assert.ok(!("todoDueDates" in entry), `${file} byMember entry must not expose raw todoDueDates`);
     }
     checked += 1;
   }
