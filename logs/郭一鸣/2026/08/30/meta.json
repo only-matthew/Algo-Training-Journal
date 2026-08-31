@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-30T01:37:43.969+08:00",
+  "problems": [
+    {
+      "id": "887d6de7-25f2-4e56-bdcc-a95147494cfb",
+      "name": "[NOIP 2004 提高组] 合并果子",
+      "platform": "洛谷",
+      "problemNumber": "P1090",
+      "difficulty": "普及",
+      "tags": [
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
