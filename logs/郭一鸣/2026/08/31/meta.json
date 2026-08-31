@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-08-31T22:20:11.816+08:00",
+  "problems": [
+    {
+      "id": "d146dc33-29cc-4508-bdac-ade65da5f3c0",
+      "name": "小 A 的糖果",
+      "platform": "洛谷",
+      "problemNumber": "P3817",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
