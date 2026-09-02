@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-02T12:41:04.874+08:00",
+  "problems": [
+    {
+      "id": "20e4627e-ae33-4833-9bf6-afed9e823e23",
+      "name": "[NOIP 1998 提高组] 拼数",
+      "platform": "洛谷",
+      "problemNumber": "P1012",
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "字符串",
+        "贪心",
+        "排序"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
