@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-02T19:25:39.501+08:00",
+  "problems": [
+    {
+      "id": "4dbeeaa5-d623-4341-9261-ab72fbaf3baf",
+      "name": "[COCI 2008/2009 #2] PERKET",
+      "platform": "洛谷",
+      "problemNumber": "P2036",
+      "difficulty": "普及-",
+      "tags": [
+        "搜索",
+        "暴力",
+        "枚举"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
