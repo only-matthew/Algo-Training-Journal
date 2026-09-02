@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-02T21:27:15.509+08:00",
+  "problems": [
+    {
+      "id": "8db9d179-fe44-4a0f-9456-be2047164dc7",
+      "name": "舞蹈面试",
+      "platform": "其他",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [
+        "滑动窗口",
+        "二分答案"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
