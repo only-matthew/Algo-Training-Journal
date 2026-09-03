@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-03T22:50:14.415+08:00",
+  "problems": [
+    {
+      "id": "ba7fa4b6-1243-45ef-8629-1b5ecc479ed5",
+      "name": "导弹防御系统",
+      "platform": "其他",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [
+        "DP"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
