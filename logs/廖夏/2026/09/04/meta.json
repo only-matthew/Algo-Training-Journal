@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-04T13:14:04.844+08:00",
+  "problems": [
+    {
+      "id": "fd790b0f-5c40-422e-8446-d440b09e7384",
+      "name": "[AHOI2018初中组] 分组",
+      "platform": "洛谷",
+      "problemNumber": "P4447",
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "贪心",
+        "队列",
+        "排序"
+      ],
+      "reviewStatus": "todo",
+      "reviewDue": "2026-12-07"
+    }
+  ]
+}
