@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-09-04T13:14:04.844+08:00",
+  "updatedAt": "2026-09-04T13:28:21.600+08:00",
   "problems": [
     {
       "id": "fd790b0f-5c40-422e-8446-d440b09e7384",
@@ -15,6 +15,17 @@
       ],
       "reviewStatus": "todo",
       "reviewDue": "2026-12-07"
+    },
+    {
+      "id": "94fea29f-62f8-4c21-b704-6454adcdf726",
+      "name": "【深基13.例1】查找",
+      "platform": "洛谷",
+      "problemNumber": "P2249",
+      "difficulty": "普及-",
+      "tags": [
+        "二分"
+      ],
+      "reviewStatus": "none"
     }
   ]
 }
