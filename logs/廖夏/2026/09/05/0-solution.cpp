@@ -41,3 +41,24 @@ int main(){
 	cout << res;
 	return 0;
 }
+
+#include<iostream>
+#include<algorithm>
+using namespace std;
+typedef long long ll;
+const int MAXN = 2e5 + 5;
+ll a[MAXN];
+ll n, C;
+int main(){
+	cin >> n >> C;
+	for (int i = 1; i <= n; i++) cin >> a[i];
+	sort(a + 1, a + 1 + n);
+	int L = 1, R = 1;
+	ll res = 0;
+	for (int i = 1; i <= n; i++){
+		while (L <= n && a[L] < a[i] + C) L++;
+		while (R <= n && a[R] <= a[i] + C) R++;
+		res += R - L;
+	}
+	cout << res;
+}
