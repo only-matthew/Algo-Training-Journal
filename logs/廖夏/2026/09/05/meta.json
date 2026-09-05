@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-09-05T15:30:25.930+08:00",
+  "updatedAt": "2026-09-05T23:02:47.107+08:00",
   "problems": [
     {
       "id": "6f0bea20-4d0b-441b-9281-eb0a24fc86da",
@@ -11,6 +11,17 @@
       "tags": [
         "模拟",
         "二分"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "c5b23e59-7cf0-4e83-929a-2247736d00bf",
+      "name": "[COCI 2011/2012 #5] EKO / 砍树",
+      "platform": "洛谷",
+      "problemNumber": "P1873",
+      "difficulty": "普及-",
+      "tags": [
+        "二分答案"
       ],
       "reviewStatus": "none"
     }
