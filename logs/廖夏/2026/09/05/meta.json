@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-05T15:19:45.056+08:00",
+  "problems": [
+    {
+      "id": "6f0bea20-4d0b-441b-9281-eb0a24fc86da",
+      "name": "A-B 数对",
+      "platform": "洛谷",
+      "problemNumber": "P1102",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "二分"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
