@@ -11,7 +11,7 @@
     "build": "npm run generate",
     "backfill:updated-at": "node scripts/backfill-updated-at.js",
     "migrate:date-layout": "node scripts/migrate-date-layout.js",
-    "test": "node --test",
+    "test": "node --test --test-concurrency=1",
     "check:syntax": "node scripts/check-syntax.mjs",
     "verify": "npm run check:syntax && npm test && npm run build",
     "check": "npm run verify"
