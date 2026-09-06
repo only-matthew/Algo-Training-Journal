@@ -4,7 +4,8 @@ import { handleQqBotWebhook } from "./qq-bot.mjs";
 import { createTrainingService, sha256Hex, trainingPaths } from "./services/training.mjs";
 import { GitTransactionError } from "./storage/git-transaction.mjs";
 import { isUuidV4 } from "../lib/training-schema.mjs";
-import { buildEvidenceV1 } from "../lib/training-projections.mjs";
+import { readCatalog, readTrainingContext, workbenchResponse } from "./services/training-read.mjs";
+import { recommendV1 } from "../lib/recommendations.mjs";
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
@@ -139,12 +140,26 @@ async function githubContentAt(token, path, ref) {
 
 function trainingGit(token) {
   const treeCache = new Map();
+  const fileCache = new Map();
+  const readFile = (head, path) => {
+    const key = `${head}:${path}`;
+    if (!fileCache.has(key)) fileCache.set(key, githubContentAt(token, path, head));
+    return fileCache.get(key);
+  };
+  const listFiles = async (snapshot, prefix) => {
+    if (!treeCache.has(snapshot.head)) treeCache.set(snapshot.head, gh(`/git/trees/${snapshot.head}?recursive=1`, token).then((result) => {
+      if (result.truncated) throw Object.assign(new Error("Repository index is too large"), { code: "INDEX_STALE", status: 503 });
+      return result.tree || [];
+    }));
+    return (await treeCache.get(snapshot.head)).filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix)).map((entry) => entry.path);
+  };
   return {
     async getHead() {
       const ref = await gh(`/git/ref/heads/${BRANCH}`, token);
       return ref.object.sha;
     },
-    readFile(head, path) { return githubContentAt(token, path, head); },
+    readFile,
+    listFiles,
     async commit({ head, changes, message }) {
       const parent = await gh(`/git/commits/${head}`, token);
       const entries = await mapConcurrent(changes, 4, async (change) => {
@@ -161,34 +176,15 @@ function trainingGit(token) {
       return { commitSha: commit.sha };
     },
     async listEvents(snapshot, memberId, subjectKey) {
-      let tree = treeCache.get(snapshot.head);
-      if (!tree) {
-        const result = await gh(`/git/trees/${snapshot.head}?recursive=1`, token);
-        tree = result.tree || [];
-        treeCache.set(snapshot.head, tree);
-      }
       const prefix = `training/members/${memberId}/events/`;
-      const paths = tree.filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix) && entry.path.endsWith(".json")).map((entry) => entry.path);
-      const events = await Promise.all(paths.map(async (path) => {
-        const raw = await githubContentAt(token, path, snapshot.head);
-        try { return raw ? JSON.parse(raw) : null; } catch { return null; }
-      }));
-      return events.filter((event) => event && event.memberId === memberId && event.subjectKey === subjectKey);
+      const paths = (await listFiles(snapshot, prefix)).filter((path) => path.endsWith(".json"));
+      const events = await mapConcurrent(paths, 4, async (path) => JSON.parse(await readFile(snapshot.head, path)));
+      return events.filter((event) => event && event.memberId === memberId && (event.subjectKey === subjectKey || event.targetAttemptId));
     },
     async listDocuments(snapshot, memberId, directory, suffix = ".json") {
-      let tree = treeCache.get(snapshot.head);
-      if (!tree) {
-        const result = await gh(`/git/trees/${snapshot.head}?recursive=1`, token);
-        tree = result.tree || [];
-        treeCache.set(snapshot.head, tree);
-      }
       const prefix = `training/members/${memberId}/${directory}/`;
-      const paths = tree.filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix) && entry.path.endsWith(suffix)).map((entry) => entry.path);
-      const values = await Promise.all(paths.map(async (path) => {
-        const raw = await githubContentAt(token, path, snapshot.head);
-        try { return raw ? { path, data: JSON.parse(raw) } : null; } catch { return null; }
-      }));
-      return values.filter(Boolean);
+      const paths = (await listFiles(snapshot, prefix)).filter((path) => path.endsWith(suffix));
+      return mapConcurrent(paths, 4, async (path) => ({ path, data: JSON.parse(await readFile(snapshot.head, path)) }));
     },
   };
 }
@@ -208,8 +204,21 @@ async function handleTrainingV2(request, user, url) {
   const suffix = url.pathname.slice("/api/v2".length);
   const git = trainingGit(user.token);
   const paths = trainingPaths(user.login);
-  const service = createTrainingService({ git, loadEvents: ({ snapshot, memberId, subjectKey }) => git.listEvents(snapshot, memberId, subjectKey) });
-  const write = request.method !== "GET";
+  const today = toUtc8(new Date().toISOString()).slice(0, 10);
+  const service = createTrainingService({ git,
+    loadEvents: ({ snapshot, memberId, subjectKey }) => git.listEvents(snapshot, memberId, subjectKey),
+    validateFocus: async (snapshot, ids) => {
+      if (!ids.length) return;
+      const nodes = await readCatalog(snapshot);
+      if (ids.some((id) => !nodes.some((node) => node.id === id))) throw Object.assign(new Error("请选择有效的学习专题"), { status: 422 });
+    },
+    validateSelection: async (snapshot, item, plan) => {
+      if (item.kind === "manual") return;
+      const context = await readTrainingContext({ git, snapshot, user, date: plan?.date || today, today });
+      const available = recommendV1({ ...context, profile: { ...(context.profile || {}), dailyItemLimit: 10, dailyBudgetMinutes: 240 } }).items;
+      if (!available.some((candidate) => candidate.subjectKey === item.subjectKey && candidate.kind === item.kind && candidate.nodeId === item.nodeId)) throw Object.assign(new Error("候选已变化，请刷新推荐后重新选择"), { code: "VERSION_CONFLICT", status: 409 });
+    },
+  });
   const command = async (method, resource, payload, preconditions) => {
     const operationId = requireIdempotencyKey(request);
     const requestHash = await sha256Hex({ method: request.method, path: suffix, body: payload, preconditions });
@@ -217,23 +226,22 @@ async function handleTrainingV2(request, user, url) {
   };
 
   if (request.method === "GET" && (suffix === "/me/reviews" || suffix === "/me/workbench" || suffix === "/me/recommendations")) {
-    const snapshot = { head: await git.getHead(), readFile: (path) => git.readFile(snapshot, path) };
-    const date = url.searchParams.get("date") || new Date().toISOString().slice(0, 10);
+    const head = await git.getHead();
+    const snapshot = { head, readFile: (path) => git.readFile(head, path) };
+    const date = url.searchParams.get("date") || today;
     if (!isDateString(date)) throw Object.assign(new Error("Invalid date"), { code: "MALFORMED_REQUEST", status: 400 });
-    const [profile, plan, reviewFiles, eventFiles, assessmentFiles] = await Promise.all([
-      readTrainingDocument(git, user.login, "profile", paths.profile),
-      readTrainingDocument(git, user.login, `plan:${date}`, paths.plan(date)),
-      git.listDocuments(snapshot, user.login, "reviews"),
-      git.listDocuments(snapshot, user.login, "events"),
-      git.listDocuments(snapshot, user.login, "assessments"),
-    ]);
-    const reviews = reviewFiles.map(({ data }) => data).filter((data) => data?.memberId === user.login);
-    if (suffix === "/me/reviews") return v2Json(request, { data: reviews, revision: `sha256:${await sha256Hex({ resourceKey: "reviews", reviews })}`, snapshotCommitSha: snapshot.head });
-    const attempts = eventFiles.map(({ data }) => data).filter((data) => data?.memberId === user.login && data.type === "attempt.recorded");
-    const selfAssessments = assessmentFiles.map(({ data }) => data).filter((data) => data?.memberId === user.login);
-    const evidence = buildEvidenceV1({ attempts, reviews, selfAssessment: selfAssessments, today: date });
-    if (suffix === "/me/recommendations") return v2Json(request, { algorithmVersion: "recommend-v1", evidenceSnapshot: evidence, items: [], snapshotCommitSha: snapshot.head });
-    return v2Json(request, { date, profile: profile.data, plan: plan.data, dueReviews: reviews.filter((review) => review.state === "scheduled" && review.dueOn && review.dueOn <= date), evidence, resourceVersions: { profile: profile.revision, [`plan:${date}`]: plan.revision }, snapshotCommitSha: snapshot.head });
+    const exclude = url.searchParams.getAll("exclude");
+    if (exclude.length > 50 || exclude.some((key) => key.length > 500)) return v2Error(request, "MALFORMED_REQUEST", "排除列表过长", 400);
+    const context = await readTrainingContext({ git, snapshot, user, date, today, includeCatalog: suffix !== "/me/reviews" });
+    if (suffix === "/me/reviews") return v2Json(request, { data: context.reviews, snapshotCommitSha: head });
+    const result = workbenchResponse(context, exclude);
+    if (suffix === "/me/recommendations") return v2Json(request, { ...result.recommendations, today, snapshotCommitSha: head });
+    return v2Json(request, result);
+  }
+
+  if (suffix === "/me/plan-actions" && request.method === "POST") {
+    const { body: action, preconditions } = withoutPreconditions(await readJsonBody(request));
+    return v2Json(request, await command(service.applyPlanAction, "action", action, preconditions));
   }
 
   if (suffix === "/me/profile") {

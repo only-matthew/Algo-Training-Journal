@@ -9,6 +9,8 @@ import {
 import { subjectKeyForProblem } from "../../lib/problem-identity.mjs";
 import { projectReviewSchedule } from "../../lib/training-projections.mjs";
 import { runGitTransaction } from "../storage/git-transaction.mjs";
+import { toUtc8 } from "../../lib/constants.mjs";
+import { isDateString } from "../../lib/log-schema.mjs";
 
 export class TrainingServiceError extends Error {
   constructor(code, message, status = 422) {
@@ -80,6 +82,11 @@ function parseJson(raw, path) {
 }
 
 async function manifestRevision(snapshot, resourceKey, paths) {
+  if (paths.length === 1) {
+    const raw = await snapshot.readFile(paths[0]);
+    if (raw == null) return null;
+    return `sha256:${await sha256Hex({ resourceKey, document: parseJson(raw, paths[0]) })}`;
+  }
   const dependencies = [];
   for (const path of [...new Set(paths)].sort()) {
     const content = await snapshot.readFile(path);
@@ -111,6 +118,10 @@ async function assertPrecondition(snapshot, preconditions, resourceKey, paths) {
 
 function fileChange(path, value) {
   return { path, content: `${canonicalJson(value)}\n` };
+}
+
+function addDays(date, days) {
+  return new Date(Date.parse(`${date}T00:00:00Z`) + days * 86400000).toISOString().slice(0, 10);
 }
 
 async function readOwned(snapshot, path, validator, memberId) {
@@ -177,7 +188,7 @@ function persistedReview(projection) {
   return validateReview(review);
 }
 
-export function createTrainingService({ git, now = () => new Date().toISOString(), loadEvents = async () => [], dateMath } = {}) {
+export function createTrainingService({ git, now = () => new Date().toISOString(), loadEvents = async () => [], validateSelection = async () => {}, validateFocus = async () => {}, dateMath } = {}) {
   if (!git) throw new TypeError("git is required");
   if (typeof now !== "function" || typeof loadEvents !== "function") throw new TypeError("now and loadEvents must be functions");
 
@@ -196,6 +207,7 @@ export function createTrainingService({ git, now = () => new Date().toISOString(
         const input = asObject(profile, "profile");
         noUnknown(input, ["focusNodeIds", "dailyBudgetMinutes", "dailyItemLimit", "cfHandle", "atcoderHandle", "goalNote"], "profile");
         const document = validateProfile({ schemaVersion: TRAINING_SCHEMA_VERSION, memberId, updatedAt: timestamp, ...input });
+        await validateFocus(snapshot, document.focusNodeIds || []);
         const revision = `sha256:${await sha256(canonicalJson({ resourceKey: "profile", document }))}`;
         return { changes: [fileChange(paths.profile, document)], result: { data: document, resourceVersions: { profile: revision } } };
       },
@@ -207,13 +219,78 @@ export function createTrainingService({ git, now = () => new Date().toISOString(
         const date = asObject(plan, "plan").date;
         await assertPrecondition(snapshot, preconditions, `plan:${date}`, [trainingPaths(memberId).plan(date)]);
       },
-      plan: async () => {
+      plan: async (snapshot) => {
         const input = asObject(plan, "plan");
         noUnknown(input, ["date", "items", "algorithmVersion", "evidenceSnapshot"], "plan");
         const document = validatePlan({ schemaVersion: TRAINING_SCHEMA_VERSION, memberId, updatedAt: now(), ...input });
+        const path = trainingPaths(memberId).plan(document.date);
+        const previous = await readOwned(snapshot, path, validatePlan, memberId);
+        const today = toUtc8(now()).slice(0, 10);
+        if ((!previous && document.date < today) || document.date > addDays(today, 365)) throw new TrainingServiceError("VALIDATION_FAILED", "新计划日期必须在今天至未来 365 天以内");
+        const previousItems = new Map((previous?.items || []).map((item) => [item.id, item]));
+        for (const item of document.items) {
+          const old = previousItems.get(item.id);
+          if (old) {
+            if (canonicalJson(old) !== canonicalJson(item)) throw new TrainingServiceError("VALIDATION_FAILED", "已有计划项请使用计划操作接口更新");
+          } else {
+            if (item.status !== "queued" || item.linkedAttemptId || item.deferredTo) throw new TrainingServiceError("VALIDATION_FAILED", "新增计划只能是待开始，不能伪造完成结果");
+            if (item.recordRef && item.recordRef.memberId !== memberId) throw new TrainingServiceError("FORBIDDEN", "不能引用其他队员的记录", 403);
+            if (item.subjectKey !== subjectKeyForProblem({ ...item.recordRef, ...item.problem })) throw new TrainingServiceError("VALIDATION_FAILED", "题目身份不一致");
+            await validateSelection(snapshot, item, previous);
+          }
+        }
+        if ([...previousItems.keys()].some((id) => !document.items.some((item) => item.id === id))) throw new TrainingServiceError("VALIDATION_FAILED", "移除计划项请使用移除操作");
+        if (document.items.filter((item) => ["queued", "started", "completed"].includes(item.status)).length > 10) throw new TrainingServiceError("VALIDATION_FAILED", "每日最多 10 个有效计划项");
         const key = `plan:${document.date}`;
         const revision = `sha256:${await sha256(canonicalJson({ resourceKey: key, document }))}`;
         return { changes: [fileChange(trainingPaths(memberId).plan(document.date), document)], result: { data: document, resourceVersions: { [key]: revision } } };
+      },
+    }),
+
+    applyPlanAction: ({ memberId, operationId, requestHash, action, preconditions }) => execute({
+      memberId, operationId, requestHash, message: "update training plan",
+      validate: async (snapshot) => {
+        asObject(action, "plan action");
+        noUnknown(action, ["date", "itemId", "action", "targetDate"], "plan action");
+        if (!isDateString(action.date) || !["start", "remove", "reopen", "defer"].includes(action.action)) throw new TrainingServiceError("VALIDATION_FAILED", "计划操作或日期无效");
+        const paths = trainingPaths(memberId);
+        await assertPrecondition(snapshot, preconditions, `plan:${action.date}`, [paths.plan(action.date)]);
+        if (action.action === "defer") {
+          if (!isDateString(action.targetDate) || action.targetDate <= action.date || action.targetDate > addDays(toUtc8(now()).slice(0, 10), 365)) throw new TrainingServiceError("VALIDATION_FAILED", "延期日期须晚于原日期且不超过未来 365 天");
+          await assertPrecondition(snapshot, preconditions, `plan:${action.targetDate}`, [paths.plan(action.targetDate)]);
+        } else if (action.targetDate !== undefined) throw new TrainingServiceError("VALIDATION_FAILED", "只有延期操作可提供目标日期");
+      },
+      plan: async (snapshot) => {
+        const paths = trainingPaths(memberId);
+        const source = await readOwned(snapshot, paths.plan(action.date), validatePlan, memberId);
+        const item = source?.items.find((entry) => entry.id === action.itemId);
+        if (!item) throw new TrainingServiceError("NOT_FOUND", "计划项不存在", 404);
+        if (action.action !== "reopen" && !["queued", "started"].includes(item.status)) throw new TrainingServiceError("VERSION_CONFLICT", "该计划项状态已变化，请刷新", 409);
+        const documents = [source];
+        if (action.action === "defer") {
+          const target = await readOwned(snapshot, paths.plan(action.targetDate), validatePlan, memberId) || { schemaVersion: 1, memberId, date: action.targetDate, items: [], updatedAt: now() };
+          if (!target.items.some((entry) => entry.subjectKey === item.subjectKey && ["queued", "started", "completed"].includes(entry.status))) {
+            const { linkedAttemptId, deferredTo, ...copy } = item;
+            target.items.push({ ...copy, id: crypto.randomUUID(), status: "queued" });
+          }
+          item.status = "deferred";
+          item.deferredTo = action.targetDate;
+          documents.push(target);
+        } else {
+          item.status = ({ start: "started", remove: "removed", reopen: "queued" })[action.action];
+          if (action.action === "reopen") { delete item.linkedAttemptId; delete item.deferredTo; }
+        }
+        const resourceVersions = {};
+        const changes = [];
+        for (const doc of documents) {
+          doc.updatedAt = now();
+          validatePlan(doc);
+          if (doc.items.filter((entry) => ["queued", "started", "completed"].includes(entry.status)).length > 10) throw new TrainingServiceError("VERSION_CONFLICT", "目标计划已满", 409);
+          const key = `plan:${doc.date}`;
+          resourceVersions[key] = `sha256:${await sha256Hex({ resourceKey: key, document: doc })}`;
+          changes.push(fileChange(paths.plan(doc.date), doc));
+        }
+        return { changes, result: { data: source, resourceVersions } };
       },
     }),
 

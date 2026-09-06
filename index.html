@@ -136,6 +136,22 @@
         <div><h1>我的训练</h1><p class="subtitle">只记录自己的节奏，安排今天要练什么</p></div>
         <button id="training-refresh" class="btn btn-outline btn-sm" type="button">刷新训练状态</button>
       </header>
+      <p id="training-save-status" role="status" aria-live="polite" class="hint"></p>
+      <button id="training-retry" class="btn btn-outline btn-sm" type="button" hidden>重试确认上次保存</button>
+      <p class="hint">训练偏好和计划会保存到公开仓库，请不要填写私人信息。</p>
+      <details class="card training-settings">
+        <summary>训练目标与时间预算</summary>
+        <form id="training-profile-form">
+          <div class="form-row">
+            <label>每天可用时间（分钟）<input id="training-budget" class="form-input" type="number" min="15" max="240" value="60" required></label>
+            <label>每次推荐题数<input id="training-limit" class="form-input" type="number" min="1" max="10" value="3" required></label>
+          </div>
+          <label>当前专题（最多 3 个；不选则从基础开始）<select id="training-focus" class="form-input" multiple size="6"></select></label>
+          <label>近期目标（可不填）<input id="training-goal" class="form-input" maxlength="200" placeholder="例如：练熟二分答案的建模"></label>
+          <button class="btn btn-primary btn-sm" type="submit">保存训练偏好</button>
+        </form>
+      </details>
+      <p><label>计划日期 <input id="training-date" class="form-input" type="date"></label></p>
       <section class="grid metrics">
         <article class="card"><p class="metric-label">今日计划</p><p id="training-plan-count" class="metric-value">—</p></article>
         <article class="card"><p class="metric-label">到期复习</p><p id="training-review-count" class="metric-value">—</p></article>
@@ -147,7 +163,14 @@
         <article class="card"><h2>到期复习</h2><div id="training-review-list"><p class="hint">登录后加载</p></div></article>
       </section>
       <section class="card"><h2>训练证据</h2><div id="training-evidence"><p class="hint">登录后加载</p></div></section>
-      <section class="card"><h2>下一步建议</h2><div id="training-recommendations"><p class="hint">登录后加载</p></div><p><a href="/roadmap/">浏览学习路线 →</a></p></section>
+      <section class="card"><h2>下一步建议</h2><p class="hint">选中后才加入计划。时间仅作预算，可自行调整训练节奏。</p><div id="training-recommendations"><p class="hint">登录后加载</p></div><button id="training-change" class="btn btn-outline btn-sm" type="button">换一组候选</button><p><a href="/roadmap/">浏览学习路线 →</a></p></section>
+      <details class="card training-settings"><summary>手动加入题目</summary>
+        <form id="training-manual-form">
+          <div class="form-row"><label>平台<select id="training-platform" class="form-input"><option>洛谷</option><option>Codeforces</option><option>AtCoder</option><option>其他</option></select></label><label>题号<input id="training-number" class="form-input" maxlength="50" required placeholder="例如 P1001"></label></div>
+          <label>题目名称<input id="training-name" class="form-input" maxlength="200" required></label>
+          <button class="btn btn-primary btn-sm" type="submit">加入所选日期的计划</button>
+        </form>
+      </details>
     </section>
 
     <section id="review-page" class="page-view" hidden>
