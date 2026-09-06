@@ -1,6 +1,10 @@
 import { isDateString, LOG_LIMITS, metaFromProblems, validateLogInput } from "../lib/log-schema.mjs";
 import { toUtc8 } from "../lib/constants.mjs";
 import { handleQqBotWebhook } from "./qq-bot.mjs";
+import { createTrainingService, sha256Hex, trainingPaths } from "./services/training.mjs";
+import { GitTransactionError } from "./storage/git-transaction.mjs";
+import { isUuidV4 } from "../lib/training-schema.mjs";
+import { buildEvidenceV1 } from "../lib/training-projections.mjs";
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
@@ -31,7 +35,7 @@ function rateExceeded(key, limit) {
 
 function cors(request) {
   const origin = request.headers.get("Origin");
-  return origin && ORIGINS.has(origin) ? { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token", "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS", Vary: "Origin" } : {};
+  return origin && ORIGINS.has(origin) ? { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token, Idempotency-Key, If-Match, If-None-Match", "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS", "Access-Control-Expose-Headers": "ETag, Retry-After", Vary: "Origin" } : {};
 }
 function json(request, body, status = 200, headers = {}) { return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8", ...cors(request), ...headers } }); }
 function cookies(request) { return Object.fromEntries((request.headers.get("Cookie") || "").split(/;\s*/).filter(Boolean).map((part) => { const i = part.indexOf("="); return [part.slice(0, i), part.slice(i + 1)]; })); }
@@ -76,6 +80,220 @@ async function gh(path, token, options = {}) {
     throw Object.assign(new Error("GitHub API 请求失败"), { status: response.status >= 500 ? 502 : 400 });
   }
   return response.status === 204 ? null : response.json();
+}
+
+function v2Error(request, code, message, status, extra = {}) {
+  return json(request, { error: { code, message, ...extra }, requestId: crypto.randomUUID() }, status, { "Cache-Control": "no-store" });
+}
+
+function v2Json(request, body, { status = 200, revision, headers = {} } = {}) {
+  return json(request, body, status, {
+    "Cache-Control": "no-store",
+    ...(revision ? { ETag: `"${revision}"` } : {}),
+    ...headers,
+  });
+}
+
+function canonicalJson(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
+  return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
+}
+
+function parseConditionalRevision(request) {
+  const match = request.headers.get("If-Match");
+  const noneMatch = request.headers.get("If-None-Match");
+  if (match && noneMatch) throw Object.assign(new Error("Use only one conditional revision header"), { code: "MALFORMED_REQUEST", status: 400 });
+  if (noneMatch === "*") return null;
+  if (match) {
+    const quoted = /^"(sha256:[a-f0-9]{64})"$/i.exec(match);
+    if (quoted) return quoted[1];
+  }
+  throw Object.assign(new Error("A conditional revision is required"), { code: "PRECONDITION_REQUIRED", status: 428 });
+}
+
+function requireIdempotencyKey(request) {
+  const value = request.headers.get("Idempotency-Key");
+  if (!isUuidV4(value)) throw Object.assign(new Error("Idempotency-Key must be a UUID v4"), { code: "PRECONDITION_REQUIRED", status: 428 });
+  return value;
+}
+
+function requireObject(value, name = "body") {
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw Object.assign(new Error(`${name} must be an object`), { code: "MALFORMED_REQUEST", status: 400 });
+  return value;
+}
+
+function withoutPreconditions(command) {
+  const { preconditions, ...body } = requireObject(command);
+  return { body, preconditions };
+}
+
+async function githubContentAt(token, path, ref) {
+  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token) });
+  if (response.status === 404) return null;
+  if (!response.ok) throw Object.assign(new Error("GitHub content read failed"), { code: "UPSTREAM_UNAVAILABLE", status: 502 });
+  const body = await response.json();
+  if (Array.isArray(body) || typeof body?.content !== "string") throw Object.assign(new Error("GitHub content response was invalid"), { code: "UPSTREAM_UNAVAILABLE", status: 502 });
+  return new TextDecoder().decode(Uint8Array.from(atob(body.content.replace(/\s/g, "")), (char) => char.charCodeAt(0)));
+}
+
+function trainingGit(token) {
+  const treeCache = new Map();
+  return {
+    async getHead() {
+      const ref = await gh(`/git/ref/heads/${BRANCH}`, token);
+      return ref.object.sha;
+    },
+    readFile(head, path) { return githubContentAt(token, path, head); },
+    async commit({ head, changes, message }) {
+      const parent = await gh(`/git/commits/${head}`, token);
+      const entries = await mapConcurrent(changes, 4, async (change) => {
+        const blob = await gh("/git/blobs", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: change.content, encoding: "utf-8" }) });
+        return { path: change.path, mode: "100644", type: "blob", sha: blob.sha };
+      });
+      const tree = await gh("/git/trees", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ base_tree: parent.tree.sha, tree: entries }) });
+      const commit = await gh("/git/commits", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message, tree: tree.sha, parents: [head] }) });
+      const current = await gh(`/git/ref/heads/${BRANCH}`, token);
+      if (current.object.sha !== head) throw Object.assign(new Error("Git reference changed"), { code: "REF_CONFLICT", status: 409 });
+      const response = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, { method: "PATCH", headers: { ...ghHeaders(token), "Content-Type": "application/json" }, body: JSON.stringify({ sha: commit.sha, force: false }) });
+      if (response.status === 422 || response.status === 409) throw Object.assign(new Error("Git reference changed"), { code: "REF_CONFLICT", status: 409 });
+      if (!response.ok) throw Object.assign(new Error("GitHub reference update failed"), { code: "UPSTREAM_UNAVAILABLE", status: 502 });
+      return { commitSha: commit.sha };
+    },
+    async listEvents(snapshot, memberId, subjectKey) {
+      let tree = treeCache.get(snapshot.head);
+      if (!tree) {
+        const result = await gh(`/git/trees/${snapshot.head}?recursive=1`, token);
+        tree = result.tree || [];
+        treeCache.set(snapshot.head, tree);
+      }
+      const prefix = `training/members/${memberId}/events/`;
+      const paths = tree.filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix) && entry.path.endsWith(".json")).map((entry) => entry.path);
+      const events = await Promise.all(paths.map(async (path) => {
+        const raw = await githubContentAt(token, path, snapshot.head);
+        try { return raw ? JSON.parse(raw) : null; } catch { return null; }
+      }));
+      return events.filter((event) => event && event.memberId === memberId && event.subjectKey === subjectKey);
+    },
+    async listDocuments(snapshot, memberId, directory, suffix = ".json") {
+      let tree = treeCache.get(snapshot.head);
+      if (!tree) {
+        const result = await gh(`/git/trees/${snapshot.head}?recursive=1`, token);
+        tree = result.tree || [];
+        treeCache.set(snapshot.head, tree);
+      }
+      const prefix = `training/members/${memberId}/${directory}/`;
+      const paths = tree.filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix) && entry.path.endsWith(suffix)).map((entry) => entry.path);
+      const values = await Promise.all(paths.map(async (path) => {
+        const raw = await githubContentAt(token, path, snapshot.head);
+        try { return raw ? { path, data: JSON.parse(raw) } : null; } catch { return null; }
+      }));
+      return values.filter(Boolean);
+    },
+  };
+}
+
+async function readTrainingDocument(git, memberId, resourceKey, path) {
+  const head = await git.getHead();
+  const raw = await git.readFile(head, path);
+  if (raw === null) return { exists: false, data: null, revision: null, snapshotCommitSha: head };
+  let data;
+  try { data = JSON.parse(raw); } catch { throw Object.assign(new Error("Stored training document is invalid"), { code: "UPSTREAM_UNAVAILABLE", status: 502 }); }
+  if (data.memberId !== memberId) throw Object.assign(new Error("Stored document is not owned by this member"), { code: "FORBIDDEN", status: 403 });
+  const revision = `sha256:${await sha256Hex({ resourceKey, document: data })}`;
+  return { exists: true, data, revision, snapshotCommitSha: head };
+}
+
+async function handleTrainingV2(request, user, url) {
+  const suffix = url.pathname.slice("/api/v2".length);
+  const git = trainingGit(user.token);
+  const paths = trainingPaths(user.login);
+  const service = createTrainingService({ git, loadEvents: ({ snapshot, memberId, subjectKey }) => git.listEvents(snapshot, memberId, subjectKey) });
+  const write = request.method !== "GET";
+  const command = async (method, resource, payload, preconditions) => {
+    const operationId = requireIdempotencyKey(request);
+    const requestHash = await sha256Hex({ method: request.method, path: suffix, body: payload, preconditions });
+    return method({ memberId: user.login, operationId, requestHash, [resource]: payload, preconditions });
+  };
+
+  if (request.method === "GET" && (suffix === "/me/reviews" || suffix === "/me/workbench" || suffix === "/me/recommendations")) {
+    const snapshot = { head: await git.getHead(), readFile: (path) => git.readFile(snapshot, path) };
+    const date = url.searchParams.get("date") || new Date().toISOString().slice(0, 10);
+    if (!isDateString(date)) throw Object.assign(new Error("Invalid date"), { code: "MALFORMED_REQUEST", status: 400 });
+    const [profile, plan, reviewFiles, eventFiles, assessmentFiles] = await Promise.all([
+      readTrainingDocument(git, user.login, "profile", paths.profile),
+      readTrainingDocument(git, user.login, `plan:${date}`, paths.plan(date)),
+      git.listDocuments(snapshot, user.login, "reviews"),
+      git.listDocuments(snapshot, user.login, "events"),
+      git.listDocuments(snapshot, user.login, "assessments"),
+    ]);
+    const reviews = reviewFiles.map(({ data }) => data).filter((data) => data?.memberId === user.login);
+    if (suffix === "/me/reviews") return v2Json(request, { data: reviews, revision: `sha256:${await sha256Hex({ resourceKey: "reviews", reviews })}`, snapshotCommitSha: snapshot.head });
+    const attempts = eventFiles.map(({ data }) => data).filter((data) => data?.memberId === user.login && data.type === "attempt.recorded");
+    const selfAssessments = assessmentFiles.map(({ data }) => data).filter((data) => data?.memberId === user.login);
+    const evidence = buildEvidenceV1({ attempts, reviews, selfAssessment: selfAssessments, today: date });
+    if (suffix === "/me/recommendations") return v2Json(request, { algorithmVersion: "recommend-v1", evidenceSnapshot: evidence, items: [], snapshotCommitSha: snapshot.head });
+    return v2Json(request, { date, profile: profile.data, plan: plan.data, dueReviews: reviews.filter((review) => review.state === "scheduled" && review.dueOn && review.dueOn <= date), evidence, resourceVersions: { profile: profile.revision, [`plan:${date}`]: plan.revision }, snapshotCommitSha: snapshot.head });
+  }
+
+  if (suffix === "/me/profile") {
+    if (request.method === "GET") return v2Json(request, await readTrainingDocument(git, user.login, "profile", paths.profile));
+    if (request.method === "PUT") {
+      const profile = requireObject(await readJsonBody(request));
+      const result = await command(service.saveProfile, "profile", profile, { profile: parseConditionalRevision(request) });
+      return v2Json(request, result, { revision: result.resourceVersions.profile });
+    }
+  }
+
+  const planMatch = /^\/me\/plans\/(\d{4}-\d{2}-\d{2})$/.exec(suffix);
+  if (planMatch) {
+    const date = planMatch[1];
+    if (!isDateString(date)) throw Object.assign(new Error("Invalid plan date"), { code: "MALFORMED_REQUEST", status: 400 });
+    const key = `plan:${date}`;
+    if (request.method === "GET") return v2Json(request, await readTrainingDocument(git, user.login, key, paths.plan(date)));
+    if (request.method === "PUT") {
+      const incoming = requireObject(await readJsonBody(request));
+      if (Object.hasOwn(incoming, "date") && incoming.date !== date) throw Object.assign(new Error("Plan date does not match URL"), { code: "MALFORMED_REQUEST", status: 400 });
+      const plan = { ...incoming, date };
+      const result = await command(service.savePlan, "plan", plan, { [key]: parseConditionalRevision(request) });
+      return v2Json(request, result, { revision: result.resourceVersions[key] });
+    }
+  }
+
+  if (suffix === "/me/attempts" && request.method === "POST") {
+    const { body: attempt, preconditions } = withoutPreconditions(await readJsonBody(request));
+    const result = await command(service.recordAttempt, "attempt", attempt, preconditions);
+    return v2Json(request, result, { status: 201, revision: Object.values(result.resourceVersions)[0] });
+  }
+  if (suffix === "/me/review-actions" && request.method === "POST") {
+    const { body: action, preconditions } = withoutPreconditions(await readJsonBody(request));
+    const result = await command(service.applyReviewAction, "action", action, preconditions);
+    return v2Json(request, result, { status: 201, revision: Object.values(result.resourceVersions)[0] });
+  }
+
+  const assessmentMatch = /^\/me\/assessments\/([^/]+)$/.exec(suffix);
+  if (assessmentMatch) {
+    const nodeId = decodeURIComponent(assessmentMatch[1]);
+    const key = `assessment:${nodeId}`;
+    if (request.method === "GET") return v2Json(request, await readTrainingDocument(git, user.login, key, paths.assessment(nodeId)));
+    if (request.method === "PUT") {
+      const incoming = requireObject(await readJsonBody(request));
+      if (Object.hasOwn(incoming, "nodeId") && incoming.nodeId !== nodeId) throw Object.assign(new Error("Assessment nodeId does not match URL"), { code: "MALFORMED_REQUEST", status: 400 });
+      const assessment = { ...incoming, nodeId };
+      const result = await command(service.saveSelfAssessment, "assessment", assessment, { [key]: parseConditionalRevision(request) });
+      return v2Json(request, result, { revision: result.resourceVersions[key] });
+    }
+  }
+
+  const operationMatch = /^\/me\/operations\/([^/]+)$/.exec(suffix);
+  if (operationMatch && request.method === "GET") {
+    const operationId = decodeURIComponent(operationMatch[1]);
+    if (!isUuidV4(operationId)) throw Object.assign(new Error("Invalid operation id"), { code: "MALFORMED_REQUEST", status: 400 });
+    const document = await readTrainingDocument(git, user.login, `operation:${operationId}`, `training/members/${user.login}/operations/${operationId}.json`);
+    return v2Json(request, document.exists ? { exists: true, operation: { id: operationId, state: "saved" }, result: document.data.result, snapshotCommitSha: document.snapshotCommitSha } : { exists: false, operation: { id: operationId, state: "unknown" }, snapshotCommitSha: document.snapshotCommitSha });
+  }
+
+  return null;
 }
 async function mapConcurrent(items, concurrency, mapper) {
   const results = new Array(items.length); let next = 0;
@@ -541,17 +759,27 @@ export default {
       }
 
       const origin = request.headers.get("Origin");
-      if (origin && !ORIGINS.has(origin)) return json(request, { error: "不允许的请求来源" }, 403);
+      if (origin && !ORIGINS.has(origin)) return url.pathname.startsWith("/api/v2/")
+        ? v2Error(request, "FORBIDDEN", "不允许的请求来源", 403)
+        : json(request, { error: "不允许的请求来源" }, 403);
 
       if (url.pathname === "/api/logout" && request.method === "DELETE") {
         return json(request, { ok: true }, 200, { "Set-Cookie": cookie(COOKIE, "", 0) });
       }
 
       const user = await session(request, env);
-      if (!user) return json(request, { error: "未登录或会话已过期" }, 401);
+      if (!user) return url.pathname.startsWith("/api/v2/")
+        ? v2Error(request, "AUTH_REQUIRED", "未登录或会话已过期", 401)
+        : json(request, { error: "未登录或会话已过期" }, 401);
 
       if (request.method !== "GET" && (request.headers.get("X-CSRF-Token") || "") !== user.csrfToken) {
+        if (url.pathname.startsWith("/api/v2/")) return v2Error(request, "CSRF_FAILED", "CSRF 校验失败", 403);
         return json(request, { error: "CSRF 校验失败" }, 403);
+      }
+
+      if (url.pathname.startsWith("/api/v2/")) {
+        const response = await handleTrainingV2(request, user, url);
+        if (response) return response;
       }
 
       if (url.pathname === "/api/session" && request.method === "GET") {
@@ -567,9 +795,17 @@ export default {
         return handleImport(request, user);
       }
 
-      return json(request, { error: "Not found" }, 404);
+      return url.pathname.startsWith("/api/v2/")
+        ? v2Error(request, "NOT_FOUND", "训练接口不存在", 404)
+        : json(request, { error: "Not found" }, 404);
     } catch (error) {
       console.error(error);
+      if (url.pathname.startsWith("/api/v2/")) {
+        const status = error.status || (error.code === "VERSION_CONFLICT" ? 409 : error instanceof TypeError ? 422 : 500);
+        const code = error.code || (status === 401 ? "AUTH_REQUIRED" : status === 409 ? "VERSION_CONFLICT" : status === 422 ? "VALIDATION_FAILED" : status >= 500 ? "UPSTREAM_UNAVAILABLE" : "VALIDATION_FAILED");
+        const extra = error.currentRevision ? { currentRevision: error.currentRevision } : {};
+        return v2Error(request, code, status >= 500 ? "训练数据服务暂时不可用" : error.message, status, extra);
+      }
       const code = error.status || 500;
       const message = error.status && error.status < 500 ? error.message : "服务器内部错误";
       return json(request, { error: message }, code);
