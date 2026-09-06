@@ -425,7 +425,7 @@ function replaceHeadMetadata(html, { title, description, canonical, robots = "in
 
 function showOnlyPage(html, pageId) {
   const $ = cheerio.load(html);
-  const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page", "roadmap-page", "tag-page"];
+  const pageIds = ["overview-page", "training-page", "review-page", "analysis-page", "member-page", "problem-page", "roadmap-page", "tag-page"];
   for (const id of pageIds) {
     const section = $(`#${id}`);
     section.removeClass("active");
@@ -592,7 +592,7 @@ function writeRouteIndex(html, segments) {
 }
 
 function writeRouteIndexes(html, members, logs) {
-  const routeTitles = { analysis: "训练分析", review: "错题本" };
+  const routeTitles = { training: "我的训练", analysis: "训练分析", review: "错题本" };
   for (const route of Object.keys(routeTitles)) {
     const routeHtml = replaceHeadMetadata(showOnlyPage(html, `${route}-page`), {
       title: `${routeTitles[route]} · ${SITE_NAME}`,

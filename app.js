@@ -32,7 +32,7 @@ function withForm() {
 
   // 1. Auth
   await initSession();
-  window.journalRouteRenderer = () => {
+  window.trainingRouteRenderer = () => {
     if (currentRoute() === "training") void initTrainingPage();
   };
 
@@ -98,6 +98,7 @@ function withForm() {
   try {
     const route = currentRoute();
     if (route === "training") {
+      initShellRenderer();
       await initTrainingPage();
     } else if (route === "analysis" || route === "report" || route === "review" || route.startsWith("member/")) {
       await initJournalPage();

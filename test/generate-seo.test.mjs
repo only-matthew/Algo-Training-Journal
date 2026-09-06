@@ -39,6 +39,13 @@ test("generator emits crawlable member and problem pages", () => {
   });
   assert.equal(result.status, 0, result.stderr || result.stdout);
 
+  const trainingHtml = fs.readFileSync(path.join(siteDir, "training", "index.html"), "utf8");
+  assert.match(trainingHtml, /<title>我的训练/);
+  assert.match(trainingHtml, /<section id="training-page"[^>]*class="[^"]*active/);
+  assert.doesNotMatch(trainingHtml, /<section id="training-page"[^>]*hidden/);
+  const $training = require("cheerio").load(trainingHtml);
+  assert.equal($training("#training-page").parents(".page-view").length, 0, "training must not be nested in a hidden page");
+
   const journal = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "all.json"), "utf8"));
   assert.ok(journal.logs.length > 0);
   assert.ok(journal.members.length > 0);
