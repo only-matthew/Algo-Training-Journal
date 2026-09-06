@@ -249,7 +249,9 @@ function writeVersionedModule(name) {
     const dependency = path.posix.join(path.posix.dirname(name), importPath);
     return `${quote}${importPath}?v=${assetVersion(dependency)}${quote}`;
   });
-  fs.writeFileSync(path.join(OUTPUT_DIR, name), content, "utf8");
+  const outputPath = path.join(OUTPUT_DIR, name);
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, content, "utf8");
 }
 
 function listBrowserModuleFiles(dir = "lib") {

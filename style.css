@@ -52,6 +52,17 @@ h1 {
   color: var(--muted);
 }
 
+.training-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.training-row:last-child { border-bottom: 0; }
+.training-row span { color: var(--muted); white-space: nowrap; }
+
 /* 首页标题后的全队总刷题数徽标 */
 .site-total-badge {
   display: inline-block;

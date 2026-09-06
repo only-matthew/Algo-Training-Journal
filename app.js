@@ -2,6 +2,7 @@ import { initTheme, toggleTheme } from "./lib/theme.mjs";
 import { currentRoute, migrateLegacyHashRoute, initPageNavigation } from "./lib/router.mjs";
 import { initSession, login, logout } from "./lib/auth.mjs";
 import { apiRequest } from "./lib/journal-api.js";
+import { initTrainingPage } from "./lib/training-dashboard.mjs";
 import { journalRenderer, initOverviewPage, initJournalPage, initRoadmapRenderer, initTagRenderer, initShellRenderer, startRefreshTimer, doRefresh } from "./lib/application.mjs";
 
 // 表单模块（~50KB，含 tag-catalog）按需动态导入：日志页首屏与学习路线页都不加载，
@@ -31,6 +32,9 @@ function withForm() {
 
   // 1. Auth
   await initSession();
+  window.journalRouteRenderer = () => {
+    if (currentRoute() === "training") void initTrainingPage();
+  };
 
   // 2. Event bindings（表单相关均按需动态导入 form.mjs）
   document.getElementById("btn-theme").addEventListener("click", toggleTheme);
@@ -93,7 +97,9 @@ function withForm() {
   // 3. Load journal
   try {
     const route = currentRoute();
-    if (route === "analysis" || route === "report" || route === "review" || route.startsWith("member/")) {
+    if (route === "training") {
+      await initTrainingPage();
+    } else if (route === "analysis" || route === "report" || route === "review" || route.startsWith("member/")) {
       await initJournalPage();
     } else if (route === "roadmap" || route.startsWith("roadmap/")) {
       // 学习路线首屏直接使用预渲染 HTML（零 JSON），roadmap.json 在切换成员/刷新时按需拉取

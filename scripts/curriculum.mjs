@@ -1,29 +1,16 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { problemStableKey } from "../lib/log-schema.mjs";
+import { PLATFORM_ALIASES as SHARED_PLATFORM_ALIASES, canonicalProblemKey, normalizePlatform as normalizeSharedPlatform } from "../lib/problem-identity.mjs";
 
 // 平台名归一化：把常见的异写（如 CodeForces）统一为规范值。
-export const PLATFORM_ALIASES = {
-  "洛谷": "洛谷",
-  "CodeForces": "Codeforces",
-  "Codeforces": "Codeforces",
-  "AtCoder": "AtCoder",
-  "UVA": "UVA",
-  "HDU": "HDU",
-  "POJ": "POJ",
-  "OpenJ_Bailian": "OpenJ_Bailian",
-  "SPOJ": "SPOJ",
-  "LibreOJ": "LibreOJ",
-  "UniversalOJ": "UniversalOJ",
-};
+export const PLATFORM_ALIASES = SHARED_PLATFORM_ALIASES;
 
 export function normalizePlatform(p) {
-  const s = String(p || "").trim();
-  return PLATFORM_ALIASES[s] ?? s;
+  return normalizeSharedPlatform(p);
 }
 
 export function problemKey(platform, number) {
-  return problemStableKey(normalizePlatform(platform), number);
+  return canonicalProblemKey(platform, number) ?? "";
 }
 
 // 读取 curriculum 目录：roadmap.json + nodes/*.json。
