@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-08-14T01:04:39.381+08:00",
+  "updatedAt": "2026-09-06T18:37:01.382+08:00",
   "problems": [
     {
       "id": "87a8152f-a331-42a0-b068-2d6b3210f0b1",
@@ -12,7 +12,8 @@
         "模拟",
         "递推"
       ],
-      "reviewStatus": "todo"
+      "reviewStatus": "todo",
+      "reviewDue": "2026-09-09"
     }
   ]
 }

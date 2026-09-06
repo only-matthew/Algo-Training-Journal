@@ -494,24 +494,8 @@
         "difficulty": "普及-"
       },
       "reviewStatus": "todo",
+      "reviewDue": "2026-09-09",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-13/87a8152f-a331-42a0-b068-2d6b3210f0b1/"
-    },
-    {
-      "subjectKey": "problem:洛谷|P1259",
-      "date": "2026-08-14",
-      "recordRef": {
-        "memberId": "only-matthew",
-        "date": "2026-08-14",
-        "recordId": "be24e772-afc5-4889-971d-a382305edea8"
-      },
-      "problem": {
-        "name": "P1259",
-        "platform": "洛谷",
-        "problemNumber": "P1259",
-        "difficulty": "普及-"
-      },
-      "reviewStatus": "none",
-      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-14/be24e772-afc5-4889-971d-a382305edea8/"
     },
     {
       "subjectKey": "problem:洛谷|P1010",
@@ -529,6 +513,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-14/21ad2fdb-2052-4a32-bdbb-48270754917b/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1259",
+      "date": "2026-08-14",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-08-14",
+        "recordId": "be24e772-afc5-4889-971d-a382305edea8"
+      },
+      "problem": {
+        "name": "P1259",
+        "platform": "洛谷",
+        "problemNumber": "P1259",
+        "difficulty": "普及-"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-14/be24e772-afc5-4889-971d-a382305edea8/"
     },
     {
       "subjectKey": "problem:洛谷|P1228",
@@ -599,23 +600,6 @@
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-18/08a969c0-24b0-47bc-9f09-7ad19e7a8e13/"
     },
     {
-      "subjectKey": "problem:洛谷|P2240",
-      "date": "2026-08-19",
-      "recordRef": {
-        "memberId": "only-matthew",
-        "date": "2026-08-19",
-        "recordId": "aaebe2be-5cdb-47e6-a8bf-7c6d748294d0"
-      },
-      "problem": {
-        "name": "【深基12.例1】部分背包问题",
-        "platform": "洛谷",
-        "problemNumber": "P2240",
-        "difficulty": "普及-"
-      },
-      "reviewStatus": "none",
-      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-19/aaebe2be-5cdb-47e6-a8bf-7c6d748294d0/"
-    },
-    {
       "subjectKey": "problem:洛谷|P1223",
       "date": "2026-08-19",
       "recordRef": {
@@ -631,6 +615,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-19/5ac822d8-ce86-4b32-9142-615ab5850aed/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P2240",
+      "date": "2026-08-19",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-08-19",
+        "recordId": "aaebe2be-5cdb-47e6-a8bf-7c6d748294d0"
+      },
+      "problem": {
+        "name": "【深基12.例1】部分背包问题",
+        "platform": "洛谷",
+        "problemNumber": "P2240",
+        "difficulty": "普及-"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-19/aaebe2be-5cdb-47e6-a8bf-7c6d748294d0/"
     },
     {
       "subjectKey": "problem:洛谷|P1803",
@@ -667,23 +668,6 @@
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-21/41c9d02d-1a46-4f50-a0b6-59582505a9d9/"
     },
     {
-      "subjectKey": "problem:洛谷|P3817",
-      "date": "2026-08-22",
-      "recordRef": {
-        "memberId": "only-matthew",
-        "date": "2026-08-22",
-        "recordId": "2deefa65-ae22-44b8-848f-3c918d9035ed"
-      },
-      "problem": {
-        "name": "小 A 的糖果",
-        "platform": "洛谷",
-        "problemNumber": "P3817",
-        "difficulty": "普及-"
-      },
-      "reviewStatus": "none",
-      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-22/2deefa65-ae22-44b8-848f-3c918d9035ed/"
-    },
-    {
       "subjectKey": "problem:洛谷|P1106",
       "date": "2026-08-22",
       "recordRef": {
@@ -700,6 +684,23 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-08-25",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-22/88a3bd72-606f-4c21-ad84-baac3a0ca11f/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P3817",
+      "date": "2026-08-22",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-08-22",
+        "recordId": "2deefa65-ae22-44b8-848f-3c918d9035ed"
+      },
+      "problem": {
+        "name": "小 A 的糖果",
+        "platform": "洛谷",
+        "problemNumber": "P3817",
+        "difficulty": "普及-"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-22/2deefa65-ae22-44b8-848f-3c918d9035ed/"
     },
     {
       "subjectKey": "problem:洛谷|P1478",
@@ -839,6 +840,23 @@
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-02/20e4627e-ae33-4833-9bf6-afed9e823e23/"
     },
     {
+      "subjectKey": "problem:洛谷|P2249",
+      "date": "2026-09-04",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-04",
+        "recordId": "94fea29f-62f8-4c21-b704-6454adcdf726"
+      },
+      "problem": {
+        "name": "【深基13.例1】查找",
+        "platform": "洛谷",
+        "problemNumber": "P2249",
+        "difficulty": "普及-"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-04/94fea29f-62f8-4c21-b704-6454adcdf726/"
+    },
+    {
       "subjectKey": "problem:洛谷|P4447",
       "date": "2026-09-04",
       "recordRef": {
@@ -855,23 +873,6 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-12-07",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-04/fd790b0f-5c40-422e-8446-d440b09e7384/"
-    },
-    {
-      "subjectKey": "problem:洛谷|P2249",
-      "date": "2026-09-04",
-      "recordRef": {
-        "memberId": "only-matthew",
-        "date": "2026-09-04",
-        "recordId": "94fea29f-62f8-4c21-b704-6454adcdf726"
-      },
-      "problem": {
-        "name": "【深基13.例1】查找",
-        "platform": "洛谷",
-        "problemNumber": "P2249",
-        "difficulty": "普及-"
-      },
-      "reviewStatus": "none",
-      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-04/94fea29f-62f8-4c21-b704-6454adcdf726/"
     },
     {
       "subjectKey": "problem:洛谷|P1102",
