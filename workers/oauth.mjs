@@ -5,7 +5,8 @@ import { createTrainingService, sha256Hex, trainingPaths } from "./services/trai
 import { GitTransactionError } from "./storage/git-transaction.mjs";
 import { isUuidV4 } from "../lib/training-schema.mjs";
 import { readCatalog, readTrainingContext, workbenchResponse } from "./services/training-read.mjs";
-import { recommendV1 } from "../lib/recommendations.mjs";
+import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
+import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
@@ -435,9 +436,12 @@ export async function planLogChanges(problems, existingFiles, root, updatedAt) {
 }
 export async function saveLog(user, date, input) {
   const { problems } = validateLogInput(input);
-  const { root, files } = await resolveLogRoot(user, date);
+  const legacyPath = trainingPaths(user.login).legacyIndex;
+  const [{ root, files }, legacyRaw] = await Promise.all([resolveLogRoot(user, date), content(legacyPath, user.token)]);
   const updatedAt = toUtc8(new Date());
   const changes = await planLogChanges(problems, files, root, updatedAt);
+  const legacyChange = planLegacyIndexChange(user, date, problems, legacyRaw);
+  if (legacyChange) changes.push(legacyChange);
   await commit(changes, `save(${user.member}): training log for ${date}`, user.token);
   return { problems };
 }
@@ -460,11 +464,39 @@ export async function readLog(user, date) {
   };
 }
 export async function deleteLog(user, date) {
-  const { root, files } = await resolveLogRoot(user, date);
+  const legacyPath = trainingPaths(user.login).legacyIndex;
+  const [{ root, files }, legacyRaw] = await Promise.all([resolveLogRoot(user, date), content(legacyPath, user.token)]);
   if (!files || !files.length) return { deleted: false };
   const changes = files.map((file) => ({ path: file.path, delete: true }));
+  const legacyChange = planLegacyIndexChange(user, date, [], legacyRaw);
+  if (legacyChange) changes.push(legacyChange);
   await commit(changes, `delete(${user.member}): training log for ${date}`, user.token);
   return { deleted: true };
+}
+
+export function planLegacyIndexChange(user, date, problems, raw) {
+  let index;
+  try { index = raw == null ? null : JSON.parse(raw); } catch { index = null; }
+  if (index?.schemaVersion !== 1 || index.memberId !== user.login || index.member !== user.member || !Array.isArray(index.records)) {
+    throw Object.assign(new Error("个人训练索引暂不可用"), { code: "INDEX_STALE", status: 503 });
+  }
+  const records = index.records.filter((record) => record?.date !== date);
+  for (const problem of problems) {
+    const recordRef = { memberId: user.login, date, recordId: problem.id };
+    records.push({
+      subjectKey: subjectKeyForProblem({ ...recordRef, ...problem }),
+      date,
+      recordRef,
+      problem: catalogProblem(problem),
+      reviewStatus: problem.reviewStatus,
+      ...(problem.reviewDue ? { reviewDue: problem.reviewDue } : {}),
+      href: `/problem/${[user.member, date, problem.id].map(encodeURIComponent).join("/")}/`,
+    });
+  }
+  records.sort((a, b) => a.date.localeCompare(b.date) || a.subjectKey.localeCompare(b.subjectKey));
+  const content = `${JSON.stringify({ ...index, records }, null, 2)}\n`;
+  if (raw?.replace(/\r\n/g, "\n") === content) return null;
+  return { path: trainingPaths(user.login).legacyIndex, content };
 }
 
 export async function summarizeDescription(ai, description) {

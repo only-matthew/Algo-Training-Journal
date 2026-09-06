@@ -1,7 +1,5 @@
-import { normalizeMeta, isDateString } from "../../lib/log-schema.mjs";
-import { subjectKeyForProblem } from "../../lib/problem-identity.mjs";
 import { buildEvidenceV1, foldTrainingEvents } from "../../lib/training-projections.mjs";
-import { recommendV1, catalogProblem } from "../../lib/recommendations.mjs";
+import { recommendV1 } from "../../lib/recommendations.mjs";
 import { sha256Hex, trainingPaths, TrainingServiceError } from "./training.mjs";
 
 async function readJson(snapshot, path) {
@@ -10,24 +8,13 @@ async function readJson(snapshot, path) {
   try { return JSON.parse(raw); } catch { throw new TrainingServiceError("UPSTREAM_UNAVAILABLE", "训练数据格式有误", 502); }
 }
 
-async function mapLimited(items, mapper) {
-  const result = new Array(items.length);
-  let cursor = 0;
-  await Promise.all(Array.from({ length: Math.min(4, items.length) }, async () => {
-    while (cursor < items.length) { const index = cursor++; result[index] = await mapper(items[index]); }
-  }));
-  return result;
-}
-
 export async function readCatalog(snapshot) {
-  const roadmap = await readJson(snapshot, "curriculum/roadmap.json");
-  const phases = Array.isArray(roadmap) ? roadmap : roadmap?.phases;
-  if (!Array.isArray(phases)) throw new TrainingServiceError("UPSTREAM_UNAVAILABLE", "学习路线暂不可用", 502);
-  const ids = phases.flatMap((phase) => phase.nodes || []);
-  if (ids.some((id) => !/^[a-z0-9-]+$/.test(id))) throw new TrainingServiceError("UPSTREAM_UNAVAILABLE", "学习节点无效", 502);
-  const nodes = await mapLimited(ids, (id) => readJson(snapshot, `curriculum/nodes/${id}.json`));
-  if (nodes.some((node, index) => node?.id !== ids[index] || !Array.isArray(node.problems))) throw new TrainingServiceError("UPSTREAM_UNAVAILABLE", "学习节点缺失", 502);
-  return nodes;
+  const catalog = await readJson(snapshot, "training/indexes/catalog.json");
+  if (catalog?.schemaVersion !== 1 || !Array.isArray(catalog.nodes)
+    || catalog.nodes.some((node) => !/^[a-z0-9-]+$/.test(node?.id || "") || !Array.isArray(node.problems))) {
+    throw new TrainingServiceError("INDEX_STALE", "学习路线索引暂不可用", 503);
+  }
+  return catalog.nodes;
 }
 
 export async function readOwnedDocument(snapshot, memberId, resourceKey, path) {
@@ -39,32 +26,17 @@ export async function readOwnedDocument(snapshot, memberId, resourceKey, path) {
 export async function readTrainingContext({ git, snapshot, user, date, today, includeCatalog = true }) {
   const memberId = user.login;
   const paths = trainingPaths(memberId);
-  const [profile, plan, eventFiles, reviewFiles, assessmentFiles, logFiles, nodes] = await Promise.all([
+  const [profile, plan, eventFiles, reviewFiles, assessmentFiles, legacyIndex, nodes] = await Promise.all([
     readOwnedDocument(snapshot, memberId, "profile", paths.profile),
     readOwnedDocument(snapshot, memberId, `plan:${date}`, paths.plan(date)),
     git.listDocuments(snapshot, memberId, "events"), git.listDocuments(snapshot, memberId, "reviews"),
-    git.listDocuments(snapshot, memberId, "assessments"), git.listFiles(snapshot, `logs/${user.member}/`),
+    git.listDocuments(snapshot, memberId, "assessments"), readJson(snapshot, paths.legacyIndex),
     includeCatalog ? readCatalog(snapshot) : [],
   ]);
-  const byDate = new Map();
-  for (const path of logFiles) {
-    const relative = path.slice(`logs/${user.member}/`.length);
-    const match = /^(\d{4})\/(\d{2})\/(\d{2})\/meta\.json$/.exec(relative) || /^(\d{4})-(\d{2})-(\d{2})\/meta\.json$/.exec(relative);
-    if (!match) continue;
-    const logDate = match.slice(1).join("-");
-    if (!isDateString(logDate)) continue;
-    if (!byDate.has(logDate) || /^\d{4}\//.test(relative)) byDate.set(logDate, path);
+  if (legacyIndex?.schemaVersion !== 1 || legacyIndex.memberId !== memberId || legacyIndex.member !== user.member || !Array.isArray(legacyIndex.records)) {
+    throw new TrainingServiceError("INDEX_STALE", "个人训练索引暂不可用", 503);
   }
-  const legacyRecords = (await mapLimited([...byDate], async ([logDate, path]) => {
-    const meta = await readJson(snapshot, path);
-    if (!meta) throw new TrainingServiceError("UPSTREAM_UNAVAILABLE", "日志快照缺失", 502);
-    return normalizeMeta(meta, { legacyIdPrefix: `${user.member}-${logDate}` }).problems.map((problem) => {
-      const recordRef = { memberId, date: logDate, recordId: problem.id };
-      return { subjectKey: subjectKeyForProblem({ ...recordRef, ...problem }), date: logDate, recordRef,
-        problem: catalogProblem(problem), reviewStatus: problem.reviewStatus, reviewDue: problem.reviewDue,
-        href: `/problem/${[user.member, logDate, problem.id].map(encodeURIComponent).join("/")}/` };
-    });
-  })).flat();
+  const legacyRecords = legacyIndex.records;
   const owned = (files) => files.map(({ data }) => data).filter((item) => item.memberId === memberId);
   const attempts = foldTrainingEvents(owned(eventFiles));
   const sources = new Map([...legacyRecords, ...attempts].map((item) => [item.subjectKey, item]));

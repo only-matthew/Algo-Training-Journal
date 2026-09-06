@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { readFileSync } from "node:fs";
 
 import worker, { seal } from "../workers/oauth.mjs";
 
@@ -12,12 +13,15 @@ const OP = "4fd06885-a6ed-43b4-9ba6-ec8875638cdf";
 function githubMock() {
   let head = "r0";
   let commitNumber = 0;
+  let fetchCount = 0;
   const files = new Map();
   const blobs = new Map();
   const response = (body, status = 200) => new Response(body === null ? null : JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "X-RateLimit-Remaining": "4900" } });
   return {
     files,
+    get fetchCount() { return fetchCount; },
     async fetch(input, options = {}) {
+      fetchCount += 1;
       const url = String(input);
       const method = options.method || "GET";
       if (!url.startsWith(API)) throw new Error(`unexpected fetch ${method} ${url}`);
@@ -54,6 +58,23 @@ function githubMock() {
     },
   };
 }
+
+test("v2 workbench stays below the Worker subrequest limit and returns recommendations", async (context) => {
+  const github = githubMock();
+  github.files.set("training/indexes/catalog.json", readFileSync("training/indexes/catalog.json", "utf8"));
+  github.files.set("training/members/only-matthew/indexes/legacy.json", readFileSync("training/members/only-matthew/indexes/legacy.json", "utf8"));
+  context.mock.method(globalThis, "fetch", github.fetch);
+  const cookie = await sessionCookie();
+  const response = await worker.fetch(new Request("https://train.xialiao.org/api/v2/me/workbench?date=2026-09-06", {
+    headers: { Cookie: `__Host-journal_session=${cookie}` },
+  }), { SESSION_SECRET: SECRET });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.nodes.length, 39);
+  assert.ok(body.evidence.distinctProblems > 40);
+  assert.ok(body.recommendations.items.length > 0);
+  assert.ok(github.fetchCount < 10, `expected fewer than 10 GitHub subrequests, received ${github.fetchCount}`);
+});
 
 async function sessionCookie() {
   return seal({ token: "token", login: LOGIN, member: "廖夏", csrfToken: CSRF, exp: Date.now() + 600000 }, SECRET);

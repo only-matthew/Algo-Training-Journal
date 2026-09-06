@@ -11,6 +11,7 @@ const gitSha = (content) => {
 };
 
 const ROOT = "logs/廖夏/2026/08/11";
+const LEGACY_INDEX = "training/members/only-matthew/indexes/legacy.json";
 const UPDATED_AT = "2026-08-11T01:09:44.000+08:00";
 
 const PROBLEMS = [
@@ -147,16 +148,17 @@ function mockGitHub(state) {
   return { fetch, blobPosts: () => blobPosts };
 }
 
-const USER = { member: "廖夏", token: "test-token" };
+const USER = { login: "only-matthew", member: "廖夏", token: "test-token" };
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-test("saveLog → readLog round trip with incremental save and delete", async (context) => {
-  const state = new Map();
+test("saveLog → readLog round trip with incremental save, index sync and delete", async (context) => {
+  const state = new Map([[LEGACY_INDEX, `${JSON.stringify({ schemaVersion: 1, memberId: USER.login, member: USER.member, records: [] }, null, 2)}\n`]]);
   const github = mockGitHub(state);
   context.mock.method(globalThis, "fetch", github.fetch);
 
   await saveLog(USER, "2026-08-11", { problems: PROBLEMS });
-  assert.equal(github.blobPosts(), 1 + 3 * PROBLEMS.length, "first save creates every blob");
+  assert.equal(github.blobPosts(), 2 + 3 * PROBLEMS.length, "first save creates every log blob and the read index");
+  assert.equal(JSON.parse(state.get(LEGACY_INDEX)).records.length, 2);
 
   const read = await readLog(USER, "2026-08-11");
   assert.equal(read.problems.length, 2);
@@ -183,7 +185,8 @@ test("saveLog → readLog round trip with incremental save and delete", async (c
 
   const deleted = await deleteLog(USER, "2026-08-11");
   assert.equal(deleted.deleted, true);
-  assert.equal(state.size, 0, "all day files must be removed");
+  assert.equal(state.size, 1, "all day files are removed while the empty read index remains");
+  assert.deepEqual(JSON.parse(state.get(LEGACY_INDEX)).records, []);
   assert.deepEqual(await readLog(USER, "2026-08-11"), { problems: [] });
 
   // 删除不存在的日期：返回 deleted:false，不产生任何 API 调用

@@ -58,6 +58,7 @@ export function trainingPaths(memberId) {
     root,
     profile: `${root}/profile.json`,
     sequence: `${root}/sequence.json`,
+    legacyIndex: `${root}/indexes/legacy.json`,
     plan: (date) => `${root}/plans/${date}.json`,
     event: (recordedAt, id) => `${root}/events/${recordedAt.slice(0, 7)}/${id}.json`,
     review: (subjectHash) => `${root}/reviews/${subjectHash}.json`,
