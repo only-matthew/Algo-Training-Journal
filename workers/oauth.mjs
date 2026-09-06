@@ -493,7 +493,10 @@ export function planLegacyIndexChange(user, date, problems, raw) {
       href: `/problem/${[user.member, date, problem.id].map(encodeURIComponent).join("/")}/`,
     });
   }
-  records.sort((a, b) => a.date.localeCompare(b.date) || a.subjectKey.localeCompare(b.subjectKey));
+  // Keep each day's records in the same order as its source meta.json. Array#sort
+  // is stable, so sorting only by date preserves both untouched groups and the
+  // order of the replacement problems appended above.
+  records.sort((a, b) => a.date.localeCompare(b.date));
   const content = `${JSON.stringify({ ...index, records }, null, 2)}\n`;
   if (raw?.replace(/\r\n/g, "\n") === content) return null;
   return { path: trainingPaths(user.login).legacyIndex, content };
