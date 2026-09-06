@@ -5,7 +5,7 @@ const files = ["test-latex.mjs", ...readdirSync("test")
   .filter((file) => file.endsWith(".mjs"))
   .sort()
   .map((file) => `test/${file}`)];
-const workerFiles = files.filter((file) => file.startsWith("test/oauth-"));
+const workerFiles = files.filter((file) => file === "test/oauth-training-v2.test.mjs");
 const regularFiles = files.filter((file) => !workerFiles.includes(file));
 const nodeArgs = ["--test", "--test-concurrency=1"];
 
