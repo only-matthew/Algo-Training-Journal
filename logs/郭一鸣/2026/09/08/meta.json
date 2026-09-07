@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-08T00:06:57.052+08:00",
+  "problems": [
+    {
+      "id": "8759e498-f7a9-48f1-aac9-8f3ad05e44a5",
+      "name": "烦恼的高考志愿",
+      "platform": "洛谷",
+      "problemNumber": "P1678",
+      "difficulty": "普及-",
+      "tags": [
+        "二分"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
