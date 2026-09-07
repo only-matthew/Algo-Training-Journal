@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-07T21:07:03.419+08:00",
+  "problems": [
+    {
+      "id": "fbd5330f-3048-4047-9f8c-5e967164722f",
+      "name": "ab串",
+      "platform": "其他",
+      "problemNumber": "",
+      "difficulty": "未标注",
+      "tags": [
+        "DP"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
