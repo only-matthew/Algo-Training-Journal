@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-07T17:18:06.133+08:00",
+  "problems": [
+    {
+      "id": "63226be5-02bb-46e3-aecf-42904890ed58",
+      "name": "[NOIP 2001 提高组] 一元三次方程求解",
+      "platform": "洛谷",
+      "problemNumber": "P1024",
+      "difficulty": "入门",
+      "tags": [
+        "二分答案",
+        "浮点数"
+      ],
+      "reviewStatus": "todo",
+      "reviewDue": "2026-09-12"
+    }
+  ]
+}

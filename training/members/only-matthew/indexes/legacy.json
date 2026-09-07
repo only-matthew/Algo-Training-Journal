@@ -907,6 +907,24 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-05/c5b23e59-7cf0-4e83-929a-2247736d00bf/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1024",
+      "date": "2026-09-07",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-07",
+        "recordId": "63226be5-02bb-46e3-aecf-42904890ed58"
+      },
+      "problem": {
+        "name": "[NOIP 2001 提高组] 一元三次方程求解",
+        "platform": "洛谷",
+        "problemNumber": "P1024",
+        "difficulty": "入门"
+      },
+      "reviewStatus": "todo",
+      "reviewDue": "2026-09-12",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-07/63226be5-02bb-46e3-aecf-42904890ed58/"
     }
   ]
 }
