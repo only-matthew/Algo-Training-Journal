@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-09-07T17:18:06.133+08:00",
+  "updatedAt": "2026-09-07T23:21:15.144+08:00",
   "problems": [
     {
       "id": "63226be5-02bb-46e3-aecf-42904890ed58",
@@ -14,6 +14,20 @@
       ],
       "reviewStatus": "todo",
       "reviewDue": "2026-09-12"
+    },
+    {
+      "id": "29ebc992-de5a-44b9-95b8-06daec00b6e6",
+      "name": "烦恼的高考志愿",
+      "platform": "洛谷",
+      "problemNumber": "P1678",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "二分",
+        "边界"
+      ],
+      "reviewStatus": "todo",
+      "reviewDue": "2026-09-10"
     }
   ]
 }
