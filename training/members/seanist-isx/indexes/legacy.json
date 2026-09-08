@@ -684,6 +684,23 @@
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-02/4dbeeaa5-d623-4341-9261-ab72fbaf3baf/"
     },
     {
+      "subjectKey": "problem:洛谷|P2440",
+      "date": "2026-09-07",
+      "recordRef": {
+        "memberId": "seanist-isx",
+        "date": "2026-09-07",
+        "recordId": "e6ffe8c0-8304-428c-a070-ae39ca32eb24"
+      },
+      "problem": {
+        "name": "木材加工",
+        "platform": "洛谷",
+        "problemNumber": "P2440",
+        "difficulty": "普及"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-07/e6ffe8c0-8304-428c-a070-ae39ca32eb24/"
+    },
+    {
       "subjectKey": "problem:洛谷|P1678",
       "date": "2026-09-08",
       "recordRef": {

@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-08T16:30:15.526+08:00",
+  "problems": [
+    {
+      "id": "e6ffe8c0-8304-428c-a070-ae39ca32eb24",
+      "name": "木材加工",
+      "platform": "洛谷",
+      "problemNumber": "P2440",
+      "difficulty": "普及",
+      "tags": [
+        "二分"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
