@@ -943,6 +943,23 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-09-10",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-07/29ebc992-de5a-44b9-95b8-06daec00b6e6/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P2440",
+      "date": "2026-09-08",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-08",
+        "recordId": "04f87283-2c30-4c21-ae21-1d1afb6a9511"
+      },
+      "problem": {
+        "name": "木材加工",
+        "platform": "洛谷",
+        "problemNumber": "P2440",
+        "difficulty": "普及"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-08/04f87283-2c30-4c21-ae21-1d1afb6a9511/"
     }
   ]
 }

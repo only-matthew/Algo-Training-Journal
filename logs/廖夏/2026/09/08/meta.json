@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-08T14:41:47.421+08:00",
+  "problems": [
+    {
+      "id": "04f87283-2c30-4c21-ae21-1d1afb6a9511",
+      "name": "木材加工",
+      "platform": "洛谷",
+      "problemNumber": "P2440",
+      "difficulty": "普及",
+      "tags": [
+        "二分答案",
+        "边界处理",
+        "细节"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
