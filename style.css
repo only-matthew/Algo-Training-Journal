@@ -2729,6 +2729,72 @@ textarea.form-input {
 .roadmap-related-section,
 .roadmap-tag-section { border-top-style: solid; }
 
+/* 参考题保持卡片网格；长条列表会把题名和难度徽标拉得过散。 */
+.roadmap-problem-list {
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+  border: 0;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.roadmap-problem-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--card);
+}
+
+.roadmap-problem-card:last-child { border-bottom: 1px solid var(--line); }
+
+.roadmap-problem-card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 10px;
+}
+
+.roadmap-problem-card-head .roadmap-problem-number {
+  grid-column: auto;
+  margin: 0;
+}
+
+.roadmap-problem-number {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.roadmap-problem-name {
+  grid-column: auto;
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.45;
+}
+
+.roadmap-problem-meta {
+  grid-column: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+  margin: 0;
+}
+
+.roadmap-problem-done {
+  grid-column: auto;
+  grid-row: auto;
+  align-self: auto;
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+
 /* 训练档案和复习与首页共用题目卡片；筛选与统计仍保留在卡片列表上方。 */
 #analysis-page .record-grid,
 #review-page .record-grid {
