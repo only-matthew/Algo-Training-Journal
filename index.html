@@ -19,12 +19,38 @@
   <title>ICPC 算法训练日志</title>
   <link rel="canonical" href="https://train.xialiao.org/" />
   <link rel="sitemap" type="application/xml" href="https://train.xialiao.org/sitemap.xml" />
-  <link rel="stylesheet" href="style.css?v=20260730-1" />
+  <link rel="stylesheet" href="style.css?v=20260908-1" />
   <!-- KaTeX / Prism 的 CSS 与 JS 一样按需加载：页面实际含公式/代码块时才动态注入（见 lib/renderer.mjs） -->
 </head>
 <body>
   <a href="#main-content" class="skip-link">跳到内容</a>
-  <main class="container" id="main-content">
+  <div class="app-shell">
+    <aside class="app-rail" aria-label="主导航">
+      <a class="app-wordmark" href="/" aria-label="ICPC 算法训练日志首页">
+        <span class="app-wordmark-mark" aria-hidden="true">A</span>
+        <span>算法训练日志</span>
+      </a>
+      <nav class="page-nav" aria-label="页面导航">
+        <button class="page-nav-btn active" type="button" data-page="overview-page">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="m3 11 9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg><span>首页</span>
+        </button>
+        <button class="page-nav-btn" type="button" data-page="analysis-page">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 20V10m5 10V4m6 16v-7m5 7V7"/></svg><span>训练档案</span>
+        </button>
+        <button class="page-nav-btn" type="button" data-page="review-page">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 3h12a2 2 0 0 1 2 2v16l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2Z"/><path d="M9 8h6M9 12h6"/></svg><span>复习</span>
+        </button>
+        <button class="page-nav-btn" type="button" data-page="roadmap-page">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H12v17H6.5A2.5 2.5 0 0 0 4 22.5zM20 5.5A2.5 2.5 0 0 0 17.5 3H12v17h5.5a2.5 2.5 0 0 1 2 1.5z"/></svg><span>知识地图</span>
+        </button>
+        <button class="page-nav-btn" type="button" data-page="tag-page" data-route="/tags/">
+          <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 13 13 20 4 11V4h7z"/><circle cx="8.5" cy="8.5" r="1"/></svg><span>标签</span>
+        </button>
+      </nav>
+      <p class="app-rail-note">记录每一次训练</p>
+    </aside>
+
+    <main class="container" id="main-content">
     <div id="auth-bar">
       <div class="auth-left">
         <span id="auth-status">未登录</span>
@@ -37,14 +63,6 @@
         <button id="btn-logout" class="btn btn-outline" style="display:none">退出</button>
       </div>
     </div>
-
-    <nav class="page-nav" aria-label="页面导航">
-      <button class="page-nav-btn active" type="button" data-page="overview-page">总览</button>
-      <button class="page-nav-btn" type="button" data-page="training-page">我的训练</button>
-      <button class="page-nav-btn" type="button" data-page="analysis-page">训练分析</button>
-      <button class="page-nav-btn" type="button" data-page="review-page">错题本</button>
-      <button class="page-nav-btn" type="button" data-page="roadmap-page">📚 学习路线</button>
-    </nav>
 
     <section id="overview-page" class="page-view active">
       <header class="header">
@@ -131,48 +149,6 @@
 
     </section>
 
-    <section id="training-page" class="page-view" hidden>
-      <header class="header">
-        <div><h1>我的训练</h1><p class="subtitle">只记录自己的节奏，安排今天要练什么</p></div>
-        <button id="training-refresh" class="btn btn-outline btn-sm" type="button">刷新训练状态</button>
-      </header>
-      <p id="training-save-status" role="status" aria-live="polite" class="hint"></p>
-      <button id="training-retry" class="btn btn-outline btn-sm" type="button" hidden>重试确认上次保存</button>
-      <p class="hint">训练偏好和计划会保存到公开仓库，请不要填写私人信息。</p>
-      <details class="card training-settings">
-        <summary>训练目标与时间预算</summary>
-        <form id="training-profile-form">
-          <div class="form-row">
-            <label>每天可用时间（分钟）<input id="training-budget" class="form-input" type="number" min="15" max="240" value="60" required></label>
-            <label>每次推荐题数<input id="training-limit" class="form-input" type="number" min="1" max="10" value="3" required></label>
-          </div>
-          <label>当前专题（最多 3 个；不选则从基础开始）<select id="training-focus" class="form-input" multiple size="6"></select></label>
-          <label>近期目标（可不填）<input id="training-goal" class="form-input" maxlength="200" placeholder="例如：练熟二分答案的建模"></label>
-          <button class="btn btn-primary btn-sm" type="submit">保存训练偏好</button>
-        </form>
-      </details>
-      <p><label>计划日期 <input id="training-date" class="form-input" type="date"></label></p>
-      <section class="grid metrics">
-        <article class="card"><p class="metric-label">今日计划</p><p id="training-plan-count" class="metric-value">—</p></article>
-        <article class="card"><p class="metric-label">到期复习</p><p id="training-review-count" class="metric-value">—</p></article>
-        <article class="card"><p class="metric-label">训练题目</p><p id="training-problem-count" class="metric-value">—</p></article>
-        <article class="card"><p class="metric-label">最近训练</p><p id="training-last-practiced" class="metric-value">—</p></article>
-      </section>
-      <section class="grid stats">
-        <article class="card"><h2>今日计划</h2><div id="training-plan-list"><p class="hint">登录后加载</p></div></article>
-        <article class="card"><h2>到期复习</h2><div id="training-review-list"><p class="hint">登录后加载</p></div></article>
-      </section>
-      <section class="card"><h2>训练证据</h2><div id="training-evidence"><p class="hint">登录后加载</p></div></section>
-      <section class="card"><h2>下一步建议</h2><p class="hint">选中后才加入计划。时间仅作预算，可自行调整训练节奏。</p><div id="training-recommendations"><p class="hint">登录后加载</p></div><button id="training-change" class="btn btn-outline btn-sm" type="button">换一组候选</button><p><a href="/roadmap/">浏览学习路线 →</a></p></section>
-      <details class="card training-settings"><summary>手动加入题目</summary>
-        <form id="training-manual-form">
-          <div class="form-row"><label>平台<select id="training-platform" class="form-input"><option>洛谷</option><option>Codeforces</option><option>AtCoder</option><option>其他</option></select></label><label>题号<input id="training-number" class="form-input" maxlength="50" required placeholder="例如 P1001"></label></div>
-          <label>题目名称<input id="training-name" class="form-input" maxlength="200" required></label>
-          <button class="btn btn-primary btn-sm" type="submit">加入所选日期的计划</button>
-        </form>
-      </details>
-    </section>
-
     <section id="review-page" class="page-view" hidden>
       <header class="header">
         <div><h1>错题本</h1><p class="subtitle">集中复习薄弱题目，掌握后仍保留复盘轨迹</p></div>
@@ -199,8 +175,8 @@
     <section id="analysis-page" class="page-view" hidden>
       <header class="header">
         <div>
-          <h1>训练分析</h1>
-          <p class="subtitle">按队员和时间范围查看训练成果、标签分布与复习重点</p>
+          <h1>训练档案</h1>
+          <p class="subtitle">按队员与时间回看队伍的训练记录、标签与复习情况</p>
         </div>
       </header>
 
@@ -286,29 +262,22 @@
     <section id="roadmap-page" class="page-view" hidden>
       <header class="header">
         <div>
-          <h1>学习路线</h1>
-          <p class="subtitle">算法知识树 · 分阶段训练 · 题单进度</p>
-        </div>
-        <div class="filter">
-          <label for="roadmap-member">查看对象</label>
-          <select id="roadmap-member" class="form-input">
-            <option value="all">全队</option>
-          </select>
+          <h1>知识地图</h1>
+          <p class="subtitle">按主题查阅参考题、关联标签和队内训练记录</p>
         </div>
       </header>
       <div class="detail-toolbar" id="roadmap-toolbar" hidden>
-        <a class="back-link" href="/roadmap/">← 返回学习路线</a>
+        <a class="back-link" href="/roadmap/">← 返回知识地图</a>
       </div>
       <div id="roadmap-content"><p class="hint">加载中...</p></div>
     </section>
 
     <section id="tag-page" class="page-view" hidden>
-      <div class="detail-toolbar" id="tag-toolbar">
+      <div class="detail-toolbar" id="tag-toolbar" hidden>
         <a class="back-link" href="/tags/">← 标签索引</a>
       </div>
       <header class="header">
         <div>
-          <p class="eyebrow">题目标签</p>
           <h1 id="tag-page-title">标签</h1>
           <p id="tag-page-subtitle" class="subtitle"></p>
         </div>
@@ -322,7 +291,6 @@
       </div>
       <header class="header profile-header">
         <div>
-          <p class="eyebrow">队员主页</p>
           <h1 id="member-page-title">队员</h1>
           <p id="member-page-subtitle" class="subtitle"></p>
         </div>
@@ -425,7 +393,8 @@
         </div>
       </div>
     </div>
-  </main>
+    </main>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>

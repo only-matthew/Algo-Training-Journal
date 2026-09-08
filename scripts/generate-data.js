@@ -425,7 +425,7 @@ function replaceHeadMetadata(html, { title, description, canonical, robots = "in
 
 function showOnlyPage(html, pageId) {
   const $ = cheerio.load(html);
-  const pageIds = ["overview-page", "training-page", "review-page", "analysis-page", "member-page", "problem-page", "roadmap-page", "tag-page"];
+  const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page", "roadmap-page", "tag-page"];
   for (const id of pageIds) {
     const section = $(`#${id}`);
     section.removeClass("active");
@@ -592,7 +592,7 @@ function writeRouteIndex(html, segments) {
 }
 
 function writeRouteIndexes(html, members, logs) {
-  const routeTitles = { training: "我的训练", analysis: "训练分析", review: "错题本" };
+  const routeTitles = { analysis: "训练档案", review: "错题本" };
   for (const route of Object.keys(routeTitles)) {
     const routeHtml = replaceHeadMetadata(showOnlyPage(html, `${route}-page`), {
       title: `${routeTitles[route]} · ${SITE_NAME}`,
@@ -965,16 +965,17 @@ async function generateRoadmapPages(html, roadmapData, nodeDataById) {
     $("#roadmap-content").attr("data-route", segments.join("/"));
     $("#roadmap-content").attr("data-members", JSON.stringify(roadmapData.members));
     $("#roadmap-content").html(contentHtml);
+    $("#roadmap-toolbar").attr("hidden", segments.length === 1 ? "" : null);
     writeRouteIndex(addSelfClosingVoids($.html()), segments);
   }
 
-  roadmapPage("学习路线", "算法知识树、分阶段训练路线与题单进度。", ["roadmap"], roadmapOverviewHtml(roadmapData, "all"));
+  roadmapPage("知识地图", "按主题查阅算法参考题、关联标签与队内训练记录。", ["roadmap"], roadmapOverviewHtml(roadmapData, "all"));
   for (const phase of roadmapData.phases) {
-    roadmapPage(phase.title, `学习路线 · ${phase.title}`, ["roadmap", phase.id], roadmapPhaseHtml(roadmapData, phase.id, "all"));
+    roadmapPage(phase.title, `知识地图 · ${phase.title}`, ["roadmap", phase.id], roadmapPhaseHtml(roadmapData, phase.id, "all"));
     for (const node of phase.nodes) {
       const nodeData = nodeDataById.get(node.id);
       if (!nodeData) continue;
-      roadmapPage(node.title, `学习路线 · ${phase.title} · ${node.title}`, ["roadmap", phase.id, node.id], roadmapNodeHtml(nodeData, "all"));
+      roadmapPage(node.title, `知识地图 · ${phase.title} · ${node.title}`, ["roadmap", phase.id, node.id], roadmapNodeHtml(nodeData, "all"));
     }
   }
 }
@@ -1009,6 +1010,7 @@ async function generateTagPages(html, tagIndex, roadmapData) {
   const $index = cheerio.load(indexPage);
   $index("#tag-content").attr("data-route", "tags");
   $index("#tag-content").html(tagIndexHtml(tagIndex));
+  $index("#tag-toolbar").attr("hidden", "");
   $index("#tag-page-title").text("标签索引");
   $index("#tag-page-subtitle").text(`共 ${tagIndex.tags.length} 个标签`);
   writeRouteIndex(addSelfClosingVoids($index.html()), ["tags"]);
@@ -1037,7 +1039,8 @@ async function generateTagPages(html, tagIndex, roadmapData) {
     $("#tag-content").attr("data-tag", tag);
     $("#tag-content").html(tagPageHtml(entry));
     $("#tag-page-title").text(tag);
-    $("#tag-page-subtitle").text(`${recordCount} 条训练记录 · ${nodeCount} 个知识树节点覆盖`);
+    $("#tag-page-subtitle").text(`${recordCount} 条训练记录 · ${nodeCount} 个知识主题关联`);
+    $("#tag-toolbar").removeAttr("hidden");
     writeRouteIndex(addSelfClosingVoids($.html()), ["tags", tag]);
   }
 }
