@@ -977,6 +977,57 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-08/5d6a61fb-28ca-4770-9eff-46dfb07ea5c6/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2260A",
+      "date": "2026-09-08",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-08",
+        "recordId": "43c57edf-2aa9-4169-b919-f53bb16d2f29"
+      },
+      "problem": {
+        "name": "Monocarp's Contest",
+        "platform": "Codeforces",
+        "problemNumber": "2260A",
+        "difficulty": "未标注"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-08/43c57edf-2aa9-4169-b919-f53bb16d2f29/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2260B",
+      "date": "2026-09-08",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-08",
+        "recordId": "c8ac948e-0dc5-4661-9603-36950ad4b468"
+      },
+      "problem": {
+        "name": "Monocarp and Projects",
+        "platform": "Codeforces",
+        "problemNumber": "2260B",
+        "difficulty": "未标注"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-08/c8ac948e-0dc5-4661-9603-36950ad4b468/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2260A",
+      "date": "2026-09-08",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-08",
+        "recordId": "522c87fa-78b2-42d7-bbdc-39b96c65d7bc"
+      },
+      "problem": {
+        "name": "Monocarp's Contest",
+        "platform": "Codeforces",
+        "problemNumber": "2260A",
+        "difficulty": "未标注"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-08/522c87fa-78b2-42d7-bbdc-39b96c65d7bc/"
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-09-08T16:40:47.118+08:00",
+  "updatedAt": "2026-09-09T00:24:05.399+08:00",
   "problems": [
     {
       "id": "04f87283-2c30-4c21-ae21-1d1afb6a9511",
@@ -26,6 +26,38 @@
         "二分",
         "贪心",
         "细节"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "43c57edf-2aa9-4169-b919-f53bb16d2f29",
+      "name": "Monocarp's Contest",
+      "platform": "Codeforces",
+      "problemNumber": "2260A",
+      "difficulty": "未标注",
+      "tags": [],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "c8ac948e-0dc5-4661-9603-36950ad4b468",
+      "name": "Monocarp and Projects",
+      "platform": "Codeforces",
+      "problemNumber": "2260B",
+      "difficulty": "未标注",
+      "tags": [
+        "数学",
+        "模拟"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "522c87fa-78b2-42d7-bbdc-39b96c65d7bc",
+      "name": "Monocarp's Contest",
+      "platform": "Codeforces",
+      "problemNumber": "2260A",
+      "difficulty": "未标注",
+      "tags": [
+        "模拟"
       ],
       "reviewStatus": "none"
     }
