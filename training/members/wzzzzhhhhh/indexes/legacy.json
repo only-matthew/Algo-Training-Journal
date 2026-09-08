@@ -870,6 +870,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-04/fbd5330f-3048-4047-9f8c-5e967164722f/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2260B",
+      "date": "2026-09-09",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-09",
+        "recordId": "1814ae7c-9c1a-40e5-8416-86877084b0c6"
+      },
+      "problem": {
+        "name": "Monocarp and Projects",
+        "platform": "Codeforces",
+        "problemNumber": "2260B",
+        "difficulty": "未标注"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-09/1814ae7c-9c1a-40e5-8416-86877084b0c6/"
     }
   ]
 }

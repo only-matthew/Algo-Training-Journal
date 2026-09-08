@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-09T00:11:40.867+08:00",
+  "problems": [
+    {
+      "id": "1814ae7c-9c1a-40e5-8416-86877084b0c6",
+      "name": "Monocarp and Projects",
+      "platform": "Codeforces",
+      "problemNumber": "2260B",
+      "difficulty": "未标注",
+      "tags": [
+        "数学"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}
