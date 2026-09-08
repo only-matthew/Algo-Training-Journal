@@ -872,6 +872,23 @@
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-04/fbd5330f-3048-4047-9f8c-5e967164722f/"
     },
     {
+      "subjectKey": "problem:Codeforces|2260A",
+      "date": "2026-09-08",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-08",
+        "recordId": "a884584b-53b0-467f-83f4-2e4ff5263bc4"
+      },
+      "problem": {
+        "name": "Monocarp's Contest",
+        "platform": "Codeforces",
+        "problemNumber": "2260A",
+        "difficulty": "未标注"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-08/a884584b-53b0-467f-83f4-2e4ff5263bc4/"
+    },
+    {
       "subjectKey": "problem:Codeforces|2260B",
       "date": "2026-09-09",
       "recordRef": {
