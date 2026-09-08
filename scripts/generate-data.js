@@ -1,3 +1,4 @@
+let trainingCardHtml;
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
@@ -282,7 +283,7 @@ function assetVersion(name) {
 }
 
 function logSummary({ description, takeaway, code, ...summary }) {
-  return summary;
+  return { ...summary, summary: truncate(description || takeaway || "", 96) };
 }
 
 function daysAgo(days) {
@@ -466,20 +467,7 @@ function recordSummary(log) {
   };
 }
 
-function recordCardHtml(log) {
-  const tags = (log.tags || []).map((tag) => `<a class="tag-chip" href="/tags/${encodeURIComponent(tag)}/">${escapeHtml(tag)}</a>`).join("");
-  const reviewLabels = { todo: "待复习", mastered: "已掌握" };
-  const review = reviewLabels[log.reviewStatus]
-    ? `<span class="review-chip ${escapeHtml(log.reviewStatus)}">${reviewLabels[log.reviewStatus]}</span>`
-    : "";
-  return `<article class="record">
-    <div class="record-head"><span class="record-date-wrap"><time datetime="${escapeHtml(log.date)}">${escapeHtml(log.date)}</time>${updatedLabel(log)}</span><a class="member-link" href="${routePath(memberSegments(log.member))}">${escapeHtml(log.member)}</a></div>
-    <h3 class="record-title"><a href="${routePath(problemSegments(log))}">${escapeHtml(log.problem)}</a></h3>
-    <p class="meta">平台：${escapeHtml(log.platform)} ｜ 难度：${escapeHtml(log.difficulty)}</p>
-    ${tags || review ? `<div class="record-badges">${tags}${review}</div>` : ""}
-    <div class="record-links"><a class="record-detail-link" href="${routePath(problemSegments(log))}">查看题目详情 →</a></div>
-  </article>`;
-}
+function recordCardHtml(log) { return `<article class="record">${trainingCardHtml(log)}</article>`; }
 
 function writeHomePage(html, logs) {
   const recentLogs = logs.filter((log) => log.date >= daysAgo(29));
@@ -493,7 +481,7 @@ function writeHomePage(html, logs) {
   });
   const $ = cheerio.load(withMeta);
   $("#records").html(cards);
-  $("#site-total-badge").text(`全队共 ${logs.length} 题`).removeClass("loading-value");
+  $("#site-total-badge").text(String(logs.length)).removeClass("loading-value");
   const output = addSelfClosingVoids($.html());
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), output, "utf8");
   return output;
@@ -1095,7 +1083,9 @@ async function main() {
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   fs.mkdirSync(path.join(OUTPUT_DIR, "lib"), { recursive: true });
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
+  ({ trainingCardHtml } = await import("../lib/ui.mjs"));
   copyFile("style.css");
+  copyDirRecursive("assets", path.join(OUTPUT_DIR, "assets"));
   writeVersionedApp();
   for (const moduleName of listBrowserModuleFiles()) writeVersionedModule(moduleName);
   const html = writeVersionedIndex(dataVersion);

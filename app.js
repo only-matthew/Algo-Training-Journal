@@ -1,6 +1,6 @@
 import { initTheme, toggleTheme } from "./lib/theme.mjs";
 import { currentRoute, migrateLegacyHashRoute, initPageNavigation } from "./lib/router.mjs";
-import { initSession, login, logout } from "./lib/auth.mjs";
+import { initSession, login, logout, currentUser } from "./lib/auth.mjs";
 import { apiRequest } from "./lib/journal-api.js";
 import { journalRenderer, initOverviewPage, initJournalPage, initRoadmapRenderer, initTagRenderer, initShellRenderer, startRefreshTimer, doRefresh } from "./lib/application.mjs";
 
@@ -22,6 +22,11 @@ function withForm() {
   initTheme();
   initPageNavigation();
 
+  document.getElementById("btn-hero-submit").addEventListener("click", async () => {
+    if (currentUser) (await withForm()).openModal();
+    else login();
+  });
+
   // 0.5 Service Worker：缓存静态资源与数据 JSON，二次访问秒开、离线可用
   if ("serviceWorker" in navigator && window.location.protocol === "https:") {
     navigator.serviceWorker
@@ -35,7 +40,7 @@ function withForm() {
   document.getElementById("btn-theme").addEventListener("click", toggleTheme);
   document.getElementById("btn-login").addEventListener("click", login);
   document.getElementById("btn-logout").addEventListener("click", logout);
-  document.getElementById("btn-submit").addEventListener("click", async () => (await withForm()).openModal());
+  document.getElementById("btn-submit").addEventListener("click", async () => currentUser ? (await withForm()).openModal() : login());
   document.getElementById("btn-close-modal").addEventListener("click", async () => (await withForm()).closeModal());
   document.getElementById("btn-add-problem").addEventListener("click", async () => (await withForm()).addProblem());
   document.getElementById("btn-import-cf").addEventListener("click", async () => (await withForm()).openImportPanel("codeforces"));
@@ -88,6 +93,48 @@ function withForm() {
   });
   document.getElementById("problem-list").addEventListener("input", async () => (await withForm()).markFormEdited());
   document.getElementById("problem-list").addEventListener("change", async () => (await withForm()).markFormEdited());
+
+  document.getElementById("global-search-form")?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const value = document.getElementById("global-search")?.value?.trim() || "";
+    window.history.pushState(null, "", value ? `/?q=${encodeURIComponent(value)}` : "/");
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    requestAnimationFrame(() => {
+      const search = document.getElementById("search-input");
+      if (search) { search.value = value; search.dispatchEvent(new Event("input")); }
+    });
+  });
+  document.querySelectorAll("[data-review-status]").forEach((button) => button.addEventListener("click", () => {
+    document.querySelectorAll("[data-review-status]").forEach((item) => item.classList.toggle("active", item === button));
+    const select = document.getElementById("review-status");
+    select.value = button.dataset.reviewStatus;
+    select.dispatchEvent(new Event("change"));
+  }));
+  document.getElementById("tag-search")?.addEventListener("input", (event) => {
+    const needle = event.target.value.trim().toLowerCase();
+    document.querySelectorAll(".tag-index-card").forEach((card) => { card.hidden = !card.textContent.toLowerCase().includes(needle); });
+  });
+  document.addEventListener("input", (event) => {
+    if (event.target.id !== "knowledge-search") return;
+    const needle = event.target.value.trim().toLowerCase();
+    document.querySelectorAll(".knowledge-topic-card").forEach((card) => { card.hidden = !card.dataset.topic.toLowerCase().includes(needle); });
+  });
+  document.querySelectorAll("[data-tag-category]").forEach((button) => button.addEventListener("click", () => {
+    document.querySelectorAll("[data-tag-category]").forEach((item) => item.classList.toggle("active", item === button));
+  }));
+  document.querySelectorAll("[data-member-view]").forEach((button) => button.addEventListener("click", () => {
+    const view = button.dataset.memberView;
+    document.querySelectorAll(".content-tabs [data-member-view]").forEach((item) => item.classList.toggle("active", item.dataset.memberView === view));
+    document.getElementById("member-dashboard").hidden = view === "records";
+    document.getElementById("member-all-records").hidden = view !== "records";
+  }));
+  document.getElementById("mobile-theme")?.addEventListener("click", toggleTheme);
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-calendar][data-shift]");
+    if (!button) return;
+    const calendar = document.getElementById(button.dataset.calendar);
+    if (calendar) calendar.scrollBy({ left: Number(button.dataset.shift) * 140, behavior: "smooth" });
+  });
 
   // 3. Load journal
   try {
