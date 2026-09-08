@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-09-08T14:41:47.421+08:00",
+  "updatedAt": "2026-09-08T16:40:47.118+08:00",
   "problems": [
     {
       "id": "04f87283-2c30-4c21-ae21-1d1afb6a9511",
@@ -11,6 +11,20 @@
       "tags": [
         "二分答案",
         "边界处理",
+        "细节"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "5d6a61fb-28ca-4770-9eff-46dfb07ea5c6",
+      "name": "[NOIP 2015 提高组] 跳石头",
+      "platform": "洛谷",
+      "problemNumber": "P2678",
+      "difficulty": "普及",
+      "tags": [
+        "模拟",
+        "二分",
+        "贪心",
         "细节"
       ],
       "reviewStatus": "none"
