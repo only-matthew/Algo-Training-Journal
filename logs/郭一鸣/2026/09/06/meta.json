@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-09T00:30:32.073+08:00",
+  "problems": [
+    {
+      "id": "f5ce40ef-5be2-4720-a100-abbcb837801d",
+      "name": "Monocarp's Contest",
+      "platform": "Codeforces",
+      "problemNumber": "2260A",
+      "difficulty": "未标注",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
