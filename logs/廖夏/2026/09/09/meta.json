@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-09-09T13:08:05.135+08:00",
+  "updatedAt": "2026-09-09T21:45:49.845+08:00",
   "problems": [
     {
       "id": "92972833-b704-4eb1-bd53-44ce3e5b34cc",
@@ -11,6 +11,19 @@
       "tags": [
         "模拟",
         "搜索",
+        "二分"
+      ],
+      "reviewStatus": "none"
+    },
+    {
+      "id": "9bb76627-1b35-4e47-a991-35ebee26b681",
+      "name": "数列分段 Section II",
+      "platform": "洛谷",
+      "problemNumber": "P1182",
+      "difficulty": "普及",
+      "tags": [
+        "贪心",
+        "前缀和",
         "二分"
       ],
       "reviewStatus": "none"

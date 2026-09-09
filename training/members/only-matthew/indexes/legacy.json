@@ -1045,6 +1045,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-09/92972833-b704-4eb1-bd53-44ce3e5b34cc/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1182",
+      "date": "2026-09-09",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-09",
+        "recordId": "9bb76627-1b35-4e47-a991-35ebee26b681"
+      },
+      "problem": {
+        "name": "数列分段 Section II",
+        "platform": "洛谷",
+        "problemNumber": "P1182",
+        "difficulty": "普及"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-09/9bb76627-1b35-4e47-a991-35ebee26b681/"
     }
   ]
 }
