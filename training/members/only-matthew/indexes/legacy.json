@@ -1028,6 +1028,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-08/522c87fa-78b2-42d7-bbdc-39b96c65d7bc/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P3853",
+      "date": "2026-09-09",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-09",
+        "recordId": "92972833-b704-4eb1-bd53-44ce3e5b34cc"
+      },
+      "problem": {
+        "name": "[TJOI2007] 路标设置",
+        "platform": "洛谷",
+        "problemNumber": "P3853",
+        "difficulty": "普及"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-09/92972833-b704-4eb1-bd53-44ce3e5b34cc/"
     }
   ]
 }
