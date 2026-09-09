@@ -1,12 +1,41 @@
 /* Shared detail surfaces. The overview retains its established design. */
 [hidden] { display: none !important; }
-.page-hero { margin-inline: calc((min(1320px, 100vw - 48px) - 100vw) / 2); }
+/* Query the usable viewport width, excluding the vertical scrollbar. */
+html { container-type: inline-size; }
+.page-hero { margin-inline: calc((min(1320px, 100cqw - 48px) - 100cqw) / 2); }
 .page-hero::after { content: none; }
 .hero-verse { position: absolute; z-index: 1; left: 55%; top: 42px; transform: rotate(-7deg); pointer-events: none; }
 .page-hero .hero-verse { color: var(--muted); font: 27px/1.8 KaiTi, STKaiti, serif; letter-spacing: 3px; }
 .hero-verse span { display: block; }
 .hero-verse span + span { padding-left: 32px; }
 .hero-verse::after { content: ""; display: block; width: 38px; margin-top: 12px; border-bottom: 1px solid currentColor; }
+/* Keep the landscape above the cards, with its foreground dissolving into the page. */
+.home-hero .hero-art { right: max(0px, calc((100cqw - 1440px) / 2)); }
+.home-hero .hero-verse { left: 55%; top: 44px; }
+.home-stats .stat-card { border-radius: 8px; }
+.home-stats .stat-card strong { font-variant-numeric: tabular-nums; }
+.home-stats .stat-card small { color: var(--muted); }
+.home-middle > .panel { min-height: 250px; }
+.today-review { display: flex; flex-direction: column; }
+.today-review > .review-queue { flex: 1; }
+.review-empty { min-height: 168px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; color: var(--muted); }
+.review-empty > .ui-icon { width: 36px; height: 36px; color: var(--green); }
+.review-empty p { margin: 0; }
+.heatmap .cell-future { visibility: hidden; }
+@media (min-width: 768px) and (max-width: 1199px) {
+  .header-inner { gap: 16px; }
+  .brand { min-width: 204px; }
+  .desktop-nav { gap: 14px; }
+  .global-search { min-width: 150px; width: 200px; }
+  .home-hero .hero-verse { left: 70%; font-size: 23px; }
+}
+@media (max-width: 767px) {
+  .home-hero { min-height: 280px; padding-bottom: 28px; }
+  .home-hero h1 span { display: inline-block; }
+  .home-hero .hero-art { left: 22%; opacity: .22; }
+  .home-middle > .panel { min-height: 220px; }
+  .home-middle .review-empty { min-height: 140px; }
+}
 .more-tools > .filter-bar { display: grid; grid-template-columns: 180px minmax(0,1fr) 180px; margin: 16px 0; position: static; }
 .more-tools { clear: both; }
 .home-records { grid-auto-rows: auto; align-items: stretch; }

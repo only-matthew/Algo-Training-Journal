@@ -112,13 +112,6 @@ function withForm() {
     select.value = button.dataset.reviewStatus;
     select.dispatchEvent(new Event("change"));
   }));
-  document.getElementById("tag-search")?.addEventListener("input", (event) => {
-    const needle = event.target.value.trim().toLowerCase();
-    document.querySelectorAll(".tag-index-card").forEach((card) => { card.hidden = !card.textContent.toLowerCase().includes(needle); });
-  });
-  document.querySelectorAll("[data-tag-category]").forEach((button) => button.addEventListener("click", () => {
-    document.querySelectorAll("[data-tag-category]").forEach((item) => item.classList.toggle("active", item === button));
-  }));
   document.querySelectorAll("[data-member-view]").forEach((button) => button.addEventListener("click", () => {
     const view = button.dataset.memberView;
     document.querySelectorAll(".content-tabs [data-member-view]").forEach((item) => item.classList.toggle("active", item.dataset.memberView === view));
