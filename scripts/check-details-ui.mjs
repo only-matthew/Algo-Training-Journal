@@ -87,6 +87,7 @@ try {
   await page.waitForSelector("#problem-thoughts");
   await page.waitForFunction(()=>typeof document.getElementById("btn-export-pdf").onclick === "function");
   const downloadPromise = page.waitForEvent("download");
+  await page.locator("#export-bar > summary").click();
   await page.locator("#btn-export-md").click();
   const download = await downloadPromise;
   assert.ok(download.suggestedFilename().endsWith(".md"));

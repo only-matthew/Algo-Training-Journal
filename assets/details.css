@@ -144,7 +144,18 @@ html { container-type: inline-size; }
 .problem-code-expanded { min-width: 0; max-width: 100%; }
 .problem-code-expanded pre { max-width: 100%; max-height: 620px; overflow: auto; margin: 0; border-radius: 5px; font-size: 13px; }
 .copy-feedback, .share-feedback { display: block; font-size: 12px; color: var(--green); }
-#problem-page > .export-bar { position: static; display: flex; flex-wrap: wrap; padding: 0 0 12px; }
+#problem-page > .detail-toolbar { display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px 20px; }
+.problem-export-menu { position: relative; z-index: 5; margin-left: auto; }
+.problem-export-menu > summary { list-style: none; cursor: pointer; }
+.problem-export-menu > summary::-webkit-details-marker { display: none; }
+.problem-export-options { position: absolute; top: calc(100% + 8px); right: 0; display: grid; gap: 4px; width: 210px; padding: 8px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); box-shadow: 0 8px 24px rgb(0 0 0 / .1); }
+.problem-export-options .btn { justify-content: flex-start; border-color: transparent; }
+.problem-detail .section-heading { flex-wrap: wrap; }
+.problem-detail .section-heading h2 { flex: 0 0 auto; margin: 0; white-space: nowrap; }
+.problem-detail .btn-sm { width: auto; flex: 0 0 auto; }
+.problem-detail .section-heading > [data-problem-edit] { margin-left: auto; }
+.problem-review-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.problem-detail .review-detail-action .ui-icon { width: 16px; height: 16px; }
 .detail-panel[id], .detail-section[id] { scroll-margin-top: 88px; }
 .problem-main .related-list { margin: 0; }
 .problem-main .related-list li:last-child { border-bottom: 0; }
