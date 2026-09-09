@@ -527,7 +527,7 @@ function problemPageHtml(html, log, related) {
   const description = truncate(log.takeaway !== "未填写" ? log.takeaway : log.description)
     || `${log.member} 在 ${log.date} 记录的 ${log.problem} 训练题目、题解与代码。`;
   // 正文结构与浏览器端共用 lib/problem-detail.mjs 模板，避免两份维护
-  const article = problemDetailHtml(log, { memberHref: routePath(memberSegments(log.member)) }) + relatedSectionHtml(related, log);
+  const article = problemDetailHtml({ ...log, related }, { memberHref: routePath(memberSegments(log.member)) });
   let page = replaceHeadMetadata(showOnlyPage(html, "problem-page"), {
     title: `${log.problem} · ${log.member} · ${SITE_NAME}`,
     description,
