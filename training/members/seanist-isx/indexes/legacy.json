@@ -733,6 +733,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-08/8759e498-f7a9-48f1-aac9-8f3ad05e44a5/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P3613",
+      "date": "2026-09-09",
+      "recordRef": {
+        "memberId": "seanist-isx",
+        "date": "2026-09-09",
+        "recordId": "70911764-fb78-415d-82ff-7145f8f7a42b"
+      },
+      "problem": {
+        "name": "【深基15.例2】寄包柜",
+        "platform": "洛谷",
+        "problemNumber": "P3613",
+        "difficulty": "普及-"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-09/70911764-fb78-415d-82ff-7145f8f7a42b/"
     }
   ]
 }

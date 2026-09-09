@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-10T00:46:44.571+08:00",
+  "problems": [
+    {
+      "id": "70911764-fb78-415d-82ff-7145f8f7a42b",
+      "name": "【深基15.例2】寄包柜",
+      "platform": "洛谷",
+      "problemNumber": "P3613",
+      "difficulty": "普及-",
+      "tags": [],
+      "reviewStatus": "none"
+    }
+  ]
+}
