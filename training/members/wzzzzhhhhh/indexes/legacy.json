@@ -904,6 +904,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-09/1814ae7c-9c1a-40e5-8416-86877084b0c6/"
+    },
+    {
+      "subjectKey": "record:wzzzzhhhhh:2026-09-10:c948f315-63d2-4726-a202-bce49cce838d",
+      "date": "2026-09-10",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-10",
+        "recordId": "c948f315-63d2-4726-a202-bce49cce838d"
+      },
+      "problem": {
+        "name": "最长公共前后缀长度",
+        "platform": "其他",
+        "problemNumber": "",
+        "difficulty": "未标注"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-10/c948f315-63d2-4726-a202-bce49cce838d/"
     }
   ]
 }
