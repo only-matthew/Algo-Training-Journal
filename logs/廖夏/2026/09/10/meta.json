@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-11T01:12:55.713+08:00",
+  "problems": [
+    {
+      "id": "6a9c84ae-d19d-4028-a59a-44032aebd07c",
+      "name": "银行贷款",
+      "platform": "洛谷",
+      "problemNumber": "P1163",
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "浮点数"
+      ],
+      "reviewStatus": "todo",
+      "reviewDue": "2026-09-14"
+    }
+  ]
+}

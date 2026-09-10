@@ -1062,6 +1062,24 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-09/9bb76627-1b35-4e47-a991-35ebee26b681/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1163",
+      "date": "2026-09-10",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-10",
+        "recordId": "6a9c84ae-d19d-4028-a59a-44032aebd07c"
+      },
+      "problem": {
+        "name": "银行贷款",
+        "platform": "洛谷",
+        "problemNumber": "P1163",
+        "difficulty": "普及-"
+      },
+      "reviewStatus": "todo",
+      "reviewDue": "2026-09-14",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-10/6a9c84ae-d19d-4028-a59a-44032aebd07c/"
     }
   ]
 }
