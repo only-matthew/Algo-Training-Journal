@@ -30,6 +30,29 @@ h1,h2,h3,h4,p{margin-top:0}h1{margin-bottom:12px;font-size:40px;line-height:1.25
 
 /* final alignment overrides */
 .detail-toolbar{justify-content:flex-start!important}
+@media(max-width:767px){
+  #member-page>.detail-toolbar{
+    flex-direction:row;
+    align-items:center;
+    flex-wrap:nowrap;
+    gap:8px;
+    min-height:48px;
+    padding:10px 0;
+    margin:0;
+    overflow-x:auto;
+    white-space:nowrap;
+    scrollbar-width:none;
+  }
+  #member-page>.detail-toolbar::-webkit-scrollbar{display:none}
+  #member-page>.detail-toolbar>*{flex:0 0 auto}
+  #member-page>.detail-toolbar>span:last-child{max-width:12rem;overflow:hidden;text-overflow:ellipsis}
+  .account-popover{
+    position:fixed;
+    top:74px;
+    right:max(16px,env(safe-area-inset-right));
+    width:min(260px,calc(100vw - 32px));
+  }
+}
 .heatmap{grid-template-columns:repeat(30,minmax(0,1fr));overflow:hidden}
 .heatmap .cell{width:100%;height:100%;aspect-ratio:auto}
 .calendar-body>.heatmap{grid-column:2;min-width:0;width:100%;margin:0;padding:0}
@@ -78,3 +101,6 @@ h1,h2,h3,h4,p{margin-top:0}h1{margin-bottom:12px;font-size:40px;line-height:1.25
 #problem-page>.export-bar{position:absolute;top:72px;right:0;z-index:4;padding:0}
 #problem-page .problem-detail-head{align-items:center;min-height:145px;padding-top:20px;padding-bottom:20px;background-image:url('/assets/ink-mountains.webp');background-position:right center;background-size:auto 100%}
 @media(max-width:767px){#problem-page>.export-bar{position:static;display:flex;overflow:auto;padding:0 0 10px}#problem-page .problem-detail-head{min-height:210px}}
+.member-dashboard #member-trend{display:grid;gap:16px;align-content:start;min-width:0;margin-top:8px}.trend-chart-svg{display:block;width:100%;height:auto;min-width:0;overflow:visible}.trend-gridline{stroke:var(--line);stroke-width:1}.trend-axis{stroke:var(--line-strong);stroke-width:1}.trend-axis-label,.trend-date-label{fill:var(--muted);font-size:11px}.trend-value{fill:var(--ink);font-size:13px;font-weight:700}.trend-bar{fill:var(--green);transition:opacity 140ms}.trend-bar:hover{opacity:.78}.trend-summary{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);padding-top:14px}.trend-summary span{display:grid;gap:2px;padding:0 10px;border-right:1px solid var(--line);text-align:center}.trend-summary span:last-child{border-right:0}.trend-summary strong{color:var(--ink);font-size:20px;line-height:1.1}.trend-summary small{color:var(--muted);font-size:11px}
+@media(max-width:767px){#member-page #member-trend{overflow-x:auto;padding-bottom:4px}#member-page #member-trend .trend-chart-svg{width:100%;max-width:100%;min-width:0}.trend-summary{min-width:320px}}
+.member-dashboard>.panel{min-width:0}
