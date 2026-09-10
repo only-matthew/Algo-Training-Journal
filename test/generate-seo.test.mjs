@@ -62,9 +62,19 @@ test("generator emits crawlable member and problem pages", () => {
   const homePage = fs.readFileSync(path.join(siteDir, "index.html"), "utf8");
   const sitemap = fs.readFileSync(path.join(siteDir, "sitemap.xml"), "utf8");
   const robots = fs.readFileSync(path.join(siteDir, "robots.txt"), "utf8");
-  const generatedApp = fs.readFileSync(path.join(siteDir, "app.js"), "utf8");
-  const generatedForm = fs.readFileSync(path.join(siteDir, "lib", "form.mjs"), "utf8");
-  const generatedApplication = fs.readFileSync(path.join(siteDir, "lib", "application.mjs"), "utf8");
+  const appSrc = homePage.match(/<script\b[^>]*src="(assets\/js\/app-[A-Z0-9]+\.js)"/)?.[1];
+  assert.ok(appSrc, "the page should load its content-hashed browser bundle");
+  assert.ok(fs.existsSync(path.join(siteDir, appSrc)));
+  const stylesheets = [...homePage.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/g)];
+  assert.equal(stylesheets.length, 1, "build should preserve the cascade in one stylesheet");
+  const heroPreload = homePage.match(/<link\b[^>]*rel="preload"[^>]*as="image"[^>]*>/)?.[0];
+  assert.ok(heroPreload?.includes('fetchpriority="high"'));
+  const heroUrl = heroPreload.match(/href="([^"]+)"/)[1];
+  assert.match(heroUrl, /^assets\/ink-mountains\.webp\?v=[a-f0-9]{12}$/);
+  const generatedStyle = fs.readFileSync(path.join(siteDir, "style.css"), "utf8");
+  assert.ok(generatedStyle.includes(`/${heroUrl}`), "CSS must reuse the preloaded image URL");
+  assert.equal(generatedStyle.includes("ink-mountains.png"), false);
+  assert.ok(fs.statSync(path.join(siteDir, "assets", "ink-mountains.webp")).size < 100000);
 
   assert.match(problemPage, new RegExp(`<title>[^<]*${log.member}[^<]*</title>`));
   assert.ok(problemPage.includes(`data-prerendered-path="${problemRoute}"`));
@@ -95,14 +105,14 @@ test("generator emits crawlable member and problem pages", () => {
   assert.ok(memberPage.includes(problemRoute));
   assert.ok(homePage.includes("/problem/"));
 
-  const appAuthImport = generatedApp.match(/\.\/lib\/auth\.mjs\?v=([a-f0-9]+)/)?.[1];
-  const formAuthImport = generatedForm.match(/\.\/auth\.mjs\?v=([a-f0-9]+)/)?.[1];
-  assert.ok(appAuthImport);
-  assert.equal(formAuthImport, appAuthImport);
-  assert.match(generatedApp, /\.\/lib\/application\.mjs\?v=[a-f0-9]+/);
-  assert.match(generatedApplication, /\.\/data\.mjs\?v=[a-f0-9]+/);
+  const preloads = [...homePage.matchAll(/<link\b[^>]*rel="modulepreload"[^>]*href="([^"]+)"/g)].map((match) => match[1]);
+  assert.ok(preloads.length > 0);
+  for (const preload of preloads) {
+    assert.ok(fs.existsSync(path.join(siteDir, preload)));
+    assert.doesNotMatch(preload, /\/form-/);
+  }
   assert.doesNotMatch(
-    fs.readFileSync(path.join(siteDir, "lib", "data.mjs"), "utf8"),
+    fs.readFileSync(path.join(root, "lib", "data.mjs"), "utf8"),
     /renderer\.mjs/,
     "the data store must not depend on browser rendering",
   );

@@ -3,6 +3,8 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const cheerio = require("cheerio");
+const { transformSync } = require("esbuild");
+const { buildBrowser } = require("./build-browser.js");
 const { execFileSync } = require("child_process");
 
 function addSelfClosingVoids(html) {
@@ -12,6 +14,7 @@ function addSelfClosingVoids(html) {
 const ROOT = path.join(__dirname, "..");
 const LOGS_DIR = path.join(ROOT, "logs");
 const OUTPUT_DIR = path.join(ROOT, "site");
+let browserAssets;
 const LEGACY_LOG_DIR_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const YEAR_PATTERN = /^\d{4}$/;
 const MONTH_PATTERN = /^(0[1-9]|1[0-2])$/;
@@ -244,24 +247,14 @@ function copyFile(name) {
   fs.copyFileSync(path.join(ROOT, name), path.join(OUTPUT_DIR, name));
 }
 
-function writeVersionedModule(name) {
-  const source = fs.readFileSync(path.join(ROOT, name), "utf8");
-  const content = source.replace(/(["'])(\.\/[^"']+\.(?:mjs|js))\1/g, (match, quote, importPath) => {
-    const dependency = path.posix.join(path.posix.dirname(name), importPath);
-    return `${quote}${importPath}?v=${assetVersion(dependency)}${quote}`;
-  });
-  const outputPath = path.join(OUTPUT_DIR, name);
-  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, content, "utf8");
-}
-
-function listBrowserModuleFiles(dir = "lib") {
-  const absoluteDir = path.join(ROOT, dir);
-  return fs.readdirSync(absoluteDir, { withFileTypes: true }).flatMap((entry) => {
-    const relativePath = path.posix.join(dir, entry.name);
-    if (entry.isDirectory()) return listBrowserModuleFiles(relativePath);
-    return /\.(?:mjs|js)$/.test(entry.name) ? [relativePath] : [];
-  });
+function writeStylesheet() {
+  // Preserve the cascade while serving one compressed, versioned stylesheet.
+  const source = ["style.css", "assets/final.css", "assets/details.css"]
+    .map((name) => fs.readFileSync(path.join(ROOT, name), "utf8"))
+    .join("\n")
+    .replaceAll("/assets/ink-mountains.webp", `/assets/ink-mountains.webp?v=${assetVersion("assets/ink-mountains.webp")}`);
+  const { code } = transformSync(source, { loader: "css", minify: true, legalComments: "eof" });
+  fs.writeFileSync(path.join(OUTPUT_DIR, "style.css"), code, "utf8");
 }
 
 function copyDirRecursive(src, dest) {
@@ -293,17 +286,22 @@ function daysAgo(days) {
 }
 
 function appVersion() {
-  // Child modules receive their own content hash in writeVersionedModule(), so
-  // the entry module only needs to reflect app.js itself.
-  return assetVersion("app.js");
+  return browserAssets.version;
 }
 
 function writeVersionedIndex(dataVersion) {
   const raw = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
   const $ = cheerio.load(raw);
   $('meta[name="journal-data-version"]').attr("content", dataVersion);
-  $('link[rel="stylesheet"][href^="style.css"]').attr("href", `style.css?v=${assetVersion("style.css")}`);
-  $('script[src^="app.js"]').attr("src", `app.js?v=${appVersion()}`);
+  const styleVersion = crypto.createHash("sha256")
+    .update(fs.readFileSync(path.join(OUTPUT_DIR, "style.css"))).digest("hex").slice(0, 12);
+  $('link[rel="stylesheet"][href^="style.css"]').attr("href", `style.css?v=${styleVersion}`);
+  $('link[rel="stylesheet"][href^="assets/final.css"], link[rel="stylesheet"][href^="assets/details.css"]').remove();
+  $('link[rel="preload"][as="image"]').attr("href", `assets/ink-mountains.webp?v=${assetVersion("assets/ink-mountains.webp")}`);
+  $('script[src^="app.js"]').attr("src", `assets/js/${browserAssets.entry}`);
+  for (const dependency of browserAssets.preloads) {
+    $("<link>").attr({ rel: "modulepreload", href: `assets/js/${dependency}` }).appendTo("head");
+  }
   const html = addSelfClosingVoids($.html());
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), html, "utf8");
   return html;
@@ -471,7 +469,10 @@ function recordCardHtml(log) { return `<article class="record">${trainingCardHtm
 
 function writeHomePage(html, logs) {
   const recentLogs = logs.filter((log) => log.date >= daysAgo(29));
-  const cards = recentLogs.length ? recentLogs.map(recordCardHtml).join("\n") : "<p>近 30 天暂无训练记录。</p>";
+  // 首页运行时与 renderLogs 保持同一分页大小，避免把全部近 30 天记录
+  // 先塞进首屏 HTML，再由脚本立即替换成 4 张卡片。
+  const initialLogs = recentLogs.slice(0, 4);
+  const cards = recentLogs.length ? initialLogs.map(recordCardHtml).join("\n") : "<p>近 30 天暂无训练记录。</p>";
   const description = "ICPC 算法训练日志，汇总队员的刷题记录、原创题解、复盘收获和代码。";
   const withMeta = replaceHeadMetadata(html, {
     title: SITE_NAME,
@@ -481,6 +482,7 @@ function writeHomePage(html, logs) {
   });
   const $ = cheerio.load(withMeta);
   $("#records").html(cards);
+  $("#record-count").text(recentLogs.length ? `近 30 天共 ${recentLogs.length} 条记录` : "");
   $("#site-total-badge").text(String(logs.length)).removeClass("loading-value");
   const output = addSelfClosingVoids($.html());
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), output, "utf8");
@@ -567,10 +569,6 @@ function writeCrawlerFiles(members, logs, extraEntries = []) {
   const urls = entries.map(({ segments, lastmod }) => `  <url>\n    <loc>${escapeXml(absoluteUrl(segments))}</loc>${lastmod ? `\n    <lastmod>${escapeXml(lastmod)}</lastmod>` : ""}\n  </url>`).join("\n");
   fs.writeFileSync(path.join(OUTPUT_DIR, "sitemap.xml"), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`, "utf8");
   fs.writeFileSync(path.join(OUTPUT_DIR, "robots.txt"), `User-agent: *\nAllow: /\n\nSitemap: ${SITE_ORIGIN}/sitemap.xml\n`, "utf8");
-}
-
-function writeVersionedApp() {
-  writeVersionedModule("app.js");
 }
 
 function writeRouteIndex(html, segments) {
@@ -1081,13 +1079,11 @@ async function main() {
 
   fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
-  fs.mkdirSync(path.join(OUTPUT_DIR, "lib"), { recursive: true });
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   ({ trainingCardHtml } = await import("../lib/ui.mjs"));
-  copyFile("style.css");
+  writeStylesheet();
   copyDirRecursive("assets", path.join(OUTPUT_DIR, "assets"));
-  writeVersionedApp();
-  for (const moduleName of listBrowserModuleFiles()) writeVersionedModule(moduleName);
+  browserAssets = buildBrowser(ROOT, path.join(OUTPUT_DIR, "assets", "js"));
   const html = writeVersionedIndex(dataVersion);
   writeServiceWorker(dataVersion);
   const homeHtml = writeHomePage(html, logs);

@@ -147,13 +147,13 @@ function withForm() {
     for (const id of ["metric-total", "metric-days", "metric-weekly"]) document.getElementById(id).textContent = "加载失败";
   }
 
-  // 非知识地图页面：空闲时预加载表单模块，避免首次点击"提交/修改记录"时等待动态导入
+  // 只有已登录队员需要表单；公开浏览不下载表单及其依赖。
   const current = currentRoute();
-  if (current !== "roadmap" && !current.startsWith("roadmap/")) {
+  if (currentUser && current !== "roadmap" && !current.startsWith("roadmap/")) {
     if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(() => { withForm(); }, { timeout: 3000 });
+      window.requestIdleCallback(() => { withForm().catch(() => { formModulePromise = null; }); }, { timeout: 3000 });
     } else {
-      setTimeout(() => { withForm(); }, 1500);
+      setTimeout(() => { withForm().catch(() => { formModulePromise = null; }); }, 1500);
     }
   }
 

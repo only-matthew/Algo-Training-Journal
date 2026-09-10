@@ -2433,7 +2433,7 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .header h1 { margin:0 0 12px; font-size:32px; letter-spacing:0; }
 .header .subtitle { max-width:680px; font-size:16px; line-height:1.8; margin:0; }
 .landscape-header { min-height:264px; }
-.landscape-header::before { content:""; position:absolute; z-index:-1; inset:0 -24px; background:url('/assets/ink-mountains.png') right center/auto 100% no-repeat; opacity:.25; pointer-events:none; }
+.landscape-header::before { content:""; position:absolute; z-index:-1; inset:0 -24px; background:url('/assets/ink-mountains.webp') right center/auto 100% no-repeat; opacity:.25; pointer-events:none; }
 .landscape-header > div:first-child { max-width:65%; }
 [data-theme="dark"] .landscape-header::before { opacity:.14; mix-blend-mode:screen; }
 .hero-actions { display:flex; align-items:center; gap:24px; margin-top:24px; }

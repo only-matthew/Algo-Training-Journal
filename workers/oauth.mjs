@@ -811,6 +811,13 @@ export default {
       }
 
       const user = await session(request, env);
+      // Reading the current session is public; an anonymous visitor is a normal state.
+      if (url.pathname === "/api/session" && request.method === "GET") {
+        const body = user
+          ? { login: user.login, member: user.member, avatar_url: user.avatar_url, csrfToken: user.csrfToken, ...(user.cfHandle ? { cfHandle: user.cfHandle } : {}) }
+          : null;
+        return json(request, body, 200, { "Cache-Control": "no-store" });
+      }
       if (!user) return url.pathname.startsWith("/api/v2/")
         ? v2Error(request, "AUTH_REQUIRED", "未登录或会话已过期", 401)
         : json(request, { error: "未登录或会话已过期" }, 401);
@@ -825,9 +832,6 @@ export default {
         if (response) return response;
       }
 
-      if (url.pathname === "/api/session" && request.method === "GET") {
-        return json(request, { login: user.login, member: user.member, avatar_url: user.avatar_url, csrfToken: user.csrfToken, ...(user.cfHandle ? { cfHandle: user.cfHandle } : {}) });
-      }
       if (url.pathname === "/api/logs/date") {
         return handleLogsDate(request, user);
       }
