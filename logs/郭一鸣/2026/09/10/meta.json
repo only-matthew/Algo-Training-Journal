@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-11T00:16:02.964+08:00",
+  "problems": [
+    {
+      "id": "6938d70a-3b49-4a5d-852d-456eb87ed7e4",
+      "name": "[COCI 2011/2012 #5] EKO / 砍树",
+      "platform": "洛谷",
+      "problemNumber": "P1873",
+      "difficulty": "普及-",
+      "tags": [
+        "二分"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}

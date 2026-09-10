@@ -750,6 +750,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-09/70911764-fb78-415d-82ff-7145f8f7a42b/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1873",
+      "date": "2026-09-10",
+      "recordRef": {
+        "memberId": "seanist-isx",
+        "date": "2026-09-10",
+        "recordId": "6938d70a-3b49-4a5d-852d-456eb87ed7e4"
+      },
+      "problem": {
+        "name": "[COCI 2011/2012 #5] EKO / 砍树",
+        "platform": "洛谷",
+        "problemNumber": "P1873",
+        "difficulty": "普及-"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-10/6938d70a-3b49-4a5d-852d-456eb87ed7e4/"
     }
   ]
 }
