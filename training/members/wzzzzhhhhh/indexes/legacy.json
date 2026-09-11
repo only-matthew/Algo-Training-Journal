@@ -921,6 +921,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-10/c948f315-63d2-4726-a202-bce49cce838d/"
+    },
+    {
+      "subjectKey": "record:wzzzzhhhhh:2026-09-11:b1927ec5-7ec7-45bd-94fa-5ced7b764077",
+      "date": "2026-09-11",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-11",
+        "recordId": "b1927ec5-7ec7-45bd-94fa-5ced7b764077"
+      },
+      "problem": {
+        "name": "蹦蹦菇",
+        "platform": "其他",
+        "problemNumber": "",
+        "difficulty": "未标注"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-11/b1927ec5-7ec7-45bd-94fa-5ced7b764077/"
     }
   ]
 }
