@@ -767,6 +767,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-10/6938d70a-3b49-4a5d-852d-456eb87ed7e4/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1010",
+      "date": "2026-09-11",
+      "recordRef": {
+        "memberId": "seanist-isx",
+        "date": "2026-09-11",
+        "recordId": "86c5b124-cc93-4a39-b715-6d24e7e91bff"
+      },
+      "problem": {
+        "name": "[NOIP 1998 普及组] 幂次方",
+        "platform": "洛谷",
+        "problemNumber": "P1010",
+        "difficulty": "普及-"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-11/86c5b124-cc93-4a39-b715-6d24e7e91bff/"
     }
   ]
 }
