@@ -1,10 +1,10 @@
 import { readdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 
-const files = ["test-latex.mjs", ...readdirSync("test")
+const files = readdirSync("test")
   .filter((file) => file.endsWith(".mjs"))
   .sort()
-  .map((file) => `test/${file}`)];
+  .map((file) => `test/${file}`);
 const workerFiles = files.filter((file) => file === "test/oauth-training-v2.test.mjs");
 const regularFiles = files.filter((file) => !workerFiles.includes(file));
 const nodeArgs = ["--test", "--test-concurrency=1"];

@@ -64,12 +64,20 @@ npm run verify        # 顺序运行以上三项
 
 最近一次验证结果：
 
-- 35 个 JS/MJS 源码文件通过语法检查。
-- 186 个测试通过。
-- `node scripts/generate-data.js` 成功生成 122 条日志、3 位成员的静态站点。
+- 63 个 JS/MJS 源码文件通过语法检查。
+- 290 个测试通过（业务测试 286 + Worker 测试 4；其中 `test/export-latex.test.mjs` 会真编译全部真实日志）。
+- `node scripts/generate-data.js` 成功生成 159 条日志、3 位成员的静态站点。
 - `git diff --check` 通过。
 
-测试会重写受忽略的 `site/`，并会更新已跟踪的 `test-output.tex`；后者通常是 `test-latex.mjs` 的正常副作用，提交前请确认其差异是否预期。
+- 测试会重写受忽略的 `site/`；导出相关的回归测试会把中间产物写在受忽略的 `build/latex-test/` 下，仓库里不再有生成的 `.tex` 文件需要人工确认。
+
+## 导出的回归测试
+
+`test/export-latex.test.mjs` 直接 import `lib/export-content.mjs`（与浏览器共用同一份生成逻辑），并对 `logs/` 里的真实日志做真实编译：
+
+- 若 `PATH` 里有 `xelatex`，会把**全部**真实日志拼成一份批量文档编译，断言零 `!` 错误、零 `Overfull \hbox`、零 `Missing character`；另有 8 个「历史故障样例」（题名含 `#`、单字符公式 `$n$`、`\boxed`、中文代码注释、代码里混入 `\end{lstlisting}`、Unicode 数学符号等）。
+- 没有 TeX 发行版时自动 skip，不会让 CI 变红；此时仍会跑纯文本断言。
+- 旧版 `test-latex.mjs` 把生成逻辑复制了一份，正是它掩盖了「题名里的 `#` 让 LaTeX 编译失败」等问题，已删除。
 
 ## 接入浏览器后的优先冒烟测试
 

@@ -3,7 +3,7 @@ import { resolve, relative } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const root = resolve(import.meta.dirname, "..");
-const sourceRoots = ["app.js", "lib", "scripts", "workers", "bot", "test-latex.mjs"];
+const sourceRoots = ["app.js", "lib", "scripts", "workers", "bot"];
 const extensions = new Set([".js", ".mjs"]);
 
 function collectFiles(entry, files = []) {

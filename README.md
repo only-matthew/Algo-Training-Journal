@@ -97,8 +97,12 @@
 ### 导出与分享
 - 题目详情页支持导出为 Markdown、PDF（打印友好的 HTML）或 LaTeX 文件。
 - 训练分析页支持勾选多道题目，批量导出为 Markdown、PDF 或 LaTeX；Markdown 和 LaTeX 单次最多 500 题，PDF 单次最多 100 题。
-- PDF 导出窗口会加载 Prism C++ 语法高亮，并将长代码行自动换行，避免打印或另存为 PDF 时截断。
-- LaTeX 导出使用 `ctexart` 文档类，代码段通过 `listings` 宏包高亮，可直接编译。
+- PDF 导出窗口会加载 Prism C++ 语法高亮与 KaTeX 公式渲染，并将长代码行自动换行，避免打印或另存为 PDF 时截断或出现裸的 `$...$`。
+- LaTeX 导出使用 `ctexart` 文档类，代码段通过 `listings` 宏包高亮，可直接编译：
+  - 文件首行带 `% !TEX program = xelatex`，推荐用 XeLaTeX 编译（Overleaf / TeXstudio 会自动选择引擎）；pdfLaTeX 同样能编译。
+  - `\lstset` 里的 `extendedchars=false` 是必需的：否则 `listings` 会把代码块中中文注释的 UTF-8 字节当成控制序列解析，pdfLaTeX 下直接致命报错、不产出 PDF。
+  - 题解/题目描述按 Markdown 解析（标题、列表、引用、粗斜体、行内代码、围栏代码块、`$...$` / `$$...$$` 公式），并转义 LaTeX 特殊字符；`≤ ≥ × ∈` 等 Unicode 数学符号会映射为对应命令，避免字体缺字形被静默丢弃。
+  - 导出内容生成器是纯函数模块 `lib/export-content.mjs`（不依赖 DOM），因此 `test/export-latex.test.mjs` 能直接 import 生产代码，并用 `logs/` 里的真实日志真编译一遍。
 
 ### 独立页面与分享
 
