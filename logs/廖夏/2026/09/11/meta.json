@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-11T18:11:01.273+08:00",
+  "problems": [
+    {
+      "id": "8dd8bdf9-3b20-40e2-8aa6-60cd1c20d5f0",
+      "name": "小鸟的设备",
+      "platform": "洛谷",
+      "problemNumber": "P3743",
+      "difficulty": "普及",
+      "tags": [
+        "二分",
+        "贪心"
+      ],
+      "reviewStatus": "none"
+    }
+  ]
+}

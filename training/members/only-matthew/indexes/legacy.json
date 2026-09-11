@@ -1080,6 +1080,23 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-09-14",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-10/6a9c84ae-d19d-4028-a59a-44032aebd07c/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P3743",
+      "date": "2026-09-11",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-11",
+        "recordId": "8dd8bdf9-3b20-40e2-8aa6-60cd1c20d5f0"
+      },
+      "problem": {
+        "name": "小鸟的设备",
+        "platform": "洛谷",
+        "problemNumber": "P3743",
+        "difficulty": "普及"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-11/8dd8bdf9-3b20-40e2-8aa6-60cd1c20d5f0/"
     }
   ]
 }
