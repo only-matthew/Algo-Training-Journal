@@ -1,6 +1,6 @@
 {
   "schemaVersion": 3,
-  "updatedAt": "2026-09-11T12:29:04.817+08:00",
+  "updatedAt": "2026-09-11T12:30:19.180+08:00",
   "problems": [
     {
       "id": "b1927ec5-7ec7-45bd-94fa-5ced7b764077",
@@ -9,7 +9,7 @@
       "problemNumber": "",
       "difficulty": "未标注",
       "tags": [
-        "多元DFS"
+        "多元BFS"
       ],
       "reviewStatus": "none"
     }
