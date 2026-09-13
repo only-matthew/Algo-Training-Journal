@@ -5,7 +5,13 @@
       "id": "901b6316-147f-4879-8813-778d09d7e990",
       "name": "Codeforces Round 1109 (Div. 3) B",
       "platform": "Codeforces",
-      "difficulty": "未标注"
+      "difficulty": "≤999",
+      "problemNumberLegacy": "1109B",
+      "problemNumber": "2244B",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     }
   ],
   "updatedAt": "2026-07-26T00:45:14.000+08:00"

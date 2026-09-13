@@ -6,31 +6,44 @@
       "name": "数的划分",
       "platform": "洛谷",
       "problemNumber": "P1025",
-      "difficulty": "未标注",
+      "difficulty": "普及",
       "tags": [
         "DFS"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "洛谷官方",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "按难度标签「普及」换算"
     },
     {
       "id": "23fb140a-af89-484a-8227-985bb8c67769",
       "name": "单词接龙",
       "platform": "洛谷",
-      "problemNumber": "",
+      "problemNumber": "P1019",
       "difficulty": "普及",
       "tags": [
         "DFS"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     },
     {
       "id": "6ba4c49a-69cb-4801-96c7-29a58ccef8ff",
       "name": "You Delete, I Delete",
       "platform": "Codeforces",
-      "problemNumber": "",
-      "difficulty": "未标注",
+      "problemNumber": "2248A",
+      "difficulty": "≤999",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     }
   ],
   "updatedAt": "2026-08-01T23:28:43.000+08:00"

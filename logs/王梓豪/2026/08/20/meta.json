@@ -9,7 +9,10 @@
       "problemNumber": "P9063",
       "difficulty": "入门",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "入门",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "按难度标签「入门」换算"
     }
   ]
 }

@@ -5,12 +5,17 @@
       "id": "6e434f57-2411-4e91-b3fe-b7aee7c77137",
       "name": "Codeforces Round 1114 (Div. 3)",
       "platform": "Codeforces",
-      "problemNumber": "B",
-      "difficulty": "未标注",
+      "problemNumber": "2254B",
+      "difficulty": "≤999",
       "tags": [
         "贪心"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1114B",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 900",
+      "difficultyRating": 900,
+      "difficultyRatingSource": "CF 官方 rating 900"
     }
   ],
   "updatedAt": "2026-08-06T18:56:37.000+08:00"

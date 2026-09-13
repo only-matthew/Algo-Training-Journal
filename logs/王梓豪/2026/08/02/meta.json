@@ -5,10 +5,15 @@
       "id": "24ea01f8-801d-4cdc-bb0b-9d8316bc65da",
       "name": "Merge to Match",
       "platform": "Codeforces",
-      "problemNumber": "",
-      "difficulty": "≤1199",
+      "problemNumber": "2248B",
+      "difficulty": "1000-1199",
       "tags": [],
-      "reviewStatus": "todo"
+      "reviewStatus": "todo",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "≤1199",
+      "difficultySource": "CF 官方 rating 1000",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "CF 官方 rating 1000"
     },
     {
       "id": "c65705ba-787d-47a0-9ea7-536f8d079af4",
@@ -17,7 +22,10 @@
       "problemNumber": "P1033",
       "difficulty": "普及",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "按难度标签「普及」换算"
     }
   ],
   "updatedAt": "2026-08-02T22:42:58.000+08:00"

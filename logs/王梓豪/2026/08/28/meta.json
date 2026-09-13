@@ -13,7 +13,10 @@
         "模拟",
         "字符串"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "1200-1399",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "CF 官方 rating 1300"
     }
   ]
 }

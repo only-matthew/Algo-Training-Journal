@@ -3,7 +3,13 @@
     {
       "name": "Educational Codeforces Round 192 (Rated for Div. 2) B",
       "platform": "Codeforces",
-      "difficulty": "未标注"
+      "difficulty": "1000-1199",
+      "problemNumberLegacy": "192B",
+      "problemNumber": "2242B",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1000",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "CF 官方 rating 1000"
     }
   ],
   "updatedAt": "2026-07-24T23:05:58.000+08:00"

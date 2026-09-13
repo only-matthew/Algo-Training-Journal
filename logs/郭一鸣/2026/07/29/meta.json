@@ -5,13 +5,18 @@
       "id": "0ce032b4-caa9-4e35-92bc-4a89a99e2b88",
       "name": "Codeforces Round 1110, Div. 1 + Div. 2",
       "platform": "Codeforces",
-      "problemNumber": "B",
-      "difficulty": "未标注",
+      "problemNumber": "2245B",
+      "difficulty": "1000-1199",
       "tags": [
         "贪心",
         "排序"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1110B",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1100",
+      "difficultyRating": 1100,
+      "difficultyRatingSource": "CF 官方 rating 1100"
     }
   ],
   "updatedAt": "2026-07-30T11:38:57.000+08:00"

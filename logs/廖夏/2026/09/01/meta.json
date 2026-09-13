@@ -14,7 +14,10 @@
         "贪心"
       ],
       "reviewStatus": "todo",
-      "reviewDue": "2026-09-04"
+      "reviewDue": "2026-09-04",
+      "difficultyLegacy": "提高",
+      "difficultyRating": 1700,
+      "difficultyRatingSource": "洛谷官方难度「提高」"
     }
   ]
 }

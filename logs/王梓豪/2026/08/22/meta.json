@@ -7,12 +7,16 @@
       "name": "歌唱练习",
       "platform": "洛谷",
       "problemNumber": "P11769",
-      "difficulty": "普及+/提高",
+      "difficulty": "普及+/提高-",
       "tags": [
         "贪心",
         "后缀和"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及+/提高",
+      "difficultySource": "洛谷官方",
+      "difficultyRating": 1500,
+      "difficultyRatingSource": "按难度标签「普及+/提高-」换算"
     }
   ]
 }

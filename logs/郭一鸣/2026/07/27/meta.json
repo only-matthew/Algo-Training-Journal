@@ -5,7 +5,13 @@
       "id": "953ad497-6685-4c30-97b9-8ce455becc30",
       "name": "Codeforces Round 1112 (Div. 2) A",
       "platform": "Codeforces",
-      "difficulty": "未标注"
+      "difficulty": "≤999",
+      "problemNumberLegacy": "1112A",
+      "problemNumber": "2250A",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     }
   ],
   "updatedAt": "2026-07-28T02:07:20.000+08:00"

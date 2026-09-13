@@ -11,6 +11,9 @@ const LOGS = [
   { member: "廖夏", date: "2026-08-02", problemIndex: 1, problemId: "c", problem: "无题号题目", platform: "洛谷", problemNumber: "", reviewStatus: "todo", reviewDue: "2026-08-10", difficulty: "", tags: [] },
   { member: "郭一鸣", date: "2026-08-03", problemIndex: 0, problemId: "d", problem: "Watermelon", platform: "Codeforces", problemNumber: "4A", reviewStatus: "none", difficulty: "", tags: [] },
   { member: "郭一鸣", date: "2026-08-04", problemIndex: 0, problemId: "e", problem: "Watermelon", platform: "Codeforces", problemNumber: "4a", reviewStatus: "todo", reviewDue: "2026-08-02", difficulty: "", tags: [] },
+  // 只填了「题号字母」的历史记录：来自不同场次，绝不能被当成同一道题
+  { member: "郭一鸣", date: "2026-07-30", problemIndex: 0, problemId: "f", problem: "Codeforces Round 1108 (Div. 2)", platform: "Codeforces", problemNumber: "B", reviewStatus: "none", difficulty: "", tags: [] },
+  { member: "郭一鸣", date: "2026-08-12", problemIndex: 0, problemId: "g", problem: "Codeforces Round 1107 (Div. 3)", platform: "Codeforces", problemNumber: "B", reviewStatus: "none", difficulty: "", tags: [] },
 ];
 
 test("buildProblemIndex 按平台+归一化题号聚合全队同题记录", async () => {
@@ -24,6 +27,16 @@ test("buildProblemIndex 按平台+归一化题号聚合全队同题记录", asyn
   assert.equal(index.has("洛谷|"), false);
   const cf = index.get("Codeforces|4A");
   assert.equal(cf.length, 2);
+});
+
+test("残缺题号（只填了 A/B）不参与聚合，不同场次不会被误判为同一道题", async () => {
+  const index = await buildProblemIndex(LOGS);
+  assert.equal(index.has("Codeforces|B"), false);
+  // 两条 B 记录各自保留记录级身份，在索引中完全不可见
+  const indexed = [...index.values()].flat();
+  assert.equal(indexed.some((r) => r.problemId === "f"), false);
+  assert.equal(indexed.some((r) => r.problemId === "g"), false);
+  assert.equal(indexed.length, 4); // P1115 x2 + 4A x2
 });
 
 test("buildReviewQueue 只收集待复习且带日期的题，并按日期升序", () => {

@@ -5,13 +5,18 @@
     {
       "id": "ba7fa4b6-1243-45ef-8629-1b5ecc479ed5",
       "name": "导弹防御系统",
-      "platform": "其他",
-      "problemNumber": "",
-      "difficulty": "未标注",
+      "platform": "洛谷",
+      "problemNumber": "P1020",
+      "difficulty": "普及+/提高-",
       "tags": [
         "DP"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "洛谷官方",
+      "difficultyRating": 1500,
+      "difficultyRatingSource": "洛谷官方难度「普及+/提高-」"
     }
   ]
 }

@@ -413,12 +413,22 @@ async function resolveLogRoot(user, date) {
 // 规划一次保存所需的文件变更：删除不再需要的旧文件，仅对内容有变化的文件创建 blob。
 // existingFiles 来自目录列表（path -> blob sha），通过本地 SHA-1 对比跳过未变更文件，
 // 无需逐文件读取旧内容。
-export async function planLogChanges(problems, existingFiles, root, updatedAt) {
+export async function planLogChanges(problems, existingFiles, root, updatedAt, interval = {}) {
   const existing = new Map((existingFiles || []).map((file) => [file.path, file.sha]));
   const desired = new Map();
-  desired.set(`${root}/meta.json`, JSON.stringify(metaFromProblems(problems, updatedAt), null, 2));
-  problems.forEach((p, i) => {
-    const prefix = `${root}/${i}-`;
+  const used = new Set(problems.filter((p) => Number.isInteger(p.fileIndex) && p.fileIndex >= 0).map((p) => p.fileIndex));
+  let next = 0;
+  for (const p of problems) {
+    if (!Number.isInteger(p.fileIndex) || p.fileIndex < 0) {
+      while (used.has(next)) next += 1;
+      p.fileIndex = next;
+      used.add(next);
+      next += 1;
+    }
+  }
+  desired.set(`${root}/meta.json`, JSON.stringify(metaFromProblems(problems, updatedAt, interval), null, 2));
+  problems.forEach((p) => {
+    const prefix = `${root}/${p.fileIndex}-`;
     desired.set(`${prefix}takeaway.md`, p.takeaway || "未填写");
     if (p.description) desired.set(`${prefix}desc.md`, p.description);
     if (p.code) desired.set(`${prefix}solution.cpp`, p.code);
@@ -435,11 +445,11 @@ export async function planLogChanges(problems, existingFiles, root, updatedAt) {
   return changes;
 }
 export async function saveLog(user, date, input) {
-  const { problems } = validateLogInput(input);
+  const { problems, startedOn, solvedOn } = validateLogInput(input);
   const legacyPath = trainingPaths(user.login).legacyIndex;
   const [{ root, files }, legacyRaw] = await Promise.all([resolveLogRoot(user, date), content(legacyPath, user.token)]);
   const updatedAt = toUtc8(new Date());
-  const changes = await planLogChanges(problems, files, root, updatedAt);
+  const changes = await planLogChanges(problems, files, root, updatedAt, { startedOn, solvedOn });
   const legacyChange = planLegacyIndexChange(user, date, problems, legacyRaw);
   if (legacyChange) changes.push(legacyChange);
   await commit(changes, `save(${user.member}): training log for ${date}`, user.token);
@@ -455,12 +465,17 @@ export async function readLog(user, date) {
   const paths = new Set(files.map((file) => file.path));
   return {
     updatedAt: typeof meta.updatedAt === "string" ? meta.updatedAt : undefined,
-    problems: await Promise.all((meta.problems || []).map(async (p, i) => ({
-      ...p,
-      description: paths.has(`${root}/${i}-desc.md`) ? (await content(`${root}/${i}-desc.md`, user.token)) || "" : "",
-      takeaway: paths.has(`${root}/${i}-takeaway.md`) ? (await content(`${root}/${i}-takeaway.md`, user.token)) || "" : "",
-      code: paths.has(`${root}/${i}-solution.cpp`) ? (await content(`${root}/${i}-solution.cpp`, user.token)) || "" : "",
-    }))),
+    startedOn: meta.startedOn,
+    solvedOn: meta.solvedOn,
+    problems: await Promise.all((meta.problems || []).map(async (p, i) => {
+      const slot = Number.isInteger(p.fileIndex) && p.fileIndex >= 0 ? p.fileIndex : i;
+      return {
+        ...p,
+        description: paths.has(`${root}/${slot}-desc.md`) ? (await content(`${root}/${slot}-desc.md`, user.token)) || "" : "",
+        takeaway: paths.has(`${root}/${slot}-takeaway.md`) ? (await content(`${root}/${slot}-takeaway.md`, user.token)) || "" : "",
+        code: paths.has(`${root}/${slot}-solution.cpp`) ? (await content(`${root}/${slot}-solution.cpp`, user.token)) || "" : "",
+      };
+    })),
   };
 }
 export async function deleteLog(user, date) {

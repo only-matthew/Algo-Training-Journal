@@ -2479,14 +2479,57 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .tag-chip:hover, [data-theme="dark"] .tag-chip:hover { color:var(--brand); background:var(--surface-hover); }
 .tag-filter-chip.active, [data-theme="dark"] .tag-filter-chip.active { background:var(--brand-solid); color:#fff; }
 .difficulty-badge, .review-chip { border:0; border-radius:6px; padding:3px 8px; font-size:12px; line-height:18px; white-space:nowrap; font-weight:500; }
+/* 难度统一按 CF Rating 展示，配色按 Rating 档位分五级：entry/basic/easy/medium/hard/expert */
+.difficulty-badge.entry { color:#2b6a7a; background:#e2f1f5; }
+.difficulty-badge.basic { color:#2f5fa8; background:#e6eefb; }
 .difficulty-badge.easy, .review-chip.mastered { color:#26734d; background:#e6f4ec; }
 .difficulty-badge.medium { color:#925800; background:#fff3d9; }
 .difficulty-badge.hard, .review-chip.todo { color:#b94845; background:#fde8e7; }
 .difficulty-badge.expert { color:#6d4c8d; background:#efe9f7; }
+[data-theme="dark"] .difficulty-badge.entry { color:#9fd0dd; background:#1e343a; }
+[data-theme="dark"] .difficulty-badge.basic { color:#a8c4ef; background:#1f2c44; }
 [data-theme="dark"] .difficulty-badge.easy, [data-theme="dark"] .review-chip.mastered { color:#9ed4b4; background:#203c2c; }
 [data-theme="dark"] .difficulty-badge.medium { color:#e7c280; background:#3c321f; }
 [data-theme="dark"] .difficulty-badge.hard, [data-theme="dark"] .review-chip.todo { color:#f0aba7; background:#422924; }
 [data-theme="dark"] .difficulty-badge.expert { color:#c9b2e5; background:#352a43; }
+
+/* 活力：独立标签与受控图表尺寸，避免通用统计卡样式污染。 */
+.vitality-inline { display:flex; flex-wrap:wrap; gap:4px 8px; align-items:baseline; margin-top:6px; color:var(--muted); font-size:12px; line-height:1.5; }
+.vitality-inline span { color:var(--ink); font-weight:600; font-variant-numeric:tabular-nums; }
+.vitality-badge { display:inline-flex; align-items:center; min-height:24px; padding:2px 8px; border-radius:6px; background:var(--soft); color:var(--green2); font-size:12px; line-height:1.4; white-space:nowrap; font-weight:600; }
+[data-theme="dark"] .vitality-badge { color:var(--green); }
+.vitality-panel { margin-top:22px; min-width:0; }
+.vitality-toolbar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; color:var(--muted); font-size:12px; }
+.vitality-toolbar label { display:flex; align-items:center; gap:8px; white-space:nowrap; }
+.vitality-toolbar select { min-height:36px; padding:6px 28px 6px 10px; border:1px solid var(--line); border-radius:6px; background:var(--surface); color:var(--ink); font:inherit; }
+.vitality-plot { overflow-x:auto; }
+.vitality-chart-svg { display:block; width:100%; min-width:620px; max-height:300px; }
+.vitality-area { fill:color-mix(in srgb,var(--green) 7%,transparent); stroke:none; }
+.vitality-line { fill:none; stroke:var(--green); stroke-width:1.8; stroke-linejoin:round; stroke-linecap:round; vector-effect:non-scaling-stroke; }
+.vitality-point { fill:var(--green); stroke:var(--surface); stroke-width:1; }
+.vitality-summary { display:flex; flex-wrap:wrap; gap:16px 40px; margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+.vitality-summary span { display:grid; gap:4px; }
+.vitality-summary strong { color:var(--ink); font-size:22px; font-variant-numeric:tabular-nums; }
+.vitality-summary small,.vitality-note { color:var(--muted); font-size:12px; }
+.vitality-note { margin:14px 0 0; line-height:1.6; }
+.member-dashboard > .member-vitality-panel { grid-column:1 / -1; min-width:0; min-height:0; }
+.member-vitality-panel > .hint { margin:0 0 18px; }
+.vitality-details { margin-top:20px; padding-top:14px; border-top:1px solid var(--line); color:var(--muted); font-size:13px; }
+.vitality-details summary { cursor:pointer; padding:8px 0; color:var(--ink); }
+.vitality-details p { line-height:1.65; }
+.vitality-table-scroll { overflow-x:auto; }
+.vitality-details table { width:100%; border-collapse:collapse; font-variant-numeric:tabular-nums; }
+.vitality-details caption { text-align:left; padding:12px 0; color:var(--ink); }
+.vitality-details th,.vitality-details td { padding:10px 8px; border-bottom:1px solid var(--line); text-align:right; white-space:nowrap; }
+.vitality-details th:first-child { text-align:left; }
+.vitality-details thead { color:var(--ink); }
+@media(max-width:767px) {
+  .vitality-toolbar select { min-height:44px; }
+  .vitality-chart-svg { min-width:850px; }
+  .vitality-chart-svg .trend-axis-label,.vitality-chart-svg .trend-date-label { font-size:14px; }
+  .vitality-summary { gap:14px 24px; }
+  .vitality-summary strong { font-size:20px; }
+}
 .record-head { display:flex; flex-wrap:wrap; align-items:center; justify-content:flex-start; gap:16px; margin-top:auto; padding-top:4px; font-size:13px; }
 .member-link { display:inline-flex; align-items:center; gap:8px; color:var(--muted); text-decoration:none; }
 .member-initial { display:inline-grid; place-items:center; width:28px; height:28px; border-radius:50%; background:var(--surface-soft); color:var(--brand); font-size:12px; }

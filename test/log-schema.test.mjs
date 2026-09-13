@@ -183,6 +183,23 @@ test("reviewDue 格式非法时拒绝，空值不写入", () => {
   assert.equal(normalizeMeta({ problems: [{ name: "A" }] }).problems[0].reviewDue, undefined);
 });
 
+test("fileIndex 在 meta 中透传并拒绝重复或非法值", () => {
+  const result = validateLogInput({ problems: [{ id: "p1", name: "A", fileIndex: 7 }] });
+  assert.equal(result.problems[0].fileIndex, 7);
+  assert.equal(metaFromProblems(result.problems).problems[0].fileIndex, 7);
+  assert.equal(normalizeMeta(metaFromProblems(result.problems)).problems[0].fileIndex, 7);
+  assert.throws(() => validateLogInput({ problems: [{ id: "a", name: "A", fileIndex: -1 }] }), /文件索引/);
+  assert.throws(() => validateLogInput({ problems: [{ id: "a", name: "A", fileIndex: 1 }, { id: "b", name: "B", fileIndex: 1 }] }), /文件索引不可重复/);
+});
+
+test("完成结果可安全透传，未知值不写入", () => {
+  const result = validateLogInput({ problems: [{ id: "p1", name: "A", outcome: "hinted" }] });
+  assert.equal(result.problems[0].outcome, "hinted");
+  assert.equal(metaFromProblems(result.problems).problems[0].outcome, "hinted");
+  const unknown = validateLogInput({ problems: [{ id: "p2", name: "B", outcome: "fake" }] });
+  assert.equal("outcome" in unknown.problems[0], false);
+});
+
 // ── 同题聚合稳定 key ──
 
 test("problemStableKey 归一化平台与题号", () => {

@@ -6,9 +6,13 @@
       "name": "数字统计",
       "platform": "其他",
       "problemNumber": "",
-      "difficulty": "未标注",
+      "difficulty": "入门",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：PAT 乙级基础题型；16 行计数",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "按难度标签「入门」换算"
     }
   ],
   "updatedAt": "2026-08-09T23:49:54.000+08:00"

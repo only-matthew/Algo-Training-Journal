@@ -11,7 +11,10 @@
         "DP",
         "高精度"
       ],
-      "reviewStatus": "todo"
+      "reviewStatus": "todo",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1500,
+      "difficultyRatingSource": "洛谷官方难度「普及+/提高-」"
     }
   ],
   "updatedAt": "2026-07-30T16:40:47.000+08:00"

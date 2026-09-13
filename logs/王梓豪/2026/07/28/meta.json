@@ -5,7 +5,12 @@
       "id": "a192ee1f-cd0b-4f47-b53f-90953a4df75f",
       "name": "P1007 独木桥",
       "platform": "洛谷",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "problemNumberLegacy": "",
+      "problemNumber": "P1007",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "按难度标签「普及」换算"
     }
   ],
   "updatedAt": "2026-07-28T20:45:54.000+08:00"

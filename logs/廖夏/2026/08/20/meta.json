@@ -12,7 +12,10 @@
         "模拟",
         "贪心"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ]
 }

@@ -13,7 +13,10 @@
         "搜索",
         "二分"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     },
     {
       "id": "9bb76627-1b35-4e47-a991-35ebee26b681",
@@ -26,7 +29,10 @@
         "前缀和",
         "二分"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     }
   ]
 }

@@ -7,11 +7,15 @@
       "name": "ab串",
       "platform": "其他",
       "problemNumber": "",
-      "difficulty": "未标注",
+      "difficulty": "普及-",
       "tags": [
         "DP"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：线性 DP，19 行",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "按难度标签「普及-」换算"
     }
   ]
 }

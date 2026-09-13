@@ -13,7 +13,10 @@
         "边界处理",
         "细节"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     },
     {
       "id": "5d6a61fb-28ca-4770-9eff-46dfb07ea5c6",
@@ -27,39 +30,54 @@
         "贪心",
         "细节"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     },
     {
       "id": "43c57edf-2aa9-4169-b919-f53bb16d2f29",
       "name": "Monocarp's Contest",
       "platform": "Codeforces",
       "problemNumber": "2260A",
-      "difficulty": "未标注",
+      "difficulty": "≤999",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：CF Div. 2 A 题位；该场尚未 rated",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "推断：CF Div. 2 A 题位；该场尚未 rated"
     },
     {
       "id": "c8ac948e-0dc5-4661-9603-36950ad4b468",
       "name": "Monocarp and Projects",
       "platform": "Codeforces",
       "problemNumber": "2260B",
-      "difficulty": "未标注",
+      "difficulty": "≤999",
       "tags": [
         "数学",
         "模拟"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：CF Div. 2 B 题位；该场尚未 rated",
+      "difficultyRating": 1100,
+      "difficultyRatingSource": "推断：CF Div. 2 B 题位；该场尚未 rated"
     },
     {
       "id": "522c87fa-78b2-42d7-bbdc-39b96c65d7bc",
       "name": "Monocarp's Contest",
       "platform": "Codeforces",
       "problemNumber": "2260A",
-      "difficulty": "未标注",
+      "difficulty": "≤999",
       "tags": [
         "模拟"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：CF Div. 2 A 题位；该场尚未 rated",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "推断：CF Div. 2 A 题位；该场尚未 rated"
     }
   ]
 }

@@ -4,7 +4,7 @@
   "member": "郭一鸣",
   "records": [
     {
-      "subjectKey": "record:seanist-isx:2026-07-23:legacy-6hrwr1",
+      "subjectKey": "problem:Codeforces|2242B",
       "date": "2026-07-23",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -14,14 +14,14 @@
       "problem": {
         "name": "Educational Codeforces Round 192 (Rated for Div. 2) B",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2242B",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-07-23/legacy-6hrwr1/"
     },
     {
-      "subjectKey": "record:seanist-isx:2026-07-24:a542304d-df41-46b8-8a7d-6079ed705310",
+      "subjectKey": "problem:Codeforces|2244A",
       "date": "2026-07-24",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -31,14 +31,14 @@
       "problem": {
         "name": "Codeforces Round 1109 (Div. 3) A",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2244A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-07-24/a542304d-df41-46b8-8a7d-6079ed705310/"
     },
     {
-      "subjectKey": "record:seanist-isx:2026-07-25:901b6316-147f-4879-8813-778d09d7e990",
+      "subjectKey": "problem:Codeforces|2244B",
       "date": "2026-07-25",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -48,14 +48,14 @@
       "problem": {
         "name": "Codeforces Round 1109 (Div. 3) B",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2244B",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-07-25/901b6316-147f-4879-8813-778d09d7e990/"
     },
     {
-      "subjectKey": "record:seanist-isx:2026-07-26:0dece00b-9317-4739-b4dc-6d66c401f630",
+      "subjectKey": "problem:Codeforces|2244C",
       "date": "2026-07-26",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -65,14 +65,14 @@
       "problem": {
         "name": "Codeforces Round 1109 (Div. 3) C",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2244C",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-07-26/0dece00b-9317-4739-b4dc-6d66c401f630/"
     },
     {
-      "subjectKey": "record:seanist-isx:2026-07-27:953ad497-6685-4c30-97b9-8ce455becc30",
+      "subjectKey": "problem:Codeforces|2250A",
       "date": "2026-07-27",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -82,14 +82,14 @@
       "problem": {
         "name": "Codeforces Round 1112 (Div. 2) A",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2250A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-07-27/953ad497-6685-4c30-97b9-8ce455becc30/"
     },
     {
-      "subjectKey": "problem:Codeforces|A",
+      "subjectKey": "problem:Codeforces|2245A",
       "date": "2026-07-28",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -99,14 +99,14 @@
       "problem": {
         "name": "Codeforces Round 1110, Div. 1 + Div. 2",
         "platform": "Codeforces",
-        "problemNumber": "A",
-        "difficulty": "未标注"
+        "problemNumber": "2245A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-07-28/b25da94e-7b74-41f6-9820-5501ec66d89d/"
     },
     {
-      "subjectKey": "problem:Codeforces|B",
+      "subjectKey": "problem:Codeforces|2245B",
       "date": "2026-07-29",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -116,14 +116,14 @@
       "problem": {
         "name": "Codeforces Round 1110, Div. 1 + Div. 2",
         "platform": "Codeforces",
-        "problemNumber": "B",
-        "difficulty": "未标注"
+        "problemNumber": "2245B",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-07-29/0ce032b4-caa9-4e35-92bc-4a89a99e2b88/"
     },
     {
-      "subjectKey": "problem:Codeforces|B",
+      "subjectKey": "problem:Codeforces|2246B",
       "date": "2026-07-30",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -133,14 +133,14 @@
       "problem": {
         "name": "Codeforces Round 1108 (Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "B",
-        "difficulty": "未标注"
+        "problemNumber": "2246B",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-07-30/71d135f6-2e79-49e7-9e5f-f57cf8867640/"
     },
     {
-      "subjectKey": "problem:Codeforces|A",
+      "subjectKey": "problem:Codeforces|2248A",
       "date": "2026-07-31",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -150,14 +150,14 @@
       "problem": {
         "name": "Codeforces Round 1113 (Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "A",
-        "difficulty": "未标注"
+        "problemNumber": "2248A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-07-31/2484bba5-0e2a-436c-ae83-fc552f6b6f17/"
     },
     {
-      "subjectKey": "problem:Codeforces|A",
+      "subjectKey": "problem:Codeforces|2246A",
       "date": "2026-08-01",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -167,14 +167,14 @@
       "problem": {
         "name": "Codeforces Round 1108 (Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "A",
-        "difficulty": "未标注"
+        "problemNumber": "2246A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-01/f9f2e79e-de12-4f17-9ad9-015c41c561ac/"
     },
     {
-      "subjectKey": "problem:Codeforces|B",
+      "subjectKey": "problem:Codeforces|2248B",
       "date": "2026-08-02",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -184,14 +184,14 @@
       "problem": {
         "name": "Codeforces Round 1113 (Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "B",
-        "difficulty": "未标注"
+        "problemNumber": "2248B",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-02/ba2a2167-59e7-4e35-8a04-ca8d5c0b1646/"
     },
     {
-      "subjectKey": "problem:Codeforces|B",
+      "subjectKey": "problem:Codeforces|2254B",
       "date": "2026-08-03",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -201,14 +201,14 @@
       "problem": {
         "name": "Codeforces Round 1114 (Div. 3)",
         "platform": "Codeforces",
-        "problemNumber": "B",
-        "difficulty": "未标注"
+        "problemNumber": "2254B",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-03/6e434f57-2411-4e91-b3fe-b7aee7c77137/"
     },
     {
-      "subjectKey": "problem:Codeforces|C1",
+      "subjectKey": "problem:Codeforces|2254C1",
       "date": "2026-08-04",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -218,14 +218,14 @@
       "problem": {
         "name": "Codeforces Round 1114 (Div. 3)",
         "platform": "Codeforces",
-        "problemNumber": "C1",
-        "difficulty": "未标注"
+        "problemNumber": "2254C1",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-04/e2a69576-47bb-4858-93e5-d662707e8035/"
     },
     {
-      "subjectKey": "problem:Codeforces|A",
+      "subjectKey": "problem:Codeforces|2254A",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -235,14 +235,14 @@
       "problem": {
         "name": "Codeforces Round 1114 (Div. 3)",
         "platform": "Codeforces",
-        "problemNumber": "A",
-        "difficulty": "≤1199"
+        "problemNumber": "2254A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-05/c063ddfb-b82e-4298-abab-61d5dde2b34e/"
     },
     {
-      "subjectKey": "problem:Codeforces|B",
+      "subjectKey": "problem:Codeforces|2253B",
       "date": "2026-08-06",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -252,14 +252,14 @@
       "problem": {
         "name": "Educational Codeforces Round 193 (Rated for Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "B",
-        "difficulty": "未标注"
+        "problemNumber": "2253B",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-06/ff288238-85bb-4cf1-863f-b1efabe5ee63/"
     },
     {
-      "subjectKey": "problem:Codeforces|A",
+      "subjectKey": "problem:Codeforces|2252A",
       "date": "2026-08-07",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -269,8 +269,8 @@
       "problem": {
         "name": "Codeforces Round 1115 (Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "A",
-        "difficulty": "未标注"
+        "problemNumber": "2252A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-07/737aef5c-ae77-4b41-a384-b03fb379419a/"
@@ -293,7 +293,7 @@
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-08/5ded0f17-a33c-497d-8c7e-1e3b0241dd50/"
     },
     {
-      "subjectKey": "problem:Codeforces|A",
+      "subjectKey": "problem:Codeforces|2253A",
       "date": "2026-08-09",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -303,14 +303,14 @@
       "problem": {
         "name": "Educational Codeforces Round 193 (Rated for Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "A",
-        "difficulty": "未标注"
+        "problemNumber": "2253A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-09/4de2c9e4-0170-4c67-9c3f-a93b8747617d/"
     },
     {
-      "subjectKey": "problem:Codeforces|A",
+      "subjectKey": "problem:Codeforces|2256A",
       "date": "2026-08-10",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -320,14 +320,14 @@
       "problem": {
         "name": "Codeforces Round 1116 (Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "A",
-        "difficulty": "未标注"
+        "problemNumber": "2256A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-10/dcd5e342-6ab0-4f32-824e-1e9ad270cfaf/"
     },
     {
-      "subjectKey": "problem:Codeforces|B",
+      "subjectKey": "problem:Codeforces|2256B",
       "date": "2026-08-11",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -337,14 +337,14 @@
       "problem": {
         "name": "Codeforces Round 1116 (Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "B",
-        "difficulty": "未标注"
+        "problemNumber": "2256B",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-11/162071aa-4f0e-4c28-95f8-ed943be42178/"
     },
     {
-      "subjectKey": "problem:Codeforces|B",
+      "subjectKey": "problem:Codeforces|2241B",
       "date": "2026-08-12",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -354,14 +354,14 @@
       "problem": {
         "name": "Codeforces Round 1107 (Div. 3)",
         "platform": "Codeforces",
-        "problemNumber": "B",
-        "difficulty": "未标注"
+        "problemNumber": "2241B",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-12/c8050306-9194-4d1e-8365-5a7eb02ccdfe/"
     },
     {
-      "subjectKey": "problem:Codeforces|A",
+      "subjectKey": "problem:Codeforces|2241A",
       "date": "2026-08-13",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -371,8 +371,8 @@
       "problem": {
         "name": "Codeforces Round 1107 (Div. 3)",
         "platform": "Codeforces",
-        "problemNumber": "A",
-        "difficulty": "未标注"
+        "problemNumber": "2241A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-13/af3c1c1e-3cc8-48c7-8ab6-9fc45d86fd5d/"
@@ -395,7 +395,7 @@
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-14/462215b6-4e2d-49c9-93ff-4b0047d6d102/"
     },
     {
-      "subjectKey": "problem:Codeforces|C",
+      "subjectKey": "problem:Codeforces|2241C",
       "date": "2026-08-15",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -405,8 +405,8 @@
       "problem": {
         "name": "Codeforces Round 1107 (Div. 3)",
         "platform": "Codeforces",
-        "problemNumber": "C",
-        "difficulty": "未标注"
+        "problemNumber": "2241C",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-15/da73db5f-7f97-4f80-a203-2c4cd8340825/"
@@ -429,7 +429,7 @@
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-16/b398f247-3129-4951-b2ba-653685450971/"
     },
     {
-      "subjectKey": "problem:Codeforces|B",
+      "subjectKey": "problem:Codeforces|2257B",
       "date": "2026-08-17",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -439,14 +439,14 @@
       "problem": {
         "name": "Codeforces Round 1117 (Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "B",
-        "difficulty": "未标注"
+        "problemNumber": "2257B",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-17/d76b82da-d39c-46f5-bbf8-177d70c46974/"
     },
     {
-      "subjectKey": "problem:Codeforces|A",
+      "subjectKey": "problem:Codeforces|2257A",
       "date": "2026-08-18",
       "recordRef": {
         "memberId": "seanist-isx",
@@ -456,8 +456,8 @@
       "problem": {
         "name": "Codeforces Round 1117 (Div. 2)",
         "platform": "Codeforces",
-        "problemNumber": "A",
-        "difficulty": "未标注"
+        "problemNumber": "2257A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-18/607666b1-48f5-474a-b83c-5cb0de762b76/"
@@ -559,7 +559,7 @@
         "name": "删数问题",
         "platform": "洛谷",
         "problemNumber": "P1106",
-        "difficulty": "普及/提高-"
+        "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-24/786ec7ac-5f77-4f0b-856e-d06d2b6f7b02/"
@@ -576,7 +576,7 @@
         "name": "[NOIP 2018 提高组] 铺设道路",
         "platform": "洛谷",
         "problemNumber": "P5019",
-        "difficulty": "普及/提高-"
+        "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-08-25/be08357a-bda1-4df2-9b7a-acee6cd275a0/"
@@ -695,7 +695,7 @@
         "name": "Monocarp's Contest",
         "platform": "Codeforces",
         "problemNumber": "2260A",
-        "difficulty": "未标注"
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-06/f5ce40ef-5be2-4720-a100-abbcb837801d/"

@@ -5,7 +5,12 @@
       "id": "5dde9805-421e-47c2-8531-cd6867325528",
       "name": "栈",
       "platform": "洛谷",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "problemNumberLegacy": "",
+      "problemNumber": "P1044",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ],
   "updatedAt": "2026-07-26T21:58:50.000+08:00"

@@ -11,7 +11,10 @@
         "模拟",
         "枚举"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ],
   "updatedAt": "2026-07-29T22:33:20.000+08:00"

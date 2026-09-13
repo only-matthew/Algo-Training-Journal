@@ -11,7 +11,10 @@
         "枚举",
         "模拟"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     },
     {
       "id": "e4fbc169-9cda-41f5-ba93-579604477497",
@@ -23,7 +26,10 @@
         "模拟",
         "枚举"
       ],
-      "reviewStatus": "mastered"
+      "reviewStatus": "mastered",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     }
   ],
   "updatedAt": "2026-07-31T20:26:59.000+08:00"

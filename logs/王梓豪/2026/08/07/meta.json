@@ -5,10 +5,14 @@
       "id": "f96b4926-faef-476b-a287-489cbfb1e437",
       "name": "计算器的改良",
       "platform": "洛谷",
-      "problemNumber": "",
+      "problemNumber": "P1022",
       "difficulty": "普及",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "按难度标签「普及」换算"
     }
   ],
   "updatedAt": "2026-08-07T23:57:13.000+08:00"

@@ -6,21 +6,31 @@
       "id": "fc6e16b6-fda8-4867-900d-8edfb8cd5cdf",
       "name": "B. Gigantomachy",
       "platform": "Codeforces",
-      "problemNumber": "",
-      "difficulty": "未标注",
+      "problemNumber": "2257B",
+      "difficulty": "≤999",
       "tags": [
         "博弈论"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     },
     {
       "id": "e7351cde-da59-4422-adfe-2b06fd3e7cc7",
       "name": "C. Spying on the Beaver",
-      "platform": "洛谷",
-      "problemNumber": "",
-      "difficulty": "未标注",
+      "platform": "Codeforces",
+      "problemNumber": "2257C",
+      "difficulty": "1200-1399",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1200",
+      "difficultyRating": 1200,
+      "difficultyRatingSource": "CF 官方 rating 1200"
     }
   ]
 }

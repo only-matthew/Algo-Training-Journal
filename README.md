@@ -185,10 +185,62 @@ logs/
 
 文件含义：
 
-- `meta.json`：题目永久 ID、名称、题号、平台、难度、标签、错题状态、复习日期（`reviewDue`，可选，格式 `YYYY-MM-DD`），以及该打卡记录的 `updatedAt`（最后更新时间，ISO 格式时间戳）。
+- `meta.json`：题目永久 ID、名称、题号、平台、难度、标签、错题状态、复习日期（`reviewDue`，可选，格式 `YYYY-MM-DD`），以及该打卡记录的 `updatedAt`（最后更新时间，ISO 格式时间戳）。修复过题号的历史记录还会带 `problemNumberLegacy`（题号原值，仅供回滚参考）。
 - `N-desc.md`：第 N 道题的题目描述。
 - `N-takeaway.md`：第 N 道题的心得或题解。
 - `N-solution.cpp`：第 N 道题的 C++ 代码。
+
+### 难度统一为 Codeforces Rating
+
+队员反映 CF Rating 比其他难度标签更直观，因此**全站（含洛谷、AtCoder、校内自建平台）的难度只展示一个口径：Codeforces Rating 数值**（写作 `★ 1200`）。数据层每条记录带 `difficultyRating`（整数）：
+
+- **Codeforces / AtCoder**：直接用官方数值难度。AtCoder Problems 提供的难度与 CF Rating 同尺度，导入时原样写入；Codeforces 有官方 rating 的用精确值，尚未 rated 的场次按题位推断。
+- **洛谷**：按其官方 8 级难度换算为等值 Rating（入门 800 / 普及- 1000 / 普及 1300 / 普及+/提高- 1500 / 提高 1700 / 提高+/省选- 2000 / 省选/NOI- 2400 / NOI 2900）。
+- **校内自建平台等非常见 OJ**：参与同一套统计。导入时若平台自报难度（数值或星级）则直接采用；否则按题面算法内容与代码规模推断，逐条在脚本里注明依据。**不需要为校内平台另建一套体系。**
+
+换算与展示集中在 [lib/rating.mjs](lib/rating.mjs)：`resolveDifficultyRating()` 是唯一的归一入口（数值优先 → 难度标签 → 旧档位 → 星级反解），构建端与浏览器端共用一份，表单导入也走它，因此任何新增平台只要提供难度就能自动落到 Rating。
+
+历史记录可用以下脚本批量换算（默认只报告，加 `--write` 才写入）：
+
+```bash
+node scripts/backfill-rating.mjs            # 只报告
+node scripts/backfill-rating.mjs --write    # 应用
+```
+
+原难度存入 `difficultyLegacy`、来源存入 `difficultyRatingSource`，便于复核与回滚。
+
+### 活力指数（v2）
+
+累计题数保留原口径，活力作为独立估算指标。Codeforces、洛谷、AtCoder、校内及其他平台只要有统一的正数 Rating，就进入同一计分路径；已有平台映射属于站内估计，不代表不同平台官方 Rating 天然等价。
+
+- 缺少训练历史时采用入门先验和中性匹配度，不把未知能力当成零能力。
+- 随知识点证据增多，逐步采用难度匹配；多标签取平均能力，日内按日初证据统一计算。
+- 完成质量系数：独立 1、提示 0.7、题解 0.5、历史未知 0.6、未完成 0.15。历史日志当前缺少结果字段，保持 unknown，不从“已掌握”推断独立完成。
+- 同一成员同题冻结首次计分基准，完成质量提高时只补差额。无可靠题号按记录 ID 计，不按题名合并。
+- 未完成不增加能力证据；重复/复习不重复计分。累计曲线按事件记录时点增加，不把旧部分分再加一遍。
+
+首页、个人统计、个人活力折线图、热力图和平台计入明细使用同一构建结果。个人页可切换每日/累计，并核对各平台的有难度记录、计分记录与活力贡献。公式是可调整的工程指标，不能当作实测能力分或排名依据。
+
+实现：[算法](lib/vitality.mjs)、[统一聚合](lib/vitality-summary.mjs)、[个人展示](lib/member-vitality.mjs)。参数与此次真实数据核对见 [v2 说明](docs/VITALITY-V2.md)；下一步设计见 [待实现功能](docs/PENDING-FEATURES.md)。
+
+### 题号完整性与同题判定
+
+「全队同题记录」（二刷关联）、题单进度和训练分析都依赖「平台 + 题号」判定同一道题，因此**题号必须是完整标识**：
+
+- Codeforces 必须形如 `1113B`（场次 + 卷面代号）；**场次序号不是 contestId**——`Round 1108` 的 contestId 是 `2246`，不能拿场次序号当题号。
+- 洛谷必须带试卷编号（`P1041`、`B2082` 等）。
+- AtCoder 必须是 task id（`abc381_a`）。
+
+只填了卷面代号（如 `B`）的记录会**不参与同题聚合**——因为 9 个不同场次的 A 题、8 个 B 题会因此塌缩成同一个 key。残缺题号的原题链接会回退到题目名称解析；题名里也没有场次信息时链接留空，不猜测。
+
+历史记录可用以下脚本按官方数据批量补全（默认只报告，加 `--write` 才写入）：
+
+```bash
+node scripts/repair-problem-identity.mjs           # 只报告
+node scripts/repair-problem-identity.mjs --write   # 应用（原值存 problemNumberLegacy）
+```
+
+补全依据是 [Codeforces 官方 API](https://codeforces.com/api/contest.list)（场次序号 ↔ contestId）与 [problemset](https://codeforces.com/api/problemset.problems)（题名 → 题号），以及洛谷官方题目页；脚本内维护映射表。**不做模糊猜测**——无法唯一确定的记录会列进「仍无法确定」，交本人补录。
 
 打卡记录的「最后更新时间」由 `meta.json` 中的 `updatedAt` 保存，统一使用 **UTC+8 时区**（如 `2026-08-11T01:09:44.000+08:00`）：通过站点 API 提交/更新时由后端自动写入；旧记录可用 `npm run backfill:updated-at`（[scripts/backfill-updated-at.js](scripts/backfill-updated-at.js)）从 git 提交历史回填——每次保存都会产生一次 commit，因此 git 提交时间比文件修改时间可靠（文件 mtime 会被 clone/pull 重置）。构建脚本也会在缺失时优先回退到 git 提交时间，并在记录卡片、题目详情页和编辑弹窗中展示（格式如「最后更新 2026.8.10」，始终按 UTC+8 显示）。
 
@@ -461,6 +513,9 @@ npx serve site
 ├── style.css                      # 组件、主题与响应式样式
 ├── docs/                          # 产品、交接与优化文档
 │   ├── PRODUCT.md                 # 一站式 ICPC 训练中心产品规划
+│   ├── SPECIFICATION.md           # 技术规格与验收矩阵
+│   ├── VITALITY-DESIGN.md         # 活力指数与难度体系的设计记录
+│   ├── PENDING-FEATURES.md        # 待实现：区间打卡与同日多次打卡
 │   ├── HANDOFF.md                 # 当前技术交接与后续重构建议
 │   └── OPTIMIZATION.md            # 优化清单与完成状态
 ├── package.json                   # 构建、测试与迁移命令

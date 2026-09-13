@@ -7,12 +7,16 @@
       "name": "最长公共前后缀长度",
       "platform": "其他",
       "problemNumber": "",
-      "difficulty": "未标注",
+      "difficulty": "普及",
       "tags": [
         "KMP",
         "DP"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：KMP / 回文处理，25 行（标签：KMP、DP）",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "按难度标签「普及」换算"
     }
   ]
 }

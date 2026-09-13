@@ -6,12 +6,17 @@
       "id": "d76b82da-d39c-46f5-bbf8-177d70c46974",
       "name": "Codeforces Round 1117 (Div. 2)",
       "platform": "Codeforces",
-      "problemNumber": "B",
-      "difficulty": "未标注",
+      "problemNumber": "2257B",
+      "difficulty": "≤999",
       "tags": [
         "模拟"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1117B",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     }
   ]
 }

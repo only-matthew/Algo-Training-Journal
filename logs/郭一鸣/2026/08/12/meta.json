@@ -6,10 +6,15 @@
       "id": "c8050306-9194-4d1e-8365-5a7eb02ccdfe",
       "name": "Codeforces Round 1107 (Div. 3)",
       "platform": "Codeforces",
-      "problemNumber": "B",
-      "difficulty": "未标注",
+      "problemNumber": "2241B",
+      "difficulty": "1000-1199",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1107B",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1100",
+      "difficultyRating": 1100,
+      "difficultyRatingSource": "CF 官方 rating 1100"
     }
   ]
 }

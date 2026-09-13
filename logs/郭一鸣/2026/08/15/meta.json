@@ -6,12 +6,17 @@
       "id": "da73db5f-7f97-4f80-a203-2c4cd8340825",
       "name": "Codeforces Round 1107 (Div. 3)",
       "platform": "Codeforces",
-      "problemNumber": "C",
-      "difficulty": "未标注",
+      "problemNumber": "2241C",
+      "difficulty": "1000-1199",
       "tags": [
         "构造"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1107C",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1000",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "CF 官方 rating 1000"
     }
   ]
 }

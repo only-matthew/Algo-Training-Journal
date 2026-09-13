@@ -82,6 +82,15 @@ test("planLogChanges only rewrites the file that actually changed", async () => 
   assert.deepEqual(changes, [{ path: `${ROOT}/0-takeaway.md`, content: "换一种 DP 写法。" }]);
 });
 
+test("planLogChanges preserves file slots when problems are reordered", async () => {
+  const original = PROBLEMS.map((p, i) => ({ ...p, fileIndex: i }));
+  const reordered = [original[1], original[0]];
+  const changes = await planLogChanges(reordered, existingFor(original, UPDATED_AT), ROOT, UPDATED_AT);
+  assert.deepEqual(changes.map((change) => change.path), [`${ROOT}/meta.json`]);
+  assert.equal(reordered[0].fileIndex, 1);
+  assert.equal(reordered[1].fileIndex, 0);
+});
+
 test("planLogChanges deletes files of problems removed from the middle", async () => {
   const changes = await planLogChanges([PROBLEMS[0]], existingFor(PROBLEMS, UPDATED_AT), ROOT, UPDATED_AT);
   // meta.json 因 problems 列表变化而重写；被移除的第 2 题的三个文件删除

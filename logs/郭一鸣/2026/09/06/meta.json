@@ -7,9 +7,13 @@
       "name": "Monocarp's Contest",
       "platform": "Codeforces",
       "problemNumber": "2260A",
-      "difficulty": "未标注",
+      "difficulty": "≤999",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：CF Div. 2 A 题位；该场尚未 rated",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "推断：CF Div. 2 A 题位；该场尚未 rated"
     }
   ]
 }

@@ -4,7 +4,7 @@
   "member": "廖夏",
   "records": [
     {
-      "subjectKey": "record:only-matthew:2026-07-21:legacy-978t0m",
+      "subjectKey": "problem:洛谷|P5143",
       "date": "2026-07-21",
       "recordRef": {
         "memberId": "only-matthew",
@@ -14,14 +14,14 @@
       "problem": {
         "name": "P5143",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P5143",
         "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-07-21/legacy-978t0m/"
     },
     {
-      "subjectKey": "record:only-matthew:2026-07-22:legacy-17aapsr",
+      "subjectKey": "problem:洛谷|P1104",
       "date": "2026-07-22",
       "recordRef": {
         "memberId": "only-matthew",
@@ -31,14 +31,14 @@
       "problem": {
         "name": "P1104",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1104",
         "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-07-22/legacy-17aapsr/"
     },
     {
-      "subjectKey": "record:only-matthew:2026-07-23:legacy-zfy1jg",
+      "subjectKey": "problem:洛谷|P2241",
       "date": "2026-07-23",
       "recordRef": {
         "memberId": "only-matthew",
@@ -48,14 +48,14 @@
       "problem": {
         "name": "P2241",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P2241",
         "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-07-23/legacy-zfy1jg/"
     },
     {
-      "subjectKey": "record:only-matthew:2026-07-24:legacy-xu954x",
+      "subjectKey": "problem:洛谷|P1618",
       "date": "2026-07-24",
       "recordRef": {
         "memberId": "only-matthew",
@@ -65,14 +65,14 @@
       "problem": {
         "name": "P1618",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1618",
         "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-07-24/legacy-xu954x/"
     },
     {
-      "subjectKey": "record:only-matthew:2026-07-25:f41a2afd-316f-493b-9829-67adc8d073fe",
+      "subjectKey": "problem:洛谷|P1036",
       "date": "2026-07-25",
       "recordRef": {
         "memberId": "only-matthew",
@@ -82,14 +82,14 @@
       "problem": {
         "name": "P1036",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1036",
         "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-07-25/f41a2afd-316f-493b-9829-67adc8d073fe/"
     },
     {
-      "subjectKey": "record:only-matthew:2026-07-26:45a45155-5052-4fe3-8f7b-2a2790b66bb9",
+      "subjectKey": "problem:洛谷|P1036",
       "date": "2026-07-26",
       "recordRef": {
         "memberId": "only-matthew",
@@ -99,7 +99,7 @@
       "problem": {
         "name": "P1036【子集枚举法】",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1036",
         "difficulty": "普及-"
       },
       "reviewStatus": "none",
@@ -117,7 +117,7 @@
         "name": "全排列问题",
         "platform": "洛谷",
         "problemNumber": "P1706",
-        "difficulty": "未标注"
+        "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-07-27/3a545919-db94-448d-b752-8c4b49d3bd6a/"
@@ -253,13 +253,13 @@
         "name": "P2036 [COCI 2008/2009 #2] PERKET",
         "platform": "洛谷",
         "problemNumber": "P2036",
-        "difficulty": "未标注"
+        "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-02/71fbf4d3-3d8a-4c36-86dc-d30588eccfda/"
     },
     {
-      "subjectKey": "problem:洛谷|2254A",
+      "subjectKey": "problem:Codeforces|2254A",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "only-matthew",
@@ -268,15 +268,15 @@
       },
       "problem": {
         "name": "A - Riptide",
-        "platform": "洛谷",
+        "platform": "Codeforces",
         "problemNumber": "2254A",
-        "difficulty": "≤1199"
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-05/11c99111-2884-4538-93b9-e07d601bbda5/"
     },
     {
-      "subjectKey": "problem:洛谷|2254B",
+      "subjectKey": "problem:Codeforces|2254B",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "only-matthew",
@@ -285,15 +285,15 @@
       },
       "problem": {
         "name": "B. Evanescent",
-        "platform": "洛谷",
+        "platform": "Codeforces",
         "problemNumber": "2254B",
-        "difficulty": "≤1199"
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-05/9f44516e-e469-404f-aded-54f90e8b8971/"
     },
     {
-      "subjectKey": "problem:洛谷|2254C1",
+      "subjectKey": "problem:Codeforces|2254C1",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "only-matthew",
@@ -302,15 +302,15 @@
       },
       "problem": {
         "name": "C1 - Marenol (easy version)",
-        "platform": "洛谷",
+        "platform": "Codeforces",
         "problemNumber": "2254C1",
-        "difficulty": "≤1199"
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-05/1da756b5-2c90-4471-bac8-1633d7358867/"
     },
     {
-      "subjectKey": "problem:洛谷|2254C2",
+      "subjectKey": "problem:Codeforces|2254C2",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "only-matthew",
@@ -319,9 +319,9 @@
       },
       "problem": {
         "name": "C2. Marenol (hard version)",
-        "platform": "洛谷",
+        "platform": "Codeforces",
         "problemNumber": "2254C2",
-        "difficulty": "≤1199"
+        "difficulty": "1200-1399"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-05/6e8f5014-21ce-4d57-9a2f-eda9323835f8/"
@@ -662,7 +662,7 @@
         "name": "[NOIP 2004 提高组] 合并果子",
         "platform": "洛谷",
         "problemNumber": "P1090",
-        "difficulty": "普及/提高-"
+        "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-21/41c9d02d-1a46-4f50-a0b6-59582505a9d9/"
@@ -696,7 +696,7 @@
         "name": "删数问题",
         "platform": "洛谷",
         "problemNumber": "P1106",
-        "difficulty": "普及/提高-"
+        "difficulty": "普及"
       },
       "reviewStatus": "todo",
       "reviewDue": "2026-08-25",
@@ -731,7 +731,7 @@
         "name": "[NOIP 2018 提高组] 铺设道路",
         "platform": "洛谷",
         "problemNumber": "P5019",
-        "difficulty": "普及/提高-"
+        "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-08-24/843550c8-f797-4d2e-8ac8-caea70ac63e5/"
@@ -990,7 +990,7 @@
         "name": "Monocarp's Contest",
         "platform": "Codeforces",
         "problemNumber": "2260A",
-        "difficulty": "未标注"
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-08/43c57edf-2aa9-4169-b919-f53bb16d2f29/"
@@ -1007,7 +1007,7 @@
         "name": "Monocarp and Projects",
         "platform": "Codeforces",
         "problemNumber": "2260B",
-        "difficulty": "未标注"
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-08/c8ac948e-0dc5-4661-9603-36950ad4b468/"
@@ -1024,7 +1024,7 @@
         "name": "Monocarp's Contest",
         "platform": "Codeforces",
         "problemNumber": "2260A",
-        "difficulty": "未标注"
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-08/522c87fa-78b2-42d7-bbdc-39b96c65d7bc/"

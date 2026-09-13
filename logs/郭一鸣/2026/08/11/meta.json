@@ -6,12 +6,17 @@
       "id": "162071aa-4f0e-4c28-95f8-ed943be42178",
       "name": "Codeforces Round 1116 (Div. 2)",
       "platform": "Codeforces",
-      "problemNumber": "B",
-      "difficulty": "未标注",
+      "problemNumber": "2256B",
+      "difficulty": "1000-1199",
       "tags": [
         "构造"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1116B",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1000",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "CF 官方 rating 1000"
     }
   ]
 }

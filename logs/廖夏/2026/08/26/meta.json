@@ -14,7 +14,10 @@
         "排序",
         "双指针"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     },
     {
       "id": "169282a7-878c-42f2-af07-da034a86a62f",
@@ -27,7 +30,10 @@
         "排序",
         "双指针"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ]
 }

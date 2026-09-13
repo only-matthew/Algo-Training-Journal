@@ -11,7 +11,10 @@
         "暴力",
         "模拟"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ],
   "updatedAt": "2026-07-30T21:47:55.000+08:00"

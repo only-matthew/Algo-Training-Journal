@@ -7,13 +7,17 @@
       "name": "[NOIP 2004 提高组] 合并果子",
       "platform": "洛谷",
       "problemNumber": "P1090",
-      "difficulty": "普及/提高-",
+      "difficulty": "普及",
       "tags": [
         "贪心",
         "哈夫曼编码",
         "队列"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及/提高-",
+      "difficultySource": "洛谷官方",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     }
   ]
 }

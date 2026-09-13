@@ -3,12 +3,21 @@
     {
       "name": "新型冠状病毒（COVID19）传播",
       "platform": "其他",
-      "difficulty": "未标注"
+      "difficulty": "普及-",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：自建题；set/map 模拟同刻同位置传播，O(n²)，59 行",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "按难度标签「普及-」换算"
     },
     {
       "name": "P1012",
       "platform": "洛谷",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "problemNumberLegacy": "",
+      "problemNumber": "P1012",
+      "difficultyLegacy": "普及",
+      "difficultyRating": 1500,
+      "difficultyRatingSource": "洛谷官方难度「普及+/提高-」"
     }
   ],
   "updatedAt": "2026-07-24T23:05:58.000+08:00"

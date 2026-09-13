@@ -15,13 +15,13 @@
         "name": "新型冠状病毒（COVID19）传播",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-24/legacy-z7hzs2/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-07-24:legacy-zhhlh1",
+      "subjectKey": "problem:洛谷|P1012",
       "date": "2026-07-24",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -31,14 +31,14 @@
       "problem": {
         "name": "P1012",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1012",
         "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-24/legacy-zhhlh1/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-07-25:legacy-3i5yy1",
+      "subjectKey": "problem:洛谷|P1042",
       "date": "2026-07-25",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -48,14 +48,14 @@
       "problem": {
         "name": "乒乓球",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1042",
         "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-25/legacy-3i5yy1/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-07-26:5dde9805-421e-47c2-8531-cd6867325528",
+      "subjectKey": "problem:洛谷|P1044",
       "date": "2026-07-26",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -65,14 +65,14 @@
       "problem": {
         "name": "栈",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1044",
         "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-26/5dde9805-421e-47c2-8531-cd6867325528/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-07-27:d2f7dcb3-09ec-4317-923f-cf2c43fdef52",
+      "subjectKey": "problem:Codeforces|2250A",
       "date": "2026-07-27",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -82,14 +82,14 @@
       "problem": {
         "name": "Threshold Movement",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2250A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-27/d2f7dcb3-09ec-4317-923f-cf2c43fdef52/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-07-28:a192ee1f-cd0b-4f47-b53f-90953a4df75f",
+      "subjectKey": "problem:洛谷|P1007",
       "date": "2026-07-28",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -99,7 +99,7 @@
       "problem": {
         "name": "P1007 独木桥",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1007",
         "difficulty": "普及"
       },
       "reviewStatus": "none",
@@ -151,13 +151,13 @@
         "name": "数的划分",
         "platform": "洛谷",
         "problemNumber": "P1025",
-        "difficulty": "未标注"
+        "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-01/e55d684d-033e-4070-84b8-b79cd53cff9e/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-01:23fb140a-af89-484a-8227-985bb8c67769",
+      "subjectKey": "problem:洛谷|P1019",
       "date": "2026-08-01",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -167,14 +167,14 @@
       "problem": {
         "name": "单词接龙",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1019",
         "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-01/23fb140a-af89-484a-8227-985bb8c67769/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-01:6ba4c49a-69cb-4801-96c7-29a58ccef8ff",
+      "subjectKey": "problem:Codeforces|2248A",
       "date": "2026-08-01",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -184,14 +184,14 @@
       "problem": {
         "name": "You Delete, I Delete",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2248A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-01/6ba4c49a-69cb-4801-96c7-29a58ccef8ff/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-02:24ea01f8-801d-4cdc-bb0b-9d8316bc65da",
+      "subjectKey": "problem:Codeforces|2248B",
       "date": "2026-08-02",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -201,8 +201,8 @@
       "problem": {
         "name": "Merge to Match",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "≤1199"
+        "problemNumber": "2248B",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "todo",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-02/24ea01f8-801d-4cdc-bb0b-9d8316bc65da/"
@@ -242,7 +242,7 @@
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-03/c6e962d7-8c62-4902-932a-e8324bd55b36/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-05:9323af59-4324-4f8a-96d9-f05417db5e48",
+      "subjectKey": "problem:Codeforces|2254A",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -252,14 +252,14 @@
       "problem": {
         "name": "A",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2254A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/9323af59-4324-4f8a-96d9-f05417db5e48/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-05:6c014e99-f969-4703-9ed0-0847e46f77de",
+      "subjectKey": "problem:Codeforces|2254B",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -269,14 +269,14 @@
       "problem": {
         "name": "B",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2254B",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/6c014e99-f969-4703-9ed0-0847e46f77de/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-05:78f791e4-01e5-4395-b9f5-6a4ae8448dff",
+      "subjectKey": "problem:Codeforces|2254C1",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -286,14 +286,14 @@
       "problem": {
         "name": "C1",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2254C1",
+        "difficulty": "1000-1199"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/78f791e4-01e5-4395-b9f5-6a4ae8448dff/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-05:5c4d4e4a-48fe-421c-98f6-8dd277a2e011",
+      "subjectKey": "problem:Codeforces|2254C2",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -303,14 +303,14 @@
       "problem": {
         "name": "C2",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2254C2",
+        "difficulty": "1200-1399"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/5c4d4e4a-48fe-421c-98f6-8dd277a2e011/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-05:b92a860b-15bc-4a40-9e64-1309ccd81548",
+      "subjectKey": "problem:Codeforces|2254D",
       "date": "2026-08-05",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -320,8 +320,8 @@
       "problem": {
         "name": "D",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2254D",
+        "difficulty": "1200-1399"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/b92a860b-15bc-4a40-9e64-1309ccd81548/"
@@ -344,7 +344,7 @@
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-06/9ac5936e-b99e-4b2d-b9e6-01f5fb6d967c/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-07:f96b4926-faef-476b-a287-489cbfb1e437",
+      "subjectKey": "problem:洛谷|P1022",
       "date": "2026-08-07",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -354,7 +354,7 @@
       "problem": {
         "name": "计算器的改良",
         "platform": "洛谷",
-        "problemNumber": "",
+        "problemNumber": "P1022",
         "difficulty": "普及"
       },
       "reviewStatus": "none",
@@ -372,7 +372,7 @@
         "name": "部分A+B",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "入门"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-08/c10d3084-5aa9-4c1b-a80d-3c74d63b59b5/"
@@ -389,7 +389,7 @@
         "name": "数字统计",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "入门"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-09/a34abb1f-0a6b-45d2-8a2d-18257581e8ef/"
@@ -474,7 +474,7 @@
         "name": "公交系统",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-14/e6186f3a-0662-4938-aa80-a4831767f2ae/"
@@ -508,13 +508,13 @@
         "name": "产生数",
         "platform": "洛谷",
         "problemNumber": "P1037",
-        "difficulty": "未标注"
+        "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-16/b94464ef-9485-4f51-bf17-04e298f47ae3/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-17:78e797dc-4da7-49c6-a9e8-95d8782dd817",
+      "subjectKey": "problem:Codeforces|2257A",
       "date": "2026-08-17",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -524,14 +524,14 @@
       "problem": {
         "name": "A Creating Abbreviations",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2257A",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-17/78e797dc-4da7-49c6-a9e8-95d8782dd817/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-18:fc6e16b6-fda8-4867-900d-8edfb8cd5cdf",
+      "subjectKey": "problem:Codeforces|2257B",
       "date": "2026-08-18",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -541,14 +541,14 @@
       "problem": {
         "name": "B. Gigantomachy",
         "platform": "Codeforces",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "problemNumber": "2257B",
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-18/fc6e16b6-fda8-4867-900d-8edfb8cd5cdf/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-08-18:e7351cde-da59-4422-adfe-2b06fd3e7cc7",
+      "subjectKey": "problem:Codeforces|2257C",
       "date": "2026-08-18",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -557,9 +557,9 @@
       },
       "problem": {
         "name": "C. Spying on the Beaver",
-        "platform": "洛谷",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "platform": "Codeforces",
+        "problemNumber": "2257C",
+        "difficulty": "1200-1399"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-18/e7351cde-da59-4422-adfe-2b06fd3e7cc7/"
@@ -627,7 +627,7 @@
         "name": "歌唱练习",
         "platform": "洛谷",
         "problemNumber": "P11769",
-        "difficulty": "普及+/提高"
+        "difficulty": "普及+/提高-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-22/67b2a533-9745-4d3f-9f3d-77b6092aed77/"
@@ -644,7 +644,7 @@
         "name": "[ICPC 2017 Urumqi R] Coins",
         "platform": "洛谷",
         "problemNumber": "P17259",
-        "difficulty": "普及+/提高"
+        "difficulty": "普及+/提高-"
       },
       "reviewStatus": "todo",
       "reviewDue": "2026-08-27",
@@ -781,7 +781,7 @@
         "name": "挖掘机技术哪家强",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "入门"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-30/4bc09d2f-d414-44c9-b62b-56b7b3984a62/"
@@ -815,7 +815,7 @@
         "name": "数码管",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-01/109e4abb-2035-4ca6-8b5b-0a9cbca1e847/"
@@ -832,13 +832,13 @@
         "name": "舞蹈面试",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "普及+/提高-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-02/8db9d179-fe44-4a0f-9456-be2047164dc7/"
     },
     {
-      "subjectKey": "record:wzzzzhhhhh:2026-09-03:ba7fa4b6-1243-45ef-8629-1b5ecc479ed5",
+      "subjectKey": "problem:洛谷|P1020",
       "date": "2026-09-03",
       "recordRef": {
         "memberId": "wzzzzhhhhh",
@@ -847,9 +847,9 @@
       },
       "problem": {
         "name": "导弹防御系统",
-        "platform": "其他",
-        "problemNumber": "",
-        "difficulty": "未标注"
+        "platform": "洛谷",
+        "problemNumber": "P1020",
+        "difficulty": "普及+/提高-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-03/ba7fa4b6-1243-45ef-8629-1b5ecc479ed5/"
@@ -866,7 +866,7 @@
         "name": "ab串",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "普及-"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-04/fbd5330f-3048-4047-9f8c-5e967164722f/"
@@ -883,7 +883,7 @@
         "name": "Monocarp's Contest",
         "platform": "Codeforces",
         "problemNumber": "2260A",
-        "difficulty": "未标注"
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-08/a884584b-53b0-467f-83f4-2e4ff5263bc4/"
@@ -900,7 +900,7 @@
         "name": "Monocarp and Projects",
         "platform": "Codeforces",
         "problemNumber": "2260B",
-        "difficulty": "未标注"
+        "difficulty": "≤999"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-09/1814ae7c-9c1a-40e5-8416-86877084b0c6/"
@@ -917,7 +917,7 @@
         "name": "最长公共前后缀长度",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-10/c948f315-63d2-4726-a202-bce49cce838d/"
@@ -934,7 +934,7 @@
         "name": "蹦蹦菇",
         "platform": "其他",
         "problemNumber": "",
-        "difficulty": "未标注"
+        "difficulty": "普及"
       },
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-11/b1927ec5-7ec7-45bd-94fa-5ced7b764077/"

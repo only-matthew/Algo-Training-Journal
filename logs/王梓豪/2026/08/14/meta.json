@@ -7,11 +7,15 @@
       "name": "公交系统",
       "platform": "其他",
       "problemNumber": "",
-      "difficulty": "未标注",
+      "difficulty": "普及-",
       "tags": [
         "前缀和"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：前缀和 + 区间推导，26 行（标签：前缀和）",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "按难度标签「普及-」换算"
     }
   ]
 }

@@ -5,46 +5,71 @@
       "id": "9323af59-4324-4f8a-96d9-f05417db5e48",
       "name": "A",
       "platform": "Codeforces",
-      "problemNumber": "",
-      "difficulty": "未标注",
+      "problemNumber": "2254A",
+      "difficulty": "≤999",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     },
     {
       "id": "6c014e99-f969-4703-9ed0-0847e46f77de",
       "name": "B",
       "platform": "Codeforces",
-      "problemNumber": "",
-      "difficulty": "未标注",
+      "problemNumber": "2254B",
+      "difficulty": "≤999",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 900",
+      "difficultyRating": 900,
+      "difficultyRatingSource": "CF 官方 rating 900"
     },
     {
       "id": "78f791e4-01e5-4395-b9f5-6a4ae8448dff",
       "name": "C1",
       "platform": "Codeforces",
-      "problemNumber": "",
-      "difficulty": "未标注",
+      "problemNumber": "2254C1",
+      "difficulty": "1000-1199",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1000",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "CF 官方 rating 1000"
     },
     {
       "id": "5c4d4e4a-48fe-421c-98f6-8dd277a2e011",
       "name": "C2",
       "platform": "Codeforces",
-      "problemNumber": "",
-      "difficulty": "未标注",
+      "problemNumber": "2254C2",
+      "difficulty": "1200-1399",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1200",
+      "difficultyRating": 1200,
+      "difficultyRatingSource": "CF 官方 rating 1200"
     },
     {
       "id": "b92a860b-15bc-4a40-9e64-1309ccd81548",
       "name": "D",
       "platform": "Codeforces",
-      "problemNumber": "",
-      "difficulty": "未标注",
+      "problemNumber": "2254D",
+      "difficulty": "1200-1399",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1300",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "CF 官方 rating 1300"
     }
   ],
   "updatedAt": "2026-08-05T00:58:26.000+08:00"

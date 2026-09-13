@@ -6,11 +6,15 @@
       "name": "全排列问题",
       "platform": "洛谷",
       "problemNumber": "P1706",
-      "difficulty": "未标注",
+      "difficulty": "普及-",
       "tags": [
         "STL"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "洛谷官方",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ],
   "updatedAt": "2026-07-29T23:34:23.000+08:00"

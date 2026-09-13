@@ -11,7 +11,10 @@
         "模拟",
         "高精度"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ],
   "updatedAt": "2026-08-11T01:09:44.000+08:00"

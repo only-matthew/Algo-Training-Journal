@@ -11,7 +11,10 @@
       "tags": [
         "模拟"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "入门",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "洛谷官方难度「入门」"
     }
   ]
 }

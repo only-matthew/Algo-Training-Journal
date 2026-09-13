@@ -5,12 +5,17 @@
       "id": "737aef5c-ae77-4b41-a384-b03fb379419a",
       "name": "Codeforces Round 1115 (Div. 2)",
       "platform": "Codeforces",
-      "problemNumber": "A",
-      "difficulty": "未标注",
+      "problemNumber": "2252A",
+      "difficulty": "≤999",
       "tags": [
         "模拟"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1115A",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     }
   ],
   "updatedAt": "2026-08-07T19:19:26.000+08:00"

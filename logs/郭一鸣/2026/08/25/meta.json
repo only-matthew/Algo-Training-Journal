@@ -7,11 +7,15 @@
       "name": "[NOIP 2018 提高组] 铺设道路",
       "platform": "洛谷",
       "problemNumber": "P5019",
-      "difficulty": "普及/提高-",
+      "difficulty": "普及",
       "tags": [
         "贪心"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及/提高-",
+      "difficultySource": "洛谷官方",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     }
   ]
 }

@@ -7,9 +7,13 @@
       "name": "挖掘机技术哪家强",
       "platform": "其他",
       "problemNumber": "",
-      "difficulty": "未标注",
+      "difficulty": "入门",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：PAT 乙级最值统计；核心逻辑 1 行",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "按难度标签「入门」换算"
     }
   ]
 }

@@ -11,7 +11,10 @@
         "模拟",
         "dfs"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     },
     {
       "id": "86699026-d65e-4c1a-8caf-9e882d0bf731",
@@ -23,7 +26,10 @@
         "模拟",
         "递推"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ],
   "updatedAt": "2026-08-09T00:58:18.000+08:00"

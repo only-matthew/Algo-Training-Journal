@@ -14,7 +14,10 @@
         "排序"
       ],
       "reviewStatus": "todo",
-      "reviewDue": "2026-12-07"
+      "reviewDue": "2026-12-07",
+      "difficultyLegacy": "普及+/提高-",
+      "difficultyRating": 1500,
+      "difficultyRatingSource": "洛谷官方难度「普及+/提高-」"
     },
     {
       "id": "94fea29f-62f8-4c21-b704-6454adcdf726",
@@ -25,7 +28,10 @@
       "tags": [
         "二分"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ]
 }

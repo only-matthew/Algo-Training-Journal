@@ -12,7 +12,10 @@
         "模拟",
         "递推"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     },
     {
       "id": "21ad2fdb-2052-4a32-bdbb-48270754917b",
@@ -24,7 +27,10 @@
         "递归",
         "模拟"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ]
 }

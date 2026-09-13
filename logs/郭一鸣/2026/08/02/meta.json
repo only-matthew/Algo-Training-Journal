@@ -5,12 +5,17 @@
       "id": "ba2a2167-59e7-4e35-8a04-ca8d5c0b1646",
       "name": "Codeforces Round 1113 (Div. 2)",
       "platform": "Codeforces",
-      "problemNumber": "B",
-      "difficulty": "未标注",
+      "problemNumber": "2248B",
+      "difficulty": "1000-1199",
       "tags": [
         "贪心"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1113B",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1000",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "CF 官方 rating 1000"
     }
   ],
   "updatedAt": "2026-08-02T16:06:21.000+08:00"

@@ -13,7 +13,10 @@
         "贪心",
         "排序"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及+/提高-",
+      "difficultyRating": 1500,
+      "difficultyRatingSource": "洛谷官方难度「普及+/提高-」"
     }
   ]
 }

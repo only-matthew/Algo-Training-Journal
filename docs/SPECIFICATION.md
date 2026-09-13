@@ -4,6 +4,8 @@
 
 产品背景见 [PRODUCT.md](PRODUCT.md)。本文件中的“必须”是验收要求，“应”是默认实现，“可”是可选增强。技术冲突以本规格为准，产品角色和用户边界以 PRODUCT.md 为准。旧 CONSTRUCTION-PLAN.md 记录的是历史施工，不作为本轮任务书。
 
+已实现功能的算法与展示设计见 [VITALITY-DESIGN.md](VITALITY-DESIGN.md)（活力指数、难度统一为 CF Rating、同题判定）；尚未实施的区间打卡与同日多次打卡见 [PENDING-FEATURES.md](PENDING-FEATURES.md)。
+
 ## 1. 范围和固定决策
 
 ### 1.1 版本边界

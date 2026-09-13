@@ -7,11 +7,15 @@
       "name": "Monocarp and Projects",
       "platform": "Codeforces",
       "problemNumber": "2260B",
-      "difficulty": "未标注",
+      "difficulty": "≤999",
       "tags": [
         "数学"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "推断：CF Div. 2 B 题位；该场尚未 rated",
+      "difficultyRating": 1100,
+      "difficultyRatingSource": "推断：CF Div. 2 B 题位；该场尚未 rated"
     }
   ]
 }

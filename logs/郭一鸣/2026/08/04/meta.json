@@ -5,10 +5,15 @@
       "id": "e2a69576-47bb-4858-93e5-d662707e8035",
       "name": "Codeforces Round 1114 (Div. 3)",
       "platform": "Codeforces",
-      "problemNumber": "C1",
-      "difficulty": "未标注",
+      "problemNumber": "2254C1",
+      "difficulty": "1000-1199",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1114C1",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1000",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "CF 官方 rating 1000"
     }
   ],
   "updatedAt": "2026-08-06T22:56:07.000+08:00"

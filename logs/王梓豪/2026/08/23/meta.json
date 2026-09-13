@@ -7,12 +7,16 @@
       "name": "[ICPC 2017 Urumqi R] Coins",
       "platform": "洛谷",
       "problemNumber": "P17259",
-      "difficulty": "普及+/提高",
+      "difficulty": "普及+/提高-",
       "tags": [
         "DP"
       ],
       "reviewStatus": "todo",
-      "reviewDue": "2026-08-27"
+      "reviewDue": "2026-08-27",
+      "difficultyLegacy": "普及+/提高",
+      "difficultySource": "洛谷官方",
+      "difficultyRating": 1500,
+      "difficultyRatingSource": "按难度标签「普及+/提高-」换算"
     }
   ]
 }

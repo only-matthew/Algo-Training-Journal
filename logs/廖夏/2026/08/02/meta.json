@@ -6,13 +6,17 @@
       "name": "P2036 [COCI 2008/2009 #2] PERKET",
       "platform": "洛谷",
       "problemNumber": "P2036",
-      "difficulty": "未标注",
+      "difficulty": "普及-",
       "tags": [
         "模拟",
         "DFS",
         "搜索"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "洛谷官方",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ],
   "updatedAt": "2026-08-02T14:54:42.000+08:00"

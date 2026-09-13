@@ -13,7 +13,10 @@
         "浮点数"
       ],
       "reviewStatus": "todo",
-      "reviewDue": "2026-09-14"
+      "reviewDue": "2026-09-14",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ]
 }

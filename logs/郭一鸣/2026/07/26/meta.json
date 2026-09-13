@@ -5,7 +5,13 @@
       "id": "0dece00b-9317-4739-b4dc-6d66c401f630",
       "name": "Codeforces Round 1109 (Div. 3) C",
       "platform": "Codeforces",
-      "difficulty": "未标注"
+      "difficulty": "1000-1199",
+      "problemNumberLegacy": "1109C",
+      "problemNumber": "2244C",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1100",
+      "difficultyRating": 1100,
+      "difficultyRatingSource": "CF 官方 rating 1100"
     }
   ],
   "updatedAt": "2026-07-27T00:20:30.000+08:00"

@@ -10,7 +10,10 @@
       "tags": [
         "递归"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1300,
+      "difficultyRatingSource": "洛谷官方难度「普及」"
     }
   ],
   "updatedAt": "2026-08-10T01:49:30.000+08:00"

@@ -5,12 +5,17 @@
       "id": "4de2c9e4-0170-4c67-9c3f-a93b8747617d",
       "name": "Educational Codeforces Round 193 (Rated for Div. 2)",
       "platform": "Codeforces",
-      "problemNumber": "A",
-      "difficulty": "未标注",
+      "problemNumber": "2253A",
+      "difficulty": "≤999",
       "tags": [
         "数论"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "193A",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     }
   ],
   "updatedAt": "2026-08-09T01:25:37.000+08:00"

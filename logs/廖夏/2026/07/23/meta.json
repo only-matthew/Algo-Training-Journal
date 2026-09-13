@@ -3,7 +3,12 @@
     {
       "name": "P2241",
       "platform": "洛谷",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "problemNumberLegacy": "",
+      "problemNumber": "P2241",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ],
   "updatedAt": "2026-07-24T23:05:58.000+08:00"

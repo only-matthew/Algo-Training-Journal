@@ -5,13 +5,18 @@
       "id": "f9f2e79e-de12-4f17-9ad9-015c41c561ac",
       "name": "Codeforces Round 1108 (Div. 2)",
       "platform": "Codeforces",
-      "problemNumber": "A",
-      "difficulty": "未标注",
+      "problemNumber": "2246A",
+      "difficulty": "≤999",
       "tags": [
         "构造",
         "数学"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1108A",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     }
   ],
   "updatedAt": "2026-08-01T23:27:02.000+08:00"

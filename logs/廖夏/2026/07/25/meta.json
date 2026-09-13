@@ -5,7 +5,12 @@
       "id": "f41a2afd-316f-493b-9829-67adc8d073fe",
       "name": "P1036",
       "platform": "洛谷",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "problemNumberLegacy": "",
+      "problemNumber": "P1036",
+      "difficultyLegacy": "普及-",
+      "difficultyRating": 1000,
+      "difficultyRatingSource": "洛谷官方难度「普及-」"
     }
   ],
   "updatedAt": "2026-07-25T23:53:22.000+08:00"

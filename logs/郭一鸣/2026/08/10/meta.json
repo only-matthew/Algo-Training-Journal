@@ -6,12 +6,17 @@
       "id": "dcd5e342-6ab0-4f32-824e-1e9ad270cfaf",
       "name": "Codeforces Round 1116 (Div. 2)",
       "platform": "Codeforces",
-      "problemNumber": "A",
-      "difficulty": "未标注",
+      "problemNumber": "2256A",
+      "difficulty": "≤999",
       "tags": [
         "数学"
       ],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "1116A",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 800",
+      "difficultyRating": 800,
+      "difficultyRatingSource": "CF 官方 rating 800"
     }
   ]
 }

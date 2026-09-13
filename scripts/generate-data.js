@@ -1,4 +1,6 @@
 let trainingCardHtml;
+let expandTrainingInterval;
+let mergeTrainingDates;
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
@@ -36,6 +38,10 @@ let tagPageHtml;
 let tagIndexHtml;
 let cfTagToChinese;
 let assessMastery;
+let buildVitality;
+let vitalityRecordKey;
+let vitalityChartHtml;
+let memberVitalityDetailsHtml;
 let SITE_ORIGIN;
 let SITE_NAME;
 
@@ -94,6 +100,8 @@ function appendDateLogs(logs, member, date, dateDir, commitDates) {
     logs.push({
       member,
       date,
+      startedOn: meta.startedOn,
+      solvedOn: meta.solvedOn,
       updatedAt: meta.updatedAt,
       problemIndex: i,
       problemId: p.id,
@@ -103,8 +111,10 @@ function appendDateLogs(logs, member, date, dateDir, commitDates) {
       description: readProblemFile(dateDir, `${i}-desc.md`),
       takeaway: readProblemFile(dateDir, `${i}-takeaway.md`) || "未填写",
       difficulty: p.difficulty || "未标注",
+      difficultyRating: Number.isFinite(Number(p.difficultyRating)) ? Number(p.difficultyRating) : 0,
       tags: p.tags || [],
       reviewStatus: p.reviewStatus || "none",
+      outcome: p.outcome,
       code: readProblemFile(dateDir, `${i}-solution.cpp`),
     });
   }
@@ -182,17 +192,29 @@ function readLogs() {
 // They compute different aggregates (date counts vs. time-windowed stats), so
 // combining into a single pass would require restructuring their interfaces.
 // Both are O(n) and the data volume is small, so keeping them separate is acceptable.
+// 热力图两套口径：
+//   count —— 当天做了几道题（保留原口径，供“题数”展示对照）
+//   value —— 当天的活力指数合计（做 1 道提高题 = 深色，做 3 道入门题 = 浅色）
 function buildHeatmapCounts(logs) {
   const all = {};
   const byMember = {};
+  const valueAll = {};
+  const valueByMember = {};
 
   for (const log of logs) {
-    all[log.date] = (all[log.date] || 0) + 1;
-    byMember[log.member] ??= {};
-    byMember[log.member][log.date] = (byMember[log.member][log.date] || 0) + 1;
+    const dates = expandTrainingInterval(log, log.date);
+    for (const day of dates) {
+      all[day] = (all[day] || 0) + 1;
+      byMember[log.member] ??= {};
+      byMember[log.member][day] = (byMember[log.member][day] || 0) + 1;
+      const vitality = Number(log.vitality) || 0;
+      valueAll[day] = Number(((valueAll[day] || 0) + vitality / dates.length).toFixed(3));
+      valueByMember[log.member] ??= {};
+      valueByMember[log.member][day] = Number(((valueByMember[log.member][day] || 0) + vitality / dates.length).toFixed(3));
+    }
   }
 
-  return { all, byMember };
+  return { all, byMember, valueAll, valueByMember };
 }
 
 function resolveStatsEnd(logs, now = new Date(), formatDate = toDateString) {
@@ -222,9 +244,11 @@ function buildRecentStats(logs, members) {
     const byDifficulty = {};
     for (const item of items) {
       byPlatform[item.platform] = (byPlatform[item.platform] || 0) + 1;
-      byDifficulty[item.difficulty] = (byDifficulty[item.difficulty] || 0) + 1;
+      // 难度统计统一按 CF Rating 展示（历史记录可能缺 difficultyRating，归入「未标注」）
+      const rating = Number(item.difficultyRating) || 0;
+      const key = rating > 0 ? `★ ${rating}` : (item.difficulty || "未标注");
+      byDifficulty[key] = (byDifficulty[key] || 0) + 1;
     }
-
     return {
       totalLogs: items.length,
       activeDays,
@@ -243,10 +267,10 @@ function buildRecentStats(logs, members) {
   return { start, end, byMember };
 }
 
+
 function copyFile(name) {
   fs.copyFileSync(path.join(ROOT, name), path.join(OUTPUT_DIR, name));
 }
-
 function writeStylesheet() {
   // Preserve the cascade while serving one compressed, versioned stylesheet.
   const source = ["style.css", "assets/final.css", "assets/details.css"]
@@ -460,6 +484,10 @@ function recordSummary(log) {
     problemNumber: log.problemNumber || "",
     platform: log.platform || "",
     difficulty: log.difficulty || "",
+    difficultyRating: Number(log.difficultyRating) || 0,
+    vitality: Number(log.vitality) || 0,
+    vitalityStatus: log.vitalityStatus,
+    vitalityOutcome: log.vitalityOutcome,
     tags: log.tags || [],
     reviewStatus: log.reviewStatus || "none",
   };
@@ -467,7 +495,7 @@ function recordSummary(log) {
 
 function recordCardHtml(log) { return `<article class="record">${trainingCardHtml(log)}</article>`; }
 
-function writeHomePage(html, logs) {
+function writeHomePage(html, logs, totalVitality = 0) {
   const recentLogs = logs.filter((log) => log.date >= daysAgo(29));
   // 首页运行时与 renderLogs 保持同一分页大小，避免把全部近 30 天记录
   // 先塞进首屏 HTML，再由脚本立即替换成 4 张卡片。
@@ -484,12 +512,15 @@ function writeHomePage(html, logs) {
   $("#records").html(cards);
   $("#record-count").text(recentLogs.length ? `近 30 天共 ${recentLogs.length} 条记录` : "");
   $("#site-total-badge").text(String(logs.length)).removeClass("loading-value");
+  // 活力指数：与累计题数并排展示，题数口径保持原样不动
+  const vitalityBadge = $("#site-vitality-badge");
+  if (vitalityBadge.length) vitalityBadge.text(totalVitality.toFixed(1)).removeClass("loading-value");
   const output = addSelfClosingVoids($.html());
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), output, "utf8");
   return output;
 }
 
-function writeMemberPages(html, members, logs) {
+function writeMemberPages(html, members, logs, vitality) {
   for (const member of members) {
     const memberLogs = logs.filter((log) => log.member === member);
     const activeDays = new Set(memberLogs.map((log) => log.date)).size;
@@ -509,6 +540,10 @@ function writeMemberPages(html, members, logs) {
     $("#member-page-title").text(member);
     $("#member-page-subtitle").text(subtitle);
     $("#member-total").removeClass("loading-value").text(memberLogs.length);
+    const scope = vitality.byMember[member];
+    $("#member-vitality-total").text((scope?.total || 0).toFixed(1));
+    $("#member-vitality-chart").html(vitalityChartHtml(scope?.daily, { total: scope?.total }));
+    $("#member-vitality-details").html(memberVitalityDetailsHtml(scope));
     $("#member-days").removeClass("loading-value").text(activeDays);
     $("#member-recent").removeClass("loading-value").text(recentCount);
     $("#member-record-count").text(`共 ${memberLogs.length} 道题，每道题均可单独打开和分享`);
@@ -635,6 +670,7 @@ async function buildProblemIndex(logs) {
       problem: log.problem,
       reviewStatus: log.reviewStatus || "none",
       difficulty: log.difficulty || "",
+      difficultyRating: Number(log.difficultyRating) || 0,
     });
   }
   return index;
@@ -652,6 +688,7 @@ function buildReviewQueue(logs) {
       problemNumber: log.problemNumber || "",
       platform: log.platform || "",
       difficulty: log.difficulty || "",
+      difficultyRating: Number(log.difficultyRating) || 0,
       reviewDue: log.reviewDue,
     }))
     .sort((a, b) => a.reviewDue.localeCompare(b.reviewDue) || a.member.localeCompare(b.member, "zh-CN"));
@@ -1038,14 +1075,25 @@ async function main() {
   ({ problemDetailHtml, originalProblemUrl, updatedLabel, relatedSectionHtml } = await import("../lib/problem-detail.mjs"));
   ({ cfTagToChinese } = await import("../lib/cf-tag-map.mjs"));
   ({ assessMastery } = await import("../lib/mastery.mjs"));
+  ({ buildVitality } = await import("../lib/vitality-summary.mjs"));
+  ({ expandTrainingInterval, mergeTrainingDates } = await import("../lib/training-interval.mjs"));
+  ({ vitalityRecordKey } = await import("../lib/vitality.mjs"));
+  ({ vitalityChartHtml } = await import("../lib/vitality-chart.mjs"));
+  ({ memberVitalityDetailsHtml } = await import("../lib/member-vitality.mjs"));
   SITE_ORIGIN = siteOrigin;
   SITE_NAME = siteName;
   const { members, logs } = readLogs();
+  // 活力指数按「题目 Rating + 当时水平」折算；结果写回每条记录，供卡片与统计使用
+  const vitality = buildVitality(logs);
+  for (const log of logs) Object.assign(log, vitality.byRecord.get(vitalityRecordKey(log)));
+  const totalVitality = vitality.total;
+  const vitalityAllDaily = vitality.allDaily;
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
   const generatedAt = new Date().toISOString();
   const summaryLogs = logs.map(logSummary);
-  const fullData = { schemaVersion: 3, generatedAt, members, logs: summaryLogs, heatmap, recent30 };
+  const heatmapData = { ...heatmap, vitalityByMember: vitality.byMember };
+  const fullData = { schemaVersion: 3, generatedAt, members, logs: summaryLogs, heatmap: heatmapData, recent30, vitality: vitality.byMember, totalLogs: logs.length, totalVitality, vitalityAllDaily, vitalityVersion: vitality.algorithmVersion };
   const overviewData = {
     schemaVersion: 3,
     generatedAt,
@@ -1053,10 +1101,13 @@ async function main() {
     totalLogs: logs.length, // 全队自建站以来的总刷题数（首页标题徽标）
     logs: summaryLogs.filter((log) => log.date >= daysAgo(29)),
     reviewQueue: buildReviewQueue(logs),
-    heatmap,
+    heatmap: heatmapData,
     recent30,
-  };
-  const problemIndex = await buildProblemIndex(logs);
+    vitality: vitality.byMember,
+    vitalityAllDaily,
+    totalVitality,
+    vitalityVersion: vitality.algorithmVersion,
+  };  const problemIndex = await buildProblemIndex(logs);
   const roadmapResult = await generateRoadmapData(logs);
   const roadmapData = roadmapResult?.roadmapData || null;
   const roadmapNodeData = roadmapResult?.nodeDataById || new Map();
@@ -1086,9 +1137,9 @@ async function main() {
   browserAssets = buildBrowser(ROOT, path.join(OUTPUT_DIR, "assets", "js"));
   const html = writeVersionedIndex(dataVersion);
   writeServiceWorker(dataVersion);
-  const homeHtml = writeHomePage(html, logs);
+  const homeHtml = writeHomePage(html, logs, totalVitality);
   writeRouteIndexes(homeHtml, members, logs);
-  writeMemberPages(html, members, logs);
+  writeMemberPages(html, members, logs, vitality);
   writeProblemPages(html, logs, problemIndex);
   if (roadmapData) {
     writeRoadmapData(roadmapData, roadmapNodeData);

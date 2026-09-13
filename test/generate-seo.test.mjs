@@ -102,6 +102,20 @@ test("generator emits crawlable member and problem pages", () => {
   }
 
   assert.ok(memberPage.includes(`${log.member} 的训练主页`));
+  assert.match(memberPage, /id="member-vitality-chart"/);
+  assert.match(memberPage, /各平台活力贡献/);
+  assert.match(memberPage, /活力曲线指标/);
+  assert.equal(journal.vitalityVersion, 'v2');
+  assert.deepEqual(journal.vitality, overview.vitality, '直达成员页与首页跳转必须使用同一活力快照');
+  assert.equal(journal.totalVitality, overview.totalVitality);
+  assert.equal(journal.vitalityAllDaily.at(-1).cumulative, journal.totalVitality);
+  for (const member of journal.members) {
+    const scope = journal.vitality[member];
+    const memberLogs = journal.logs.filter(item => item.member === member);
+    assert.equal(scope.daily.length, new Set(memberLogs.map(item => item.date)).size);
+    assert.equal(Number(memberLogs.reduce((sum, item) => sum + item.vitality, 0).toFixed(3)), scope.total);
+    assert.equal(scope.byPlatform.reduce((sum, item) => sum + item.records, 0), memberLogs.length);
+  }
   assert.ok(memberPage.includes(problemRoute));
   assert.ok(homePage.includes("/problem/"));
 

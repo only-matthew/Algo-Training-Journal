@@ -5,10 +5,15 @@
       "id": "ff288238-85bb-4cf1-863f-b1efabe5ee63",
       "name": "Educational Codeforces Round 193 (Rated for Div. 2)",
       "platform": "Codeforces",
-      "problemNumber": "B",
-      "difficulty": "未标注",
+      "problemNumber": "2253B",
+      "difficulty": "1000-1199",
       "tags": [],
-      "reviewStatus": "none"
+      "reviewStatus": "none",
+      "problemNumberLegacy": "193B",
+      "difficultyLegacy": "未标注",
+      "difficultySource": "CF 官方 rating 1100",
+      "difficultyRating": 1100,
+      "difficultyRatingSource": "CF 官方 rating 1100"
     }
   ],
   "updatedAt": "2026-08-09T22:44:00.000+08:00"
