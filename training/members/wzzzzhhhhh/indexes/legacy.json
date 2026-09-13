@@ -956,6 +956,23 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-09-16",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-12/f179a17a-7fb3-44d7-b1f8-866e6ef3e84a/"
+    },
+    {
+      "subjectKey": "record:wzzzzhhhhh:2026-09-13:b68caddb-07c0-4a88-8bcd-38018f9b92d1",
+      "date": "2026-09-13",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-13",
+        "recordId": "b68caddb-07c0-4a88-8bcd-38018f9b92d1"
+      },
+      "problem": {
+        "name": "J. Joker or Judger",
+        "platform": "Codeforces",
+        "problemNumber": "",
+        "difficulty": "1200-1399"
+      },
+      "reviewStatus": "mastered",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-13/b68caddb-07c0-4a88-8bcd-38018f9b92d1/"
     }
   ]
 }

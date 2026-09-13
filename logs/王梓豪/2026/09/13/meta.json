@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-13T23:38:45.467+08:00",
+  "problems": [
+    {
+      "id": "b68caddb-07c0-4a88-8bcd-38018f9b92d1",
+      "name": "J. Joker or Judger",
+      "platform": "Codeforces",
+      "problemNumber": "",
+      "difficulty": "1200-1399",
+      "tags": [
+        "字符串匹配"
+      ],
+      "reviewStatus": "mastered"
+    }
+  ]
+}
