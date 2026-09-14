@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-15T00:11:53.257+08:00",
+  "problems": [
+    {
+      "id": "782613b8-a8dc-4f11-8d35-eff84c21c375",
+      "name": "Worms",
+      "platform": "Codeforces",
+      "problemNumber": "474B",
+      "difficulty": "★ 1200",
+      "difficultyRating": 1200,
+      "tags": [
+        "二分",
+        "模拟"
+      ],
+      "reviewStatus": "none",
+      "outcome": "hinted",
+      "fileIndex": 0
+    }
+  ]
+}

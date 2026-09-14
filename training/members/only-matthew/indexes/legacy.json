@@ -1097,6 +1097,23 @@
       },
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-11/8dd8bdf9-3b20-40e2-8aa6-60cd1c20d5f0/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|474B",
+      "date": "2026-09-14",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-14",
+        "recordId": "782613b8-a8dc-4f11-8d35-eff84c21c375"
+      },
+      "problem": {
+        "name": "Worms",
+        "platform": "Codeforces",
+        "problemNumber": "474B",
+        "difficulty": "★ 1200"
+      },
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-14/782613b8-a8dc-4f11-8d35-eff84c21c375/"
     }
   ]
 }
