@@ -973,6 +973,23 @@
       },
       "reviewStatus": "mastered",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-13/b68caddb-07c0-4a88-8bcd-38018f9b92d1/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1052",
+      "date": "2026-09-14",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-14",
+        "recordId": "6374c925-3c03-4729-aa63-417b8e5588e7"
+      },
+      "problem": {
+        "name": "[NOIP 2005 提高组] 过河",
+        "platform": "洛谷",
+        "problemNumber": "P1052",
+        "difficulty": "★ 1500"
+      },
+      "reviewStatus": "mastered",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-14/6374c925-3c03-4729-aa63-417b8e5588e7/"
     }
   ]
 }

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 3,
+  "updatedAt": "2026-09-14T23:32:24.159+08:00",
+  "problems": [
+    {
+      "id": "6374c925-3c03-4729-aa63-417b8e5588e7",
+      "name": "[NOIP 2005 提高组] 过河",
+      "platform": "洛谷",
+      "problemNumber": "P1052",
+      "difficulty": "★ 1500",
+      "difficultyRating": 1500,
+      "tags": [
+        "DP"
+      ],
+      "reviewStatus": "mastered",
+      "outcome": "hinted",
+      "fileIndex": 0
+    }
+  ]
+}
