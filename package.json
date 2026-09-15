@@ -16,6 +16,7 @@
     "check:syntax": "node scripts/check-syntax.mjs",
     "preview": "node scripts/preview-ui.mjs",
     "smoke:attachment": "node scripts/smoke-attachment.mjs",
+    "probe:workerd": "node scripts/probe-workerd-multipart.mjs",
     "verify": "npm run check:syntax && npm run training:reindex -- --check && npm test && npm run build",
     "check": "npm run verify"
   },

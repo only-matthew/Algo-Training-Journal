@@ -16,7 +16,11 @@
 >
 > 附件只能通过 v2 写入：旧 JSON 接口对「新增或变更 `statementAttachment`」返回 422 `ATTACHMENT_REQUIRES_V2`，但允许原样回传既有引用（表单编辑既有记录的做法）。v2 的 payload 则必须**省略** `statementAttachment`（keep 由服务端沿用旧引用、replace 用上传结果的哈希覆盖、remove 要求引用缺席）。
 >
-> §5.2 表中的多数路由、§4.2 的事件投影、§6.4 的索引体系仍未实现。浏览器端附件选择/替换/移除与 IndexedDB 恢复已实现并有 Playwright 冒烟覆盖，但 **Worker 尚未部署**，部署环境的 multipart 与 CF 抓取可达性未验证。以 `docs/HANDOFF.md` 的核查记录为准，不要把本规格当作现有 API 文档。
+> §5.2 表中的多数路由、§4.2 的事件投影、§6.4 的索引体系仍未实现。浏览器端附件选择/替换/移除与 IndexedDB 恢复已实现并有 Playwright 冒烟覆盖。
+>
+> **上线状态（2026-09-15）**：前端（GitHub Pages）与 Worker（`algo-oauth.xialiao.org`）**均已发布**。顺序很重要：旧写入口的 `expectedVersion` 是硬性要求、没有兼容旁路，先单独部署 Worker 会让旧前端保存全部 428（本轮真的发生过，已回滚后按「先前端后 Worker」重发）。另：Worker 级测试用的是 Node 的 `Request`（undici），**不是** workerd；multipart 解析与 `crypto.subtle` 哈希已用 `npm run probe:workerd` 在真实运行时上单独验证。
+>
+> **但附件上传尚未被真人验证**：线上已有真人条件写入成功的记录（`8551e44`，新 Worker 上线 79 分钟后，写入 `schemaVersion: 4` 且索引同 commit 更新），但那条记录没有附件。匿名探测也**无法**判断路由是否存在（未知 `/api/v2/*` 同样返回结构化 401）。以 `docs/HANDOFF.md` 的核查记录为准，不要把本规格当作现有 API 文档。
 
 产品背景见 [PRODUCT.md](PRODUCT.md)。本文件中的“必须”是验收要求，“应”是默认实现，“可”是可选增强。技术冲突以本规格为准，产品角色和用户边界以 PRODUCT.md 为准。旧 CONSTRUCTION-PLAN.md 记录的是历史施工，不作为本轮任务书。
 

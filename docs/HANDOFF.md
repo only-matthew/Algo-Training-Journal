@@ -76,6 +76,76 @@
 - `expectedVersion` 只在旧接口与 v2 之间互认，`/api/v2/me/*` 那套训练接口仍是独立的条件写入实现。
 - 真实数据里仍没有任何 `statementAttachment` / `aiAnalysis` / `outcome` 字段：v4 特性全部是「代码已实现并有测试」，没有一条真实记录验证过。
 
+### 2026-09-15 补记（三）：上线与回滚
+
+上一节的三项「仍未验证」中有两项本轮落实了：**Worker 已部署上线**，**multipart 在真实 workerd 运行时上实测通过**。剩下的一项（CF 题面抓取可达性）仍未验证。
+
+**部署记录（可按版本号回滚）**
+
+| 版本 | 时间 | 说明 |
+| --- | --- | --- |
+| `671abdc5-3082-4630-973a-ad2f715c94c2` | 2026-09-13 | 本会话之前的线上版本，即回滚目标 |
+| `3cffbb00-598b-49eb-8ce4-eb0fa5a36dcb` | 2026-09-15 | 本轮首次部署（**已回滚**，原因见下） |
+| `0b56f682-7287-49f7-9a26-bca71f20b621` | 2026-09-15 | 前端上线后重新部署，**当前线上版本** |
+
+前端发布走 `main` 分支 push → GitHub Actions（`npm run check` + Pages）。本轮两个提交：`27e97fe`（条件写入 + 附件 + 题目增强）、`c4329c7`（LaTeX 星标字形）。
+
+**踩到的坑：破坏性 API 变更必须先于其客户端上线，顺序反了就是线上故障**
+
+首次只部署了 Worker。但旧前端（`form-BQXMR5IY.js`）**完全不含 `expectedVersion`**，而新 Worker 的旧写入口是刻意不给「无版本 PUT」旁路的（见 `workers/oauth.mjs` 注释），于是所有队员保存记录都会拿到 **428 PRECONDITION_REQUIRED**——这是一次真实的生产故障，由部署顺序错误造成。
+
+处置：立刻 `wrangler rollback` 回 `671abdc5` 恢复服务，然后按正确顺序重新发布——**先**把前端推上线（确认线上 `form-*.js` 与共享 chunk 已含 `expectedVersion`、`Idempotency-Key`、`btn-pick-statement`、`journal-attachments` 标记），**再**部署 Worker。两次部署都保留了既有 secret（`wrangler deploy` 不会清空既有 secret）。
+
+**教训记在这里**：`/api/logs/date` 的版本要求是硬性的、没有兼容旁路，所以 Worker 不能单独先上线。若将来还要再收紧契约，正确做法是先在过渡期接受旧客户端（或双写／特性开关），而不是直接切换。
+
+**顺带修正两个我先前说错的结论**
+
+1. **「v2 路由返回 `AUTH_REQUIRED` 而不是 404，所以新代码已上线」是错的。** 实测 `/api/v2/definitely-not-a-real-route` 返回**完全相同**的结构化 401 与 `requestId`——鉴权闸在路由分发之前，匿名探测根本区分不出路由是否存在；而且那套 v2 错误信封在 `671abdc5` 上就已存在，不是本轮新增。判断线上跑的是哪个版本，只能看 `wrangler deployments list` / `rollback` 的输出。
+2. **「LaTeX 缺字形会让 CI 失败」是错的。** CI（`ubuntu-latest`）没有装 TeX，`test/export-latex.test.mjs` 里 `if (!XELATEX) t.skip(...)` 会整段跳过；那两条 2026-09-14 日志在 CI 上是绿的。缺字形只在**装了 xelatex 的机器**上暴露（本地全量验证会红）。修仍然要修，但它当时并没有挡住 CI。
+
+**修掉：洛谷难度星标 ★ 被 LaTeX 静默丢字形**
+
+新导入的日志把难度写成 `"★ 1200"`，`★`(U+2605) 不在 `LATEX_SYMBOLS` 里，正文拉丁字体没有该字形，xelatex 只记一条 `Missing character` 就把字符丢掉（实测 2 个）。已映射 `★`→`\bigstar`、`☆`→`\star`（前导已加载 `amssymb`）。
+
+这里也修掉了一个我自己写坏的测试：起初我加了一条「凡是非 CJK 非 ASCII 且未被映射的字符就报错」的全量扫描，它把 `†`(U+2020) 也报了出来——但 Latin Modern **有** `†` 字形。**「不在映射表里」不等于「缺字形」**，那条测试前提就错了，已删除；是否缺字形的判据交给既有的「整篇编译 + 断言 `missingCharacters === 0`」，它是实测而非猜测，且零误报。
+
+**新增：workerd 跨运行时探针（`npm run probe:workerd`）**
+
+`test/oauth-logs-v2.test.mjs` 是用 Node 的 `Request` 直接调 `worker.fetch`，走的是 undici 的 multipart 实现，**不是** Cloudflare 的 workerd。上传 PDF 依赖两个只有真实运行时才能证明的假设，本轮用 `wrangler dev`（生产同款运行时，本地跑）实测：
+
+- workerd 能正确解析浏览器 `FormData` 生成的分区：分区名、`payload` JSON、`expectedVersion: null`、`replace` 动作、CJK 文件名、`application/pdf`、字节长度、`%PDF-` 魔数全部原样保留；
+- **workerd 的 `crypto.subtle.digest("SHA-256")` 与客户端算出的哈希逐字节一致**——两边不一致，服务端就会把正常上传判成哈希不匹配。
+
+11/11 通过。探针已提交为 `scripts/probe-workerd-multipart.mjs`，可随时重跑。
+
+**本轮验证**
+
+- `npm run verify`（即 CI 的 `npm run check`）退出码 0：语法 78 个文件、训练索引最新、**392 项测试全过**、构建 169 条记录。
+- `node scripts/probe-workerd-multipart.mjs` 11/11 通过。
+- GitHub Actions run [34979614977](https://github.com/only-matthew/Algo-Training-Journal/actions/runs/34979614977) `success`；线上 `form-RPNFSVV4.js`(59,846B) 与共享 chunk 均已含新标记。
+- 浏览器冒烟 `scripts/smoke-attachment.mjs` 16 项断言全过（针对本地构建产物）。
+
+**仍未验证（本轮之后）**
+
+- Codeforces 题面抓取在 Cloudflare 出口的可达性（README 已说明 CF 有反爬，源码抓取本就不可用）、网页版 DeepSeek 的附件能力，均未验证。
+- **附件上传（multipart + PDF）在线上还没有被真人跑过。** 普通文字保存已有真实证据（见下），但 `statementAttachment` 仍是零真实数据。
+- 导入面板写入的 `difficulty: "★ 1200"` 与既有日志的 `普及-` / `1000-1199` 三种格式并存；报表与筛选是否都覆盖了星标格式，未逐一核对。
+
+**意外的真实端到端证据：线上保存已跑通**
+
+收尾时从 `origin/main` 拉到 `8551e44 save(王梓豪): training log for 2026-09-15`，提交时间 **2026-09-15T15:29:54Z**——比新 Worker `0b56f682` 上线（**14:10:46Z**）晚 79 分钟。也就是说这是**真人用真实 OAuth 会话、经过新前端 + 新 Worker 完成的一次真实条件写入**，不是推测：
+
+- 写入的 `meta.json` 是 `schemaVersion: 4`，`id` 是客户端生成的 UUID，带 `outcome: "hinted"`、`difficultyRating: 1500`、`fileIndex: 0`；
+- `training/members/wzzzzhhhhh/indexes/legacy.json` 与日志在**同一个 commit** 里更新——这正是「索引必须与日志同 commit 落盘，否则 503 INDEX_STALE」那条设计要求的线上验证；
+- 该笔写入没有触发 428/409/422。
+
+两点随之需要修正或注意：
+
+1. 上一节写的「真实数据里仍无 `outcome` 字段」**已不成立**：这条真实记录带了 `outcome: "hinted"`。`statementAttachment` / `aiAnalysis` 仍是零真实数据。
+2. 该记录的 `difficulty` 就是 `"★ 1500"`——说明星标**不是**某条日志的偶然写法，而是**当前线上写入路径的常规格式**。所以那个 `★` 字形修复不是修个例；不修的话，此后每条洛谷日志都会在 LaTeX 导出里丢掉一个字符。
+
+真正仍未被真人验证的只剩**附件上传本身**（选择 PDF → multipart 上传 → 服务端落盘 → 回读下载）。请登录后传一份题面 PDF 确认。
+
 更新时间：2026-08-28（架构整理）／2026-09-11（活力指数与难度统一，见文末「本轮改动」）
 
 ## 当前状态
