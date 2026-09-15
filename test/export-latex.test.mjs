@@ -131,6 +131,10 @@ test("文本转义覆盖所有会破坏 LaTeX 的字符", () => {
 test("Unicode 数学符号换成 LaTeX 命令，不再被静默丢字形", () => {
   assert.equal(escapeLatexText("x ≤ 2 且 y ≥ 3"), "x $\\le$ 2 且 y $\\ge$ 3");
   assert.equal(escapeLatexText("a × b ÷ c ≠ d ∞"), "a $\\times$ b $\\div$ c $\\ne$ d $\\infty$");
+  // 洛谷导入的难度写作 "★ 1200"，正文字体没有星标字形，会被整字丢掉。
+  // 是否为「缺字形」最终由下面真实数据的整篇编译断言，这里只锁定映射本身。
+  assert.equal(escapeLatexText("★ 1200"), "$\\bigstar$ 1200");
+  assert.equal(escapeLatexText("☆ 800"), "$\\star$ 800");
 });
 
 test("题名里的 # / _ / & 不会写坏 \\title 与 \\section", () => {
