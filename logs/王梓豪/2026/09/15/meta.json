@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 4,
+  "updatedAt": "2026-09-15T23:29:52.291+08:00",
+  "problems": [
+    {
+      "id": "99196161-e34f-4902-bba7-66c7a0fb24df",
+      "name": "[NOIP 1999 提高组] 导弹拦截",
+      "platform": "洛谷",
+      "problemNumber": "P1020",
+      "difficulty": "★ 1500",
+      "difficultyRating": 1500,
+      "tags": [
+        "DP",
+        "贪心"
+      ],
+      "reviewStatus": "mastered",
+      "outcome": "hinted",
+      "fileIndex": 0
+    }
+  ]
+}

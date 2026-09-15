@@ -990,6 +990,23 @@
       },
       "reviewStatus": "mastered",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-14/6374c925-3c03-4729-aa63-417b8e5588e7/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1020",
+      "date": "2026-09-15",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-15",
+        "recordId": "99196161-e34f-4902-bba7-66c7a0fb24df"
+      },
+      "problem": {
+        "name": "[NOIP 1999 提高组] 导弹拦截",
+        "platform": "洛谷",
+        "problemNumber": "P1020",
+        "difficulty": "★ 1500"
+      },
+      "reviewStatus": "mastered",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-15/99196161-e34f-4902-bba7-66c7a0fb24df/"
     }
   ]
 }
