@@ -1,5 +1,9 @@
 # 队员自主算法训练平台：技术规格
 
+## 2026-09-16 专项规格：训练状态拆分
+
+新增 [训练状态与提交表单规格](LEARNING-STATE-SPECIFICATION.md) 及 [设计方案](LEARNING-STATE-DESIGN.md)。新写入采用 v5，保留已有题面与附件字段。完成结果、掌握自评、复习安排与错题标记独立；涉及旧 reviewStatus 三态的冲突以此专项为准。活力 outcome 权重保持不变。实现与验证进展见 [最新交接](HANDOFF.md)。
+
 ## 2026-09-15 专项规格补充（待实现）
 
 新增 [题面归档与 AI 元数据补全规格](PROBLEM-ENRICHMENT-SPECIFICATION.md)，产品流程见 [设计方案](PROBLEM-ENRICHMENT-DESIGN.md)。覆盖 PDF 归档、网页版 DeepSeek 提示词与 JSON 回填、Codeforces 单题题面抓取。此补充只完成设计，未实施。

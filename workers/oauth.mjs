@@ -9,6 +9,7 @@ import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
 import { fetchCodeforcesStatement } from "./services/problem-statement.mjs";
 import { createLogsV2Service, parseLogsV2Request, revisionFromEntries, statementPath } from "./services/logs-v2.mjs";
+import { normalizeLearningState } from "../lib/learning-state.mjs";
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
@@ -663,7 +664,7 @@ export function planLegacyIndexChange(user, date, problems, raw) {
       date,
       recordRef,
       problem: catalogProblem(problem),
-      reviewStatus: problem.reviewStatus,
+      ...normalizeLearningState(problem),
       ...(problem.reviewDue ? { reviewDue: problem.reviewDue } : {}),
       href: `/problem/${[user.member, date, problem.id].map(encodeURIComponent).join("/")}/`,
     });

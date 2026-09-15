@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { PLATFORM_ALIASES as SHARED_PLATFORM_ALIASES, canonicalProblemKey, normalizePlatform as normalizeSharedPlatform } from "../lib/problem-identity.mjs";
+import { normalizeLearningState } from "../lib/learning-state.mjs";
 
 // 平台名归一化：把常见的异写（如 CodeForces）统一为规范值。
 export const PLATFORM_ALIASES = SHARED_PLATFORM_ALIASES;
@@ -89,7 +90,7 @@ export function buildMatchIndex(logs) {
       member: entry.member,
       date: entry.date,
       problemId: entry.problemId,
-      reviewStatus: entry.reviewStatus,
+      ...normalizeLearningState(entry),
       difficulty: entry.difficulty,
       problem: entry.problem,
     };
@@ -119,7 +120,7 @@ function computeStats(problems, matchIndex, totalProblems) {
     const records = key ? matchIndex.get(key) : undefined;
     if (!records || records.length === 0) continue;
     done += 1;
-    if (records.some((r) => r.reviewStatus === "mastered")) mastered += 1;
+    if (records.some((r) => r.masteryStatus === "mastered")) mastered += 1;
     if (records.some((r) => r.reviewStatus === "todo")) review += 1;
     for (const r of records) {
       let m = memberMap.get(r.member);
@@ -128,7 +129,7 @@ function computeStats(problems, matchIndex, totalProblems) {
         memberMap.set(r.member, m);
       }
       m.done += 1;
-      if (r.reviewStatus === "mastered") m.mastered += 1;
+      if (r.masteryStatus === "mastered") m.mastered += 1;
       if (r.reviewStatus === "todo") m.review += 1;
     }
   }
@@ -172,10 +173,10 @@ export function buildNodeTrainingEvidence(node, logs) {
     const totalRecords = items.length;
     const relatedRecordSet = new Set(relatedRecords);
     const relatedCount = items.filter((item) => relatedRecordSet.has(item)).length;
-    const masteredRecords = items.filter((item) => item.reviewStatus === "mastered").length;
+    const masteredRecords = items.filter((item) => normalizeLearningState(item).masteryStatus === "mastered").length;
     const todoRecords = items.filter((item) => item.reviewStatus === "todo").length;
     const todoDueDates = items
-      .filter((item) => item.reviewStatus === "todo" && item.reviewDue)
+      .filter((item) => normalizeLearningState(item).reviewStatus === "todo" && item.reviewDue)
       .map((item) => String(item.reviewDue));
     const lastTrainedAt = items.reduce((latest, item) => String(item.date || "") > latest ? String(item.date || "") : latest, "");
     return { totalRecords, relatedRecords: relatedCount, masteredRecords, todoRecords, todoDueDates, lastTrainedAt };

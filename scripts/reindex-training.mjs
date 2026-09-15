@@ -5,6 +5,7 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 import { normalizeMeta } from "../lib/log-schema.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
 import { catalogProblem } from "../lib/recommendations.mjs";
+import { normalizeLearningState } from "../lib/learning-state.mjs";
 
 const ROOT = resolve(import.meta.dirname, "..");
 const MEMBER_IDS = Object.freeze({
@@ -84,7 +85,7 @@ export function buildLegacyIndex(member, memberId) {
         date,
         recordRef,
         problem: catalogProblem(problem),
-        reviewStatus: problem.reviewStatus,
+        ...normalizeLearningState(problem),
         ...(problem.reviewDue ? { reviewDue: problem.reviewDue } : {}),
         href: `/problem/${[member, date, problem.id].map(encodeURIComponent).join("/")}/`,
       });

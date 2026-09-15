@@ -44,6 +44,15 @@ let vitalityChartHtml;
 let memberVitalityDetailsHtml;
 let SITE_ORIGIN;
 let SITE_NAME;
+let normalizeLearningState;
+function learningState(record) {
+  return normalizeLearningState ? normalizeLearningState(record) : {
+    outcome: record?.outcome,
+    masteryStatus: record?.masteryStatus || (record?.reviewStatus === "mastered" ? "mastered" : "unknown"),
+    isMistake: record?.isMistake === true,
+    reviewStatus: ["none", "todo", "archived"].includes(record?.reviewStatus) ? record.reviewStatus : "none",
+  };
+}
 
 // 批量获取多个文件各自的最后一次提交时间（一次 git log，替代每文件 spawn 一次进程）
 function lastCommitDates(relPaths) {
@@ -114,8 +123,8 @@ function appendDateLogs(logs, member, date, dateDir, commitDates) {
       difficulty: p.difficulty || "未标注",
       difficultyRating: Number.isFinite(Number(p.difficultyRating)) ? Number(p.difficultyRating) : 0,
       tags: p.tags || [],
-      reviewStatus: p.reviewStatus || "none",
-      outcome: p.outcome,
+      ...learningState(p),
+      ...(p.reviewDue ? { reviewDue: p.reviewDue } : {}),
       code: readProblemFile(dateDir, `${slot}-solution.cpp`),
       ...(p.statementAttachment ? { statementAttachment: p.statementAttachment, statementPath: path.join(dateDir, `${slot}-statement-${p.statementAttachment.sha256}.pdf`) } : {}),
       ...(p.statementSource ? { statementSource: p.statementSource } : {}),
@@ -494,7 +503,7 @@ function recordSummary(log) {
     vitalityStatus: log.vitalityStatus,
     vitalityOutcome: log.vitalityOutcome,
     tags: log.tags || [],
-    reviewStatus: log.reviewStatus || "none",
+    ...learningState(log),
   };
 }
 
@@ -686,7 +695,7 @@ async function buildProblemIndex(logs) {
       date: log.date,
       problemId: String(log.problemId || log.problemIndex || 0),
       problem: log.problem,
-      reviewStatus: log.reviewStatus || "none",
+      ...learningState(log),
       difficulty: log.difficulty || "",
       difficultyRating: Number(log.difficultyRating) || 0,
     });
@@ -697,7 +706,7 @@ async function buildProblemIndex(logs) {
 // 全量待复习题（不受 30 天窗口限制），按复习日期升序，供首页"今日复习队列"
 function buildReviewQueue(logs) {
   return logs
-    .filter((log) => log.reviewStatus === "todo" && log.reviewDue)
+    .filter((log) => learningState(log).reviewStatus === "todo" && log.reviewDue)
     .map((log) => ({
       member: log.member,
       date: log.date,
@@ -807,7 +816,7 @@ async function generateRoadmapData(logs) {
       const doneBy = (matchIndex.get(problemKey(problem.platform, problem.number)) || []).map((entry) => ({
         member: entry.member,
         date: entry.date,
-        reviewStatus: entry.reviewStatus || "none",
+        ...learningState(entry),
         problemId: entry.problemId,
         problemName: entry.problem,
       }));
@@ -1088,6 +1097,7 @@ async function generateTagPages(html, tagIndex, roadmapData) {
 
 async function main() {
   ({ normalizeMeta, problemStableKey } = await import("../lib/log-schema.mjs"));
+  ({ normalizeLearningState } = await import("../lib/learning-state.mjs"));
   ({ escapeHtml } = await import("../lib/render-safety.mjs"));
   ({ toDateString, toUtc8, SITE_ORIGIN: siteOrigin, SITE_NAME: siteName } = await import("../lib/constants.mjs"));
   ({ problemDetailHtml, originalProblemUrl, updatedLabel, relatedSectionHtml } = await import("../lib/problem-detail.mjs"));

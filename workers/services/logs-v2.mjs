@@ -163,7 +163,9 @@ function validateChanges(changes, problems, attachments, multipart) {
 }
 
 function checkLogVersion(log) {
-  if (log?.schemaVersion !== undefined && log.schemaVersion !== 4) throw new LogsV2Error("UNSUPPORTED_SCHEMA", "Only log schema version 4 can be saved");
+  // Accept an in-flight v1–v4 editor snapshot, then normalize and persist v5.
+  // This is compatibility at the API boundary, not a legacy write format.
+  if (log?.schemaVersion !== undefined && (!Number.isInteger(log.schemaVersion) || log.schemaVersion < 1 || log.schemaVersion > 5)) throw new LogsV2Error("UNSUPPORTED_SCHEMA", "Unsupported log schema version", 422);
 }
 
 function knownTextPaths(root, problems) {
@@ -186,10 +188,10 @@ function textChanges(root, previous, next, interval, timestamp) {
 
 async function decodeLog(snapshot, root, files) {
   const metaPath = `${root}/meta.json`;
-  if (!files.some((file) => file.path === metaPath)) return { exists: false, root, files, log: { schemaVersion: 4, problems: [] }, interval: {} };
+  if (!files.some((file) => file.path === metaPath)) return { exists: false, root, files, log: { schemaVersion: 5, problems: [] }, interval: {} };
   let meta;
   try { meta = JSON.parse(await snapshot.readFile(metaPath)); } catch { throw new LogsV2Error("STORAGE_UNAVAILABLE", "Stored log metadata is invalid", 502); }
-  if (meta.schemaVersion !== undefined && meta.schemaVersion > 4) throw new LogsV2Error("UNSUPPORTED_SCHEMA", "Stored log uses a newer schema", 422);
+  if (meta.schemaVersion !== undefined && meta.schemaVersion > 5) throw new LogsV2Error("UNSUPPORTED_SCHEMA", "Stored log uses a newer schema", 422);
   const paths = new Set(files.map((file) => file.path));
   const raw = { ...meta, problems: await Promise.all((meta.problems || []).map(async (problem, index) => {
     const fileIndex = Number.isInteger(problem.fileIndex) ? problem.fileIndex : index;

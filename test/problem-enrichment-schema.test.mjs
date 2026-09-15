@@ -39,8 +39,8 @@ test("metadata drops stale tag provenance and does not infer new provenance", ()
   assert.equal(normalizeMeta({ schemaVersion: 3, problems: [{ name: "old" }] }).problems[0].metadataSources, undefined);
 });
 
-test("unknown future schemas cannot be normalized or written as v4", () => {
-  for (const schemaVersion of [5, "4", null, -1]) {
+test("unknown future schemas cannot be normalized or written as v5", () => {
+  for (const schemaVersion of [6, "5", null, -1]) {
     assert.throws(() => validateLogInput({ schemaVersion, problems: [{ name: "Example" }] }), { code: "UNSUPPORTED_SCHEMA" });
     assert.throws(() => normalizeMeta({ schemaVersion, problems: [{ name: "Example" }] }), { code: "UNSUPPORTED_SCHEMA" });
   }

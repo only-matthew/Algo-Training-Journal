@@ -17,6 +17,8 @@
         "problemNumber": "",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-24/legacy-z7hzs2/"
     },
@@ -34,6 +36,8 @@
         "problemNumber": "P1012",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-24/legacy-zhhlh1/"
     },
@@ -51,6 +55,8 @@
         "problemNumber": "P1042",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-25/legacy-3i5yy1/"
     },
@@ -68,6 +74,8 @@
         "problemNumber": "P1044",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-26/5dde9805-421e-47c2-8531-cd6867325528/"
     },
@@ -85,6 +93,8 @@
         "problemNumber": "2250A",
         "difficulty": "≤999"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-27/d2f7dcb3-09ec-4317-923f-cf2c43fdef52/"
     },
@@ -102,6 +112,8 @@
         "problemNumber": "P1007",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-28/a192ee1f-cd0b-4f47-b53f-90953a4df75f/"
     },
@@ -119,6 +131,8 @@
         "problemNumber": "P1016",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-29/20ad9dda-50f6-4eca-9470-5228cad8ca38/"
     },
@@ -136,6 +150,8 @@
         "problemNumber": "P1005",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-07-30/475d3ace-bc82-44db-8a21-5bce87c7c3de/"
     },
@@ -153,6 +169,8 @@
         "problemNumber": "P1025",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-01/e55d684d-033e-4070-84b8-b79cd53cff9e/"
     },
@@ -170,6 +188,8 @@
         "problemNumber": "P1019",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-01/23fb140a-af89-484a-8227-985bb8c67769/"
     },
@@ -187,6 +207,8 @@
         "problemNumber": "2248A",
         "difficulty": "≤999"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-01/6ba4c49a-69cb-4801-96c7-29a58ccef8ff/"
     },
@@ -204,6 +226,8 @@
         "problemNumber": "2248B",
         "difficulty": "1000-1199"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-02/24ea01f8-801d-4cdc-bb0b-9d8316bc65da/"
     },
@@ -221,6 +245,8 @@
         "problemNumber": "P1033",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-02/c65705ba-787d-47a0-9ea7-536f8d079af4/"
     },
@@ -238,6 +264,8 @@
         "problemNumber": "P1031",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-03/c6e962d7-8c62-4902-932a-e8324bd55b36/"
     },
@@ -255,6 +283,8 @@
         "problemNumber": "2254A",
         "difficulty": "≤999"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/9323af59-4324-4f8a-96d9-f05417db5e48/"
     },
@@ -272,6 +302,8 @@
         "problemNumber": "2254B",
         "difficulty": "≤999"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/6c014e99-f969-4703-9ed0-0847e46f77de/"
     },
@@ -289,6 +321,8 @@
         "problemNumber": "2254C1",
         "difficulty": "1000-1199"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/78f791e4-01e5-4395-b9f5-6a4ae8448dff/"
     },
@@ -306,6 +340,8 @@
         "problemNumber": "2254C2",
         "difficulty": "1200-1399"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/5c4d4e4a-48fe-421c-98f6-8dd277a2e011/"
     },
@@ -323,6 +359,8 @@
         "problemNumber": "2254D",
         "difficulty": "1200-1399"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-05/b92a860b-15bc-4a40-9e64-1309ccd81548/"
     },
@@ -340,6 +378,8 @@
         "problemNumber": "P1488",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-06/9ac5936e-b99e-4b2d-b9e6-01f5fb6d967c/"
     },
@@ -357,6 +397,8 @@
         "problemNumber": "P1022",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-07/f96b4926-faef-476b-a287-489cbfb1e437/"
     },
@@ -374,6 +416,8 @@
         "problemNumber": "",
         "difficulty": "入门"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-08/c10d3084-5aa9-4c1b-a80d-3c74d63b59b5/"
     },
@@ -391,6 +435,8 @@
         "problemNumber": "",
         "difficulty": "入门"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-09/a34abb1f-0a6b-45d2-8a2d-18257581e8ef/"
     },
@@ -408,6 +454,8 @@
         "problemNumber": "P1045",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-10/53b43690-3eda-4b31-9420-9fc41afa8ece/"
     },
@@ -425,6 +473,8 @@
         "problemNumber": "P1024",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-11/a0705a7d-ef68-43a8-b3ea-1e0741bd0456/"
     },
@@ -442,6 +492,8 @@
         "problemNumber": "",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-12/5242d2d8-85ee-4d3c-aecc-a50a8d0b6da7/"
     },
@@ -459,6 +511,8 @@
         "problemNumber": "P1048",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-13/f0fd692f-a0b1-4120-8626-ba02a4855e0b/"
     },
@@ -476,6 +530,8 @@
         "problemNumber": "",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-14/e6186f3a-0662-4938-aa80-a4831767f2ae/"
     },
@@ -493,6 +549,8 @@
         "problemNumber": "P1028",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-15/dc5e8ccc-3625-44e1-bd41-42d70493cf53/"
     },
@@ -510,6 +568,8 @@
         "problemNumber": "P1037",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-16/b94464ef-9485-4f51-bf17-04e298f47ae3/"
     },
@@ -527,6 +587,8 @@
         "problemNumber": "2257A",
         "difficulty": "≤999"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-17/78e797dc-4da7-49c6-a9e8-95d8782dd817/"
     },
@@ -544,6 +606,8 @@
         "problemNumber": "2257B",
         "difficulty": "≤999"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-18/fc6e16b6-fda8-4867-900d-8edfb8cd5cdf/"
     },
@@ -561,6 +625,8 @@
         "problemNumber": "2257C",
         "difficulty": "1200-1399"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-18/e7351cde-da59-4422-adfe-2b06fd3e7cc7/"
     },
@@ -578,6 +644,8 @@
         "problemNumber": "P1036",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-19/e710937f-f591-423b-b2b7-9b5d5c97e614/"
     },
@@ -595,6 +663,8 @@
         "problemNumber": "P9063",
         "difficulty": "入门"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-20/460d0601-c544-4000-a6af-985258e0b3f3/"
     },
@@ -612,6 +682,8 @@
         "problemNumber": "P1059",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-21/a08e9cfa-1321-4e79-9e1c-be8fbf0f7062/"
     },
@@ -629,6 +701,8 @@
         "problemNumber": "P11769",
         "difficulty": "普及+/提高-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-22/67b2a533-9745-4d3f-9f3d-77b6092aed77/"
     },
@@ -646,6 +720,8 @@
         "problemNumber": "P17259",
         "difficulty": "普及+/提高-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
       "reviewDue": "2026-08-27",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-23/aa34b20a-a31b-489d-a2da-02b7a7084691/"
@@ -664,6 +740,8 @@
         "problemNumber": "P17308",
         "difficulty": "入门"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-24/a20ebfd7-d808-404d-84af-4ab1be75044d/"
     },
@@ -681,6 +759,8 @@
         "problemNumber": "P17309",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-25/b7f29317-8d6f-46c4-848c-0603735655a3/"
     },
@@ -698,6 +778,8 @@
         "problemNumber": "P17310",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-25/94a4c454-f1c7-43a9-ae94-da3f4cae3690/"
     },
@@ -715,6 +797,8 @@
         "problemNumber": "P1042",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-26/b07cdee4-29eb-40c8-96b7-11776871f2c5/"
     },
@@ -732,6 +816,8 @@
         "problemNumber": "P1045",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-27/19871f98-e7a7-4044-a4b6-6c4b2785ba12/"
     },
@@ -749,6 +835,8 @@
         "problemNumber": "1182B",
         "difficulty": "1200-1399"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-28/e850b905-7e18-48f1-9472-f855248b845d/"
     },
@@ -766,6 +854,8 @@
         "problemNumber": "P2670",
         "difficulty": "入门"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-29/547de1ec-d9a4-4cb0-9514-086f296ca53f/"
     },
@@ -783,6 +873,8 @@
         "problemNumber": "",
         "difficulty": "入门"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-30/4bc09d2f-d414-44c9-b62b-56b7b3984a62/"
     },
@@ -800,6 +892,8 @@
         "problemNumber": "P1449",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-08-31/8b5d6d45-60e4-42ed-ab85-3e6a08cc4a70/"
     },
@@ -817,6 +911,8 @@
         "problemNumber": "",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-01/109e4abb-2035-4ca6-8b5b-0a9cbca1e847/"
     },
@@ -834,6 +930,8 @@
         "problemNumber": "",
         "difficulty": "普及+/提高-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-02/8db9d179-fe44-4a0f-9456-be2047164dc7/"
     },
@@ -851,6 +949,8 @@
         "problemNumber": "P1020",
         "difficulty": "普及+/提高-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-03/ba7fa4b6-1243-45ef-8629-1b5ecc479ed5/"
     },
@@ -868,6 +968,8 @@
         "problemNumber": "",
         "difficulty": "普及-"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-04/fbd5330f-3048-4047-9f8c-5e967164722f/"
     },
@@ -885,6 +987,8 @@
         "problemNumber": "2260A",
         "difficulty": "≤999"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-08/a884584b-53b0-467f-83f4-2e4ff5263bc4/"
     },
@@ -902,6 +1006,8 @@
         "problemNumber": "2260B",
         "difficulty": "≤999"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-09/1814ae7c-9c1a-40e5-8416-86877084b0c6/"
     },
@@ -919,6 +1025,8 @@
         "problemNumber": "",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-10/c948f315-63d2-4726-a202-bce49cce838d/"
     },
@@ -936,6 +1044,8 @@
         "problemNumber": "",
         "difficulty": "普及"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-11/b1927ec5-7ec7-45bd-94fa-5ced7b764077/"
     },
@@ -953,6 +1063,8 @@
         "problemNumber": "",
         "difficulty": "1900-2199"
       },
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
       "reviewDue": "2026-09-16",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-12/f179a17a-7fb3-44d7-b1f8-866e6ef3e84a/"
@@ -971,7 +1083,9 @@
         "problemNumber": "",
         "difficulty": "1200-1399"
       },
-      "reviewStatus": "mastered",
+      "masteryStatus": "mastered",
+      "isMistake": false,
+      "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-13/b68caddb-07c0-4a88-8bcd-38018f9b92d1/"
     },
     {
@@ -988,7 +1102,10 @@
         "problemNumber": "P1052",
         "difficulty": "★ 1500"
       },
-      "reviewStatus": "mastered",
+      "outcome": "hinted",
+      "masteryStatus": "mastered",
+      "isMistake": false,
+      "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-14/6374c925-3c03-4729-aa63-417b8e5588e7/"
     },
     {
@@ -1005,7 +1122,10 @@
         "problemNumber": "P1020",
         "difficulty": "★ 1500"
       },
-      "reviewStatus": "mastered",
+      "outcome": "hinted",
+      "masteryStatus": "mastered",
+      "isMistake": false,
+      "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-15/99196161-e34f-4902-bba7-66c7a0fb24df/"
     }
   ]
