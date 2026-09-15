@@ -7,6 +7,8 @@ import { isUuidV4 } from "../lib/training-schema.mjs";
 import { readCatalog, readTrainingContext, workbenchResponse } from "./services/training-read.mjs";
 import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
+import { fetchCodeforcesStatement } from "./services/problem-statement.mjs";
+import { createLogsV2Service, parseLogsV2Request, revisionFromEntries, statementPath } from "./services/logs-v2.mjs";
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
@@ -18,7 +20,7 @@ const MEMBERS = { "only-matthew": "廖夏", wzzzzhhhhh: "王梓豪", "seanist-is
 const CF_HANDLES = { "only-matthew": "onlymatt", wzzzzhhhhh: "hnuwang", "seanist-isx": "ymguo" };
 const ORIGINS = new Set(["https://train.xialiao.org", "http://localhost:3000", "http://localhost:4173", "http://localhost:5000"]);
 
-const RATE_LIMITS = { summarize: { max: 5, windowMs: 60000 }, "import:codeforces": { max: 10, windowMs: 60000 }, "import:luogu": { max: 10, windowMs: 60000 }, "import:atcoder": { max: 10, windowMs: 60000 } };
+const RATE_LIMITS = { summarize: { max: 5, windowMs: 60000 }, "import:codeforces": { max: 10, windowMs: 60000 }, "import:luogu": { max: 10, windowMs: 60000 }, "import:atcoder": { max: 10, windowMs: 60000 }, "problem-statement": { max: 10, windowMs: 60000 } };
 // 注意：此限流表是 isolate 内存态，跨冷启动 / 多个 isolate 不共享；
 // 对小队规模足够，严格防滥用需迁移到 KV 或 Durable Object。
 const rateMap = new Map();
@@ -52,7 +54,11 @@ async function open(value, secret) { try { const all = decode(value); const raw 
 // 用于与目录列表中的 blob sha 对比，跳过内容未变化的文件写入。
 export async function gitBlobSha(content) {
   const encoder = new TextEncoder();
-  const bytes = encoder.encode(content);
+  // 文本与二进制共用同一实现：PDF 附件必须按原始字节计算 blob SHA，
+  // 不能先经过 TextDecoder/TextEncoder 往返，否则哈希与 GitHub 存储值不符。
+  // 文本分支同样要先编码：直接读 content.length 在字符串上是 undefined，
+  // 会让头部变成 "blob undefined\0"，所有文本文件的 blob SHA 全部算错。
+  const bytes = typeof content === "string" ? encoder.encode(content) : content;
   const header = encoder.encode(`blob ${bytes.length}\0`);
   const combined = new Uint8Array(header.length + bytes.length);
   combined.set(header);
@@ -97,6 +103,9 @@ function v2Json(request, body, { status = 200, revision, headers = {} } = {}) {
 }
 
 function canonicalJson(value) {
+  // Keep this in step with the receipt writer: JSON.stringify(undefined) yields
+  // the string "undefined", which is not valid JSON.
+  if (value === undefined) return "null";
   if (value === null || typeof value !== "object") return JSON.stringify(value);
   if (Array.isArray(value)) return `[${value.map(canonicalJson).join(",")}]`;
   return `{${Object.keys(value).sort().map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(",")}}`;
@@ -131,28 +140,50 @@ function withoutPreconditions(command) {
 }
 
 async function githubContentAt(token, path, ref) {
+  const bytes = await githubContentBytesAt(token, path, ref);
+  return bytes === null ? null : new TextDecoder().decode(bytes);
+}
+
+// 与 githubContentAt 共用一次 Contents 请求，但返回原始字节。
+// 题面 PDF 附件必须走这条路径：文本解码会破坏二进制内容。
+async function githubContentBytesAt(token, path, ref) {
   const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token) });
   if (response.status === 404) return null;
   if (!response.ok) throw Object.assign(new Error("GitHub content read failed"), { code: "UPSTREAM_UNAVAILABLE", status: 502 });
   const body = await response.json();
   if (Array.isArray(body) || typeof body?.content !== "string") throw Object.assign(new Error("GitHub content response was invalid"), { code: "UPSTREAM_UNAVAILABLE", status: 502 });
-  return new TextDecoder().decode(Uint8Array.from(atob(body.content.replace(/\s/g, "")), (char) => char.charCodeAt(0)));
+  return Uint8Array.from(atob(body.content.replace(/\s/g, "")), (char) => char.charCodeAt(0));
 }
 
 function trainingGit(token) {
   const treeCache = new Map();
   const fileCache = new Map();
-  const readFile = (head, path) => {
+  const readBytes = (head, path) => {
     const key = `${head}:${path}`;
-    if (!fileCache.has(key)) fileCache.set(key, githubContentAt(token, path, head));
+    if (!fileCache.has(key)) fileCache.set(key, githubContentBytesAt(token, path, head));
     return fileCache.get(key);
   };
-  const listFiles = async (snapshot, prefix) => {
+  const readFile = (head, path) => readBytes(head, path).then((bytes) => (bytes === null ? null : new TextDecoder().decode(bytes)));
+  // 目录树按 head 缓存一次；blob SHA 由缓存内容本地计算，不额外请求 Contents API。
+  const tree = async (snapshot) => {
     if (!treeCache.has(snapshot.head)) treeCache.set(snapshot.head, gh(`/git/trees/${snapshot.head}?recursive=1`, token).then((result) => {
       if (result.truncated) throw Object.assign(new Error("Repository index is too large"), { code: "INDEX_STALE", status: 503 });
       return result.tree || [];
     }));
-    return (await treeCache.get(snapshot.head)).filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix)).map((entry) => entry.path);
+    return treeCache.get(snapshot.head);
+  };
+  const listFiles = async (snapshot, prefix) => {
+    const entries = await tree(snapshot);
+    return entries.filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix)).map((entry) => entry.path);
+  };
+  // logs-v2 的日期版本需要对目录内每个文件取 Git blob SHA 才能构造内容指纹，
+  // 因此比 listFiles 多返回一层 { path, sha }。
+  const listFileEntries = async (snapshot, prefix) => {
+    const paths = await listFiles(snapshot, prefix);
+    return mapConcurrent(paths, 4, async (path) => {
+      const bytes = await readBytes(snapshot.head, path);
+      return { path, sha: await gitBlobSha(bytes || new Uint8Array()) };
+    });
   };
   return {
     async getHead() {
@@ -160,15 +191,23 @@ function trainingGit(token) {
       return ref.object.sha;
     },
     readFile,
+    readBytes,
     listFiles,
+    listFileEntries,
     async commit({ head, changes, message }) {
       const parent = await gh(`/git/commits/${head}`, token);
+      const putFile = async (path, bytes, encoding = "utf-8") => {
+        // 二进制附件由调用方预先 base64 编码；文本仍然按 utf-8 提交。
+        const blob = await gh("/git/blobs", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: bytes, encoding }) });
+        return { path, mode: "100644", type: "blob", sha: blob.sha };
+      };
       const entries = await mapConcurrent(changes, 4, async (change) => {
-        const blob = await gh("/git/blobs", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ content: change.content, encoding: "utf-8" }) });
-        return { path: change.path, mode: "100644", type: "blob", sha: blob.sha };
+        // 删除用 null blob sha 表达，tree API 会移除该路径。
+        if (change.delete) return { path: change.path, mode: "100644", type: "blob", sha: null };
+        return change.encoding === "base64" ? putFile(change.path, change.content, "base64") : putFile(change.path, change.content);
       });
-      const tree = await gh("/git/trees", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ base_tree: parent.tree.sha, tree: entries }) });
-      const commit = await gh("/git/commits", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message, tree: tree.sha, parents: [head] }) });
+      const treeResult = await gh("/git/trees", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ base_tree: parent.tree.sha, tree: entries }) });
+      const commit = await gh("/git/commits", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message, tree: treeResult.sha, parents: [head] }) });
       const current = await gh(`/git/ref/heads/${BRANCH}`, token);
       if (current.object.sha !== head) throw Object.assign(new Error("Git reference changed"), { code: "REF_CONFLICT", status: 409 });
       const response = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, { method: "PATCH", headers: { ...ghHeaders(token), "Content-Type": "application/json" }, body: JSON.stringify({ sha: commit.sha, force: false }) });
@@ -304,16 +343,90 @@ async function handleTrainingV2(request, user, url) {
 
   return null;
 }
+
+// v2 日志路由：整日读写/删除与题面 PDF 附件。这是 logs-v2 服务唯一的对外入口，
+// 负责把 HTTP 语义（幂等键、条件版本、multipart、Content-Disposition）接到纯业务服务上。
+async function handleLogsV2(request, user, url) {
+  const suffix = url.pathname.slice("/api/v2".length);
+  const dateMatch = /^\/logs\/dates\/(\d{4}-\d{2}-\d{2})$/.exec(suffix);
+  const statementMatch = /^\/logs\/dates\/(\d{4}-\d{2}-\d{2})\/problems\/([^/]+)\/statement$/.exec(suffix);
+  if (!dateMatch && !statementMatch) return null;
+  const date = (dateMatch || statementMatch)[1];
+  const git = trainingGit(user.token);
+  const legacyIndexPath = trainingPaths(user.login).legacyIndex;
+  // 附件、正文与个人训练索引必须落在同一个 commit；索引缺失时按既有语义报 INDEX_STALE。
+  const auxiliaryChanges = async ({ snapshot, date: logDate, problems }) => {
+    const raw = await git.readFile(snapshot.head, legacyIndexPath);
+    const change = planLegacyIndexChange({ login: user.login, member: user.member }, logDate, problems, raw);
+    return change ? [change] : [];
+  };
+  const service = createLogsV2Service({ git, planAuxiliaryChanges: auxiliaryChanges });
+
+  if (statementMatch) {
+    if (request.method !== "GET") return null;
+    const recordId = decodeURIComponent(statementMatch[2]);
+    const attachment = await service.statement({ member: user.member, date, recordId });
+    const fileName = attachment.fileName.replace(/[\r\n]/g, " ").trim() || "statement.pdf";
+    return new Response(attachment.bytes, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`,
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "no-store",
+        ETag: `"sha256:${attachment.sha256}"`,
+      },
+    });
+  }
+
+  if (request.method === "GET") {
+    const current = await service.read({ member: user.member, date });
+    return v2Json(request, { ...current.log, version: current.version, revision: current.version });
+  }
+
+  if (request.method === "PUT" || request.method === "DELETE") {
+    const operationId = requireIdempotencyKey(request);
+    let requestBody;
+    let expectedVersion;
+    let attachmentChanges;
+    let attachments;
+    if (request.method === "PUT") {
+      const parsed = await parseLogsV2Request(request);
+      const payload = requireObject(parsed.payload);
+      requestBody = payload.log;
+      expectedVersion = payload.expectedVersion;
+      attachmentChanges = payload.attachmentChanges;
+      attachments = parsed.attachments;
+    } else {
+      const payload = requireObject(await readJsonBody(request, 64 * 1024));
+      expectedVersion = payload.expectedVersion;
+    }
+    const base = { memberId: user.login, member: user.member, date, operationId, expectedVersion };
+
+    if (request.method === "PUT") {
+      const result = await service.save({ ...base, log: requestBody, attachmentChanges, attachments });
+      // `revision` is the name every client reads; keep it in the body as well as the
+      // ETag so a save and a read are interchangeable for the caller.
+      return v2Json(request, { ...result, revision: result.version }, { revision: result.version });
+    }
+
+    const result = await service.remove(base);
+    return v2Json(request, { ...result, revision: null });
+  }
+
+  return null;
+}
+
 async function mapConcurrent(items, concurrency, mapper) {
   const results = new Array(items.length); let next = 0;
   async function worker() { while (next < items.length) { const index = next++; results[index] = await mapper(items[index], index); } }
   await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, worker)); return results;
 }
-async function readJsonBody(request) {
+async function readJsonBody(request, maxBytes = LOG_LIMITS.maxRequestBytes) {
   const declared = Number(request.headers.get("Content-Length") || 0);
-  if (declared > LOG_LIMITS.maxRequestBytes) throw Object.assign(new RangeError("提交内容不能超过 1.5 MB"), { status: 413 });
+  if (declared > maxBytes) throw Object.assign(new RangeError("提交内容超过大小限制"), { status: 413 });
   const text = await request.text();
-  if (new TextEncoder().encode(text).byteLength > LOG_LIMITS.maxRequestBytes) throw Object.assign(new RangeError("提交内容不能超过 1.5 MB"), { status: 413 });
+  if (new TextEncoder().encode(text).byteLength > maxBytes) throw Object.assign(new RangeError("提交内容超过大小限制"), { status: 413 });
   try { return JSON.parse(text); } catch { throw Object.assign(new TypeError("请求内容不是有效的 JSON"), { status: 400 }); }
 }
 async function commit(changes, message, token, retry = 0) {
@@ -427,16 +540,20 @@ export async function planLogChanges(problems, existingFiles, root, updatedAt, i
     }
   }
   desired.set(`${root}/meta.json`, JSON.stringify(metaFromProblems(problems, updatedAt, interval), null, 2));
+  // 题面 PDF 的字节由 v2 附件接口写入，这里只能「保留引用到的、清理不再引用的」。
+  // 若把它们当作普通文件比较内容，我们手里只有路径没有字节，会把它们误判为需要删除。
+  const keep = new Set();
   problems.forEach((p) => {
     const prefix = `${root}/${p.fileIndex}-`;
     desired.set(`${prefix}takeaway.md`, p.takeaway || "未填写");
     if (p.description) desired.set(`${prefix}desc.md`, p.description);
     if (p.code) desired.set(`${prefix}solution.cpp`, p.code);
+    if (p.statementAttachment?.sha256) keep.add(statementPath(root, p));
   });
 
   const changes = [];
   for (const path of existing.keys()) {
-    if (!desired.has(path)) changes.push({ path, delete: true });
+    if (!desired.has(path) && !keep.has(path)) changes.push({ path, delete: true });
   }
   for (const [path, content] of desired) {
     if (existing.get(path) === await gitBlobSha(content)) continue;
@@ -444,26 +561,68 @@ export async function planLogChanges(problems, existingFiles, root, updatedAt, i
   }
   return changes;
 }
-export async function saveLog(user, date, input) {
+/**
+ * The legacy JSON endpoint cannot upload attachment bytes, so it must never be
+ * able to introduce or change an attachment reference — that would write a record
+ * pointing at a PDF that does not exist. Re-sending an unchanged reference (what
+ * the form does when it round-trips an existing record) is fine.
+ */
+async function assertAttachmentsUnchanged(problems, files, root, token) {
+  const incoming = problems.filter((problem) => problem.statementAttachment);
+  if (!incoming.length) return;
+  const metaPath = `${root}/meta.json`;
+  if (!(files || []).some((file) => file.path === metaPath)) {
+    throw Object.assign(new Error("题面 PDF 必须通过附件上传接口保存，此接口无法写入附件字节"), { code: "ATTACHMENT_REQUIRES_V2", status: 422 });
+  }
+  const raw = await content(metaPath, token);
+  let meta = {};
+  try { meta = JSON.parse(raw || "{}"); } catch { meta = {}; }
+  const existing = new Map((meta.problems || []).map((problem) => [problem.id, problem]));
+  for (const problem of incoming) {
+    if (existing.get(problem.id)?.statementAttachment?.sha256 === problem.statementAttachment.sha256) continue;
+    throw Object.assign(new Error("题面 PDF 必须通过附件上传接口保存，此接口无法写入附件字节"), { code: "ATTACHMENT_REQUIRES_V2", status: 422 });
+  }
+}
+
+export async function saveLog(user, date, input, expectedVersion) {
   const { problems, startedOn, solvedOn } = validateLogInput(input);
   const legacyPath = trainingPaths(user.login).legacyIndex;
   const [{ root, files }, legacyRaw] = await Promise.all([resolveLogRoot(user, date), content(legacyPath, user.token)]);
+  await assertAttachmentsUnchanged(problems, files, root, user.token);
   const updatedAt = toUtc8(new Date());
   const changes = await planLogChanges(problems, files, root, updatedAt, { startedOn, solvedOn });
   const legacyChange = planLegacyIndexChange(user, date, problems, legacyRaw);
   if (legacyChange) changes.push(legacyChange);
+  await assertLogVersionPlan({ expectedVersion, files, changes, root, allowedOutside: legacyChange ? [legacyChange.path] : [] });
   await commit(changes, `save(${user.member}): training log for ${date}`, user.token);
-  return { problems };
+  return { problems, revision: await predictedRevision(files, changes, root) };
+}
+
+/**
+ * The revision the caller should use for its next write: the current date files
+ * with this save's changes applied. Files outside the date root (the personal
+ * index) are excluded, matching how the revision is computed everywhere else, so
+ * a client can keep editing and saving without reloading the page first.
+ */
+async function predictedRevision(files, changes, root) {
+  const next = new Map((files || []).filter((file) => file.path.startsWith(`${root}/`)).map((file) => [file.path, file.sha]));
+  for (const change of changes || []) {
+    if (!change.path.startsWith(`${root}/`)) continue;
+    if (change.delete) next.delete(change.path);
+    else next.set(change.path, await gitBlobSha(change.content));
+  }
+  return revisionFromEntries([...next.entries()].map(([path, sha]) => ({ path, sha })));
 }
 export async function readLog(user, date) {
   const { root, files } = await resolveLogRoot(user, date);
   const metaPath = `${root}/meta.json`;
-  if (!files || !files.some((file) => file.path === metaPath)) return { problems: [] };
+  if (!files || !files.some((file) => file.path === metaPath)) return { problems: [], revision: null };
   const raw = await content(metaPath, user.token);
-  if (!raw) return { problems: [] };
+  if (!raw) return { problems: [], revision: null };
   const meta = JSON.parse(raw);
   const paths = new Set(files.map((file) => file.path));
   return {
+    revision: await revisionFromEntries(files),
     updatedAt: typeof meta.updatedAt === "string" ? meta.updatedAt : undefined,
     startedOn: meta.startedOn,
     solvedOn: meta.solvedOn,
@@ -478,13 +637,14 @@ export async function readLog(user, date) {
     })),
   };
 }
-export async function deleteLog(user, date) {
+export async function deleteLog(user, date, expectedVersion) {
   const legacyPath = trainingPaths(user.login).legacyIndex;
   const [{ root, files }, legacyRaw] = await Promise.all([resolveLogRoot(user, date), content(legacyPath, user.token)]);
   if (!files || !files.length) return { deleted: false };
   const changes = files.map((file) => ({ path: file.path, delete: true }));
   const legacyChange = planLegacyIndexChange(user, date, [], legacyRaw);
   if (legacyChange) changes.push(legacyChange);
+  await assertLogVersionPlan({ expectedVersion, files, changes, root, allowedOutside: legacyChange ? [legacyChange.path] : [] });
   await commit(changes, `delete(${user.member}): training log for ${date}`, user.token);
   return { deleted: true };
 }
@@ -581,6 +741,63 @@ async function handleAuth(request, env) {
   return null;
 }
 
+// 条件写入：客户端必须回传读取时拿到的 revision。缺少版本一律 428 并提示刷新，
+// 不允许存在「无版本 PUT」旁路，否则并发编辑会静默覆盖。
+// 版本只覆盖该日期目录自身的文件（不把 legacy 索引算进去），与 logs-v2 的日期版本同口径。
+function parseExpectedVersion(value) {
+  if (value === undefined) {
+    throw Object.assign(new Error("保存前需要先读取该日期的版本；请刷新页面后重试"), { code: "PRECONDITION_REQUIRED", status: 428 });
+  }
+  if (value !== null && (typeof value !== "string" || !/^sha256:[a-f0-9]{64}$/.test(value))) {
+    throw Object.assign(new TypeError("版本格式无效，请刷新页面后重试"), { code: "VALIDATION_FAILED", status: 422 });
+  }
+  return value;
+}
+
+/** 请求体 expectedVersion 优先，其次 If-Match；都没有则 undefined（由 parseExpectedVersion 拒绝）。 */
+function expectedVersionFrom(request, body) {
+  if (body && typeof body === "object" && Object.hasOwn(body, "expectedVersion")) return parseExpectedVersion(body.expectedVersion);
+  const header = request.headers.get("If-Match");
+  if (header) {
+    const quoted = /^"(sha256:[a-f0-9]{64})"$/i.exec(header);
+    if (!quoted) return parseExpectedVersion(undefined);
+    return parseExpectedVersion(quoted[1]);
+  }
+  return parseExpectedVersion(undefined);
+}
+
+/**
+ * Gate for every conditional write.
+ *
+ * Order matters: the version format is validated first (so a malformed client
+ * revision can never be coerced into a legitimate one), then the planned
+ * changes are confined to the resolved date directory, and only then is the
+ * revision compared. Running the boundary guard before the comparison keeps it
+ * unconditional — a plan that escapes the date directory is refused even when
+ * the caller also got the version wrong.
+ *
+ * Exported for direct unit testing of the boundary guard.
+ */
+export async function assertLogVersionPlan({ expectedVersion, files, changes, root, allowedOutside = [] }) {
+  expectedVersion = parseExpectedVersion(expectedVersion);
+  // 计划中的变更必须只发生在本日期目录内。越界写入是逻辑错误，不能提交。
+  const outside = (changes || [])
+    .map((change) => change.path)
+    .filter((path) => !path.startsWith(`${root}/`) && !allowedOutside.includes(path));
+  if (outside.length) {
+    throw Object.assign(new Error(`保存计划包含该日期目录以外的文件：${outside[0]}`), { code: "INTERNAL_ERROR", status: 500 });
+  }
+  const current = files && files.length ? await revisionFromEntries(files) : null;
+  if (expectedVersion === null) {
+    if (current === null) return null;
+    throw Object.assign(new Error("该日期已有记录，请刷新后重试"), { code: "VERSION_CONFLICT", status: 409, currentRevision: current });
+  }
+  if (current === null || expectedVersion !== current) {
+    throw Object.assign(new Error("记录已被其他端修改，请刷新后重试"), { code: "VERSION_CONFLICT", status: 409, currentRevision: current });
+  }
+  return current;
+}
+
 async function handleLogsDate(request, user) {
   const url = new URL(request.url);
   const date = url.searchParams.get("date");
@@ -589,8 +806,18 @@ async function handleLogsDate(request, user) {
   const today = toUtc8(new Date().toISOString()).slice(0, 10);
   if (date > today) return json(request, { error: "不能提交未来日期的记录" }, 400);
   if (request.method === "GET") return json(request, await readLog(user, date));
-  if (request.method === "PUT") return json(request, await saveLog(user, date, await readJsonBody(request)));
-  if (request.method === "DELETE") return json(request, await deleteLog(user, date));
+  if (request.method === "PUT") {
+    const body = await readJsonBody(request);
+    const expectedVersion = expectedVersionFrom(request, body);
+    const input = { ...body };
+    delete input.expectedVersion;
+    return json(request, await saveLog(user, date, input, expectedVersion));
+  }
+  if (request.method === "DELETE") {
+    let body = null;
+    try { body = await readJsonBody(request, 4096); } catch { body = null; }
+    return json(request, await deleteLog(user, date, expectedVersionFrom(request, body)));
+  }
 }
 
 async function handleSummarize(request, user, env) {
@@ -607,6 +834,18 @@ async function handleSummarize(request, user, env) {
   const summary = await summarizeDescription(env.AI, description);
   if (!summary) return json(request, { error: "生成失败，请检查描述内容" }, 422);
   return json(request, { summary });
+}
+
+async function handleProblemStatement(request, user) {
+  if (rateExceeded(`problem-statement:${user.login}`, RATE_LIMITS["problem-statement"])) {
+    return v2Error(request, "RATE_LIMITED", "请求过于频繁，请稍后再试", 429);
+  }
+  const body = await readJsonBody(request, 4096);
+  if (!body || body.platform !== "Codeforces" || typeof body.problemNumber !== "string"
+    || (body.sourceUrl !== undefined && typeof body.sourceUrl !== "string")) {
+    return v2Error(request, "INVALID_JSON", "只支持一个 Codeforces 题号", 400);
+  }
+  return json(request, await fetchCodeforcesStatement(body));
 }
 
 // Codeforces 官方 API：拉取最近 days 天内的 AC 记录，按题目去重（公开接口，无需登录）。
@@ -813,7 +1052,7 @@ export default {
 
       // QQ 机器人 Webhook：服务端回调，ed25519 签名鉴权，不经过登录会话/Origin/CSRF
       if (url.pathname === "/api/qq-bot" && request.method === "POST") {
-        return handleQqBotWebhook(request, env, ctx);
+        return await handleQqBotWebhook(request, env, ctx);
       }
 
       const origin = request.headers.get("Origin");
@@ -843,18 +1082,23 @@ export default {
       }
 
       if (url.pathname.startsWith("/api/v2/")) {
+        const logsResponse = await handleLogsV2(request, user, url);
+        if (logsResponse) return logsResponse;
         const response = await handleTrainingV2(request, user, url);
         if (response) return response;
       }
 
       if (url.pathname === "/api/logs/date") {
-        return handleLogsDate(request, user);
+        return await handleLogsDate(request, user);
       }
       if (url.pathname === "/api/summarize" && request.method === "POST") {
-        return handleSummarize(request, user, env);
+        return await handleSummarize(request, user, env);
+      }
+      if (url.pathname === "/api/problem-statement" && request.method === "POST") {
+        return await handleProblemStatement(request, user);
       }
       if (url.pathname === "/api/import" && request.method === "POST") {
-        return handleImport(request, user);
+        return await handleImport(request, user);
       }
 
       return url.pathname.startsWith("/api/v2/")
@@ -870,7 +1114,12 @@ export default {
       }
       const code = error.status || 500;
       const message = error.status && error.status < 500 ? error.message : "服务器内部错误";
-      return json(request, { error: message }, code);
+      // 条件写入失败时把当前版本回给客户端，便于刷新或重新加载；HEAD 无法稳定取得，故省略。
+      return json(request, {
+        error: message,
+        ...(error.code ? { code: error.code } : {}),
+        ...(error.currentRevision ? { currentRevision: error.currentRevision } : {}),
+      }, code);
     }
   },
 };

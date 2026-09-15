@@ -97,6 +97,7 @@ function appendDateLogs(logs, member, date, dateDir, commitDates) {
 
   for (let i = 0; i < meta.problems.length; i++) {
     const p = meta.problems[i];
+    const slot = Number.isInteger(p.fileIndex) && p.fileIndex >= 0 ? p.fileIndex : i;
     logs.push({
       member,
       date,
@@ -108,14 +109,18 @@ function appendDateLogs(logs, member, date, dateDir, commitDates) {
       problem: p.name || "未填写",
       platform: p.platform || "未填写",
       problemNumber: p.problemNumber || "",
-      description: readProblemFile(dateDir, `${i}-desc.md`),
-      takeaway: readProblemFile(dateDir, `${i}-takeaway.md`) || "未填写",
+      description: readProblemFile(dateDir, `${slot}-desc.md`),
+      takeaway: readProblemFile(dateDir, `${slot}-takeaway.md`) || "未填写",
       difficulty: p.difficulty || "未标注",
       difficultyRating: Number.isFinite(Number(p.difficultyRating)) ? Number(p.difficultyRating) : 0,
       tags: p.tags || [],
       reviewStatus: p.reviewStatus || "none",
       outcome: p.outcome,
-      code: readProblemFile(dateDir, `${i}-solution.cpp`),
+      code: readProblemFile(dateDir, `${slot}-solution.cpp`),
+      ...(p.statementAttachment ? { statementAttachment: p.statementAttachment, statementPath: path.join(dateDir, `${slot}-statement-${p.statementAttachment.sha256}.pdf`) } : {}),
+      ...(p.statementSource ? { statementSource: p.statementSource } : {}),
+      ...(p.metadataSources ? { metadataSources: p.metadataSources } : {}),
+      ...(p.aiAnalysis ? { aiAnalysis: p.aiAnalysis } : {}),
     });
   }
 }
@@ -645,10 +650,23 @@ function writeProblemDetails(logs, generatedAt, problemIndex) {
       ? (problemIndex.get(key) || [])
           .filter((r) => !(r.member === log.member && r.date === log.date && r.problemId === String(log.problemId || log.problemIndex || 0)))
       : [];
+    let attachmentUrl = "";
+    if (log.statementAttachment) {
+      if (!log.statementPath || !fs.existsSync(log.statementPath)) throw new Error(`缺少题面附件：${log.member}/${log.date}/${log.problemId}`);
+      const bytes = fs.readFileSync(log.statementPath);
+      const actual = crypto.createHash("sha256").update(bytes).digest("hex");
+      if (actual !== log.statementAttachment.sha256 || bytes.length !== log.statementAttachment.bytes) throw new Error(`题面附件校验失败：${log.member}/${log.date}/${log.problemId}`);
+      const fileName = `statement-${actual}.pdf`;
+      const target = path.join(OUTPUT_DIR, "problem", log.member, log.date, String(log.problemId || log.problemIndex || 0), fileName);
+      fs.mkdirSync(path.dirname(target), { recursive: true }); fs.copyFileSync(log.statementPath, target);
+      attachmentUrl = `/${["problem", log.member, log.date, String(log.problemId || log.problemIndex || 0), fileName].map(encodeURIComponent).join("/")}`;
+    }
+    const { statementPath, ...detailLog } = log;
     writeJson(path.join("data", "problems", log.member, log.date, `${log.problemId || log.problemIndex || 0}.json`), {
       schemaVersion: 3,
       generatedAt,
-      ...log,
+      ...detailLog,
+      ...(attachmentUrl ? { statementUrl: attachmentUrl } : {}),
       ...(related.length ? { related } : {}),
     });
   }

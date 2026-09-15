@@ -5,7 +5,9 @@ const files = readdirSync("test")
   .filter((file) => file.endsWith(".mjs"))
   .sort()
   .map((file) => `test/${file}`);
-const workerFiles = files.filter((file) => file === "test/oauth-training-v2.test.mjs");
+// Worker tests install a global fetch mock, so they run in their own pass
+// (serialized) instead of sharing the process with the browser/Node tests.
+const workerFiles = files.filter((file) => /^test\/oauth-[^/]*\.test\.mjs$/.test(file));
 const regularFiles = files.filter((file) => !workerFiles.includes(file));
 const nodeArgs = ["--test", "--test-concurrency=1"];
 

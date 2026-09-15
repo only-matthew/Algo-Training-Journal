@@ -6,3 +6,5 @@ site/
 oi-wiki/
 .wrangler/
 build/
+# UI 冒烟与截图检查的本地产物，可随时重跑生成，不进仓库。
+artifacts/

@@ -1,6 +1,22 @@
 # 队员自主算法训练平台：技术规格
 
+## 2026-09-15 专项规格补充（待实现）
+
+新增 [题面归档与 AI 元数据补全规格](PROBLEM-ENRICHMENT-SPECIFICATION.md)，产品流程见 [设计方案](PROBLEM-ENRICHMENT-DESIGN.md)。覆盖 PDF 归档、网页版 DeepSeek 提示词与 JSON 回填、Codeforces 单题题面抓取。此补充只完成设计，未实施。
+
+本专项定义 v4 的附件与来源扩展，实施时必须与本文已有 v4 规划合并；不可创建两个不兼容的 v4。附件限额、协议、保存事务与专项验收以补充文件为准，本文其他功能边界保持不变。现有源码核查和下一步见 [最新交接](HANDOFF.md)。
+
 版本：1.0-draft · 日期：2026-09-05 · 状态：实现依据，功能尚未实施。
+
+> **实现状态（2026-09-15，第二轮）**：§4.1 的 v2 日志接口已落地并被 Worker 级测试覆盖：`/api/v2/logs/dates/:date`（GET/PUT/DELETE）与题面附件读取路由已在 `workers/oauth.mjs` 接线，`workers/services/logs-v2.mjs` 不再只是被单元测试引用的死代码。
+>
+> **条件写入已覆盖全部写入口**：旧 `/api/logs/date` 的 GET 返回 `revision`，PUT/DELETE 必须回传 `expectedVersion`（请求体字段或 `If-Match`），缺失 428、过期 409、格式非法 422；首次创建必须显式传 `null`。前端整日保存/删除与首页快捷复习均已带版本，草稿恢复路径会先补读一次版本。保存响应回传新 `revision`，连续保存无需刷新页面。
+>
+> 落地时对 **日期版本范围** 做了一处明确收敛：`version` 只覆盖该日期目录自身的文件（含目录内的 PDF blob），**不包含**位于日期目录之外、每次保存都会被重写的个人训练索引，也不含幂等回执。否则保存返回值与随后 GET 的版本永不相等，客户端每次保存后都会遇到幻影冲突。旧接口与 v2 现在共用同一个 `revisionFromEntries()`，并有跨路径双向一致性测试。这与本节「不取整个仓库 HEAD」的意图一致，是该原则在目录层面的具体化。
+>
+> 附件只能通过 v2 写入：旧 JSON 接口对「新增或变更 `statementAttachment`」返回 422 `ATTACHMENT_REQUIRES_V2`，但允许原样回传既有引用（表单编辑既有记录的做法）。v2 的 payload 则必须**省略** `statementAttachment`（keep 由服务端沿用旧引用、replace 用上传结果的哈希覆盖、remove 要求引用缺席）。
+>
+> §5.2 表中的多数路由、§4.2 的事件投影、§6.4 的索引体系仍未实现。浏览器端附件选择/替换/移除与 IndexedDB 恢复已实现并有 Playwright 冒烟覆盖，但 **Worker 尚未部署**，部署环境的 multipart 与 CF 抓取可达性未验证。以 `docs/HANDOFF.md` 的核查记录为准，不要把本规格当作现有 API 文档。
 
 产品背景见 [PRODUCT.md](PRODUCT.md)。本文件中的“必须”是验收要求，“应”是默认实现，“可”是可选增强。技术冲突以本规格为准，产品角色和用户边界以 PRODUCT.md 为准。旧 CONSTRUCTION-PLAN.md 记录的是历史施工，不作为本轮任务书。
 

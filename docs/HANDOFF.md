@@ -1,5 +1,81 @@
 # 交接文档：Algo Training Journal
 
+## 最新交接（2026-09-15）：题面归档与 AI 补全设计
+
+**本轮已进入实现，未部署。** 先完成设计与 specification，随后由 Terra 子代理实现了部分业务链路；仍需在合并前完成一次人工 UI 冒烟和部署环境验证。
+
+- [设计方案](PROBLEM-ENRICHMENT-DESIGN.md)：PDF 题面归档、复制提示词并打开 DeepSeek、粘贴 JSON 预览回填、Codeforces 题面补全，以及界面状态与实施顺序。
+- [专项技术规格](PROBLEM-ENRICHMENT-SPECIFICATION.md)：v4 扩展字段、AI JSON 协议、附件保存/读取与条件事务、CF 解析规则、兼容和验收矩阵。
+- 核查结论：`fetchCodeforcesAccepted` 只读提交 API，未抓题面；`planLogChanges` 会删除目标清单以外的文件，附件必须纳入完整保存链路，不能只加上传控件。
+- 固定方向：不新增模型 API；用户自行在网页版上传 PDF/截图并粘贴回答。原题与 AI 分析分离；官方评分优先；已应用估计值保留来源。首期 PDF 沿用 Git，一题一份、单份 5 MiB、单次新增总量 10 MiB。
+- 已实现：AI 分析绑定/严格 JSON 校验、v4 来源字段、CF 单题抓取与降级、PDF v2 保存服务/幂等版本检查、表单提示词预览与字段回填、静态详情/导出附件投影。仍需重点复核旧写入口兼容、浏览器 IndexedDB 附件选择和部署 Worker 的 multipart 实测；不得把未验证的外部网络能力当成已验收。
+- 外部验证边界：已核查 Codeforces 官方 Problem 对象不含正文；DeepSeek 页面此次读取为 403，未验证登录后的附件能力、额度或部署 Worker 的抓取可达性。
+- 本轮专项测试与语法检查已通过；完整验证曾因既有 LaTeX 长 URL 溢出失败，已修复并单独通过 `test/export-latex.test.mjs`。部署和真实浏览器操作尚未完成。
+
+### 2026-09-15 补记：v2 日志保存链路已接线
+
+前一轮的 `workers/services/logs-v2.mjs` 只被单元测试引用，Worker 里没有任何路由，前端也仍走不带版本的 `/api/logs/date`——「PDF v2 保存服务」当时并不可达。本轮把它接到真实入口：
+
+- `workers/oauth.mjs` 新增 `/api/v2/logs/dates/:date`（GET 带 `version`/`ETag`；PUT 接受纯 JSON 或 multipart；DELETE 需 `expectedVersion`）与 `/api/v2/logs/dates/:date/problems/:recordId/statement`（`application/pdf` + `nosniff` + `attachment`）。
+- GitHub 适配器补齐二进制能力：`readBytes`、`listFileEntries`（返回 `{path, sha}`，blob SHA 本地计算，不额外请求 Contents API）、`commit` 支持 base64 blob；删除仍用 null blob sha。
+- 附件、正文与个人训练索引在同一 commit 落盘；索引缺失按既有语义返回 503 `INDEX_STALE`，不产生半提交。
+- 前端仍使用旧写入口，尚未接入 v2；本轮只保证服务端闭环可用并有 Worker 级测试。
+
+**同时修掉三个真实缺陷**（均由新增的 Worker 级测试暴露，不是测试替身问题）：
+
+1. `gitBlobSha()` 在文本路径被传入字符串时，`bytes.length` 是 `undefined`，头部变成 `blob undefined\0`，所有文本文件的 blob SHA 全部算错。现已先按 UTF-8 编码再计算。
+2. `logs-v2` 的日期版本指纹取的是「提交后的预测文件清单」，且把个人索引（位于日期目录之外、每次保存都会被重写）也算进去，导致保存返回值与随后的 GET 永不相等——客户端每次保存后都会看到幻影版本冲突。现在版本只覆盖该日期自己的文件（含该目录下的 PDF），与读取端计算一致。
+3. `canonical()` 的叶子分支直接 `JSON.stringify(value)`，遇到 `undefined` 会输出裸 `undefined` 词元，而 `problem.outcome`、`log.updatedAt` 等可选字段经常就是 `undefined`——写出的幂等回执不是合法 JSON，重试时解析失败返回 502。`logs-v2.mjs` 与 `oauth.mjs` 两份实现都已按 `null` 归一。
+
+本轮验证：`node scripts/check-syntax.mjs` 76 个文件通过；`node scripts/run-tests.mjs` 363 项全部通过（常规 325 + Worker 38）；`node scripts/reindex-training.mjs --check` 索引最新；`npm run build` 生成 167 条记录。新增 `test/oauth-logs-v2.test.mjs`（8 项）覆盖：缺失幂等键、PDF 落盘与哈希、statement 字节与响应头、过期版本冲突、同键重放不二次提交、删除、索引同 commit、索引缺失时 fail-closed。
+
+仍待完成：前端改用 v2 并携带 `expectedVersion`（旧 `/api/logs/date` 目前仍是无版本旁路）；浏览器 IndexedDB 附件选择与恢复；部署环境 multipart 与 CF 抓取可达性实测。
+
+### 2026-09-15 补记（二）：条件写入、附件链路与数据完整性
+
+上一节的「仍待完成」三项本轮全部落地。这一轮的重点不是加功能，而是把**会静默出错的地方**堵住——下面 5 个缺陷里有 4 个是真实的数据损坏或静默失效，不是测试替身问题。
+
+**1. 旧写入口不再是「无版本旁路」**
+
+`/api/logs/date` 的 GET 现在返回 `revision`；PUT/DELETE 必须回传 `expectedVersion`（请求体字段，或 `If-Match`）。缺失 → 428 `PRECONDITION_REQUIRED`；过期 → 409 `VERSION_CONFLICT` 且带 `currentRevision`；格式非法 → 422。首次创建必须显式传 `null`，不允许靠缺省值蒙混。保存响应回传新 `revision`，因此连续编辑保存不必刷新页面。
+
+前端所有写入口都已带上版本：整日保存与删除（`lib/form.mjs`）、首页复习队列的快捷流转（`lib/renderer.mjs`）。草稿恢复路径不知道服务端版本，保存前会先读一次，绝不拿猜测的版本去写。
+
+**2. 版本范围收敛（两侧一致）**
+
+版本只覆盖该日期目录自身的文件（含该目录内的 PDF），不含位于日期目录之外、每次保存都会被重写的个人索引。两条路径（旧接口的 Contents API 列表、v2 的 tree 列表）现在用同一个 `revisionFromEntries()`，并有测试双向断言「旧接口读到的版本 → v2 保存可用 → v2 返回的版本 → 旧接口读取复现」。这条不变量是「平时走旧接口、只有传 PDF 时才切 v2」这个设计成立的前提。
+
+**3. 修掉 5 个真实缺陷**
+
+1. `gitBlobSha()`（上一节已述）文本路径 blob SHA 全错。
+2. `logs-v2` 日期版本指纹含提交后预测与个人索引，保存值与随后 GET 永不相等（幻影冲突）。
+3. `canonical()` 输出裸 `undefined` 词元，幂等回执不是合法 JSON，重试 502。
+4. **旧接口保存会删掉已归档的题面 PDF。** `planLogChanges` 把「不在期望清单里的既有文件」一律删除，而它从不认识 `*-statement-*.pdf`——于是只要对某天做一次普通保存，meta.json 里的附件引用就指向一个刚被删掉的文件。现已把被引用的 PDF 纳入保留集，并在引用消失时清理孤立 PDF。
+5. **旧接口能写出悬空附件引用。** 它没有上传字节的能力，却接受任意合法的 `statementAttachment`。现在对「新增或变更引用」直接 422 `ATTACHMENT_REQUIRES_V2`，原样回传既有引用仍允许（表单编辑既有记录正是这个用法）。
+
+另外修掉一个会让错误处理整体失效的问题：Worker 里有 5 个 handler 以 `return handleX(...)` 返回 promise 而没有 `await`，`try/catch` 根本看不到它们的 rejection——版本冲突不会返回 409 JSON，而是变成未处理的 rejection。这 5 处都已改为 `return await`。
+
+**4. 浏览器端 PDF 附件**
+
+- 新增 `lib/attachment-store.mjs`：IndexedDB 保存「已选好但还没保存」的 PDF（按 账号+日期 一条记录）。所有方法返回状态而不抛异常，隐私模式/配额/无 IndexedDB 时表单仍可正常填写与提交，只是失去本地恢复能力。
+- `lib/form.mjs` 每题新增附件区：选择题面 PDF、替换、移除，并区分「已归档 / 待保存 / 已标记移除」三种状态；已归档的提供下载链接（走 v2 statement 路由）。
+- 保存时若涉及附件，改走 `/api/v2/logs/dates/:date` 的 multipart（payload + 每个 PDF 一个分区 + `Idempotency-Key`）；不涉及附件时仍走旧 JSON 接口。v2 的 payload 必须**省略** `statementAttachment`（服务端对无动作题目沿用旧引用、对 replace 用上传结果的哈希覆盖、对 remove 要求引用缺席），旧接口则必须**原样回传**该引用。两者分工写在代码注释里，并有测试守着。
+- 选择 PDF 时会同时持久化草稿：题目 id 是客户端生成的，只有草稿把它保留下来，刷新后重建表单才能拿到同一批 id。恢复时按 id 匹配，匹配不上的孤立文件会被清掉并如实提示，而不是显示「已恢复」却什么都没接上。
+
+**5. 本轮验证（全部在本机实际执行）**
+
+- `npm run verify`（即 CI 的 `npm run check`）退出码 0：语法检查 78 个文件、训练索引最新、测试 392 项全部通过（常规 342 + Worker/接口 50）、`npm run build` 生成 167 条记录。
+- 新增浏览器冒烟 `scripts/smoke-attachment.mjs`（Playwright + msedge，`npm run preview` 起静态服务后运行）：16 项断言全过——附件区确实出现在构建产物里、选中 PDF 后落入 IndexedDB、**刷新页面后仍能恢复**、保存发出的是带幂等键的 multipart 条件写入、payload 含 `schemaVersion:4` 与 replace 动作与 PDF 字节、**不含** `statementAttachment`、成功后本地待上传记录被清除、无未捕获页面错误。
+- 既有 UI 检查无回归：`scripts/check-ui.mjs` 无溢出无错误，`scripts/check-details-ui.mjs` SPA 与 Markdown 导出正常。
+- 新增测试文件：`test/oauth-logs-date.test.mjs`（旧接口 6 项）、`test/attachment-store.test.mjs`（8 项）、`test/journal-api.test.mjs` 扩容（v2 multipart 请求构造）、`test/oauth-logs-v2.test.mjs` 增加跨路径版本一致性。
+
+**仍未验证 / 未完成（不要当成已验收）**
+
+- **Worker 尚未部署。** `.github/workflows/deploy.yml` 只发布静态站点到 GitHub Pages，Worker 需另行 `wrangler deploy`（本会话没有 Cloudflare 凭据）。在部署新 Worker 之前，前端发出的 `Idempotency-Key`、multipart 与 428/409 契约在线上都不存在。
+- 部署环境的 multipart 实测、Codeforces 题面抓取可达性、网页版 DeepSeek 的附件能力仍未验证。
+- `expectedVersion` 只在旧接口与 v2 之间互认，`/api/v2/me/*` 那套训练接口仍是独立的条件写入实现。
+- 真实数据里仍没有任何 `statementAttachment` / `aiAnalysis` / `outcome` 字段：v4 特性全部是「代码已实现并有测试」，没有一条真实记录验证过。
+
 更新时间：2026-08-28（架构整理）／2026-09-11（活力指数与难度统一，见文末「本轮改动」）
 
 ## 当前状态

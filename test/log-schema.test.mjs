@@ -192,6 +192,15 @@ test("fileIndex 在 meta 中透传并拒绝重复或非法值", () => {
   assert.throws(() => validateLogInput({ problems: [{ id: "a", name: "A", fileIndex: 1 }, { id: "b", name: "B", fileIndex: 1 }] }), /文件索引不可重复/);
 });
 
+test("v4 题面附件与来源字段在 meta 往返，旧记录不猜来源", () => {
+  const attachment = { sha256: "a".repeat(64), fileName: "题面.pdf", bytes: 12, mimeType: "application/pdf", pageRange: { from: 1, to: 2 } };
+  const value = validateLogInput({ problems: [{ id: "p1", name: "A", statementAttachment: attachment, statementSource: { kind: "manual" }, metadataSources: { difficultyRating: { kind: "manual" }, tags: [{ tag: "DP", kind: "manual" }] } }] });
+  const restored = normalizeMeta(metaFromProblems(value.problems));
+  assert.equal(restored.problems[0].statementAttachment.sha256, attachment.sha256);
+  assert.equal(normalizeMeta({ problems: [{ name: "old" }] }).problems[0].metadataSources, undefined);
+  assert.throws(() => validateLogInput({ problems: [{ id: "bad", name: "A", statementAttachment: { ...attachment, sha256: "upper" } }] }), /附件/);
+});
+
 test("完成结果可安全透传，未知值不写入", () => {
   const result = validateLogInput({ problems: [{ id: "p1", name: "A", outcome: "hinted" }] });
   assert.equal(result.problems[0].outcome, "hinted");
