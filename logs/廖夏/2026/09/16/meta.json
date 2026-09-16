@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-16T20:49:17.566+08:00",
+  "problems": [
+    {
+      "id": "292a2912-58d8-4605-a5ec-5d4156b2d1a1",
+      "name": "Maximum Median",
+      "platform": "Codeforces",
+      "problemNumber": "1201C",
+      "difficulty": "★ 1400",
+      "difficultyRating": 1400,
+      "tags": [
+        "二分",
+        "贪心",
+        "数学",
+        "排序"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "learning",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/1201/C?locale=en",
+        "fetchedAt": "2026-09-16T12:49:08.323Z",
+        "parserVersion": "cf-html-v2"
+      }
+    }
+  ]
+}

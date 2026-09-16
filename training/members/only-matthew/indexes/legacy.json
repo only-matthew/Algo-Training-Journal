@@ -1245,6 +1245,26 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-14/782613b8-a8dc-4f11-8d35-eff84c21c375/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|1201C",
+      "date": "2026-09-16",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-16",
+        "recordId": "292a2912-58d8-4605-a5ec-5d4156b2d1a1"
+      },
+      "problem": {
+        "name": "Maximum Median",
+        "platform": "Codeforces",
+        "problemNumber": "1201C",
+        "difficulty": "★ 1400"
+      },
+      "outcome": "independent",
+      "masteryStatus": "learning",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-16/292a2912-58d8-4605-a5ec-5d4156b2d1a1/"
     }
   ]
 }
