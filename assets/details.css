@@ -154,7 +154,9 @@ html { container-type: inline-size; }
 .problem-detail .section-heading h2 { flex: 0 0 auto; margin: 0; white-space: nowrap; }
 .problem-detail .btn-sm { width: auto; flex: 0 0 auto; }
 .problem-detail .section-heading > [data-problem-edit] { margin-left: auto; }
-.problem-review-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+/* 「结束复习 / 顺延 +3」保持同一行：文字变长后 wrap 会把这两个按钮叠成上下两行。 */
+.problem-review-actions { display: flex; flex-wrap: nowrap; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.problem-review-actions .review-detail-action { min-width: 0; }
 .problem-detail .review-detail-action .ui-icon { width: 16px; height: 16px; }
 .detail-panel[id], .detail-section[id] { scroll-margin-top: 88px; }
 .problem-main .related-list { margin: 0; }
