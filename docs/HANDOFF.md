@@ -1,5 +1,37 @@
 # 交接文档：Algo Training Journal
 
+## 最新交接（2026-09-16 补记二）：复习按钮排布与并发写入丢更新
+
+### 1. 首页/详情页「结束复习 / 顺延 +3」恢复横排
+
+用户报「首页复习栏目被改、顺延和结束竖着排」。核对后：复习区的**文字**（已掌握→结束复习、非错题→未安排复习、已掌握→已归档）来自 `3a93356`（当天 07:27，学习状态那一轮，早于本轮改动）；按钮竖排是这些**更长的按钮文字**撞上了既有的 `flex-wrap: wrap`（`.review-quick-actions` 来自 9-08 的 `7605d50`，`.problem-review-actions` 来自 9-09 的 `7065cb7`）。本轮两个 CF/表单提交都没有碰 `lib/renderer.mjs`、`style.css`、`index.html`；之所以看起来像刚发生，是本次重新构建改变了 Service Worker 的缓存版本，浏览器这才把此前累积的前端改动拉下来。
+
+处置（`8387eaf`）：只改排布、不动文案——`.review-queue-item` 允许整组换行但按钮组内部 `nowrap`（并去掉只在该换行时才需要的上边框/上内边距），`.problem-review-actions` 同样 `nowrap` 且允许按钮收缩。验证方式是无头 Edge 加载真实产物样式量测：改前 430px 队列面板与 280px 侧栏三处按钮组 `sameRow=false`（复现竖排），改后三处 `sameRow=true` 且无横向溢出。
+
+### 2. 索引过期导致 Pages 连续四次部署失败
+
+现象：`11:35` 之后四次 `save(廖夏)` 提交后 CI 全红，`npm run check` 卡在 `training:reindex -- --check`：`training/members/only-matthew/indexes/legacy.json` 已过期。站点本身没挂（最后一次成功构建一直在服务），只是新数据发不出去。
+
+证据：四次「顺延 +3」把 `reviewDue` 都写成了 `2026-09-19`（四份 meta.json 都是新值），但索引里 `2026-09-01`、`2026-09-07` 两条仍是旧值。也就是说四次保存都提交了索引，最终却丢了两条。
+
+根因（legacy `/api/logs/date` 写路径）：`saveLog` 在请求开始读一次索引，`planLegacyIndexChange` 据此算出**整份**索引内容，然后交给 `commit()`；`commit()` 在非强制 ref 更新返回 422（有人抢先提交）时 `return commit(changes, ...)`——**用同一份旧内容重试**。并发保存落在不同日期时日期文件互不冲突，但共享的个人索引会被后完成的那次覆盖，先完成的改动就丢了。v2 路径（`logs-v2.mjs`）没有这个问题：它的重试循环每次都重新 `getHead` 并重新规划 `planAuxiliaryChanges`。
+
+修复（Worker only，前端未动）：
+
+- `content()` / `listDir()` / `resolveLogRoot()` 支持显式 `ref`（commit sha），以便「按将要提交到的那个 head」重读状态。
+- `commit(changes, message, token, retry, recheck)`：每次尝试先跑 `recheck(head)` 重新校验前置条件，再把 `changes` 里的**函数项**按该 head 求值；派生文件（个人索引）改由函数给出，因此重试必然重读重算，函数返回 `null` 表示无需变更。
+- `saveLog` / `deleteLog` 的索引变更改成函数；并新增 `assertFreshDateVersion()`：重试时若同一天被别人改过就直接 409，不再拿旧快照规划出的日期文件去覆盖。
+- `assertLogVersionPlan` 与 `predictedRevision` 跳过函数项（它们的路径由 `allowedOutside` 声明）。
+
+回归测试（`test/oauth-plan.test.mjs`，+2 项）：新增忠实一点的 Git Data API 替身（commit→tree→blob、ref 用 `force:false`，并能在第一次 ref 更新前插入「别人先提交成功」）。一条断言冲突重试后索引里同时保留并发写入的记录与本次保存的题目，另一条断言同一天被并发改动时抛 `VERSION_CONFLICT` 且不推进 ref。这两条在旧 Worker 上都会失败（已用 `git stash` 换回旧代码验证过）。
+
+### 3. 这一轮的部署与善后
+
+- `8387eaf`（复习按钮排布）、`a73cd5a`（重建索引，恢复 CI）已推送；前端由 CI 重新发布，线上四条记录均已显示 `reviewDue 2026-09-19`。
+- Worker 随后按上面的修复重新 `wrangler deploy`。
+
+教训（两次都成立）：**部署前要先列出「这次发布会让用户看到哪些此前未生效的变化」**——补记一里的 CF/代码框改动连带发布了此前累积的前端改动，补记二里的「顺延」则暴露了写路径的并发缺陷。
+
 ## 最新交接（2026-09-16 补记）：代码框默认展开与 CF 题面镜像兜底
 
 两项用户反馈：提交表单的代码框要「展开」，「抓取 CF 题面」一直报 blocked。

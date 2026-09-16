@@ -320,3 +320,156 @@ test("saveLog rejects invalid input without touching GitHub", async (context) =>
   await assert.rejects(saveLog(USER, "2026-08-11", { problems: [] }), /1 到 15 道题/);
   assert.equal(state.size, 0);
 });
+
+// ── 并发写入：ref 冲突重试不能拿旧快照算出的内容覆盖别人的改动 ──
+
+/**
+ * 忠实一点的 Git Data API 替身：commit → tree → blob，ref 用 force:false 更新。
+ * 它按 commit sha 保存快照，因此能区分「读的是哪个 head」，也能在第一次 ref 更新前
+ * 插入一次「别人先提交成功」的并发写入（真实世界里这就是我们拿到 422 的原因）。
+ */
+function concurrentGitHub(files) {
+  let counter = 0;
+  const commits = new Map();
+  const trees = new Map();
+  const blobs = new Map();
+  const contentsReads = [];
+  const snapshotOf = (sha) => commits.get(sha)?.snapshot || trees.get(sha) || null;
+  const stage = (snapshot) => {
+    counter += 1;
+    const sha = `tree-${counter}`;
+    trees.set(sha, new Map(snapshot));
+    return sha;
+  };
+  const record = (treeSha, snapshot) => {
+    counter += 1;
+    const sha = `commit-${counter}`;
+    commits.set(sha, { treeSha, snapshot: new Map(snapshot) });
+    return sha;
+  };
+
+  let head = record(stage(files), files);
+  const ok = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json", "X-RateLimit-Remaining": "4900" } });
+
+  const github = {
+    contentsReads,
+    head: () => head,
+    index: () => JSON.parse(snapshotOf(head).get(LEGACY_INDEX)),
+    // 模拟另一个请求成功提交：以当前 head 为父提交推进 ref。
+    externalCommit(mutate) {
+      const snapshot = new Map(snapshotOf(head));
+      mutate(snapshot);
+      head = record(stage(snapshot), snapshot);
+      return head;
+    },
+    // 第一次 ref 更新前触发；返回新的 head 表示「别人先提交成功」，我们应当收到 422。
+    onRefPatch: null,
+    async fetch(url, options = {}) {
+      const u = String(url);
+      const method = options.method || "GET";
+      if (u.startsWith(`${API}/contents/`)) {
+        const requested = decodeURIComponent(new URL(u).searchParams.get("ref") || head);
+        // 真实 GitHub 会把分支名解析成当前 head；显式 sha 则精确读取那个提交。
+        const ref = requested === "main" ? head : requested;
+        contentsReads.push(ref);
+        const snapshot = snapshotOf(ref);
+        if (!snapshot) return new Response("Not Found", { status: 404 });
+        const pathPart = decodeURIComponent(u.slice(`${API}/contents/`.length).split("?")[0]);
+        const children = [...snapshot.keys()].filter((p) => p.startsWith(pathPart + "/"));
+        if (children.length) return ok(children.map((p) => ({ type: "file", path: p, sha: gitSha(snapshot.get(p)), size: snapshot.get(p).length })));
+        const direct = snapshot.get(pathPart);
+        if (direct !== undefined) return ok({ content: Buffer.from(direct, "utf8").toString("base64"), encoding: "base64" });
+        return new Response("Not Found", { status: 404 });
+      }
+      if (u === `${API}/git/ref/heads/main` && method === "GET") return ok({ object: { sha: head } });
+      if (/\/git\/commits\/[^/]+$/.test(u) && method === "GET") {
+        const sha = u.split("/").pop();
+        const entry = commits.get(sha);
+        if (!entry) return new Response("Not Found", { status: 404 });
+        return ok({ sha, tree: { sha: entry.treeSha } });
+      }
+      if (u === `${API}/git/blobs` && method === "POST") {
+        const body = JSON.parse(options.body);
+        const sha = gitSha(body.content);
+        blobs.set(sha, body.content);
+        return ok({ sha });
+      }
+      if (u === `${API}/git/trees` && method === "POST") {
+        const body = JSON.parse(options.body);
+        const next = new Map(snapshotOf(body.base_tree) || []);
+        for (const entry of body.tree) {
+          if (entry.sha === null) next.delete(entry.path);
+          else next.set(entry.path, blobs.get(entry.sha));
+        }
+        return ok({ sha: stage(next) });
+      }
+      if (u === `${API}/git/commits` && method === "POST") {
+        const body = JSON.parse(options.body);
+        counter += 1;
+        const sha = `commit-${counter}`;
+        commits.set(sha, { treeSha: body.tree, snapshot: new Map(trees.get(body.tree)) });
+        return ok({ sha });
+      }
+      if (u === `${API}/git/refs/heads/main` && method === "PATCH") {
+        const advanced = github.onRefPatch?.();
+        if (advanced) return new Response(JSON.stringify({ message: "Reference update failed" }), { status: 422 });
+        head = JSON.parse(options.body).sha;
+        return ok({ sha: head });
+      }
+      throw new Error(`unexpected GitHub API call: ${method} ${u}`);
+    },
+  };
+  return github;
+}
+
+const emptyIndex = () => `${JSON.stringify({ schemaVersion: 1, memberId: USER.login, member: USER.member, records: [] }, null, 2)}\n`;
+const indexRecord = (number, date) => ({
+  subjectKey: `problem:洛谷|${number}`,
+  date,
+  recordRef: { memberId: USER.login, date, recordId: `other-${number}` },
+  problem: { name: number, platform: "洛谷", problemNumber: number },
+  href: `/problem/${date}/${number}/`,
+});
+
+test("ref 冲突重试时个人索引按新 head 重算，不会覆盖并发写入的记录", async (context) => {
+  const github = concurrentGitHub(new Map([[LEGACY_INDEX, `${JSON.stringify({ schemaVersion: 1, memberId: USER.login, member: USER.member, records: [indexRecord("P1000", "2026-08-01")] }, null, 2)}\n`]]));
+  let concurrentHead = null;
+  github.onRefPatch = () => {
+    if (concurrentHead) return null;
+    // 另一个请求在我们的 ref 更新之前落库：它往索引里追加了自己那天的记录。
+    concurrentHead = github.externalCommit((snapshot) => {
+      const index = JSON.parse(snapshot.get(LEGACY_INDEX));
+      index.records.push(indexRecord("P2000", "2026-08-02"));
+      snapshot.set(LEGACY_INDEX, `${JSON.stringify(index, null, 2)}\n`);
+    });
+    return concurrentHead;
+  };
+  context.mock.method(globalThis, "fetch", github.fetch);
+
+  await saveLog(USER, "2026-08-11", { problems: PROBLEMS }, null);
+
+  const numbers = github.index().records.map((record) => record.problem.problemNumber);
+  assert.deepEqual(numbers.slice(0, 2), ["P1000", "P2000"], "并发写入的记录必须保留");
+  assert.deepEqual(numbers.slice(2), ["P1115", "20C"], "本次保存的题目也要写进索引");
+  assert.ok(github.contentsReads.includes(concurrentHead), "重试时必须按新的 head 重新读取索引");
+});
+
+test("ref 冲突重试期间同一天被改动则报版本冲突，不覆盖别人那天的记录", async (context) => {
+  const github = concurrentGitHub(new Map([[LEGACY_INDEX, emptyIndex()]]));
+  context.mock.method(globalThis, "fetch", github.fetch);
+  const created = await saveLog(USER, "2026-08-11", { problems: PROBLEMS }, null);
+
+  let concurrentHead = null;
+  github.onRefPatch = () => {
+    if (concurrentHead) return null;
+    concurrentHead = github.externalCommit((snapshot) => { snapshot.set(`${ROOT}/9-desc.md`, "别人给同一天加的题面"); });
+    return concurrentHead;
+  };
+
+  await assert.rejects(
+    () => saveLog(USER, "2026-08-11", { problems: PROBLEMS }, created.revision),
+    (error) => error.code === "VERSION_CONFLICT" && error.status === 409,
+  );
+  assert.equal(github.head(), concurrentHead, "冲突重试失败后不能再推进 ref");
+});
+

@@ -430,13 +430,32 @@ async function readJsonBody(request, maxBytes = LOG_LIMITS.maxRequestBytes) {
   if (new TextEncoder().encode(text).byteLength > maxBytes) throw Object.assign(new RangeError("提交内容超过大小限制"), { status: 413 });
   try { return JSON.parse(text); } catch { throw Object.assign(new TypeError("请求内容不是有效的 JSON"), { status: 400 }); }
 }
-async function commit(changes, message, token, retry = 0) {
+/**
+ * 把一组变更提交到 main。
+ *
+ * `changes` 里的每一项要么是现成的变更对象，要么是 `(headSha) => Promise<change|null>`
+ * 形式的「按当前 head 求值的变更」——派生文件（如个人训练索引）必须用后者：非强制 ref
+ * 更新失败后的重试如果复用旧快照算出的内容，就会把并发写入的改动静默覆盖回去。
+ * `recheck(headSha)` 在每次尝试前用同一个 head 重新校验前置条件（日期版本），
+ * 保证重试不会拿过期内容覆盖同一天的新改动。
+ */
+async function commit(changes, message, token, retry = 0, recheck = null) {
   // 1. Get current branch reference and parent commit
   const ref = await gh(`/git/ref/heads/${BRANCH}`, token);
   const parent = await gh(`/git/commits/${ref.object.sha}`, token);
+  const head = ref.object.sha;
+
+  // 1b. 每次尝试都重新校验前置条件并重新求值派生变更：重试必须基于新的 head。
+  if (recheck) await recheck(head);
+  const resolved = [];
+  for (const change of changes) {
+    const value = typeof change === "function" ? await change(head) : change;
+    if (value) resolved.push(value);
+  }
+  if (!resolved.length) return { commitSha: null };
 
   // 2. Create or delete blobs for all changes
-  const treeEntries = await mapConcurrent(changes, 4, async (change) => {
+  const treeEntries = await mapConcurrent(resolved, 4, async (change) => {
     if (change.delete) {
       return { path: change.path, mode: "100644", type: "blob", sha: null };
     }
@@ -459,7 +478,7 @@ async function commit(changes, message, token, retry = 0) {
   const newCommit = await gh("/git/commits", token, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message, tree: newTree.sha, parents: [ref.object.sha] }),
+    body: JSON.stringify({ message, tree: newTree.sha, parents: [head] }),
   });
 
   // 5. Update branch reference
@@ -479,12 +498,13 @@ async function commit(changes, message, token, retry = 0) {
     throw Object.assign(new Error("GitHub API 请求配额已用完，请稍后再试"), { status: 429 });
   }
   if (response.status === 422 && retry < 2) {
-    return commit(changes, message, token, retry + 1);
+    return commit(changes, message, token, retry + 1, recheck);
   }
   if (!response.ok) {
     console.error(`GitHub ref update failed: ${response.status}`);
     throw Object.assign(new Error("GitHub 更新引用失败"), { status: 502 });
   }
+  return { commitSha: newCommit.sha };
 }
 export function logRoots(member, date) {
   const [year, month, day] = date.split("-");
@@ -501,26 +521,27 @@ async function session(request, env) {
   }
   return null;
 }
-async function content(path, token) {
-  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${BRANCH}`, { headers: ghHeaders(token) });
+async function content(path, token, ref = BRANCH) {
+  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token) });
   if (response.status === 404) return null; if (!response.ok) { console.error(`GitHub content fetch failed: ${response.status}`); throw Object.assign(new Error("读取仓库文件失败"), { status: 502 }); }
   return new TextDecoder().decode(Uint8Array.from(atob((await response.json()).content.replace(/\s/g, "")), (c) => c.charCodeAt(0)));
 }
 // 一次请求列出目录下的所有文件（path + blob sha）；目录不存在返回 null。
 // 替代逐文件探测存在性，大幅减少 Contents API 调用次数。
-async function listDir(path, token) {
-  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${BRANCH}`, { headers: ghHeaders(token) });
+async function listDir(path, token, ref = BRANCH) {
+  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token) });
   if (response.status === 404) return null;
   if (!response.ok) { console.error(`GitHub contents list failed: ${response.status}`); throw Object.assign(new Error("读取仓库目录失败"), { status: 502 }); }
   const body = await response.json();
   if (!Array.isArray(body)) return null;
   return body.filter((entry) => entry.type === "file").map(({ path: p, sha }) => ({ path: p, sha }));
 }
-async function resolveLogRoot(user, date) {
+// ref 省略时读当前 main；显式传 commit sha 用于「按将要提交到的那个 head」重读仓库状态。
+async function resolveLogRoot(user, date, ref = BRANCH) {
   const [currentRoot, oldRoot] = logRoots(user.member, date);
-  const current = await listDir(currentRoot, user.token);
+  const current = await listDir(currentRoot, user.token, ref);
   if (current !== null) return { root: currentRoot, files: current };
-  const old = await listDir(oldRoot, user.token);
+  const old = await listDir(oldRoot, user.token, ref);
   if (old !== null) return { root: oldRoot, files: old };
   return { root: currentRoot, files: null };
 }
@@ -588,15 +609,25 @@ async function assertAttachmentsUnchanged(problems, files, root, token) {
 export async function saveLog(user, date, input, expectedVersion) {
   const { problems, startedOn, solvedOn } = validateLogInput(input);
   const legacyPath = trainingPaths(user.login).legacyIndex;
-  const [{ root, files }, legacyRaw] = await Promise.all([resolveLogRoot(user, date), content(legacyPath, user.token)]);
+  const { root, files } = await resolveLogRoot(user, date);
   await assertAttachmentsUnchanged(problems, files, root, user.token);
   const updatedAt = toUtc8(new Date());
   const changes = await planLogChanges(problems, files, root, updatedAt, { startedOn, solvedOn });
-  const legacyChange = planLegacyIndexChange(user, date, problems, legacyRaw);
-  if (legacyChange) changes.push(legacyChange);
-  await assertLogVersionPlan({ expectedVersion, files, changes, root, allowedOutside: legacyChange ? [legacyChange.path] : [] });
-  await commit(changes, `save(${user.member}): training log for ${date}`, user.token);
+  // 个人索引是从各日日志派生的整份文件：按提交尝试的 head 重读重算，
+  // 冲突重试时不会拿旧快照算出的内容覆盖别人刚写进去的改动。
+  changes.push((head) => content(legacyPath, user.token, head).then((raw) => planLegacyIndexChange(user, date, problems, raw)));
+  await assertLogVersionPlan({ expectedVersion, files, changes, root, allowedOutside: [legacyPath] });
+  await commit(changes, `save(${user.member}): training log for ${date}`, user.token, 0, (head) => assertFreshDateVersion(user, date, expectedVersion, legacyPath, head));
   return { problems, revision: await predictedRevision(files, changes, root) };
+}
+
+/**
+ * 每次提交尝试前用该次 head 重新校验日期版本：期间有人改过这一天就必须 409，
+ * 不能把按旧快照规划出来的日期文件写到新的 head 上。
+ */
+async function assertFreshDateVersion(user, date, expectedVersion, legacyPath, head) {
+  const { root, files } = await resolveLogRoot(user, date, head);
+  return assertLogVersionPlan({ expectedVersion, files, changes: [], root, allowedOutside: [legacyPath] });
 }
 
 /**
@@ -608,7 +639,8 @@ export async function saveLog(user, date, input, expectedVersion) {
 async function predictedRevision(files, changes, root) {
   const next = new Map((files || []).filter((file) => file.path.startsWith(`${root}/`)).map((file) => [file.path, file.sha]));
   for (const change of changes || []) {
-    if (!change.path.startsWith(`${root}/`)) continue;
+    // 派生变更（函数）一定在日期目录之外，且此时尚未求值。
+    if (typeof change === "function" || !change.path.startsWith(`${root}/`)) continue;
     if (change.delete) next.delete(change.path);
     else next.set(change.path, await gitBlobSha(change.content));
   }
@@ -640,13 +672,12 @@ export async function readLog(user, date) {
 }
 export async function deleteLog(user, date, expectedVersion) {
   const legacyPath = trainingPaths(user.login).legacyIndex;
-  const [{ root, files }, legacyRaw] = await Promise.all([resolveLogRoot(user, date), content(legacyPath, user.token)]);
+  const { root, files } = await resolveLogRoot(user, date);
   if (!files || !files.length) return { deleted: false };
   const changes = files.map((file) => ({ path: file.path, delete: true }));
-  const legacyChange = planLegacyIndexChange(user, date, [], legacyRaw);
-  if (legacyChange) changes.push(legacyChange);
-  await assertLogVersionPlan({ expectedVersion, files, changes, root, allowedOutside: legacyChange ? [legacyChange.path] : [] });
-  await commit(changes, `delete(${user.member}): training log for ${date}`, user.token);
+  changes.push((head) => content(legacyPath, user.token, head).then((raw) => planLegacyIndexChange(user, date, [], raw)));
+  await assertLogVersionPlan({ expectedVersion, files, changes, root, allowedOutside: [legacyPath] });
+  await commit(changes, `delete(${user.member}): training log for ${date}`, user.token, 0, (head) => assertFreshDateVersion(user, date, expectedVersion, legacyPath, head));
   return { deleted: true };
 }
 
@@ -782,9 +813,10 @@ function expectedVersionFrom(request, body) {
 export async function assertLogVersionPlan({ expectedVersion, files, changes, root, allowedOutside = [] }) {
   expectedVersion = parseExpectedVersion(expectedVersion);
   // 计划中的变更必须只发生在本日期目录内。越界写入是逻辑错误，不能提交。
+  // 派生变更以函数形式给出（提交时才求值），其路径由调用方写进 allowedOutside。
   const outside = (changes || [])
-    .map((change) => change.path)
-    .filter((path) => !path.startsWith(`${root}/`) && !allowedOutside.includes(path));
+    .map((change) => (typeof change === "function" ? null : change.path))
+    .filter((path) => path && !path.startsWith(`${root}/`) && !allowedOutside.includes(path));
   if (outside.length) {
     throw Object.assign(new Error(`保存计划包含该日期目录以外的文件：${outside[0]}`), { code: "INTERNAL_ERROR", status: 500 });
   }
