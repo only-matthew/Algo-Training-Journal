@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 3,
-  "updatedAt": "2026-08-22T20:14:48.242+08:00",
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-16T19:38:37.636+08:00",
   "problems": [
     {
       "id": "2deefa65-ae22-44b8-848f-3c918d9035ed",
@@ -8,14 +8,15 @@
       "platform": "洛谷",
       "problemNumber": "P3817",
       "difficulty": "普及-",
+      "difficultyRating": 1000,
       "tags": [
         "模拟",
         "贪心"
       ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
-      "difficultyLegacy": "普及-",
-      "difficultyRating": 1000,
-      "difficultyRatingSource": "洛谷官方难度「普及-」"
+      "fileIndex": 0
     },
     {
       "id": "88a3bd72-606f-4c21-ad84-baac3a0ca11f",
@@ -23,16 +24,16 @@
       "platform": "洛谷",
       "problemNumber": "P1106",
       "difficulty": "普及",
+      "difficultyRating": 1300,
       "tags": [
         "模拟",
         "贪心"
       ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
-      "reviewDue": "2026-08-25",
-      "difficultyLegacy": "普及/提高-",
-      "difficultySource": "洛谷官方",
-      "difficultyRating": 1300,
-      "difficultyRatingSource": "洛谷官方难度「普及」"
+      "reviewDue": "2026-09-19",
+      "fileIndex": 1
     }
   ]
 }
