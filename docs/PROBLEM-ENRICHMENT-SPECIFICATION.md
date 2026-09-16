@@ -31,7 +31,7 @@
 
 文件路径仅服务端生成：`<resolvedLogRoot>/<fileIndex>-statement-<sha256>.pdf`。原始文件名、AI 字符串和客户端路径均不能参与仓库路径拼接。同日不同题即使哈希相同，也采用各自 fileIndex 路径，本期不引入共享引用计数。
 
-`statementSource={kind,url?,fetchedAt?,parserVersion?}`，kind 为 `manual | codeforces-html | ai-summary`。抓取 URL 必须来自已校验 CF 地址，时间由服务端产生。用户修改自动抓取正文后变为 manual；原 PDF 不受影响。
+`statementSource={kind,url?,fetchedAt?,parserVersion?}`，kind 为 `manual | codeforces-html | luogu-mirror | ai-summary`。抓取 URL 必须与 kind 对应且经校验（codeforces-html 只认 codeforces.com 的题目路径，luogu-mirror 只认 `www.luogu.com.cn/problem/CF<contestId><index>`），时间由服务端产生。用户修改自动抓取正文后变为 manual；原 PDF 不受影响。
 
 `metadataSources.difficultyRating={kind,reference?,acceptedAt?}`；kind 为 `official | manual | ai-estimate | legacy-unknown`。`metadataSources.tags` 是 `{tag,kind}` 数组，kind 为 `official | manual | ai-suggested | legacy-unknown`，只包含当前 tags；同一标签优先保留已有来源。旧数据不按平台或数值猜来源。
 
@@ -153,6 +153,10 @@
 
 服务端固定英文 locale。手动处理重定向，最多 2 次，每次重新校验主机、协议和允许路径；到登录、其他域名或附件下载页停止。每次操作总时限 12 秒，HTML 最多 2 MiB，Markdown 最多现有 description 上限 100,000 字符；超限返回明确失败，不能截断样例或公式。
 
+**来源链（2026-09-16 补充）。** codeforces.com 的题面页由 Cloudflare 托管，机房出口（含 Workers）通常只拿到 403 挑战页，因此抓取按顺序尝试两个来源，共用同一个 12 秒总预算：先请求官方英文题面（带常规浏览器请求头以争取直取，不做任何验证码绕过），失败且不是 `not-found` 时再请求洛谷同题页 `https://www.luogu.com.cn/problem/CF<contestId><index>`。洛谷对匿名请求先下发 C3VK 挑战 cookie（302 回跳同 URL），带 cookie 重试一次，这与洛谷导入、`scripts/fetch-luogu-meta.mjs` 是同一条既有链路。
+
+镜像成功时 `source.kind="luogu-mirror"`、`parserVersion="luogu-mirror-v1"`，并在 `warnings` 里加 `mirror-source`：镜像正文可能是中文翻译，与官方英文题面存在措辞差异，表单必须提示用户核对。两个来源都失败时回给主来源（codeforces.com）的 reason，镜像的失败原因不覆盖它；`not-found` 不触发镜像（官方对题目存在性是权威的）。
+
 每账号 10 次/分钟，同一客户端最多并发 2 题。成功公开题面按规范题目 URL+locale+parserVersion 缓存 24 小时，失败不作长期缓存；缓存丢失不影响正确性。不自动无限重试，不读取私人 Cookie，不绕过验证码。上线前核查上游当前访问约束，并实际验证 Worker 网络可达性。
 
 成功响应：`{status:"ok",problemNumber,description,source:{kind:"codeforces-html",url,fetchedAt,parserVersion},warnings:[]}`。
@@ -167,9 +171,13 @@
 
 图片链接解析为绝对 HTTPS URL，经安全渲染链输出；不下载第三方任意资源。包含外链图片时返回 `external-images` 警告，表示归档文本仍依赖外部图片，可补 PDF。远程 SVG 不内联。仅提供 PDF 链接的页面返回 unsupported，提示手工下载上传。
 
+洛谷镜像的正文来自页面内嵌 `lentille-context` JSON 的 `data.problem`，与洛谷导入同款解析：`pid` 存在时必须等于 `CF<contestId><index>`，否则判 parse-failed；`content` 兼容字符串与 `{background,description,formatI,formatO,hint}` 对象两种形态，按小节转成 `## 题目描述 / ## 输入格式 / ## 输出格式 / ## 说明/提示`。样例可能嵌在正文（`pre`）也可能单列在 `samples`，后者只在正文没有代码块时补 `### 样例 n`，避免重复。脚本、样式与表格分别做丢弃和 GFM 表格转换；相对图片地址按 `www.luogu.com.cn` 解析为绝对 HTTPS URL。
+
 ### 5.3 表单整合
 
 AC 列表不阻塞等待题面。只抓用户添加的题，按 recordId 绑定请求，保存 identity/fingerprint 和描述初始值。响应时若行已删除、账号/日期已切换、题号变化或用户改过描述，不自动写回；提供当前行重新抓取入口。
+
+抓取结果与失败原因都必须给用户可读的中文说明：镜像来源提示“可能是中文翻译，建议对照原题核对”，失败时把 reason 展开成可操作的建议（blocked → 上传 PDF 或手动粘贴），不能只显示英文代号。
 
 同题多个请求采用请求序号，仅最新结果有效。失败保留题名、官方元数据和原题链接；重新抓取不会隐式替换用户描述。现有历史记录按需补全，本期无后台全库回填。
 

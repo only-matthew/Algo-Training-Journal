@@ -7,7 +7,7 @@ import { isUuidV4 } from "../lib/training-schema.mjs";
 import { readCatalog, readTrainingContext, workbenchResponse } from "./services/training-read.mjs";
 import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
-import { fetchCodeforcesStatement } from "./services/problem-statement.mjs";
+import { fetchStatement } from "./services/problem-statement.mjs";
 import { createLogsV2Service, parseLogsV2Request, revisionFromEntries, statementPath } from "./services/logs-v2.mjs";
 import { normalizeLearningState } from "../lib/learning-state.mjs";
 
@@ -846,7 +846,7 @@ async function handleProblemStatement(request, user) {
     || (body.sourceUrl !== undefined && typeof body.sourceUrl !== "string")) {
     return v2Error(request, "INVALID_JSON", "只支持一个 Codeforces 题号", 400);
   }
-  return json(request, await fetchCodeforcesStatement(body));
+  return json(request, await fetchStatement(body));
 }
 
 // Codeforces 官方 API：拉取最近 days 天内的 AC 记录，按题目去重（公开接口，无需登录）。

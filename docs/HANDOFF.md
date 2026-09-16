@@ -1,5 +1,47 @@
 # 交接文档：Algo Training Journal
 
+## 最新交接（2026-09-16 补记）：代码框默认展开与 CF 题面镜像兜底
+
+两项用户反馈：提交表单的代码框要「展开」，「抓取 CF 题面」一直报 blocked。
+
+### 1. 代码框默认展开
+
+`lib/form.mjs` 里代码区仍是 `journal-disclosure` 折叠块（第三轮重排时刻意保留了折叠），现在加 `open`：打开表单即显示代码输入框，标题仍可点击收起。没有改成常驻——每题卡片已经很长，保留折叠入口更划算。
+
+### 2. blocked 的根因与处置
+
+先复查了 `workers/services/problem-statement.mjs`：`blocked` 有两条来源——HTTP 403（第 102 行）与「拿到了挑战页但解析不出 `.problem-statement`」（第 82 行）。两条都被实际触发过，因为 codeforces.com 的题面页在 Cloudflare 后面。
+
+本机实测（同一台机器、同一组请求头，只差协议）：
+
+| 请求方式 | 结果 |
+| --- | --- |
+| `fetch`（undici，HTTP/1.1） | 403，正文是 `Just a moment...` 挑战页（6 KB） |
+| `http2.connect`（HTTP/2） | 200，正文 61 KB 的真实题面页 |
+| `codeforces.com/api/problemset.problems` | 200（官方 API 不在挑战范围内） |
+| 第三方抓取服务（jina / codetabs / corsproxy）代取 | 403 挑战页或 522，机房出口一视同仁 |
+
+也就是说：**这是出口 IP/协议层面的反爬，不是我们能靠请求头绕过的**；规范第 5.1 节也明写「不绕过验证码」。Worker 出口是机房 IP，只会比本机更严格，所以这个按钮在原实现下必然失败。
+
+处置：把抓取改成两个来源的顺序链，共用原有的 12 秒总预算（`fetchStatement`）。
+
+1. 仍先请求官方英文题面，但改发常规浏览器请求头（`User-Agent` / `Accept` / `Accept-Language`）——提高了直取成功率，且不是绕过验证码；拿到就还是 `kind="codeforces-html"`。
+2. 被拦时退回洛谷同题页 `https://www.luogu.com.cn/problem/CF<contestId><index>`，复用洛谷导入那条已被线上验证过的链路：先是 `lentille-context` 内嵌 JSON，匿名请求会先收到 C3VK 挑战 cookie（302 回跳同 URL），带 cookie 重试一次。成功时 `kind="luogu-mirror"`、`parserVersion="luogu-mirror-v1"`，并在 `warnings` 里加 `mirror-source`。
+3. `not-found` 不触发镜像（官方对题目存在性是权威的）；两个来源都失败时回主来源（CF）的 reason，镜像的失败原因不覆盖它。
+
+洛谷镜像的解析按「兼容未知形态」写：`pid` 存在时必须是 `CF<contestId><index>`；`content` 兼容字符串与 `{background,description,formatI,formatO,hint}` 对象，按小节转 `## 题目描述` 等；样例既可能在正文 `pre` 里，也可能单列在 `samples`，后者只在正文没有代码块时补，避免重复。顺带给共用的 HTML→Markdown 转换器加了 GFM 表格、丢弃 `script`/`style`、按来源解析相对图片地址（`safeUrl` 的 base 参数，CF 行为不变）。
+
+`lib/problem-enrichment-schema.mjs` 的 `statementSource` 白名单加了 `luogu-mirror`，并按 kind 校验地址：官方只认 codeforces.com 题目路径，镜像只认 `www.luogu.com.cn/problem/CF...`，防止把任意 URL 写成来源。表单侧把失败原因翻成中文可操作提示（`blocked` → 可上传 PDF 或手动粘贴），镜像结果提示「可能是中文翻译，建议对照原题核对」。
+
+### 验证与仍然未验证的部分
+
+- `test/problem-statement.test.mjs` 15 项全过：新增镜像小节转换/公式/图片/表格/`script` 丢弃、`samples` 补齐与去重、`pid` 不符与挑战页判 blocked、C3VK 挑战后带 cookie 重试、CF 成功时不访问镜像、CF 被拦时回退镜像、两者都失败时保留主来源原因、`not-found` 短路。
+- `test/problem-enrichment-schema.test.mjs` 5 项全过：新增镜像来源地址的接受/拒绝与存取往返。
+- 新增 `test/oauth-problem-statement.test.mjs`（3 项）直接驱动 Worker 的 `/api/problem-statement`：官方题面优先、403 挑战页时回退镜像（含 `kind`/`parserVersion`/`warnings`/正文）、题号非法时仍是 400 且不请求镜像。
+- 全量 53 个测试文件逐个跑：51 通过；`browser-build.test.mjs` 与 `generate-seo.test.mjs` 在本会话沙箱里因 esbuild/子进程 `spawn EPERM` 失败，属于环境限制（`generate-seo` 的断言就是 `spawnSync` 返回 `status: null`；同一沙箱里空跑一次 `spawnSync(node, ["--version"])` 同样得到 `EPERM`），不是代码问题。
+- **仍未验证**：部署后的 Worker 能否访问洛谷（本机网络到洛谷被同一层反爬挡住，只有 `curriculum/luogu-problem-meta.json` 与线上 16 条带 LaTeX 的洛谷题面能间接证明这条链路曾经可用）；以及洛谷 CF 远程题页 `content` 的真实形态——解析器已按字符串/对象两种形态与通用 HTML 转换写，但本机没有真实 CF 页面样本。请登录后在真机点一次「抓取 CF 题面」，确认拿到的是镜像题面而不是 `blocked`。
+- `site/` 是构建产物且已被 `.gitignore` 忽略；前端改动要生效需要一次部署（CI 的 `npm run check` 会重建），**Worker 也要重新 `wrangler deploy`**，否则线上仍是只会直取 CF 的旧逻辑。
+
 ## 最新交接（2026-09-16）：训练状态拆分与提交表单重构
 
 ### 提交界面第三轮重排

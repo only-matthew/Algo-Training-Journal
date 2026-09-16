@@ -30,7 +30,15 @@ test("server rejects malformed attachment and metadata instead of silently dropp
     { metadataSources: { tags: "DP" } },
     { metadataSources: { difficultyRating: { kind: "official", extra: true } } },
     { statementSource: { kind: "codeforces-html", url: "https://evil.example/4/A" } },
+    { statementSource: { kind: "luogu-mirror", url: "https://evil.example/problem/CF4A" } },
+    { statementSource: { kind: "luogu-mirror", url: "https://www.luogu.com.cn/problem/P1001" } },
   ]) assert.throws(() => validateLogInput({ problems: [{ id: "p1", name: "Example", ...patch }] }));
+});
+
+test("洛谷镜像题面来源按 kind 校验地址并可保存", () => {
+  const saved = validateLogInput({ schemaVersion: 4, problems: [{ id: "p1", name: "Watermelon", problemNumber: "4A", statementSource: { kind: "luogu-mirror", url: "https://www.luogu.com.cn/problem/CF4A", fetchedAt: "2026-09-16T00:00:00.000Z", parserVersion: "luogu-mirror-v1" } }] });
+  assert.deepEqual(saved.problems[0].statementSource, { kind: "luogu-mirror", url: "https://www.luogu.com.cn/problem/CF4A", fetchedAt: "2026-09-16T00:00:00.000Z", parserVersion: "luogu-mirror-v1" });
+  assert.deepEqual(normalizeMeta(metaFromProblems(saved.problems)).problems[0].statementSource, saved.problems[0].statementSource);
 });
 
 test("metadata drops stale tag provenance and does not infer new provenance", () => {
