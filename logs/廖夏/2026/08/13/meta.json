@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 3,
-  "updatedAt": "2026-09-06T18:37:01.382+08:00",
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-16T19:58:11.541+08:00",
   "problems": [
     {
       "id": "87a8152f-a331-42a0-b068-2d6b3210f0b1",
@@ -8,15 +8,16 @@
       "platform": "洛谷",
       "problemNumber": "P3612",
       "difficulty": "普及-",
+      "difficultyRating": 1000,
       "tags": [
         "模拟",
         "递推"
       ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
-      "reviewDue": "2026-09-09",
-      "difficultyLegacy": "普及-",
-      "difficultyRating": 1000,
-      "difficultyRatingSource": "洛谷官方难度「普及-」"
+      "reviewDue": "2026-09-19",
+      "fileIndex": 0
     }
   ]
 }
