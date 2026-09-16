@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 3,
-  "updatedAt": "2026-09-07T23:21:15.144+08:00",
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-16T19:38:43.032+08:00",
   "problems": [
     {
       "id": "63226be5-02bb-46e3-aecf-42904890ed58",
@@ -8,15 +8,16 @@
       "platform": "洛谷",
       "problemNumber": "P1024",
       "difficulty": "入门",
+      "difficultyRating": 800,
       "tags": [
         "二分答案",
         "浮点数"
       ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
       "reviewDue": "2026-09-12",
-      "difficultyLegacy": "入门",
-      "difficultyRating": 800,
-      "difficultyRatingSource": "洛谷官方难度「入门」"
+      "fileIndex": 0
     },
     {
       "id": "29ebc992-de5a-44b9-95b8-06daec00b6e6",
@@ -24,16 +25,17 @@
       "platform": "洛谷",
       "problemNumber": "P1678",
       "difficulty": "普及-",
+      "difficultyRating": 1000,
       "tags": [
         "模拟",
         "二分",
         "边界"
       ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
-      "reviewDue": "2026-09-10",
-      "difficultyLegacy": "普及-",
-      "difficultyRating": 1000,
-      "difficultyRatingSource": "洛谷官方难度「普及-」"
+      "reviewDue": "2026-09-19",
+      "fileIndex": 1
     }
   ]
 }
