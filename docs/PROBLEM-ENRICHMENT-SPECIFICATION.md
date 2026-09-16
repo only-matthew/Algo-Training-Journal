@@ -153,9 +153,11 @@
 
 服务端固定英文 locale。手动处理重定向，最多 2 次，每次重新校验主机、协议和允许路径；到登录、其他域名或附件下载页停止。每次操作总时限 12 秒，HTML 最多 2 MiB，Markdown 最多现有 description 上限 100,000 字符；超限返回明确失败，不能截断样例或公式。
 
-**来源链（2026-09-16 补充）。** codeforces.com 的题面页由 Cloudflare 托管，机房出口（含 Workers）通常只拿到 403 挑战页，因此抓取按顺序尝试两个来源，共用同一个 12 秒总预算：先请求官方英文题面（带常规浏览器请求头以争取直取，不做任何验证码绕过），失败且不是 `not-found` 时再请求洛谷同题页 `https://www.luogu.com.cn/problem/CF<contestId><index>`。洛谷对匿名请求先下发 C3VK 挑战 cookie（302 回跳同 URL），带 cookie 重试一次，这与洛谷导入、`scripts/fetch-luogu-meta.mjs` 是同一条既有链路。
+**来源链（2026-09-16 补充）。** codeforces.com 的题面页由 Cloudflare 托管：边缘实测（临时探针 Worker，跑同款代码）表明，**只发 `Accept: text/html` 会拿到 403 且带 `cf-mitigated: challenge`，补上常规浏览器请求头（`User-Agent` / `Accept` / `Accept-Language`）就是 200 的真题面页**——直取失败的原因是请求头，不是出口 IP。因此抓取按顺序尝试两个来源，共用同一个 12 秒总预算：先请求官方英文题面（带浏览器请求头，不做任何验证码绕过），失败且不是 `not-found` 时再请求洛谷同题页 `https://www.luogu.com.cn/problem/CF<contestId><index>`。洛谷对匿名请求先下发 C3VK 挑战 cookie（302 回跳同 URL），带 cookie 重试一次，这与洛谷导入、`scripts/fetch-luogu-meta.mjs` 是同一条既有链路。
 
-镜像成功时 `source.kind="luogu-mirror"`、`parserVersion="luogu-mirror-v1"`，并在 `warnings` 里加 `mirror-source`：镜像正文可能是中文翻译，与官方英文题面存在措辞差异，表单必须提示用户核对。两个来源都失败时回给主来源（codeforces.com）的 reason，镜像的失败原因不覆盖它；`not-found` 不触发镜像（官方对题目存在性是权威的）。
+镜像成功时 `source.kind="luogu-mirror"`、`parserVersion="luogu-mirror-v1"`，并在 `warnings` 里加 `mirror-source`：镜像正文措辞可能与官方英文题面有差异（边缘实测取到的是英文原题），表单必须提示用户核对。两个来源都失败时回给主来源（codeforces.com）的 reason，镜像的失败原因不覆盖它；`not-found` 不触发镜像（官方对题目存在性是权威的）。
+
+解析保真补充：CF 限制块内嵌的 `.property-title`（如 `time limit per test`）只是标签，必须剥掉，否则正文会出现「时间限制：time limit per test1 second」。
 
 每账号 10 次/分钟，同一客户端最多并发 2 题。成功公开题面按规范题目 URL+locale+parserVersion 缓存 24 小时，失败不作长期缓存；缓存丢失不影响正确性。不自动无限重试，不读取私人 Cookie，不绕过验证码。上线前核查上游当前访问约束，并实际验证 Worker 网络可达性。
 

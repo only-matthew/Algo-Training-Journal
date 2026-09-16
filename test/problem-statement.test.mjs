@@ -49,6 +49,14 @@ test("题面解析保留标题、公式并报告外部图片", () => {
   assert.deepEqual(result.warnings, ["external-images"]);
 });
 
+test("时间/内存限制不把 property-title 标签拼进正文", () => {
+  const html = `<div class="problem-statement"><div class="header"><div class="title">A. Watermelon</div><div class="time-limit"><div class="property-title">time limit per test</div>1 second</div><div class="memory-limit"><div class="property-title">memory limit per test</div>64 megabytes</div><div class="input-file input-standard"><div class="property-title">input</div>stdin</div></div><p>One hot summer day.</p></div>`;
+  const description = parseCodeforcesStatement(html, "4A").description;
+  assert.match(description, /时间限制：1 second/);
+  assert.match(description, /内存限制：64 megabytes/);
+  assert.doesNotMatch(description, /time limit per test|memory limit per test/);
+});
+
 test("题面保留多个样例、代码空白与上下标", () => {
   const html = `<div class="problem-statement"><div class="header"><div class="title">B. Sample</div><div class="time-limit">1 second</div><div class="memory-limit">256 megabytes</div></div><p>a<sup>2</sup> + b<sub>i</sub></p><div class="sample-tests"><div class="input"><div class="title">Input</div><pre>1\n  2</pre></div><div class="output"><div class="title">Output</div><pre>3</pre></div><div class="input"><div class="title">Input</div><div class="test-example-line">x</div><div class="test-example-line"> y</div></div></div></div>`;
   const result = parseCodeforcesStatement(html).description;
