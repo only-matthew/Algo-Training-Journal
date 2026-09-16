@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 3,
-  "updatedAt": "2026-09-02T13:20:00.800+08:00",
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-16T19:38:39.633+08:00",
   "problems": [
     {
       "id": "308a8e95-8860-411c-8899-0a71e03a3c93",
@@ -8,16 +8,17 @@
       "platform": "洛谷",
       "problemNumber": "P1080",
       "difficulty": "提高",
+      "difficultyRating": 1700,
       "tags": [
         "模拟",
         "高精度",
         "贪心"
       ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
-      "reviewDue": "2026-09-04",
-      "difficultyLegacy": "提高",
-      "difficultyRating": 1700,
-      "difficultyRatingSource": "洛谷官方难度「提高」"
+      "reviewDue": "2026-09-19",
+      "fileIndex": 0
     }
   ]
 }
