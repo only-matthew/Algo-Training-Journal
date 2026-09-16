@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 3,
-  "updatedAt": "2026-09-11T01:12:55.713+08:00",
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-16T19:38:43.323+08:00",
   "problems": [
     {
       "id": "6a9c84ae-d19d-4028-a59a-44032aebd07c",
@@ -8,15 +8,16 @@
       "platform": "洛谷",
       "problemNumber": "P1163",
       "difficulty": "普及-",
+      "difficultyRating": 1000,
       "tags": [
         "模拟",
         "浮点数"
       ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
-      "reviewDue": "2026-09-14",
-      "difficultyLegacy": "普及-",
-      "difficultyRating": 1000,
-      "difficultyRatingSource": "洛谷官方难度「普及-」"
+      "reviewDue": "2026-09-19",
+      "fileIndex": 0
     }
   ]
 }
