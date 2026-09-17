@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 3,
-  "updatedAt": "2026-08-24T00:23:23.158+08:00",
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-17T23:26:55.637+08:00",
   "problems": [
     {
       "id": "aa34b20a-a31b-489d-a2da-02b7a7084691",
@@ -8,15 +8,14 @@
       "platform": "洛谷",
       "problemNumber": "P17259",
       "difficulty": "普及+/提高-",
+      "difficultyRating": 1500,
       "tags": [
         "DP"
       ],
-      "reviewStatus": "todo",
-      "reviewDue": "2026-08-27",
-      "difficultyLegacy": "普及+/提高",
-      "difficultySource": "洛谷官方",
-      "difficultyRating": 1500,
-      "difficultyRatingSource": "按难度标签「普及+/提高-」换算"
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "archived",
+      "fileIndex": 0
     }
   ]
 }
