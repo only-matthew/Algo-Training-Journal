@@ -286,7 +286,7 @@ DOM / 预渲染 HTML
 | 文件 | 职责 |
 | --- | --- |
 | `app.js` | 应用启动、认证、全局事件绑定、按初始 URL 选择页面。 |
-| `lib/application.mjs` | 前端组合根：创建/替换渲染器、定时刷新、跨页面数据加载。 |
+| `lib/application.mjs` | 前端组合根：创建/替换渲染器、手动刷新、跨页面数据加载。 |
 | `lib/data.mjs` | JSON 请求与缓存、刷新标记、题目与路线数据加载。 |
 | `lib/renderer.mjs` | 所有浏览器端 UI 渲染；当前仍是下一步最大的拆分对象。 |
 | `scripts/generate-data.js` | 日志聚合、静态预渲染、SEO、资源复制、模块版本化。 |

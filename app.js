@@ -3,7 +3,7 @@ import { currentRoute, migrateLegacyHashRoute, initPageNavigation } from "./lib/
 import { initSession, login, logout, currentUser } from "./lib/auth.mjs";
 import { apiRequest } from "./lib/journal-api.js";
 import { initDetailInteractions } from "./lib/detail-interactions.mjs";
-import { journalRenderer, initOverviewPage, initJournalPage, initRoadmapRenderer, initTagRenderer, initShellRenderer, startRefreshTimer, doRefresh } from "./lib/application.mjs";
+import { initOverviewPage, initJournalPage, initRoadmapRenderer, initTagRenderer, initShellRenderer, doRefresh } from "./lib/application.mjs";
 
 // 表单模块（~50KB，含 tag-catalog）按需动态导入：日志页与知识地图页都不加载，
 // 仅在用户首次打开提交表单/导入面板时才拉取。
@@ -157,10 +157,7 @@ function withForm() {
     }
   }
 
-  // 4. Setup refresh timer
-  if (journalRenderer) startRefreshTimer();
-
-  // 5. Manual refresh
+  // 4. 手动刷新（自动定时刷新与切回标签页补刷已移除，只保留按钮触发）
   document.getElementById("btn-refresh").addEventListener("click", async () => {
     await doRefresh();
   });

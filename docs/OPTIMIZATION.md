@@ -160,7 +160,7 @@
 - [x] **表单模块静态加载** — `form.mjs`（含 tag-catalog/log-schema 依赖 ~57KB）被 app.js 顶层静态导入，学习路线等页面也全量加载；已改为按需动态导入，非学习路线页面空闲时预加载（`app.js`）
 - [x] **无 Service Worker** — 静态资源与数据 JSON 受 GitHub Pages/Vercel 默认缓存策略限制；已新增构建期生成 `sw.js`（缓存版本随代码+数据哈希+构建时间自动失效），导航网络优先、静态资源缓存优先，二次访问秒开且可离线（`scripts/generate-data.js`, `app.js`）
 - [x] **标签筛选栏/云每次重建** — 切队员时跳过全局标签重渲染（`lib/renderer.mjs`）
-- [x] **后台 refresh timer 无休眠** — visibilitychange 事件暂停/恢复（`lib/data.mjs`）
+- [x] **后台 refresh timer 无休眠** — 已直接删除自动定时刷新与 visibilitychange 补刷：切回标签页会强制重拉当前页 JSON 并重建 DOM，收益低于干扰；刷新改为仅由「🔄 刷新」按钮手动触发（`lib/application.mjs`, `app.js`）
 - [ ] **构建脚本同步 I/O** — 数据集较小，保持同步 I/O 可接受
 - [ ] **独立文件写入** — 每题写入独立 HTML + JSON，可批量处理
 - [x] **重复遍历日志** — 已添加注释标注优化方向（`scripts/generate-data.js`）
