@@ -1127,6 +1127,27 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-15/99196161-e34f-4902-bba7-66c7a0fb24df/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1018",
+      "date": "2026-09-17",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-17",
+        "recordId": "60ff5b8c-d7ee-496f-b0b7-754cb6104fbe"
+      },
+      "problem": {
+        "name": "[NOIP 2000 提高组] 乘积最大",
+        "platform": "洛谷",
+        "problemNumber": "P1018",
+        "difficulty": "★ 1600"
+      },
+      "outcome": "hinted",
+      "masteryStatus": "learning",
+      "isMistake": false,
+      "reviewStatus": "todo",
+      "reviewDue": "2026-09-20",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-17/60ff5b8c-d7ee-496f-b0b7-754cb6104fbe/"
     }
   ]
 }

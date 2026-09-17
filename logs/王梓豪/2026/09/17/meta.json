@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-17T23:19:50.935+08:00",
+  "startedOn": "2026-09-16",
+  "solvedOn": "2026-09-17",
+  "problems": [
+    {
+      "id": "60ff5b8c-d7ee-496f-b0b7-754cb6104fbe",
+      "name": "[NOIP 2000 提高组] 乘积最大",
+      "platform": "洛谷",
+      "problemNumber": "P1018",
+      "difficulty": "★ 1600",
+      "difficultyRating": 1600,
+      "tags": [
+        "DP",
+        "高精度"
+      ],
+      "outcome": "hinted",
+      "masteryStatus": "learning",
+      "isMistake": false,
+      "reviewStatus": "todo",
+      "reviewDue": "2026-09-20",
+      "fileIndex": 0
+    }
+  ]
+}
