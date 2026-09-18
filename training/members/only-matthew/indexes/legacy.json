@@ -1264,6 +1264,25 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-16/292a2912-58d8-4605-a5ec-5d4156b2d1a1/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1219",
+      "date": "2026-09-18",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-18",
+        "recordId": "12b92cbf-0c70-4381-bee9-9446c071e305"
+      },
+      "problem": {
+        "name": "[USACO1.5] 八皇后 Checker Challenge",
+        "platform": "洛谷",
+        "problemNumber": "P1219",
+        "difficulty": "★ 1300"
+      },
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-18/12b92cbf-0c70-4381-bee9-9446c071e305/"
     }
   ]
 }

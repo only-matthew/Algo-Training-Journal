@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-19T00:24:10.237+08:00",
+  "problems": [
+    {
+      "id": "12b92cbf-0c70-4381-bee9-9446c071e305",
+      "name": "[USACO1.5] 八皇后 Checker Challenge",
+      "platform": "洛谷",
+      "problemNumber": "P1219",
+      "difficulty": "★ 1300",
+      "difficultyRating": 1300,
+      "tags": [
+        "模拟",
+        "DFS",
+        "搜索",
+        "细节",
+        "巧思"
+      ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
