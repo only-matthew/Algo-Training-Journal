@@ -7,9 +7,10 @@ import { isUuidV4 } from "../lib/training-schema.mjs";
 import { readCatalog, readTrainingContext, workbenchResponse } from "./services/training-read.mjs";
 import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
-import { fetchStatement } from "./services/problem-statement.mjs";
-import { createLogsV2Service, parseLogsV2Request, revisionFromEntries, statementPath } from "./services/logs-v2.mjs";
+import { archiveStatementImages, fetchStatement, parseLuoguProblem, readLuoguProblem } from "./services/problem-statement.mjs";
+import { createLogsV2Service, parseLogsV2Request, revisionFromEntries, statementImagePath, statementPath } from "./services/logs-v2.mjs";
 import { normalizeLearningState } from "../lib/learning-state.mjs";
+import { MAX_NEW_STATEMENT_IMAGE_BYTES } from "../lib/statement-images.mjs";
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
@@ -345,14 +346,15 @@ async function handleTrainingV2(request, user, url) {
   return null;
 }
 
-// v2 日志路由：整日读写/删除与题面 PDF 附件。这是 logs-v2 服务唯一的对外入口，
+// v2 日志路由：整日读写/删除与题面 PDF/图片附件。这是 logs-v2 服务唯一的对外入口，
 // 负责把 HTTP 语义（幂等键、条件版本、multipart、Content-Disposition）接到纯业务服务上。
 async function handleLogsV2(request, user, url) {
   const suffix = url.pathname.slice("/api/v2".length);
   const dateMatch = /^\/logs\/dates\/(\d{4}-\d{2}-\d{2})$/.exec(suffix);
   const statementMatch = /^\/logs\/dates\/(\d{4}-\d{2}-\d{2})\/problems\/([^/]+)\/statement$/.exec(suffix);
-  if (!dateMatch && !statementMatch) return null;
-  const date = (dateMatch || statementMatch)[1];
+  const imageMatch = /^\/logs\/dates\/(\d{4}-\d{2}-\d{2})\/problems\/([^/]+)\/images\/([^/]+)$/.exec(suffix);
+  if (!dateMatch && !statementMatch && !imageMatch) return null;
+  const date = (dateMatch || statementMatch || imageMatch)[1];
   const git = trainingGit(user.token);
   const legacyIndexPath = trainingPaths(user.login).legacyIndex;
   // 附件、正文与个人训练索引必须落在同一个 commit；索引缺失时按既有语义报 INDEX_STALE。
@@ -380,6 +382,23 @@ async function handleLogsV2(request, user, url) {
     });
   }
 
+  if (imageMatch) {
+    if (request.method !== "GET") return null;
+    const recordId = decodeURIComponent(imageMatch[2]);
+    const image = await service.statementImage({ member: user.member, date, recordId, fileName: decodeURIComponent(imageMatch[3]) });
+    return new Response(image.bytes, {
+      status: 200,
+      headers: {
+        "Content-Type": image.mimeType,
+        // 图片要在题面里内联显示：文件名即内容哈希，可以长缓存，但附件接口需要会话。
+        "Content-Disposition": "inline",
+        "X-Content-Type-Options": "nosniff",
+        "Cache-Control": "private, max-age=86400",
+        ETag: `"sha256:${image.sha256}"`,
+      },
+    });
+  }
+
   if (request.method === "GET") {
     const current = await service.read({ member: user.member, date });
     return v2Json(request, { ...current.log, version: current.version, revision: current.version });
@@ -391,6 +410,7 @@ async function handleLogsV2(request, user, url) {
     let expectedVersion;
     let attachmentChanges;
     let attachments;
+    let images;
     if (request.method === "PUT") {
       const parsed = await parseLogsV2Request(request);
       const payload = requireObject(parsed.payload);
@@ -398,6 +418,7 @@ async function handleLogsV2(request, user, url) {
       expectedVersion = payload.expectedVersion;
       attachmentChanges = payload.attachmentChanges;
       attachments = parsed.attachments;
+      images = parsed.images;
     } else {
       const payload = requireObject(await readJsonBody(request, 64 * 1024));
       expectedVersion = payload.expectedVersion;
@@ -405,7 +426,7 @@ async function handleLogsV2(request, user, url) {
     const base = { memberId: user.login, member: user.member, date, operationId, expectedVersion };
 
     if (request.method === "PUT") {
-      const result = await service.save({ ...base, log: requestBody, attachmentChanges, attachments });
+      const result = await service.save({ ...base, log: requestBody, attachmentChanges, attachments, images });
       // `revision` is the name every client reads; keep it in the body as well as the
       // ETag so a save and a read are interchangeable for the caller.
       return v2Json(request, { ...result, revision: result.version }, { revision: result.version });
@@ -562,7 +583,7 @@ export async function planLogChanges(problems, existingFiles, root, updatedAt, i
     }
   }
   desired.set(`${root}/meta.json`, JSON.stringify(metaFromProblems(problems, updatedAt, interval), null, 2));
-  // 题面 PDF 的字节由 v2 附件接口写入，这里只能「保留引用到的、清理不再引用的」。
+  // 题面 PDF 与题面图片的字节由 v2 附件接口写入，这里只能「保留引用到的、清理不再引用的」。
   // 若把它们当作普通文件比较内容，我们手里只有路径没有字节，会把它们误判为需要删除。
   const keep = new Set();
   problems.forEach((p) => {
@@ -571,6 +592,7 @@ export async function planLogChanges(problems, existingFiles, root, updatedAt, i
     if (p.description) desired.set(`${prefix}desc.md`, p.description);
     if (p.code) desired.set(`${prefix}solution.cpp`, p.code);
     if (p.statementAttachment?.sha256) keep.add(statementPath(root, p));
+    for (const image of p.statementImages || []) keep.add(statementImagePath(root, image));
   });
 
   const changes = [];
@@ -585,32 +607,45 @@ export async function planLogChanges(problems, existingFiles, root, updatedAt, i
 }
 /**
  * The legacy JSON endpoint cannot upload attachment bytes, so it must never be
- * able to introduce or change an attachment reference — that would write a record
- * pointing at a PDF that does not exist. Re-sending an unchanged reference (what
- * the form does when it round-trips an existing record) is fine.
+ * able to introduce or change an attachment/image reference — that would write a
+ * record pointing at a PDF or image that does not exist. Re-sending an unchanged
+ * reference (what the form does when it round-trips an existing record) is fine.
  */
-async function assertAttachmentsUnchanged(problems, files, root, token) {
-  const incoming = problems.filter((problem) => problem.statementAttachment);
-  if (!incoming.length) return;
-  const metaPath = `${root}/meta.json`;
-  if (!(files || []).some((file) => file.path === metaPath)) {
-    throw Object.assign(new Error("题面 PDF 必须通过附件上传接口保存，此接口无法写入附件字节"), { code: "ATTACHMENT_REQUIRES_V2", status: 422 });
+function assertAttachmentsUnchanged(problems, previous) {
+  const incomparable = (problem, old) => {
+    const attachmentChanged = problem.statementAttachment && old?.statementAttachment?.sha256 !== problem.statementAttachment.sha256;
+    const next = (problem.statementImages || []).map((image) => image.sha256).sort().join(",");
+    const before = (old?.statementImages || []).map((image) => image.sha256).sort().join(",");
+    return attachmentChanged || (problem.statementImages !== undefined && next !== before);
+  };
+  for (const problem of problems) {
+    if (!problem.statementAttachment && problem.statementImages === undefined) continue;
+    if (!incomparable(problem, previous.get(problem.id))) continue;
+    throw Object.assign(new Error("题面 PDF 与题面图片必须通过附件上传接口保存，此接口无法写入附件字节"), { code: "ATTACHMENT_REQUIRES_V2", status: 422 });
   }
+}
+
+/** 旧接口的写入快照：题面附件/图片的引用只能沿用，缺字段时按「保持不变」处理。 */
+async function readLegacyEnrichment(root, files, token) {
+  const metaPath = `${root}/meta.json`;
+  if (!(files || []).some((file) => file.path === metaPath)) return new Map();
   const raw = await content(metaPath, token);
   let meta = {};
   try { meta = JSON.parse(raw || "{}"); } catch { meta = {}; }
-  const existing = new Map((meta.problems || []).map((problem) => [problem.id, problem]));
-  for (const problem of incoming) {
-    if (existing.get(problem.id)?.statementAttachment?.sha256 === problem.statementAttachment.sha256) continue;
-    throw Object.assign(new Error("题面 PDF 必须通过附件上传接口保存，此接口无法写入附件字节"), { code: "ATTACHMENT_REQUIRES_V2", status: 422 });
-  }
+  const previous = new Map((meta.problems || []).map((problem) => [problem.id, problem]));
+  return previous;
 }
 
 export async function saveLog(user, date, input, expectedVersion) {
   const { problems, startedOn, solvedOn } = validateLogInput(input);
   const legacyPath = trainingPaths(user.login).legacyIndex;
   const { root, files } = await resolveLogRoot(user, date);
-  await assertAttachmentsUnchanged(problems, files, root, user.token);
+  const previous = await readLegacyEnrichment(root, files, user.token);
+  for (const problem of problems) {
+    const old = previous.get(problem.id);
+    if (!Object.hasOwn(problem, "statementImages") && old?.statementImages?.length) problem.statementImages = old.statementImages;
+  }
+  assertAttachmentsUnchanged(problems, previous);
   const updatedAt = toUtc8(new Date());
   const changes = await planLogChanges(problems, files, root, updatedAt, { startedOn, solvedOn });
   // 个人索引是从各日日志派生的整份文件：按提交尝试的 head 重读重算，
@@ -926,25 +961,11 @@ export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, days 
 // 0 暂无评定 | 1 入门 | 2 普及- | 3 普及 | 4 普及+/提高- | 5 提高 | 6 提高+/省选- | 7 省选/NOI- | 8 NOI/NOI+/CTS
 const LUOGU_DIFFICULTY = { 0: "暂无评定", 1: "入门", 2: "普及-", 3: "普及", 4: "普及+/提高-", 5: "提高", 6: "提高+/省选-", 7: "省选/NOI-", 8: "NOI/NOI+/CTS" };
 
-function htmlToText(html) {
-  return String(html || "")
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/p>/gi, "\n")
-    .replace(/<\/h[1-6]>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
-}
-
 // 洛谷：抓取题目页解析题名、官方难度与题目描述（页面内嵌 lentille-context JSON）。
 // 标签为数字 ID 且平台未提供公开的标签名称接口，故不返回；洛谷提交记录 API 需登录态 + CSRF，
 // 故导入采用「粘贴题号 → 补全题名/难度/题面」的半自动方案。
+// 题面与「抓取 CF 题面」走同一套解析与图片归档：裸 Markdown 图片语法里的 CDN 链接
+// 在站内加载不出来（CSP 只允许 'self' 与 data:），必须随保存归档到仓库。
 export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurrency = 3 } = {}) {
   const list = String(numbers || "")
     .split(/[\s,，、;；]+/)
@@ -955,6 +976,9 @@ export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurren
 
   const fallback = (number) => ({ name: number, platform: "洛谷", problemNumber: number, difficulty: "未标注", description: "" });
   const results = new Array(list.length);
+  // 一次导入最多回传 15 道题，图片是 base64 回传的：给整批设一个总量预算，
+  // 超出的题目按「图片未归档」降级（正文保留外链），不会让响应体无限膨胀。
+  let imageBudget = 4 * 1024 * 1024;
   let next = 0;
   async function worker() {
     while (next < list.length) {
@@ -965,19 +989,20 @@ export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurren
         if (!response.ok) throw new Error("页面不存在");
         const html = await response.text();
         const item = fallback(number);
-        const context = html.match(/<script id="lentille-context" type="application\/json">([\s\S]*?)<\/script>/i);
-        const problem = context ? JSON.parse(context[1])?.data?.problem : null;
+        const problem = readLuoguProblem(html);
         if (problem) {
           if (problem.name) item.name = problem.name;
           if (typeof problem.difficulty === "number") item.difficulty = LUOGU_DIFFICULTY[problem.difficulty] || "未标注";
-          // content 为对象结构 { description, background, hint, ... }，取 description 字段；
-          // 直接 String(对象) 会产生 "[object Object]"
-          if (problem.content) {
-            const raw = typeof problem.content === "string"
-              ? problem.content
-              : (problem.content && problem.content.description) || "";
-            if (raw) item.description = htmlToText(raw).slice(0, 20000);
-          }
+          try {
+            const parsed = parseLuoguProblem(problem, { collectImages: true });
+            const budget = Math.max(0, Math.min(MAX_NEW_STATEMENT_IMAGE_BYTES, imageBudget));
+            const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, maxTotalBytes: budget });
+            imageBudget -= archived.images.reduce((sum, image) => sum + image.bytes, 0);
+            // 单条导入的正文上限沿用旧口径（15 题一次导入，响应体不能无限膨胀）；
+            // 截断后可能剩下半截图片语法，一并清掉。
+            item.description = archived.description.slice(0, 20000).replace(/\n?!\[[^\]]*\]?\([^)]*$/, "");
+            if (archived.images.length) item.statementImages = archived.images.map(({ fileName, sha256, mimeType, bytes, data }) => ({ fileName, sha256, mimeType, bytes, data }));
+          } catch { /* 正文解析失败时保留题名与难度，描述留空由用户手工填写 */ }
         } else {
           // 回退：解析 <title>（如「P1001 A+B Problem - 洛谷 | ...」）
           const title = (html.match(/<title>([^<]*)<\/title>/i)?.[1] || "").replace(/\s*-\s*洛谷.*$/i, "");

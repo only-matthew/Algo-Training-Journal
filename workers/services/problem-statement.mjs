@@ -1,11 +1,22 @@
 import { normalizeProblemNumber } from "../../lib/problem-identity.mjs";
+import {
+  MAX_NEW_STATEMENT_IMAGE_BYTES,
+  MAX_STATEMENT_IMAGES,
+  MAX_STATEMENT_IMAGE_BYTES,
+  bytesToBase64,
+  sniffStatementImageMime,
+  statementImageFileName,
+} from "../../lib/statement-images.mjs";
 
-export const CF_STATEMENT_PARSER_VERSION = "cf-html-v2";
-export const LUOGU_STATEMENT_PARSER_VERSION = "luogu-mirror-v1";
+export const CF_STATEMENT_PARSER_VERSION = "cf-html-v3";
+export const LUOGU_STATEMENT_PARSER_VERSION = "luogu-mirror-v2";
 const MAX_HTML_BYTES = 2 * 1024 * 1024;
 const MAX_MARKDOWN = 100_000;
 const CF_ORIGIN = "https://codeforces.com/";
 const LUOGU_ORIGIN = "https://www.luogu.com.cn";
+// 题面图片的下载预算：与正文抓取分开计时，图片取不到不影响题面本身。
+const IMAGE_TIMEOUT_MS = 6000;
+const IMAGE_CONCURRENCY = 4;
 // codeforces.com 的题面页挂在 Cloudflare 后面：机房出口（含 Workers）大多只拿到
 // 403「Just a moment」挑战页。浏览器请求头能提高直取成功率，但不保证通过，
 // 也不做任何验证码绕过——拿不到时按规范降级。
@@ -36,18 +47,73 @@ function parseHtml(html) {
 }
 const textOf = (node) => (node.children || []).map((child) => child.text ?? textOf(child)).join("");
 // Collapse only excess blank lines; leading spaces inside fenced samples are data.
-const tidy = (value) => String(value).replace(/\r\n?/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
+// 行尾与只含空白的行要清掉：洛谷正文里 <p> 之间的换行会变成一行「空格」，
+// 拼进 Markdown 会留下没有意义的空行。
+const tidy = (value) => String(value).replace(/\r\n?/g, "\n").replace(/[ \t]+\n/g, "\n").replace(/\n{3,}/g, "\n\n").trim();
 const codeText = (node) => textOf(node).replace(/\r\n?/g, "\n").replace(/^\n|\n$/g, "");
 const escapeRegex = (value) => String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 function safeUrl(value, image = false, base = CF_ORIGIN) { try { const url = new URL(value, base); return url.protocol === "https:" && !url.username && !url.password && (!image || url.hostname) ? url.toString() : ""; } catch { return ""; } }
+
+// ── 题面图片归档 ────────────────────────────────────────────────────────────
+// 正文里的图片不直接写成外链：站点 CSP 只允许 'self' + data:，洛谷 CDN 还按 referer
+// 限制，外链在站内加载不出来。解析时先把图片记下来、正文写成占位符，抓取函数再统一
+// 下载并替换成仓库内的文件名（见 lib/statement-images.mjs）。
+export const EXTERNAL_IMAGES_WARNING = "external-images";
+const DATA_IMAGE = /^data:image\/(?:png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=\s]*$/i;
+const MARKDOWN_IMAGE = /!\[([^\]]*)\]\(\s*([^\s)]+)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/g;
+
+const imagePlaceholder = (index) => `{{statement-image:${index}}}`;
+// 正文里的引用写成 `./statement-<sha>.<ext>`：显式相对路径在 GitHub 与站内 Markdown
+// 渲染器里都能解析（裸文件名只有 GitHub 认），站点构建时再改写成站点绝对地址。
+const imageReference = (fileName) => `./${fileName}`;
+
+/** 题面里允许归档的地址：https 外链与 data: 内联图；其余（http、ftp、相对协议不支持）一律丢弃。 */
+function safeImageUrl(value, base) {
+  const raw = String(value || "").trim();
+  if (DATA_IMAGE.test(raw)) return raw.replace(/\s+/g, "");
+  if (/^data:/i.test(raw)) return "";
+  return safeUrl(raw, true, base);
+}
+
+function imageAlt(value) { return tidy(value || "image").replace(/[\[\]]/g, "\\$"); }
+
+/**
+ * 记下一张待归档的图片并返回正文里的占位符。
+ *
+ * 同一个地址只记一次：题面里同一张图重复出现时共用一个占位符，下载与哈希也只算一次。
+ * 没有开启归档时（直接调用解析函数）保持原样的外链写法，只留下警告。
+ */
+function registerImage(source, alt, context, warnings) {
+  const url = safeImageUrl(source, context.base);
+  if (!url) return "";
+  warnings.add(EXTERNAL_IMAGES_WARNING);
+  if (!context.images) return `![${imageAlt(alt)}](${url})`;
+  let index = context.imageUrls.get(url);
+  if (index === undefined) {
+    index = context.images.length;
+    context.images.push({ url });
+    context.imageUrls.set(url, index);
+  }
+  return `![${imageAlt(alt)}](${imagePlaceholder(index)})`;
+}
+
+// 洛谷的题面正文里 HTML 与 Markdown 混排：图片既有 <img src> 也有裸的 ![](url) 语法，
+// 后者藏在文本节点里，必须单独识别，否则会被当成普通文字原样写进描述。
+function textWithImages(text, context, warnings) {
+  return String(text).replace(MARKDOWN_IMAGE, (all, alt, href) => registerImage(href, alt, context, warnings) || all);
+}
+
 function markdownFrom(node, warnings, context = {}) {
-  if (node.text !== undefined) return context.pre ? node.text : node.text.replace(/\$\$\$([\s\S]*?)\$\$\$/g, (_all, f) => `$${f}$`).replace(/\s+/g, " ");
+  if (node.text !== undefined) {
+    const text = context.pre ? node.text : textWithImages(node.text, context, warnings);
+    return context.pre ? text : text.replace(/\$\$\$([\s\S]*?)\$\$\$/g, (_all, f) => `$${f}$`).replace(/\s+/g, " ");
+  }
   const children = (extra = {}) => (node.children || []).map((part) => markdownFrom(part, warnings, { ...context, ...extra })).join(""); const tag = node.tag;
   // 脚本与样式在题面里没有语义，任何来源都不应把它们的源码混进正文。
   if (tag === "script" || tag === "style") return "";
   if (tag === "pre") { const value = codeText(node); return `\n\n\`\`\`\n${value}${value.endsWith("\n") ? "" : "\n"}\`\`\`\n\n`; }
   if (tag === "br") return "\n";
-  if (tag === "img") { const url = safeUrl(node.attrs.src, true, context.base); if (!url) return ""; warnings.add("external-images"); return `![${tidy(node.attrs.alt || "image").replace(/[\[\]]/g, "\\$")}](${url})`; }
+  if (tag === "img") return registerImage(node.attrs.src, node.attrs.alt, context, warnings);
   if (tag === "a") { const label = tidy(children()) || tidy(node.attrs.href); const url = safeUrl(node.attrs.href, false, context.base); return url ? `[${label}](${url})` : label; }
   if (tag === "sup") return `^(${tidy(children())})`; if (tag === "sub") return `_(${tidy(children())})`;
   if (hasClass(node, "test-example-line")) return `${children()}\n`;
@@ -67,6 +133,123 @@ function tableMarkdown(node, warnings, context) {
   return `\n\n${lines.join("\n")}\n\n`;
 }
 function sectionTitle(node) { if (hasClass(node, "input-specification")) return "Input"; if (hasClass(node, "output-specification")) return "Output"; if (hasClass(node, "note")) return "Note"; if (hasClass(node, "interaction")) return "Interaction"; return ""; }
+const imageContext = (collect) => (collect ? { images: [], imageUrls: new Map() } : {});
+
+/** 下载图片时的 Referer：两个站点的图床都按来源站校验，缺了会被当成盗链。 */
+function imageReferer(url) {
+  try {
+    const { hostname, origin } = new URL(url);
+    if (/(^|\.)luogu\.com\.cn$/i.test(hostname)) return `${LUOGU_ORIGIN}/`;
+    if (/(^|\.)codeforces\.com$/i.test(hostname)) return CF_ORIGIN;
+    return `${origin}/`;
+  } catch { return ""; }
+}
+
+// 图片同样按字节数封顶：Content-Length 可能缺失或撒谎，所以流式累计后再判定。
+async function readImageBody(response, limit, signal) {
+  if (Number(response.headers.get("Content-Length") || 0) > limit) return null;
+  if (!response.body?.getReader) { const buffer = await response.arrayBuffer(); return buffer.byteLength > limit ? null : new Uint8Array(buffer); }
+  const reader = response.body.getReader(); const chunks = []; let bytes = 0;
+  try {
+    while (true) {
+      if (signal.aborted) return null;
+      const part = await reader.read();
+      if (part.done) break;
+      bytes += part.value.byteLength;
+      if (bytes > limit) { await reader.cancel(); return null; }
+      chunks.push(part.value);
+    }
+  } finally { reader.releaseLock(); }
+  const merged = new Uint8Array(bytes); let offset = 0;
+  for (const chunk of chunks) { merged.set(chunk, offset); offset += chunk.byteLength; }
+  return merged;
+}
+
+/**
+ * 下载抓取到的题面图片，并把正文里的占位符换成仓库文件名。
+ *
+ * 任何一张图失败都只影响它自己：正文保留原始外链、警告里标记仍有未归档图片，
+ * 题面本身照常可用（图片是可选增强，不能拖垮整条抓取链路）。
+ */
+export async function archiveStatementImages(description, images, { fetchImpl = fetch, timeoutMs = IMAGE_TIMEOUT_MS, maxImages = MAX_STATEMENT_IMAGES, maxImageBytes = MAX_STATEMENT_IMAGE_BYTES, maxTotalBytes = MAX_NEW_STATEMENT_IMAGE_BYTES } = {}) {
+  const all = Array.isArray(images) ? images : [];
+  const requests = all.slice(0, maxImages);
+  const results = new Array(requests.length).fill(null);
+  const deadline = Date.now() + timeoutMs;
+  let next = 0;
+  async function worker() {
+    while (next < requests.length) {
+      const index = next++;
+      const { url } = requests[index];
+      if (/^data:/i.test(url)) {
+        const bytes = decodeDataImage(url);
+        if (bytes) results[index] = bytes;
+        continue;
+      }
+      const budget = deadline - Date.now();
+      if (budget <= 0) continue;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), budget);
+      try {
+        const response = await fetchImpl(url, { redirect: "follow", signal: controller.signal, headers: { ...BROWSER_HEADERS, Accept: "image/*,*/*;q=0.8", ...(imageReferer(url) ? { Referer: imageReferer(url) } : {}) } });
+        if (response.ok) results[index] = await readImageBody(response, maxImageBytes, controller.signal);
+      } catch { /* 单张图片失败按未归档处理 */ } finally { clearTimeout(timer); }
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(IMAGE_CONCURRENCY, requests.length) }, worker));
+
+  const archived = [];
+  let total = 0;
+  let text = String(description);
+  let failed = requests.length < all.length;
+  for (let index = 0; index < requests.length; index += 1) {
+    const bytes = results[index];
+    const mimeType = bytes && bytes.byteLength ? sniffStatementImageMime(bytes) : "";
+    const sha256 = mimeType ? await sha256Hex(bytes) : "";
+    const fileName = sha256 ? statementImageFileName(sha256, mimeType) : "";
+    const duplicate = fileName && archived.some((image) => image.fileName === fileName);
+    // 单张上限与总量上限都在这里再判一次：超过单张上限的图片会被保存接口拒绝，
+    // 与其让整次保存失败，不如让这张图退回外链（data: 内联图不走下载路径，只有这里能拦）。
+    if (!fileName || (!duplicate && (bytes.byteLength > maxImageBytes || total + bytes.byteLength > maxTotalBytes))) {
+      failed = true;
+      text = text.split(imagePlaceholder(index)).join(requests[index].url);
+      continue;
+    }
+    // bytes 只用于响应体传输；不同地址指向同一张图时只回传一次。
+    if (!duplicate) {
+      total += bytes.byteLength;
+      archived.push({ fileName, sha256, mimeType, bytes: bytes.byteLength, data: bytesToBase64(bytes) });
+    }
+    text = text.split(imagePlaceholder(index)).join(imageReference(fileName));
+  }
+  // 超出数量上限的图片根本没被处理：它们的占位符必须还原成原外链，
+  // 否则正文里会留下一个谁都不认识的占位符。
+  for (let index = requests.length; index < all.length; index += 1) {
+    text = text.split(imagePlaceholder(index)).join(all[index].url);
+  }
+  return { description: text, images: archived, failed };
+}
+
+async function sha256Hex(bytes) {
+  const digest = await crypto.subtle.digest("SHA-256", bytes);
+  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+}
+
+function decodeDataImage(url) {
+  const comma = url.indexOf(",");
+  if (comma < 0) return null;
+  try {
+    const binary = atob(url.slice(comma + 1));
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) bytes[index] = binary.charCodeAt(index);
+    return bytes.byteLength ? bytes : null;
+  } catch { return null; }
+}
+
+// 归档完成后清掉「有外链图片」的警告：全部归档成功时正文里已经没有外链了。
+function settledWarnings(warnings, archived) {
+  return archived.failed ? warnings : warnings.filter((warning) => warning !== EXTERNAL_IMAGES_WARNING);
+}
 
 export function parseCodeforcesProblemNumber(problemNumber) { const normalized = normalizeProblemNumber(problemNumber); const match = /^(\d+)([A-Z][A-Z0-9]*)$/.exec(normalized || ""); return match ? { contestId: match[1], index: match[2], problemNumber: normalized } : null; }
 export function validateCodeforcesUrl(value, problemNumber) {
@@ -77,7 +260,7 @@ export function validateCodeforcesUrl(value, problemNumber) {
   if (!match || match[2] !== expected.contestId || match[3].toUpperCase() !== expected.index) throw Object.assign(new TypeError("题面地址与题号不一致"), { status: 400, code: "INVALID_REQUEST" });
   url.search = "?locale=en"; url.hash = ""; return url;
 }
-export function parseCodeforcesStatement(html, expectedProblemNumber) {
+export function parseCodeforcesStatement(html, expectedProblemNumber, { collectImages = false } = {}) {
   const document = parseHtml(html); const container = findFirst(document, (node) => node.tag === "div" && hasClass(node, "problem-statement"));
   if (!container) fail(/captcha|challenge|access denied|cloudflare/i.test(html) ? "blocked" : "parse-failed");
   const header = findFirst(container, (node) => node.tag === "div" && hasClass(node, "header")); const titleNode = findFirst(header || container, (node) => node.tag === "div" && hasClass(node, "title"));
@@ -85,9 +268,9 @@ export function parseCodeforcesStatement(html, expectedProblemNumber) {
   const propertyText = (node) => tidy((node.children || []).filter((child) => !(child.tag === "div" && hasClass(child, "property-title"))).map((child) => child.text ?? textOf(child)).join(""));
   const title = tidy(textOf(titleNode || { children: [] })); const time = propertyText(findFirst(header || container, (node) => node.tag === "div" && hasClass(node, "time-limit")) || { children: [] }); const memory = propertyText(findFirst(header || container, (node) => node.tag === "div" && hasClass(node, "memory-limit")) || { children: [] });
   if (!header || !title || (!time && !memory)) fail("parse-failed"); const expected = expectedProblemNumber && parseCodeforcesProblemNumber(expectedProblemNumber); if (expected && !new RegExp(`^${escapeRegex(expected.index)}\\s*\\.`, "i").test(title)) fail("parse-failed");
-  const warnings = new Set(); const parts = []; for (const node of container.children || []) { if (node === header) continue; const heading = sectionTitle(node); if (heading) parts.push(`## ${heading}`); parts.push(markdownFrom(node, warnings)); } const body = tidy(parts.join("\n"));
+  const warnings = new Set(); const parts = []; const context = imageContext(collectImages); for (const node of container.children || []) { if (node === header) continue; const heading = sectionTitle(node); if (heading) parts.push(`## ${heading}`); parts.push(markdownFrom(node, warnings, context)); } const body = tidy(parts.join("\n"));
   if (!body) { if (findFirst(container, (node) => node.tag === "a" && /\.pdf(?:$|[?#])/i.test(node.attrs.href || ""))) fail("unsupported"); fail("parse-failed"); }
-  const description = tidy([`# ${title}`, time && `时间限制：${time}`, memory && `内存限制：${memory}`, body].filter(Boolean).join("\n\n")); if (description.length > MAX_MARKDOWN) fail("too-large"); return { description, warnings: [...warnings] };
+  const description = tidy([`# ${title}`, time && `时间限制：${time}`, memory && `内存限制：${memory}`, body].filter(Boolean).join("\n\n")); if (description.length > MAX_MARKDOWN) fail("too-large"); return { description, warnings: [...warnings], images: context.images || [] };
 }
 async function readLimitedBody(response, signal) {
   if (Number(response.headers.get("Content-Length") || 0) > MAX_HTML_BYTES) fail("too-large"); if (!response.body?.getReader) { const value = await response.text(); if (new TextEncoder().encode(value).byteLength > MAX_HTML_BYTES) fail("too-large"); return value; }
@@ -97,12 +280,17 @@ async function readLimitedBody(response, signal) {
 const failureReason = (error, signal) => signal.aborted || error?.message === "timeout" ? "timeout" : ["too-large", "unsupported", "blocked"].includes(error?.message) ? error.message : "parse-failed";
 const REASONS_RETRYABLE = new Set(["timeout", "upstream-error"]);
 
-export async function fetchCodeforcesStatement({ problemNumber, sourceUrl }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000 } = {}) {
+export async function fetchCodeforcesStatement({ problemNumber, sourceUrl }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
   let url = validateCodeforcesUrl(sourceUrl, problemNumber); const normalized = parseCodeforcesProblemNumber(problemNumber).problemNumber; const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeoutMs);
   try { for (let redirects = 0; redirects <= 2; redirects += 1) { let response; try { response = await fetchImpl(url.toString(), { redirect: "manual", signal: controller.signal, headers: BROWSER_HEADERS }); } catch (error) { return unavailable(normalized, error?.name === "AbortError" || controller.signal.aborted ? "timeout" : "upstream-error", true); }
     if ([301, 302, 303, 307, 308].includes(response.status)) { const location = response.headers.get("Location"); if (!location || redirects === 2) return unavailable(normalized, "blocked"); try { url = validateCodeforcesUrl(new URL(location, url).toString(), normalized); } catch { return unavailable(normalized, "blocked"); } continue; }
     if (response.status === 404) return unavailable(normalized, "not-found"); if (response.status === 403 || !response.ok) return unavailable(normalized, response.status >= 500 ? "upstream-error" : "blocked", response.status >= 500);
-    try { const parsed = parseCodeforcesStatement(await readLimitedBody(response, controller.signal), normalized); return { status: "ok", problemNumber: normalized, description: parsed.description, source: { kind: "codeforces-html", url: url.toString(), fetchedAt: now(), parserVersion: CF_STATEMENT_PARSER_VERSION }, warnings: parsed.warnings }; } catch (error) { const reason = failureReason(error, controller.signal); return unavailable(normalized, reason, REASONS_RETRYABLE.has(reason)); }
+    try {
+      const parsed = parseCodeforcesStatement(await readLimitedBody(response, controller.signal), normalized, { collectImages: true });
+      const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, timeoutMs: imageTimeoutMs });
+      if (archived.description.length > MAX_MARKDOWN) return unavailable(normalized, "too-large");
+      return { status: "ok", problemNumber: normalized, description: archived.description, images: archived.images, source: { kind: "codeforces-html", url: url.toString(), fetchedAt: now(), parserVersion: CF_STATEMENT_PARSER_VERSION }, warnings: settledWarnings(parsed.warnings, archived) };
+    } catch (error) { const reason = failureReason(error, controller.signal); return unavailable(normalized, reason, REASONS_RETRYABLE.has(reason)); }
   } } finally { clearTimeout(timer); } return unavailable(normalized, "blocked");
 }
 
@@ -124,15 +312,25 @@ function sampleBlock(sample, index) {
   const fence = (text) => ["```", text, "```"].join("\n");
   return [`### 样例 ${index + 1}`, "输入：", fence(value("in") || value("input")), "输出：", fence(value("out") || value("output"))].join("\n");
 }
-export function parseLuoguStatement(html, expectedProblemNumber) {
-  const expected = expectedProblemNumber && parseCodeforcesProblemNumber(expectedProblemNumber); const context = LUOGU_CONTEXT.exec(html);
-  if (!context) fail(isChallengePage(html) ? "blocked" : "parse-failed");
-  let problem; try { problem = JSON.parse(context[1])?.data?.problem; } catch { fail("parse-failed"); }
+/** 洛谷页面里嵌的 lentille-context JSON → problem 对象；页面结构变了就返回 null。 */
+export function readLuoguProblem(html) {
+  const context = LUOGU_CONTEXT.exec(String(html || ""));
+  if (!context) return null;
+  try { const problem = JSON.parse(context[1])?.data?.problem; return problem && typeof problem === "object" ? problem : null; } catch { return null; }
+}
+/**
+ * 把洛谷题目对象转成 Markdown 题面。
+ *
+ * 洛谷题号导入与 CF 镜像共用这一段：两条链路都从同一份页面数据出发，正文格式与
+ * 图片归档方式必须一致，否则用户会在两个入口看到两种结果。
+ */
+export function parseLuoguProblem(problem, { expectedProblemNumber, collectImages = false } = {}) {
+  const expected = expectedProblemNumber && parseCodeforcesProblemNumber(expectedProblemNumber);
   if (!problem || typeof problem !== "object") fail("parse-failed");
-  // pid 是洛谷自己的题目身份；缺失时不再猜，URL 本来就是按题号拼出来的。
+  // pid 是洛谷自己的题目身份；镜像链路用它核对题号，导入链路按用户输入的题号取页面。
   const pid = String(problem.pid || "").toUpperCase(); const expectedPid = expected ? `CF${expected.contestId}${expected.index}` : "";
   if (pid && expectedPid && pid !== expectedPid) fail("parse-failed");
-  const warnings = new Set(); const parts = []; const render = (raw) => tidy(markdownFrom(parseHtml(raw), warnings, { base: LUOGU_ORIGIN }));
+  const warnings = new Set(); const parts = []; const context = imageContext(collectImages); const render = (raw) => tidy(markdownFrom(parseHtml(raw), warnings, { ...context, base: LUOGU_ORIGIN }));
   if (typeof problem.content === "string") { const body = render(problem.content); if (body) parts.push(body); }
   else if (problem.content && typeof problem.content === "object") for (const [key, label] of LUOGU_SECTIONS) { const raw = problem.content[key]; if (typeof raw !== "string" || !raw.trim()) continue; const body = render(raw); if (body) parts.push(`## ${label}`, body); }
   // 样例可能嵌在正文里，也可能单列在 samples：后者只在正文没有代码块时补，避免重复。
@@ -141,39 +339,57 @@ export function parseLuoguStatement(html, expectedProblemNumber) {
   const title = tidy(problem.title || problem.name || (problem.content && typeof problem.content === "object" ? problem.content.name : "") || "");
   const body = tidy(parts.join("\n")); if (!body) fail("parse-failed");
   const description = tidy([title && `# ${title}`, body].filter(Boolean).join("\n\n")); if (description.length > MAX_MARKDOWN) fail("too-large");
-  return { description, warnings: [...warnings] };
+  return { description, warnings: [...warnings], images: context.images || [] };
 }
-export async function fetchLuoguStatement({ problemNumber }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000 } = {}) {
+export function parseLuoguStatement(html, expectedProblemNumber, options) {
+  const problem = readLuoguProblem(html);
+  if (!problem) fail(isChallengePage(html) ? "blocked" : "parse-failed");
+  return parseLuoguProblem(problem, { ...options, expectedProblemNumber });
+}
+/** 洛谷页面 → C3VK 挑战 cookie 握手后的响应；两条洛谷链路共用同一套重试。 */
+async function requestLuoguPage(url, { fetchImpl, controller, headers }) {
+  const send = (extra = {}) => fetchImpl(url, { redirect: "manual", signal: controller.signal, headers: { ...headers, ...extra } });
+  let response; try { response = await send(); } catch (error) { return { error }; }
+  if ([301, 302, 303, 307, 308].includes(response.status)) {
+    // 挑战 cookie 可能挂在这次 302 上，也可能要再请求一次才下发。
+    let cookies = setCookies(response);
+    if (!cookies.length) { try { cookies = setCookies(await send()); } catch { cookies = []; } }
+    if (!cookies.length) return { blocked: true };
+    try { response = await send({ Cookie: cookies.join("; ") }); } catch (error) { return { error }; }
+    if ([301, 302, 303, 307, 308].includes(response.status)) return { blocked: true };
+  }
+  return { response };
+}
+export async function fetchLuoguStatement({ problemNumber }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
   const expected = parseCodeforcesProblemNumber(problemNumber); const normalized = expected ? expected.problemNumber : normalizeProblemNumber(problemNumber);
   if (!expected) return unavailable(normalized, "parse-failed");
   const url = `${LUOGU_ORIGIN}/problem/CF${expected.contestId}${expected.index}`;
   const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeoutMs);
-  const headers = { ...BROWSER_HEADERS, "Accept-Language": "zh-CN,zh;q=0.9" }; const send = (extra = {}) => fetchImpl(url, { redirect: "manual", signal: controller.signal, headers: { ...headers, ...extra } });
+  const headers = { ...BROWSER_HEADERS, "Accept-Language": "zh-CN,zh;q=0.9" };
   try {
-    let response; try { response = await send(); } catch (error) { return unavailable(normalized, error?.name === "AbortError" || controller.signal.aborted ? "timeout" : "upstream-error", true); }
-    if ([301, 302, 303, 307, 308].includes(response.status)) {
-      // 挑战 cookie 可能挂在这次 302 上，也可能要再请求一次才下发。
-      let cookies = setCookies(response);
-      if (!cookies.length) { try { cookies = setCookies(await send()); } catch { cookies = []; } }
-      if (!cookies.length) return unavailable(normalized, "blocked");
-      try { response = await send({ Cookie: cookies.join("; ") }); } catch (error) { return unavailable(normalized, error?.name === "AbortError" || controller.signal.aborted ? "timeout" : "upstream-error", true); }
-      if ([301, 302, 303, 307, 308].includes(response.status)) return unavailable(normalized, "blocked");
-    }
+    const { response, error, blocked } = await requestLuoguPage(url, { fetchImpl, controller, headers });
+    if (error) return unavailable(normalized, error?.name === "AbortError" || controller.signal.aborted ? "timeout" : "upstream-error", true);
+    if (blocked || !response) return unavailable(normalized, "blocked");
     if (response.status === 404) return unavailable(normalized, "not-found");
     if (response.status === 403 || !response.ok) return unavailable(normalized, response.status >= 500 ? "upstream-error" : "blocked", response.status >= 500);
-    try { const parsed = parseLuoguStatement(await readLimitedBody(response, controller.signal), normalized); return { status: "ok", problemNumber: normalized, description: parsed.description, source: { kind: "luogu-mirror", url, fetchedAt: now(), parserVersion: LUOGU_STATEMENT_PARSER_VERSION }, warnings: [LUOGU_MIRROR_WARNING, ...parsed.warnings] }; } catch (error) { const reason = failureReason(error, controller.signal); return unavailable(normalized, reason, REASONS_RETRYABLE.has(reason)); }
+    try {
+      const parsed = parseLuoguStatement(await readLimitedBody(response, controller.signal), normalized, { collectImages: true });
+      const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, timeoutMs: imageTimeoutMs });
+      if (archived.description.length > MAX_MARKDOWN) return unavailable(normalized, "too-large");
+      return { status: "ok", problemNumber: normalized, description: archived.description, images: archived.images, source: { kind: "luogu-mirror", url, fetchedAt: now(), parserVersion: LUOGU_STATEMENT_PARSER_VERSION }, warnings: [LUOGU_MIRROR_WARNING, ...settledWarnings(parsed.warnings, archived)] };
+    } catch (error) { const reason = failureReason(error, controller.signal); return unavailable(normalized, reason, REASONS_RETRYABLE.has(reason)); }
   } finally { clearTimeout(timer); }
 }
 
 // 抓取入口：先取官方英文题面，被反爬拦下（或解析失败）时退回洛谷镜像，
 // 两个来源共用同一个总时限；主来源的失败原因最终回给前端，镜像失败不改变它。
-export async function fetchStatement({ problemNumber, sourceUrl }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000 } = {}) {
+export async function fetchStatement({ problemNumber, sourceUrl }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
   const deadline = Date.now() + timeoutMs;
   const remaining = () => deadline - Date.now();
-  const primary = await fetchCodeforcesStatement({ problemNumber, sourceUrl }, { fetchImpl, now, timeoutMs: Math.max(1000, Math.round(remaining() * 0.6)) });
+  const primary = await fetchCodeforcesStatement({ problemNumber, sourceUrl }, { fetchImpl, now, timeoutMs: Math.max(1000, Math.round(remaining() * 0.6)), imageTimeoutMs });
   if (primary.status === "ok" || primary.reason === "not-found") return primary;
   const budget = remaining();
   if (budget < 1000) return primary;
-  const mirror = await fetchLuoguStatement({ problemNumber }, { fetchImpl, now, timeoutMs: budget });
+  const mirror = await fetchLuoguStatement({ problemNumber }, { fetchImpl, now, timeoutMs: budget, imageTimeoutMs });
   return mirror.status === "ok" ? mirror : primary;
 }

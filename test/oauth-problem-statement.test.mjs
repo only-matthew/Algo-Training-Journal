@@ -71,7 +71,7 @@ test("官方题面被反爬拦下时路由回退洛谷镜像", async (context) =
   const body = await response.json();
   assert.equal(body.status, "ok");
   assert.equal(body.source.kind, "luogu-mirror");
-  assert.equal(body.source.parserVersion, "luogu-mirror-v1");
+  assert.equal(body.source.parserVersion, "luogu-mirror-v2");
   assert.deepEqual(body.warnings, ["mirror-source"]);
   assert.match(body.description, /# Watermelon/);
   assert.match(body.description, /\$w\$/);

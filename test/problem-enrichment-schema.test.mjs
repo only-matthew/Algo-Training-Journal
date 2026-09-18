@@ -1,7 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { validateLogInput, metaFromProblems, normalizeMeta } from "../lib/log-schema.mjs";
+import { LOG_SCHEMA_VERSION, validateLogInput, metaFromProblems, normalizeMeta } from "../lib/log-schema.mjs";
 import { analysisBinding, applyAnalysis, validateAnalysisResult } from "../lib/problem-analysis.mjs";
+import { MAX_STATEMENT_IMAGES } from "../lib/statement-images.mjs";
 
 async function analyzedProblem() {
   const problem = { id: "p1", name: "Example", platform: "Codeforces", problemNumber: "4A", description: "Full text", tags: ["DP"] };
@@ -41,14 +42,41 @@ test("洛谷镜像题面来源按 kind 校验地址并可保存", () => {
   assert.deepEqual(normalizeMeta(metaFromProblems(saved.problems)).problems[0].statementSource, saved.problems[0].statementSource);
 });
 
+test("归档的题面图片按文件名与内容哈希校验，并可以往返 meta", () => {
+  const image = { sha256: "b".repeat(64), fileName: `statement-${"b".repeat(64)}.png`, bytes: 1234, mimeType: "image/png" };
+  const saved = validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "p1", name: "Example", statementImages: [image] }] });
+  assert.deepEqual(saved.problems[0].statementImages, [image]);
+  assert.deepEqual(normalizeMeta(metaFromProblems(saved.problems)).problems[0].statementImages, [image]);
+
+  // 空数组在请求体里表示「不再引用任何题面图片」，但落盘时不写这个字段。
+  const cleared = validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "p1", name: "Example", statementImages: [] }] });
+  assert.deepEqual(cleared.problems[0].statementImages, []);
+  assert.equal("statementImages" in metaFromProblems(cleared.problems).problems[0], false);
+});
+
+test("server rejects malformed statement image references", () => {
+  const image = { sha256: "b".repeat(64), fileName: `statement-${"b".repeat(64)}.png`, bytes: 1234, mimeType: "image/png" };
+  for (const patch of [
+    { statementImages: [{ ...image, fileName: `statement-${"c".repeat(64)}.png` }] },
+    { statementImages: [{ ...image, fileName: "../statement.png" }] },
+    { statementImages: [{ ...image, mimeType: "image/svg+xml" }] },
+    { statementImages: [{ ...image, bytes: 0 }] },
+    { statementImages: [{ ...image, bytes: 2 * 1024 * 1024 }] },
+    { statementImages: [{ ...image, sha256: "B".repeat(64) }] },
+    { statementImages: [image, image] },
+    { statementImages: Array.from({ length: MAX_STATEMENT_IMAGES + 1 }, (_value, index) => ({ ...image, sha256: index.toString(16).padStart(64, "0"), fileName: `statement-${index.toString(16).padStart(64, "0")}.png` })) },
+    { statementImages: "not-an-array" },
+  ]) assert.throws(() => validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "p1", name: "Example", ...patch }] }), /题面图片/);
+});
+
 test("metadata drops stale tag provenance and does not infer new provenance", () => {
   const result = validateLogInput({ problems: [{ id: "p1", name: "Example", tags: ["DP"], metadataSources: { tags: [{ tag: "动态规划", kind: "ai-suggested" }, { tag: "数学", kind: "manual" }] } }] });
   assert.deepEqual(result.problems[0].metadataSources.tags, [{ tag: "DP", kind: "ai-suggested" }]);
   assert.equal(normalizeMeta({ schemaVersion: 3, problems: [{ name: "old" }] }).problems[0].metadataSources, undefined);
 });
 
-test("unknown future schemas cannot be normalized or written as v5", () => {
-  for (const schemaVersion of [6, "5", null, -1]) {
+test("unknown future schemas cannot be normalized or written as the current version", () => {
+  for (const schemaVersion of [LOG_SCHEMA_VERSION + 1, String(LOG_SCHEMA_VERSION), null, -1]) {
     assert.throws(() => validateLogInput({ schemaVersion, problems: [{ name: "Example" }] }), { code: "UNSUPPORTED_SCHEMA" });
     assert.throws(() => normalizeMeta({ schemaVersion, problems: [{ name: "Example" }] }), { code: "UNSUPPORTED_SCHEMA" });
   }

@@ -37,14 +37,31 @@ test("every form save is conditional on the revision it read", () => {
 test("attachments only travel through the v2 multipart route", () => {
   assert.match(formSource, /import \{ createAttachmentStore, sha256Hex, validateAttachmentFile \} from "\.\/attachment-store\.mjs"/);
   assert.match(formSource, /import \{[^}]*saveDateLogV2[^}]*\} from "\.\/journal-api\.js"/);
-  // 有附件动作时必须走 v2；旧接口无法上传字节。
-  assert.match(formSource, /pendingAttachments\.size\s*\n?\s*\? await saveWithAttachments\(/);
+  // 有附件动作（PDF 或题面图片）时必须走 v2；旧接口无法上传字节。
+  assert.match(formSource, /pendingAttachments\.size \|\| hasStatementImages\(\)\s*\n?\s*\? await saveWithAttachments\(/);
   // v2 的 payload 必须省略 statementAttachment：服务端对 keep 会自动沿用旧引用，
-  // 而带着旧哈希回去会被判定为「keep 不能修改附件」。
-  assert.match(formSource, /problems: problems\.map\(\(\{ statementAttachment, \.\.\.problem \}\) => problem\)/);
+  // 而带着旧哈希回去会被判定为「keep 不能修改附件」。题面图片则只在「知道服务端现状」
+  // 或「本次抓到图片」时才声明，字段缺席表示沿用旧引用。
+  assert.match(formSource, /problems: problems\.map\(\(\{ statementAttachment, statementImages, \.\.\.problem \}\) => \(declared\.has\(problem\.id\) \? \{ \.\.\.problem, statementImages: declared\.get\(problem\.id\) \} : problem\)\)/);
   // 「移除」要靠显式动作表达，不能靠缺少条目表达。
   assert.match(formSource, /action: "remove"/);
   assert.match(formSource, /action: "replace", partName/);
+});
+
+test("crawled statement images are archived through the same save as the PDF", () => {
+  // 图片没有独立的动作：正文里仍引用的文件才会被声明，服务端据此写文件并清理孤儿。
+  assert.match(formSource, /import \{ MAX_NEW_STATEMENT_IMAGE_BYTES, MAX_STATEMENT_IMAGES, MAX_STATEMENT_IMAGE_BYTES, base64ToBytes, parseStatementImageName \} from "\.\/statement-images\.mjs"/);
+  assert.match(formSource, /const pendingStatementImages = new Map\(\)/);
+  assert.match(formSource, /return \[\.\.\.images\.values\(\)\]\.filter\(\(image\) => description\.includes\(image\.fileName\)\)/);
+  // 已经归档过的图片不重复上传：文件名就是内容哈希。
+  assert.match(formSource, /if \(!archived\.has\(image\.sha256\)\) images\.set\(image\.fileName/);
+  // 抓取结果里的图片要在本题登记，并写进本地恢复存储。
+  assert.match(formSource, /await attachmentStore\.saveImages\(\{ memberId, date: activeFormDate, problemId, images: decoded \}\)/);
+  assert.match(formSource, /block\.dataset\.serverImages = JSON\.stringify\(images\)/);
+  // 不知道服务端现状（旧草稿、旧客户端）时不声明图片，避免把仓库里已有的图片误删。
+  assert.match(formSource, /const knows = block && \(block\.dataset\.serverImages !== undefined \|\| \(pendingStatementImages\.get\(problem\.id\) \|\| \[\]\)\.length\)/);
+  // 草稿要带上已归档的图片引用，恢复后才知道服务端有哪些图。
+  assert.match(formSource, /\.\.\.\(archived \? \{ statementImages: archived \} : \{\}\)/);
 });
 
 test("a saved attachment updates both the picker state and the legacy round-trip field", () => {

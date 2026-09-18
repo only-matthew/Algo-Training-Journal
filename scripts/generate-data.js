@@ -127,6 +127,7 @@ function appendDateLogs(logs, member, date, dateDir, commitDates) {
       ...(p.reviewDue ? { reviewDue: p.reviewDue } : {}),
       code: readProblemFile(dateDir, `${slot}-solution.cpp`),
       ...(p.statementAttachment ? { statementAttachment: p.statementAttachment, statementPath: path.join(dateDir, `${slot}-statement-${p.statementAttachment.sha256}.pdf`) } : {}),
+      ...(Array.isArray(p.statementImages) && p.statementImages.length ? { statementImages: p.statementImages, statementImagePaths: new Map(p.statementImages.map((image) => [image.fileName, path.join(dateDir, image.fileName)])) } : {}),
       ...(p.statementSource ? { statementSource: p.statementSource } : {}),
       ...(p.metadataSources ? { metadataSources: p.metadataSources } : {}),
       ...(p.aiAnalysis ? { aiAnalysis: p.aiAnalysis } : {}),
@@ -313,7 +314,8 @@ function assetVersion(name) {
     .slice(0, 12);
 }
 
-function logSummary({ description, takeaway, code, ...summary }) {
+// 附件与图片的本地路径是构建期的中间量，不能出现在站点数据里（Map 还会序列化成 {}）。
+function logSummary({ description, takeaway, code, statementPath, statementImagePaths, ...summary }) {
   return { ...summary, summary: truncate(description || takeaway || "", 96) };
 }
 
@@ -670,15 +672,51 @@ function writeProblemDetails(logs, generatedAt, problemIndex) {
       fs.mkdirSync(path.dirname(target), { recursive: true }); fs.copyFileSync(log.statementPath, target);
       attachmentUrl = `/${["problem", log.member, log.date, String(log.problemId || log.problemIndex || 0), fileName].map(encodeURIComponent).join("/")}`;
     }
-    const { statementPath, ...detailLog } = log;
+    // 题面图片：与 PDF 同样校验哈希后发布；正文里的相对文件名改写成站点地址。
+    // 描述在仓库里保持相对路径（GitHub 能直接渲染），站内靠这一步变成绝对地址。
+    const description = publishStatementImages(log);
+    const { statementPath, statementImagePaths, ...detailLog } = log;
     writeJson(path.join("data", "problems", log.member, log.date, `${log.problemId || log.problemIndex || 0}.json`), {
       schemaVersion: 3,
       generatedAt,
       ...detailLog,
+      description,
       ...(attachmentUrl ? { statementUrl: attachmentUrl } : {}),
       ...(related.length ? { related } : {}),
     });
   }
+}
+
+/**
+ * 发布某条记录引用的题面图片，并返回把相对文件名换成站点地址后的描述。
+ *
+ * 正文里出现 `statement-<sha256>.<ext>` 却不在归档清单里，说明记录与仓库不一致
+ * （服务端保存时会校验，只有手工改仓库才会出现）——构建期直接报错，不发布坏链接。
+ */
+function publishStatementImages(log, outputDir = OUTPUT_DIR) {
+  const description = String(log.description || "");
+  const images = Array.isArray(log.statementImages) ? log.statementImages : [];
+  if (!images.length) {
+    const dangling = /statement-[a-f0-9]{64}\.(?:png|jpg|gif|webp)/.exec(description);
+    if (dangling) throw new Error(`题面图片未归档：${log.member}/${log.date}/${log.problemId} 引用了 ${dangling[0]}`);
+    return description;
+  }
+  const problemId = String(log.problemId || log.problemIndex || 0);
+  let next = description;
+  for (const image of images) {
+    const source = log.statementImagePaths?.get(image.fileName);
+    if (!source || !fs.existsSync(source)) throw new Error(`缺少题面图片：${log.member}/${log.date}/${problemId} 的 ${image.fileName}`);
+    const bytes = fs.readFileSync(source);
+    const actual = crypto.createHash("sha256").update(bytes).digest("hex");
+    if (actual !== image.sha256 || bytes.length !== image.bytes) throw new Error(`题面图片校验失败：${log.member}/${log.date}/${problemId} 的 ${image.fileName}`);
+    const target = path.join(outputDir, "problem", log.member, log.date, problemId, image.fileName);
+    fs.mkdirSync(path.dirname(target), { recursive: true }); fs.copyFileSync(source, target);
+    const url = `/${["problem", log.member, log.date, problemId, image.fileName].map(encodeURIComponent).join("/")}`;
+    // 抓取写入的是 `./statement-<sha>.<ext>`；手工补的引用可能没有 `./` 前缀，两种都换。
+    // 一次替换到位：分两步做会把结果里的文件名再换一遍（URL 里也含该文件名）。
+    next = next.replace(new RegExp(`(?:\\./)?${image.fileName.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "g"), url);
+  }
+  return next;
 }
 
 // 聚合全队同题记录（二刷关联）：key = 平台 + 归一化题号
@@ -1199,4 +1237,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { replaceProblemArticle, resolveStatsEnd, buildProblemIndex, buildReviewQueue };
+module.exports = { replaceProblemArticle, resolveStatsEnd, buildProblemIndex, buildReviewQueue, publishStatementImages };

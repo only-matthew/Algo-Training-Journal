@@ -1,4 +1,13 @@
-import { LOG_LIMITS, metaFromProblems, validateLogInput, isDateString } from "../../lib/log-schema.mjs";
+import { LOG_LIMITS, LOG_SCHEMA_VERSION, metaFromProblems, validateLogInput, isDateString } from "../../lib/log-schema.mjs";
+import {
+  MAX_NEW_STATEMENT_IMAGE_BYTES,
+  MAX_STATEMENT_IMAGE_BYTES,
+  MAX_STATEMENT_IMAGES,
+  STATEMENT_IMAGE_NAME_PATTERN,
+  parseStatementImageName,
+  sniffStatementImageMime,
+  statementImageFileName,
+} from "../../lib/statement-images.mjs";
 
 const MAX_MULTIPART_BYTES = 12 * 1024 * 1024;
 const MAX_NEW_ATTACHMENT_BYTES = 10 * 1024 * 1024;
@@ -61,6 +70,18 @@ export function statementPath(root, problem) {
   return `${root}/${problem.fileIndex}-statement-${problem.statementAttachment.sha256}.pdf`;
 }
 
+/**
+ * Repository path of an archived statement image.
+ *
+ * 图片不带 fileIndex：文件名就是内容哈希，同一张图被同一天的两道题引用时只落一份，
+ * 正文里的相对链接也因此与题目槽位无关（题号改动不会让图片失联）。
+ */
+export function statementImagePath(root, image) {
+  return `${root}/${image.fileName}`;
+}
+
+const STATEMENT_IMAGE_ORPHAN = /^statement-[a-f0-9]{64}\.(?:png|jpg|gif|webp)$/;
+
 function operationPath(memberId, operationId) {
   return `training/members/${memberId}/operations/${operationId}.json`;
 }
@@ -114,7 +135,23 @@ async function normalizeAttachmentPart(value, partName) {
   return { bytes, sha256: await digest(bytes), fileName: name, mimeType: "application/pdf" };
 }
 
-/** Parse either the JSON body or the documented multipart payload + PDF parts. */
+/**
+ * 题面图片分区：分区名就是仓库文件名（statement-<sha256>.<ext>），内容哈希与文件名
+ * 必须一致——服务端只凭引用拼路径，不能让请求指定任意文件名。
+ */
+async function normalizeStatementImagePart(value, partName) {
+  const named = parseStatementImageName(partName);
+  if (!named) throw new LogsV2Error("INVALID_IMAGE", `Image part ${partName} is not statement-<sha256>.<ext>`, 422);
+  const bytes = await asBytes(value);
+  if (bytes.byteLength < 1 || bytes.byteLength > MAX_STATEMENT_IMAGE_BYTES) throw new LogsV2Error("ATTACHMENT_TOO_LARGE", "Each statement image must be between 1 byte and 1 MiB", 413);
+  const mimeType = sniffStatementImageMime(bytes);
+  if (mimeType !== named.mimeType) throw new LogsV2Error("INVALID_IMAGE", `Image ${partName} does not match its extension`, 422);
+  const sha256 = await digest(bytes);
+  if (statementImageFileName(sha256, mimeType) !== partName) throw new LogsV2Error("INVALID_IMAGE", `Image ${partName} does not match its content`, 422);
+  return { bytes, sha256, fileName: partName, mimeType };
+}
+
+/** Parse either the JSON body or the documented multipart payload + PDF/image parts. */
 export async function parseLogsV2Request(request) {
   const contentType = request.headers.get("Content-Type") || "";
   const declared = Number(request.headers.get("Content-Length") || 0);
@@ -122,7 +159,7 @@ export async function parseLogsV2Request(request) {
   if (!contentType.toLowerCase().startsWith("multipart/form-data")) {
     const text = await request.text();
     if (byteLength(text) > LOG_LIMITS.maxRequestBytes) throw new LogsV2Error("REQUEST_TOO_LARGE", "JSON request exceeds 1.5 MB", 413);
-    try { return { payload: ensureObject(JSON.parse(text)), attachments: new Map() }; }
+    try { return { payload: ensureObject(JSON.parse(text)), attachments: new Map(), images: new Map() }; }
     catch (error) { if (error instanceof LogsV2Error) throw error; throw new LogsV2Error("INVALID_JSON", "Request is not valid JSON", 400); }
   }
   let form;
@@ -132,16 +169,18 @@ export async function parseLogsV2Request(request) {
   if (byteLength(payloadRaw) > LOG_LIMITS.maxRequestBytes) throw new LogsV2Error("REQUEST_TOO_LARGE", "JSON payload exceeds 1.5 MB", 413);
   let payload;
   try { payload = ensureObject(JSON.parse(payloadRaw)); } catch { throw new LogsV2Error("INVALID_JSON", "payload is not valid JSON", 400); }
-  const attachments = new Map(); let total = byteLength(payloadRaw);
+  const attachments = new Map(); const images = new Map(); let total = byteLength(payloadRaw);
   for (const [name, value] of form.entries()) {
     if (name === "payload") continue;
-    if (attachments.has(name)) throw new LogsV2Error("INVALID_MULTIPART", `Duplicate multipart part ${name}`, 400);
-    const attachment = await normalizeAttachmentPart(value, name);
-    total += attachment.bytes.byteLength;
+    if (images.has(name) || attachments.has(name)) throw new LogsV2Error("INVALID_MULTIPART", `Duplicate multipart part ${name}`, 400);
+    const image = STATEMENT_IMAGE_NAME_PATTERN.test(name);
+    const part = image ? await normalizeStatementImagePart(value, name) : await normalizeAttachmentPart(value, name);
+    total += part.bytes.byteLength;
     if (total > MAX_MULTIPART_BYTES) throw new LogsV2Error("REQUEST_TOO_LARGE", "Multipart request exceeds 12 MiB", 413);
-    attachments.set(name, attachment);
+    if (image) images.set(name, part); else attachments.set(name, part);
   }
-  return { payload, attachments };
+  if (images.size > MAX_STATEMENT_IMAGES * LOG_LIMITS.maxProblems) throw new LogsV2Error("ATTACHMENT_TOO_LARGE", "Too many statement images in one request", 413);
+  return { payload, attachments, images };
 }
 
 function validateChanges(changes, problems, attachments, multipart) {
@@ -163,9 +202,31 @@ function validateChanges(changes, problems, attachments, multipart) {
 }
 
 function checkLogVersion(log) {
-  // Accept an in-flight v1–v4 editor snapshot, then normalize and persist v5.
+  // Accept an in-flight v1–v5 editor snapshot, then normalize and persist the current version.
   // This is compatibility at the API boundary, not a legacy write format.
-  if (log?.schemaVersion !== undefined && (!Number.isInteger(log.schemaVersion) || log.schemaVersion < 1 || log.schemaVersion > 5)) throw new LogsV2Error("UNSUPPORTED_SCHEMA", "Unsupported log schema version", 422);
+  if (log?.schemaVersion !== undefined && (!Number.isInteger(log.schemaVersion) || log.schemaVersion < 1 || log.schemaVersion > LOG_SCHEMA_VERSION)) throw new LogsV2Error("UNSUPPORTED_SCHEMA", "Unsupported log schema version", 422);
+}
+
+/**
+ * 校验题面图片引用。
+ *
+ * 与 PDF 不同，图片没有单独的 change 动作：payload 里每题的 `statementImages` 就是该题
+ * 期望的完整集合，服务端据此决定上传、保留与删除。每个引用要么带上了对应分区，要么
+ * 仓库里已有同名文件（文件名即内容哈希，存在即内容一致）。
+ */
+function validateStatementImages(problems, images, root, existingPaths) {
+  const declared = new Set();
+  for (const problem of problems) for (const image of problem.statementImages || []) {
+    const path = statementImagePath(root, image);
+    if (declared.has(path)) continue;
+    declared.add(path);
+    const upload = images.get(image.fileName);
+    if (upload ? upload.sha256 !== image.sha256 || upload.bytes.byteLength !== image.bytes : !existingPaths.has(path)) {
+      throw new LogsV2Error("INVALID_ATTACHMENT_REFERENCE", `Statement image ${image.fileName} was not uploaded`, 422);
+    }
+  }
+  for (const name of images.keys()) if (!declared.has(`${root}/${name}`)) throw new LogsV2Error("INVALID_ATTACHMENT_REFERENCE", `Image part ${name} is not referenced by any problem`, 422);
+  return declared;
 }
 
 function knownTextPaths(root, problems) {
@@ -188,10 +249,10 @@ function textChanges(root, previous, next, interval, timestamp) {
 
 async function decodeLog(snapshot, root, files) {
   const metaPath = `${root}/meta.json`;
-  if (!files.some((file) => file.path === metaPath)) return { exists: false, root, files, log: { schemaVersion: 5, problems: [] }, interval: {} };
+  if (!files.some((file) => file.path === metaPath)) return { exists: false, root, files, log: { schemaVersion: LOG_SCHEMA_VERSION, problems: [] }, interval: {} };
   let meta;
   try { meta = JSON.parse(await snapshot.readFile(metaPath)); } catch { throw new LogsV2Error("STORAGE_UNAVAILABLE", "Stored log metadata is invalid", 502); }
-  if (meta.schemaVersion !== undefined && meta.schemaVersion > 5) throw new LogsV2Error("UNSUPPORTED_SCHEMA", "Stored log uses a newer schema", 422);
+  if (meta.schemaVersion !== undefined && meta.schemaVersion > LOG_SCHEMA_VERSION) throw new LogsV2Error("UNSUPPORTED_SCHEMA", "Stored log uses a newer schema", 422);
   const paths = new Set(files.map((file) => file.path));
   const raw = { ...meta, problems: await Promise.all((meta.problems || []).map(async (problem, index) => {
     const fileIndex = Number.isInteger(problem.fileIndex) ? problem.fileIndex : index;
@@ -234,7 +295,7 @@ export function createLogsV2Service({ git, now = () => new Date().toISOString(),
     return { log: state.log, version: state.exists ? await revisionFromEntries(state.files) : null };
   }
 
-  async function save({ memberId, member, date, operationId, expectedVersion, log, attachmentChanges, attachments = new Map() }) {
+  async function save({ memberId, member, date, operationId, expectedVersion, log, attachmentChanges, attachments = new Map(), images = new Map() }) {
     assertDate(date); assertUuid(operationId); checkLogVersion(log);
     // A replace request may carry only pageRange in the JSON; the server derives
     // hash, byte length and MIME from the actual multipart bytes below.
@@ -257,7 +318,7 @@ export function createLogsV2Service({ git, now = () => new Date().toISOString(),
       nextFileIndex += 1;
     }
     if (typeof expectedVersion !== "string" && expectedVersion !== null) throw new LogsV2Error("MALFORMED_REQUEST", "expectedVersion must be a version or null", 400);
-    const requestHash = await digest(encoder.encode(canonical({ date, expectedVersion, log: parsed, attachmentChanges: attachmentChanges || [], attachments: [...attachments.entries()].map(([name, file]) => ({ name, sha256: file.sha256 })) })));
+    const requestHash = await digest(encoder.encode(canonical({ date, expectedVersion, log: parsed, attachmentChanges: attachmentChanges || [], attachments: [...attachments.entries()].map(([name, file]) => ({ name, sha256: file.sha256 })), images: [...images.keys()] })));
     const receiptPath = operationPath(memberId, operationId);
     for (let attempt = 0; attempt < MAX_RETRIES; attempt += 1) {
       const head = await git.getHead();
@@ -268,8 +329,12 @@ export function createLogsV2Service({ git, now = () => new Date().toISOString(),
       const changesById = validateChanges(attachmentChanges, parsed.problems, attachments, attachments.size > 0);
       const oldById = new Map(state.log.problems.map((problem) => [problem.id, problem]));
       let newBytes = 0;
+      let newImageBytes = 0;
+      const existingPaths = new Set(state.files.map((file) => file.path));
       for (const problem of parsed.problems) {
         const old = oldById.get(problem.id); const action = changesById.get(problem.id)?.action || "keep";
+        // 旧客户端不带 statementImages：沿用服务端已有的引用，不能当成「清空」。
+        if (!own(problem, "statementImages") && old?.statementImages?.length) problem.statementImages = old.statementImages;
         if (action === "keep") {
           if (old?.statementAttachment) {
             if (own(problem, "statementAttachment") && !attachmentEqual(problem.statementAttachment, old.statementAttachment)) throw new LogsV2Error("INVALID_ATTACHMENT_REFERENCE", "keep cannot change an attachment");
@@ -282,6 +347,9 @@ export function createLogsV2Service({ git, now = () => new Date().toISOString(),
           problem.statementAttachment = { sha256: upload.sha256, fileName: upload.fileName, bytes: upload.bytes.byteLength, mimeType: upload.mimeType, ...(problem.statementAttachment?.pageRange ? { pageRange: problem.statementAttachment.pageRange } : {}) };
         }
       }
+      const declaredImages = validateStatementImages(parsed.problems, images, state.root, existingPaths);
+      for (const image of images.values()) if (!existingPaths.has(`${state.root}/${image.fileName}`)) newImageBytes += image.bytes.byteLength;
+      if (newImageBytes > MAX_NEW_STATEMENT_IMAGE_BYTES) throw new LogsV2Error("ATTACHMENT_TOO_LARGE", "New statement images exceed 2 MiB", 413);
       if (newBytes > MAX_NEW_ATTACHMENT_BYTES) throw new LogsV2Error("ATTACHMENT_TOO_LARGE", "New PDFs exceed 10 MiB", 413);
       // Date files and everything else are tracked separately: the date version is
       // a fingerprint of this day's own files (plus attachment blobs), so personal
@@ -300,6 +368,16 @@ export function createLogsV2Service({ git, now = () => new Date().toISOString(),
           const upload = attachments.get(action.partName); const path = statementPath(state.root, problem);
           dateChanges.set(path, { path, content: base64(upload.bytes), encoding: "base64", binary: upload.bytes });
         }
+      }
+      // 题面图片：上传本次新增的，删掉这一天里已不再被任何题目引用的。
+      for (const image of images.values()) {
+        const path = `${state.root}/${image.fileName}`;
+        if (existingPaths.has(path)) continue;
+        dateChanges.set(path, { path, content: base64(image.bytes), encoding: "base64", binary: image.bytes });
+      }
+      for (const path of existingPaths) {
+        if (!path.startsWith(`${state.root}/`) || !STATEMENT_IMAGE_ORPHAN.test(path.slice(state.root.length + 1))) continue;
+        if (!declaredImages.has(path)) dateChanges.set(path, { path, delete: true });
       }
       for (const extra of await planAuxiliaryChanges({ snapshot: state.snapshot, memberId, member, date, problems: parsed.problems })) sideChanges.set(extra.path, extra);
       // The version this save reports must equal the version a later read computes
@@ -356,7 +434,19 @@ export function createLogsV2Service({ git, now = () => new Date().toISOString(),
     return { bytes, fileName: safeAttachmentName(problem.statementAttachment.fileName), sha256: problem.statementAttachment.sha256 };
   }
 
-  return Object.freeze({ read, save, remove, statement });
+  /** 已归档的题面图片：只认 meta 里登记过的引用，路径由文件名（内容哈希）拼出。 */
+  async function statementImage({ member, date, recordId, fileName }) {
+    const image = parseStatementImageName(fileName);
+    if (!image) throw new LogsV2Error("NOT_FOUND", "Statement image not found", 404);
+    const state = await snapshotDate(git, await git.getHead(), member, date);
+    const problem = state.log.problems.find((item) => item.id === recordId);
+    if (!problem?.statementImages?.some((entry) => entry.sha256 === image.sha256)) throw new LogsV2Error("NOT_FOUND", "Statement image not found", 404);
+    const bytes = await state.snapshot.readBytes(statementImagePath(state.root, image));
+    if (!bytes) throw new LogsV2Error("STORAGE_UNAVAILABLE", "Statement image is missing", 502);
+    return { bytes, fileName: image.fileName, sha256: image.sha256, mimeType: image.mimeType };
+  }
+
+  return Object.freeze({ read, save, remove, statement, statementImage });
 }
 
 function base64(bytes) {

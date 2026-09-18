@@ -143,3 +143,38 @@ test("corrupt entries are dropped without discarding the valid ones", async () =
   const loaded = await store.loadDate("only-matthew", "2026-09-15");
   assert.deepEqual(Object.keys(loaded.items), ["good"]);
 });
+
+const image = (name, sha) => ({ blob: new Blob([new Uint8Array([0x89, 0x50, 0x4e, 0x47])], { type: "image/png" }), fileName: `statement-${sha}.png`, sha256: sha, mimeType: "image/png" });
+
+test("抓取到的题面图片与 PDF 各自记账，互不覆盖", async () => {
+  const store = createAttachmentStore({ indexedDB: memoryIndexedDB() });
+  const first = image(1, "1".repeat(64));
+  const second = image(2, "2".repeat(64));
+  await store.save({ memberId: "only-matthew", date: "2026-09-15", problemId: "p1", blob: pdf(), fileName: "题面.pdf", sha256: "a".repeat(64) });
+  assert.equal((await store.saveImages({ memberId: "only-matthew", date: "2026-09-15", problemId: "p1", images: [first, second] })).status, "saved");
+
+  // 两边都要读得回来：图片不会顶掉 PDF。
+  const pdfs = await store.loadDate("only-matthew", "2026-09-15");
+  assert.equal(pdfs.items.p1.fileName, "题面.pdf");
+  const images = await store.loadImages("only-matthew", "2026-09-15");
+  assert.deepEqual(images.items.p1.map((item) => item.fileName), [first.fileName, second.fileName]);
+
+  // 移除 PDF 不影响图片；移除图片不影响 PDF。
+  await store.remove("only-matthew", "2026-09-15", "p1");
+  assert.deepEqual(Object.keys((await store.loadDate("only-matthew", "2026-09-15")).items), []);
+  assert.deepEqual(Object.keys((await store.loadImages("only-matthew", "2026-09-15")).items), ["p1"]);
+  await store.removeImages("only-matthew", "2026-09-15", "p1");
+  assert.deepEqual(await store.loadImages("only-matthew", "2026-09-15"), { status: "missing", items: {} });
+});
+
+test("旧格式（条目本身是 PDF）仍能读回，图片上限计入同一次保存的总量", async () => {
+  const idb = memoryIndexedDB();
+  const store = createAttachmentStore({ indexedDB: idb, maxNewBytes: 10 });
+  // v1 记录：items[p1] 直接就是 PDF 对象，没有 pdf/images 之分。
+  idb.map.set("pending", new Map([[attachmentRecordKey("only-matthew", "2026-09-15"), {
+    memberId: "only-matthew", date: "2026-09-15", items: { p1: { blob: pdf(), fileName: "a.pdf", sha256: "a".repeat(64) } },
+  }]]));
+  const legacy = await store.loadDate("only-matthew", "2026-09-15");
+  assert.equal(legacy.items.p1.fileName, "a.pdf");
+  assert.equal((await store.saveImages({ memberId: "only-matthew", date: "2026-09-15", problemId: "p1", images: [image(1, "1".repeat(64))] })).status, "too_large");
+});

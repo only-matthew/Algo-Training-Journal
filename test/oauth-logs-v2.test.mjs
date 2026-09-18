@@ -202,6 +202,69 @@ function jsonCall(github, path, method, body, operationId) {
   });
 }
 
+const OP_IMAGES = "6fd06885-a6ed-43b4-9ba6-ec8875638cdf";
+
+function pngBytes() {
+  return new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x11, 0x22, 0x33, 0x44]);
+}
+
+async function sha256Hex(bytes) {
+  return [...new Uint8Array(await crypto.subtle.digest("SHA-256", bytes))].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+test("v2 logs PUT archives crawled statement images and serves them back", async (context) => {
+  const github = githubMock();
+  seedLegacyIndex(github);
+  context.mock.method(globalThis, "fetch", github.fetch);
+  const bytes = pngBytes();
+  const sha256 = await sha256Hex(bytes);
+  const fileName = `statement-${sha256}.png`;
+  const image = { sha256, fileName, bytes: bytes.byteLength, mimeType: "image/png" };
+  const log = {
+    schemaVersion: 6,
+    problems: [{ id: "p1", name: "Loop", platform: "Codeforces", problemNumber: "123A", tags: [], description: `图：![示意图](./${fileName})`, statementImages: [image] }],
+  };
+  const form = new FormData();
+  form.set("payload", JSON.stringify({ operationId: OP_IMAGES, expectedVersion: null, log }));
+  form.set(fileName, new Blob([bytes], { type: "image/png" }), fileName);
+
+  const saved = await call(github, `/api/v2/logs/dates/${DATE}`, { method: "PUT", headers: { "X-CSRF-Token": CSRF, "Idempotency-Key": OP_IMAGES }, body: form });
+  assert.equal(saved.status, 200);
+  const body = await saved.json();
+  assert.match(body.version, /^sha256:[a-f0-9]{64}$/);
+
+  const meta = JSON.parse(new TextDecoder().decode(github.files.get(`logs/${MEMBER}/2026/09/15/meta.json`)));
+  assert.deepEqual(meta.problems[0].statementImages, [image]);
+  // 图片文件名就是仓库路径，不带题目槽位：内容相同的图片在同一天只落一份。
+  assert.deepEqual(github.files.get(`logs/${MEMBER}/2026/09/15/${fileName}`), bytes);
+
+  const served = await call(github, `/api/v2/logs/dates/${DATE}/problems/p1/images/${fileName}`, { method: "GET" });
+  assert.equal(served.status, 200);
+  assert.equal(served.headers.get("Content-Type"), "image/png");
+  assert.equal(served.headers.get("Content-Disposition"), "inline");
+  assert.equal(served.headers.get("X-Content-Type-Options"), "nosniff");
+  assert.deepEqual(new Uint8Array(await served.arrayBuffer()), bytes);
+
+  // 未登记的文件名与别题的引用都不能被读到。
+  const other = `statement-${"a".repeat(64)}.png`;
+  assert.equal((await call(github, `/api/v2/logs/dates/${DATE}/problems/p1/images/${other}`, { method: "GET" })).status, 404);
+  assert.equal((await call(github, `/api/v2/logs/dates/${DATE}/problems/p2/images/${fileName}`, { method: "GET" })).status, 404);
+});
+
+test("v2 logs PUT rejects an image part whose bytes do not match its name", async (context) => {
+  const github = githubMock();
+  seedLegacyIndex(github);
+  context.mock.method(globalThis, "fetch", github.fetch);
+  const bytes = pngBytes();
+  const fileName = `statement-${"b".repeat(64)}.png`;
+  const form = new FormData();
+  form.set("payload", JSON.stringify({ operationId: OP_IMAGES, expectedVersion: null, log: { schemaVersion: 6, problems: [{ id: "p1", name: "Loop" }] } }));
+  form.set(fileName, new Blob([bytes], { type: "image/png" }), fileName);
+  const response = await call(github, `/api/v2/logs/dates/${DATE}`, { method: "PUT", headers: { "X-CSRF-Token": CSRF, "Idempotency-Key": OP_IMAGES }, body: form });
+  assert.equal(response.status, 422);
+  assert.equal((await response.json()).error.code, "INVALID_IMAGE");
+});
+
 test("v2 logs PUT rejects a missing idempotency key before touching Git", async (context) => {
   const github = githubMock();
   seedLegacyIndex(github);

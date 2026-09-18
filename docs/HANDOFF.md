@@ -1,5 +1,43 @@
 # 交接文档：Algo Training Journal
 
+## 最新交接（2026-09-18）：题面图片随抓取归档到仓库
+
+用户反馈：抓洛谷题面时正文里被插进了 `cdn.luogu.com.cn` 的外链图片，在本站加载不出来；要求修复抓取机制、把图片一并抓进仓库（「和 PDF 一样」），并顺带确认 Codeforces 有没有同样的问题。
+
+### 1. 根因不是 referer，是站点 CSP
+
+用户怀疑是洛谷 CDN 的 referer 限制。实测（`curl`，带浏览器 UA）**新旧两代洛谷图床都不校验 referer**：`/upload/pic/2262.png` 与 `/upload/image_hosting/oe7wpwsi.png` 在不带 referer、带 `example.com` referer、带本站 referer 三种情况下都是 200（新图床只是把 `Content-Type` 报成 `application/octet-stream`）。
+
+真正的原因在 `index.html` 的 CSP：`img-src 'self' https://avatars.githubusercontent.com data:` ——任何外部图片域都被拦下，而与 referer 无关。Codeforces **有同样的问题**：官方题面里的图（`espresso.codeforces.com` 等）同样是外链，一样被这条 CSP 拦掉；`parserVersion=cf-html-v2` 只是给正文加了 `external-images` 警告，警告本身并不能让图片显示出来。顺带发现 CF 题面里的内联 `data:` 图（CSP 恰好放行）此前会被 `safeUrl` 直接丢弃，现在也会被解码归档。
+
+所以两条链路（官方 CF 题面、洛谷镜像）都要把图片收进仓库；只放宽 CSP 不是好办法：图片仍然依赖上游可用性与防盗链策略。
+
+### 2. 处置
+
+命名与限额集中在 [lib/statement-images.mjs](lib/statement-images.mjs)：文件名 `statement-<sha256>.<ext>`（内容寻址、同名必然同内容、跨题自然去重），只收位图 `png/jpeg/gif/webp`（**不收 SVG**：同源 SVG 能执行脚本，等于给了自己一个 XSS 入口）；单张 1 MiB、每题最多 10 张、一次保存新增合计 2 MiB。正文里的引用写成 `./statement-<sha256>.<ext>`：`lib/render-safety.mjs` 的 `isSafeUrl` 只放行 `http(s)://`、`/`、`./`、`../`、`#` 开头，**裸文件名会被它丢掉**（实测过），显式 `./` 则在 GitHub 与站内渲染器里都能解析。
+
+1. **解析层**（`workers/services/problem-statement.mjs`）：图片不再直接写成外链，而是记进 `context.images` 并在正文里留下占位符。洛谷正文是 HTML 与 Markdown 混排，裸的 `![](url)` 语法藏在文本节点里，此前会被当成普通文字原样写进描述——现在和 `<img src>` 走同一条登记路径。未开启归档时（直接调用解析函数、单元测试）保持原来的外链写法，`external-images` 警告语义不变。
+2. **抓取层**：`archiveStatementImages()` 下载图片（4 并发、总预算 6 秒、流式截断到 1 MiB），按**魔数**判断类型（洛谷新图床的响应头不可信），按来源站补 `Referer`，算出 sha256 后把占位符替换成 `./statement-<sha256>.<ext>`。单张失败只影响它自己：正文保留原外链并保留 `external-images` 警告，题面照常返回。单张/总量/张数超限的图片同样退回外链——超过单张上限的图片会被保存接口拒绝，不能让整次保存因此失败。
+3. **洛谷题号导入**（`fetchLuoguProblems`）：与 CF 镜像共用 `parseLuoguProblem()`，因此导入的描述由「纯文本 + 截断 20000 字」变成与抓取一致的 Markdown 全文（小节标题、公式、样例、图片），图片同样归档；一次导入的图片按 4 MiB 总量预算降级。
+4. **保存链路**：走既有的 v2 multipart，新增的分区名就是仓库文件名（`statement-<sha>.png`），服务端按「文件名 = 内容哈希」逐张校验内容，拒绝名不符实的分区；payload 里每题的 `statementImages` 是这一题期望的完整集合，服务端据此写新文件、删这一天里不再被任何题目引用的图片；读取走 `GET /api/v2/logs/dates/:date/problems/:recordId/images/:fileName`（需会话、`nosniff`、`inline`）。旧 JSON 接口仍然不能写入图片字节：新增/变更引用返回 422 `ATTACHMENT_REQUIRES_V2`，`planLogChanges` 会把仍被引用的图片纳入保留集。
+5. **构建期**（`scripts/generate-data.js`）：逐张校验哈希与字节数后复制到 `site/problem/<成员>/<日期>/<题号>/`，并把**站点数据里**的描述从相对文件名改写成绝对地址。仓库里的 `desc.md` 保持相对文件名（GitHub 页面能直接渲染）；「描述引用了 `statement-<sha>.<ext>` 却没有归档清单」会在构建期直接失败，不发布坏链接。
+6. **schemaVersion 5 → 6**：新增 `problem.statementImages`。空数组表示「不再引用任何图片」（据此删文件），字段缺席表示「旧客户端不知道这件事」——服务端沿用旧引用，不把无知当删除。落盘时省略空数组。前端只在「服务端告知过这一题的图片」或「本次抓到新图片」时才声明该字段，并且把已归档的引用一起写进草稿：否则一份旧草稿恢复后，一次带附件的保存就会把正文还在引用的图片当孤儿删掉，构建期还会因为「引用了未归档图片」直接报错。
+
+### 3. 设计取舍：图片跟随正文，而不是像 PDF 那样常驻
+
+PDF 有独立的「替换 / 移除」按钮，因为它是一次性的原件归档。图片不同：它出现在正文里，**是否保留由正文决定**——保存时只声明「描述里仍然写着该文件名」的图片，其余不上传、并删除同名旧文件。这样 AI 概括（把描述压成一句话）之后不会在仓库里留下没人看的图片，用户想删图片也只需要删正文里的那行。表单状态区会写明「只有描述里仍引用的图片会随保存保留」以及当前有几张已不被引用。
+
+### 4. 验证
+
+- `npm run check:syntax`、`npm test`（383 + 58 项全过）、`npm run build` 均通过。
+- 联网实测（本机住宅网络）：洛谷导入 `P3376 / P1904 / P1514` 三道题全部归档成功（图片字节哈希与文件名一致、正文不再有 `cdn.luogu.com.cn`）；CF 题面链路上游 403 时走洛谷镜像，`1710A` 归档 2 张图、其余题目无图但同样不再有外链。另做了一次真实数据端到端：抓 `P1514` → 写成日期目录 → `publishStatementImages()` → `renderMarkdown()`，得到 2 个同源 `<img src="/problem/…">`。
+- 新增/更新测试：解析与归档（`test/problem-statement.test.mjs`：HTML 图片、洛谷 Markdown 图片语法、失败降级、`data:` 内联、SVG 拒绝、重复图片只下载一次、单张/总量/张数上限）、洛谷导入端到端（`test/oauth-import.test.mjs`）、schema 校验（`test/problem-enrichment-schema.test.mjs`）、服务端存取与孤儿清理（`test/logs-v2.test.mjs`）、Worker HTTP 端到端 multipart 与读回（`test/oauth-logs-v2.test.mjs`）、构建期发布与改写（`test/statement-image-publish.test.mjs`，含裸文件名容错）、渲染放行相对路径（`test/render-safety.test.mjs`）、浏览器本地存储（`test/attachment-store.test.mjs`）、表单接线（`test/form-drafts.test.mjs`）。
+- **未验证**：① `espresso.codeforces.com` 等 CF 图床的真实下载（本机对 codeforces.com 及图床都是 403，只能验证洛谷域；代码按来源站补 referer，但没跑过真的 CF 官方题面）；② 部署到边缘后没有真人跑一遍「抓取 → 保存 → 等部署 → 看详情页图片」。上线前建议按这两条各跑一次。
+
+### 5. 部署顺序：先 Worker，后前端
+
+与 2026-09-15 那轮相反，这次是**前端先上会直接坏**：新前端发 `schemaVersion: 6`，旧 Worker 的 `checkLogVersion`/`validateLogInput` 会把 `> 5` 一律 422 `UNSUPPORTED_SCHEMA`（新旧接口都是），保存全失败。反过来没有风险：新 Worker 接受 v5 载荷，旧前端不带 `statementImages` 时按「沿用旧引用」处理。所以顺序是 **`wrangler deploy` → 推前端**。
+
 ## 最新交接（2026-09-16 补记二）：复习按钮排布与并发写入丢更新
 
 ### 1. 首页/详情页「结束复习 / 顺延 +3」恢复横排

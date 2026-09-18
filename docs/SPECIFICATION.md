@@ -1,8 +1,12 @@
 # 队员自主算法训练平台：技术规格
 
+## 2026-09-18 专项规格：题面图片归档
+
+新增 `problem.statementImages`（schemaVersion 5 → 6）：抓取 CF 题面与洛谷题面时，正文里的图片一并下载、按 `statement-<sha256>.<ext>` 落到该日目录，与题面 PDF 同一套保存/读取/发布链路；站点 CSP 只允许 `img-src 'self'`，外链图片（洛谷 CDN、Codeforces 图床）在站内本来就加载不出来。命名、类型与限额集中在 [lib/statement-images.mjs](lib/statement-images.mjs)，接口与取舍见 [题面归档规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) §4.1/§4.2/§5.1 与 [最新交接](HANDOFF.md)。
+
 ## 2026-09-16 专项规格：训练状态拆分
 
-新增 [训练状态与提交表单规格](LEARNING-STATE-SPECIFICATION.md) 及 [设计方案](LEARNING-STATE-DESIGN.md)。新写入采用 v5，保留已有题面与附件字段。完成结果、掌握自评、复习安排与错题标记独立；涉及旧 reviewStatus 三态的冲突以此专项为准。活力 outcome 权重保持不变。实现与验证进展见 [最新交接](HANDOFF.md)。
+新增 [训练状态与提交表单规格](LEARNING-STATE-SPECIFICATION.md) 及 [设计方案](LEARNING-STATE-DESIGN.md)。该轮写入 v5，保留已有题面与附件字段（题面图片后于 2026-09-18 追加，当前写入版本为 v6）。完成结果、掌握自评、复习安排与错题标记独立；涉及旧 reviewStatus 三态的冲突以此专项为准。活力 outcome 权重保持不变。实现与验证进展见 [最新交接](HANDOFF.md)。
 
 ## 2026-09-15 专项规格补充（待实现）
 

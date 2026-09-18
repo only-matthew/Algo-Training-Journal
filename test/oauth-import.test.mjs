@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import test from "node:test";
 
 import { fetchCodeforcesAccepted, fetchLuoguProblems, fetchAtCoderAccepted } from "../workers/oauth.mjs";
@@ -92,20 +93,40 @@ test("fetchLuoguProblems parses name, official difficulty and description from o
   };
   const problems = await fetchLuoguProblems("P3376", { fetchImpl });
   assert.equal(problems.length, 1);
+  // 题面与「抓取 CF 题面」共用一套解析：Markdown 小节标题、公式与图片都保留下来。
   assert.deepEqual(problems[0], {
     name: "【模板】网络最大流",
     platform: "洛谷",
     problemNumber: "P3376",
     difficulty: "提高+/省选-",
-    description: "给定网络，求最大流。\n\n数据范围较大。",
+    description: "# 【模板】网络最大流\n\n## 题目描述\n给定网络，求最大流。\n\n数据范围较大。",
   });
   assert.ok(!problems[0].description.includes("[object Object]"), "description must not be [object Object]");
+});
+
+test("fetchLuoguProblems archives statement images instead of inserting CDN links", async () => {
+  const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d]);
+  const fileName = `statement-${createHash("sha256").update(png).digest("hex")}.png`;
+  const fetchImpl = async (url) => {
+    const target = String(url);
+    if (target.includes("cdn.luogu.com.cn")) {
+      assert.equal(target, "https://cdn.luogu.com.cn/upload/image_hosting/oe7wpwsi.png");
+      return new Response(png, { headers: { "Content-Type": "application/octet-stream" } });
+    }
+    assert.match(target, /^https:\/\/www\.luogu\.com\.cn\/problem\/P1904$/);
+    return new Response(luoguPage({ pid: "P1904", name: "天际线问题", difficulty: 7, content: { description: "<p>如图：</p><p>![建筑轮廓](https://cdn.luogu.com.cn/upload/image_hosting/oe7wpwsi.png)</p>" } }));
+  };
+  const [problem] = await fetchLuoguProblems("P1904", { fetchImpl });
+  assert.match(problem.description, new RegExp(`!\\[建筑轮廓\\]\\(\\./${fileName}\\)`));
+  assert.doesNotMatch(problem.description, /cdn\.luogu\.com\.cn/);
+  assert.equal(problem.statementImages.length, 1);
+  assert.deepEqual({ ...problem.statementImages[0], data: undefined }, { fileName, sha256: fileName.slice(10, 74), mimeType: "image/png", bytes: png.byteLength, data: undefined });
 });
 
 test("fetchLuoguProblems falls back to raw string content without breaking", async () => {
   const fetchImpl = async () => new Response(luoguPage({ pid: "P1001", name: "A+B Problem", difficulty: 1, content: "直接字符串题面" }));
   const [problem] = await fetchLuoguProblems("P1001", { fetchImpl });
-  assert.equal(problem.description, "直接字符串题面");
+  assert.equal(problem.description, "# A+B Problem\n\n## 题目描述\n直接字符串题面");
 });
 
 test("fetchLuoguProblems maps all official difficulty levels", async () => {

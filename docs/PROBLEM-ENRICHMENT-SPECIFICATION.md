@@ -114,7 +114,8 @@
 - attachmentChanges 是 `{recordId,action,partName?}` 数组；action 为 keep/replace/remove，每题至多一项；省略视为 keep。replace 的 partName 必须唯一且匹配实际 multipart 文件。纯 JSON 不允许 replace。
 - keep 的引用必须与同快照已有记录一致；不能通过伪造哈希引用他人附件。remove 后省略引用；replace 的引用由服务端重建，不信任客户端 bytes/mime/sha。
 - 服务端对 PDF 扩展名、声明类型和 `%PDF-` 文件头做基础校验，明确这不是恶意内容扫描。以下载/外部查看方式提供，不能将文件内容作为 HTML 渲染。
-- 已删除题目所对应的附件必须一同删除；未知文件不得被新增附件清单的遗漏误删。
+- 已删除题目所对应的附件必须一同删除；未知文件必须保留，不得因「不在期望清单里」被误删。
+- **题面图片（2026-09-18 补充）**：`log.problems[].statementImages` 是每題期望的完整集合，元素 `{sha256,fileName,bytes,mimeType}`，文件名必须等于 `statement-<sha256>.<ext>`（`lib/statement-images.mjs` 是唯一命名来源）；只接受位图 `png/jpeg/gif/webp`，单张 ≤1 MiB、每题 ≤10 张、一次保存新增合计 ≤2 MiB。图片没有 keep/replace/remove 动作：只声明「正文里仍然引用」的那些，服务端据此写入缺的分区、并删除这一天里不再被任何题目引用的图片文件。字段缺席表示旧客户端不知道这件事，服务端沿用旧引用；空数组才是「不再引用」。分区名就是仓库文件名，服务端按魔数判断类型并重新计算哈希，与文件名、声明值不符一律 422 `INVALID_IMAGE`。
 
 成功响应：`{log,version,commitSha,publicationStatus:"pending"}`。version 为该日期权威文件清单（路径与 Git blob SHA 排序）的内容指纹，不取整个仓库 HEAD；与本日期无关的提交不能制造内容冲突。
 
@@ -128,6 +129,7 @@
 
 - `GET /api/v2/logs/:date` 返回 `{log,version}`，本人读取最新已提交快照。
 - `GET /api/v2/logs/:date/problems/:recordId/statement` 认证后提供本人最新 PDF；ID 解析到记录的附件，禁止任意路径。响应使用 application/pdf、nosniff 和 attachment Content-Disposition，显示名做编码与 CR/LF 清理。
+- `GET /api/v2/logs/:date/problems/:recordId/images/:fileName` 认证后提供本人最新归档图片；只认 meta 里登记过的哈希，路径由文件名拼出（禁止任意路径），响应使用登记时的 MIME、`nosniff` 与 inline；构建期发布的站点副本才是公开读取路径。
 - `DELETE /api/v2/logs/:date` 携带 operationId、expectedVersion，原子删除本日正文、meta、附件及索引引用，并写成功回执。
 - 公开读者通过静态站点发布后的附件 URL 获取。最新读取接口不意味着源数据私有。
 
@@ -155,7 +157,9 @@
 
 **来源链（2026-09-16 补充）。** codeforces.com 的题面页由 Cloudflare 托管：边缘实测（临时探针 Worker，跑同款代码）表明，**只发 `Accept: text/html` 会拿到 403 且带 `cf-mitigated: challenge`，补上常规浏览器请求头（`User-Agent` / `Accept` / `Accept-Language`）就是 200 的真题面页**——直取失败的原因是请求头，不是出口 IP。因此抓取按顺序尝试两个来源，共用同一个 12 秒总预算：先请求官方英文题面（带浏览器请求头，不做任何验证码绕过），失败且不是 `not-found` 时再请求洛谷同题页 `https://www.luogu.com.cn/problem/CF<contestId><index>`。洛谷对匿名请求先下发 C3VK 挑战 cookie（302 回跳同 URL），带 cookie 重试一次，这与洛谷导入、`scripts/fetch-luogu-meta.mjs` 是同一条既有链路。
 
-镜像成功时 `source.kind="luogu-mirror"`、`parserVersion="luogu-mirror-v1"`，并在 `warnings` 里加 `mirror-source`：镜像正文措辞可能与官方英文题面有差异（边缘实测取到的是英文原题），表单必须提示用户核对。两个来源都失败时回给主来源（codeforces.com）的 reason，镜像的失败原因不覆盖它；`not-found` 不触发镜像（官方对题目存在性是权威的）。
+镜像成功时 `source.kind="luogu-mirror"`、`parserVersion="luogu-mirror-v2"`，并在 `warnings` 里加 `mirror-source`：镜像正文措辞可能与官方英文题面有差异（边缘实测取到的是英文原题），表单必须提示用户核对。两个来源都失败时回给主来源（codeforces.com）的 reason，镜像的失败原因不覆盖它；`not-found` 不触发镜像（官方对题目存在性是权威的）。
+
+**题面图片（2026-09-18 补充）。** 站点 CSP 是 `img-src 'self' https://avatars.githubusercontent.com data:`，任何外来图片域都加载不出来——洛谷的 `cdn.luogu.com.cn`（实测不校验 referer）、Codeforces 的 `espresso.codeforces.com` 都一样；旧实现把外链原样写进描述，等于在站内留下一堆加载不出来的图。因此两个来源的正文图片都改成「先归档、再引用」：解析阶段把 `<img src>` 与正文里的裸 `![](...)`（洛谷正文 HTML 与 Markdown 混排）统一换成占位符，`archiveStatementImages()` 再下载（4 并发、总预算 6 秒、单张流式截断 1 MiB）、按魔数判类型、补来源站 referer，算出 sha256 后把占位符替换成 `statement-<sha256>.<ext>`；`data:` 内联图直接解码归档。单张失败保留原外链并保留 `external-images` 警告，正文与题面本身照常返回。`images` 随响应体以 base64 回传（`{fileName,sha256,mimeType,bytes,data}`），由表单交给 v2 保存链路，不写进描述以外的任何聚合数据。
 
 解析保真补充：CF 限制块内嵌的 `.property-title`（如 `time limit per test`）只是标签，必须剥掉，否则正文会出现「时间限制：time limit per test1 second」。
 

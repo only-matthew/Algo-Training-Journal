@@ -38,3 +38,12 @@ test("危险链接协议不会进入 href", () => {
   assert.equal(html, "<p>危险链接</p>");
   assert.doesNotMatch(html, /javascript:/i);
 });
+
+test("归档题面图片的相对与站点内地址都能渲染成图片", () => {
+  const fileName = `statement-${"a".repeat(64)}.png`;
+  // 仓库里的 desc.md 用显式相对路径（GitHub 与站内渲染器都认），站点数据里换成同源绝对地址。
+  assert.match(renderMarkdown(`![示意图](./${fileName})`), new RegExp(`<img src="\\./${fileName}" alt="示意图">`));
+  assert.match(renderMarkdown(`![示意图](/problem/%E5%BB%96%E5%A4%8F/2026-09-16/p1/${fileName})`), /<img src="\/problem\//);
+  // 危险协议的图片不产生 img（退化成 alt 文本）。
+  assert.doesNotMatch(renderMarkdown("![x](javascript:alert(1))"), /<img/);
+});
