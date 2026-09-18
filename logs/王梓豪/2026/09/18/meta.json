@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 5,
+  "updatedAt": "2026-09-18T20:58:43.664+08:00",
+  "problems": [
+    {
+      "id": "a1dcf8d8-95f3-4f65-8f31-5cb6a7fe48d3",
+      "name": "[NOIP 2000 提高组] 方格取数",
+      "platform": "洛谷",
+      "problemNumber": "P1004",
+      "difficulty": "★ 1500",
+      "difficultyRating": 1500,
+      "tags": [
+        "DP"
+      ],
+      "outcome": "hinted",
+      "masteryStatus": "mastered",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}

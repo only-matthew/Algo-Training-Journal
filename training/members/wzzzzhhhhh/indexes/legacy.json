@@ -1147,6 +1147,26 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-09-20",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-17/60ff5b8c-d7ee-496f-b0b7-754cb6104fbe/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1004",
+      "date": "2026-09-18",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-18",
+        "recordId": "a1dcf8d8-95f3-4f65-8f31-5cb6a7fe48d3"
+      },
+      "problem": {
+        "name": "[NOIP 2000 提高组] 方格取数",
+        "platform": "洛谷",
+        "problemNumber": "P1004",
+        "difficulty": "★ 1500"
+      },
+      "outcome": "hinted",
+      "masteryStatus": "mastered",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-18/a1dcf8d8-95f3-4f65-8f31-5cb6a7fe48d3/"
     }
   ]
 }
