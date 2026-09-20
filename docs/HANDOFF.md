@@ -57,6 +57,12 @@
 - **边缘实测（临时探针 Worker，已删除）**：`abc381_a` / `abc337_e` / `abc340_e` / `dp_a` 全部 `ok · luogu-mirror · 300–800 ms`，`typical90_a` 如实报 `blocked`；`officialOnly` 全部 `blocked`、`mirrorOnly` 全部 `ok`，来源链的每一步都被单独验证过。
 - **仍差真人**：登录后在界面里点一次「抓取题面」（选一条 AtCoder 记录、题号如 `abc381_a`）做最终确认。
 
+### 6. 上线状态（2026-09-21 收尾）
+
+- 前端：`c0735d0`、`5a5f522`、`6b7b01f` 均已推 `main`，GitHub Actions 三次构建全部 `completed success`；线上入口 `app-SWLYTDN6.js`，form 分包已含「抓取题面」/`atcoderHandle`/`atcoder-html`/「AtCoder 官方页在服务端被拦截」/「题面取自洛谷镜像（多为日文原题）」/「官方页与镜像都没取到」全部标记（`artifacts/verify-live-mirror.mjs` 可复核）。
+- Worker：`algo-oauth` 最新版本 `e0d1573c-b507-40be-abfa-b5ed5f36d194`（100% 流量，2026-09-20T18:07:15Z），即「官方页 → 洛谷 AT_ 镜像」这一版；`https://algo-oauth.xialiao.org/api/session` 正常返回 `null`（未登录态）。
+- 临时资源已回收：探针 Worker `algo-atcoder-probe` 与其自定义域 `atcoder-probe.xialiao.org` 已删除，DNS 查询确认「名称不存在」。
+
 ## 最新交接（2026-09-18）：题面图片随抓取归档到仓库
 
 用户反馈：抓洛谷题面时正文里被插进了 `cdn.luogu.com.cn` 的外链图片，在本站加载不出来；要求修复抓取机制、把图片一并抓进仓库（「和 PDF 一样」），并顺带确认 Codeforces 有没有同样的问题。
