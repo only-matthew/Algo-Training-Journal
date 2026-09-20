@@ -2,7 +2,7 @@
 
 ## 2026-09-21 专项规格：AtCoder 题面抓取
 
-`POST /api/problem-statement` 的 `platform` 从只有 `Codeforces` 扩为 `Codeforces` 与 `AtCoder`：AtCoder 按题号（任务 ID，如 `abc381_a`）取官方题目页 `atcoder.jp/contests/<比赛>/tasks/<任务>?lang=en`，只取 `span.lang-en` 题面，`<var>` 的裸 TeX 转 `$...$`，图片按 `Referer: https://atcoder.jp/` 归档；`statementSource.kind` 新增 `atcoder-html` 并按域名校验来源地址。共享解析器同时补齐 `<code>`、`<var>`、`<thead>/<tbody>` 表格与 `<blockquote>`，因此 CF / 洛谷解析版本升级为 `cf-html-v4` / `luogu-mirror-v3`。导入面板同时预置队员的 AtCoder 用户名（`workers/oauth.mjs` 的 `ATCODER_HANDLES`，廖夏 `only_matthew`）。接口与取舍见 [题面归档规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) §5.1/§5.3 与 [最新交接](HANDOFF.md)。
+`POST /api/problem-statement` 的 `platform` 从只有 `Codeforces` 扩为 `Codeforces` 与 `AtCoder`：AtCoder 按题号（任务 ID，如 `abc381_a`）先试官方题目页 `atcoder.jp/contests/<比赛>/tasks/<任务>?lang=en`（只取 `span.lang-en` 题面，`<var>` 的裸 TeX 转 `$...$`，图片按 `Referer: https://atcoder.jp/` 归档），实测该站对机房出口整体返回 403，因此失败后退回洛谷的 `AT_<任务 ID>` 镜像页（`parserVersion="luogu-atcoder-mirror-v1"`，带 `mirror-source` 警告）。`statementSource.kind` 新增 `atcoder-html`，洛谷 `AT_` 镜像复用 `luogu-mirror`，来源地址按 kind 与平台形态校验。共享解析器同时补齐 `<code>`、`<var>`、`<thead>/<tbody>` 表格、`<blockquote>`，以及纯 Markdown 正文与 `[in, out]` 数组样例（洛谷 AT_ 页形态），因此 CF / 洛谷解析版本升级为 `cf-html-v4` / `luogu-mirror-v3`。导入面板同时预置队员的 AtCoder 用户名（`workers/oauth.mjs` 的 `ATCODER_HANDLES`，廖夏 `only_matthew`）。接口与取舍见 [题面归档规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) §5.1/§5.3 与 [最新交接](HANDOFF.md)。
 
 ## 2026-09-18 专项规格：题面图片归档
 

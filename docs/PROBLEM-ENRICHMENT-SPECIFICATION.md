@@ -185,9 +185,13 @@ AtCoder 没有题面 API，但题目页是公开的：`https://atcoder.jp/contes
 
 页面在 `#task-statement` 内同时内嵌 `span.lang-ja` 与 `span.lang-en` 两套题面，只取英文那套；只有日文时取日文原题并在 `warnings` 里加 `ja-statement`，表单提示「这道题没有英文题面，正文是日文原题」。页面用 `og:url` 声明自己的身份，与请求题号不一致时判 `parse-failed`，绝不把别题正文写进记录。404 为 `not-found`；403 与 429 都按 `blocked` 降级（AtCoder 会对异常流量限流），不自动重试、不做任何绕过。
 
-解析保真（AtCoder 用到的映射）：`<var>` 里是裸 TeX（如 `\frac{|T|+1}{2}`、`1 \leq N \leq 100`），转成 `$...$` 交给站内 KaTeX；`<code>` 转行内代码（围栏长度按内容里最长的反引号串自适应）；`<h3>` 小节标题转 `###`；`<pre>` 样例保留空白并转 fenced code；表格行递归收集（AtCoder 的 `<tr>` 包在 `<thead>/<tbody>` 里，只认直接子节点会让整张表消失），没有单元格的空行跳过；`<blockquote>` 转引用块。标题取自 `<title>`，时间/内存限制从页面头部的 `Time Limit: … / Memory Limit: …` 抽取，写成 `时间限制：2 sec` / `内存限制：1024 MiB`。
+**来源链（2026-09-21 边缘实测补充）。** 官方页对机房出口整体返回 403（连首页都是，属 IP 级拦截；换请求头无效），因此 Cloudflare Workers **取不到官方页**，与 Codeforces 一样需要兜底：官方页先试（占一半预算、失败很快；上游放行时仍是权威英文题面），失败后退回洛谷的 `AT_<任务 ID>` 镜像页 `https://www.luogu.com.cn/problem/AT_<task>`。镜像成功时 `source.kind="luogu-mirror"`、`parserVersion="luogu-atcoder-mirror-v1"`，并在 `warnings` 里加 `mirror-source`（正文多为日文原题、部分是中文翻译，表单必须提示核对）；两个来源都失败时回给官方页的原因，`not-found`（页面可达且确实没有这道题）不触发镜像。覆盖面受洛谷收录限制：ABC/ARC/AGC/DP 常见题可用，Typical90、JOI 等无镜像。
 
-题面图片同样先归档：AtCoder 的题面图在 `img.atcoder.jp`，下载时补 `Referer: https://atcoder.jp/`，其余与 CF / 洛谷链路相同。`source.kind="atcoder-html"`、`parserVersion="atcoder-html-v1"`。共享解析器的这轮改动同时影响另外两个来源，因此版本一并升级为 `cf-html-v4` / `luogu-mirror-v3`。
+镜像页的正文形态与洛谷题目不同，解析时要分开处理：正文是**纯 Markdown 文本**（`> 引用`、`- 列表`、`$公式$` 靠换行表达，且正文里的 `<` 不是标签开头），不能走 HTML 解析器、也不能折叠空白；样例是 `[in, out]` **数组对**（洛谷题目与 CF 镜像是 `{in,out}` 对象，两种都要接受）；首行 `[problemUrl]: <原题地址>` 是 Markdown 的链接引用定义、渲染时会整行消失，改写为可见的 `原题链接：<url>`。
+
+解析保真（AtCoder 官方页用到的映射）：`<var>` 里是裸 TeX（如 `\frac{|T|+1}{2}`、`1 \leq N \leq 100`），转成 `$...$` 交给站内 KaTeX；`<code>` 转行内代码（围栏长度按内容里最长的反引号串自适应）；`<h3>` 小节标题转 `###`；`<pre>` 样例保留空白并转 fenced code；表格行递归收集（AtCoder 的 `<tr>` 包在 `<thead>/<tbody>` 里，只认直接子节点会让整张表消失），没有单元格的空行跳过；`<blockquote>` 转引用块。标题取自 `<title>`，时间/内存限制从页面头部的 `Time Limit: … / Memory Limit: …` 抽取，写成 `时间限制：2 sec` / `内存限制：1024 MiB`。
+
+题面图片同样先归档：AtCoder 官方页的题面图在 `img.atcoder.jp`，下载时补 `Referer: https://atcoder.jp/`；洛谷镜像走洛谷那条链路。`source.kind="atcoder-html"`、`parserVersion="atcoder-html-v1"`。共享解析器的这轮改动同时影响另外两个来源，因此版本一并升级为 `cf-html-v4` / `luogu-mirror-v3`。
 
 ### 5.4 表单整合
 

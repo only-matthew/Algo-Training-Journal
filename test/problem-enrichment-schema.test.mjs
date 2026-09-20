@@ -46,6 +46,17 @@ test("AtCoder 题面来源按 kind 校验地址并可保存", () => {
   assert.deepEqual(normalizeMeta(metaFromProblems(saved.problems)).problems[0].statementSource, source);
 });
 
+test("AtCoder 题面走洛谷 AT_ 镜像时来源地址同样被接受", () => {
+  // 实测 atcoder.jp 对机房出口整体 403，生产环境的题面多来自洛谷 AT_ 镜像；
+  // 这个地址与 CF 镜像共用 luogu-mirror kind，但路径形态不同，必须一起放行。
+  const mirror = { kind: "luogu-mirror", url: "https://www.luogu.com.cn/problem/AT_abc381_a", fetchedAt: "2026-09-21T00:00:00.000Z", parserVersion: "luogu-atcoder-mirror-v1" };
+  const saved = validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "p1", name: "[ABC381A] 11/22 String", problemNumber: "abc381_a", statementSource: mirror }] });
+  assert.deepEqual(saved.problems[0].statementSource, mirror);
+  for (const url of ["https://www.luogu.com.cn/problem/AT_", "https://www.luogu.com.cn/problem/ABC381A", "https://www.luogu.com.cn/problem/AT-abc381-a"]) {
+    assert.throws(() => validateLogInput({ problems: [{ id: "p1", name: "Example", statementSource: { kind: "luogu-mirror", url } }] }), /题面来源地址无效/);
+  }
+});
+
 test("洛谷镜像题面来源按 kind 校验地址并可保存", () => {
   const saved = validateLogInput({ schemaVersion: 4, problems: [{ id: "p1", name: "Watermelon", problemNumber: "4A", statementSource: { kind: "luogu-mirror", url: "https://www.luogu.com.cn/problem/CF4A", fetchedAt: "2026-09-16T00:00:00.000Z", parserVersion: "luogu-mirror-v1" } }] });
   assert.deepEqual(saved.problems[0].statementSource, { kind: "luogu-mirror", url: "https://www.luogu.com.cn/problem/CF4A", fetchedAt: "2026-09-16T00:00:00.000Z", parserVersion: "luogu-mirror-v1" });

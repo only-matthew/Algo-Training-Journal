@@ -10,10 +10,10 @@
 
 ### 2. 修法：一个入口，按平台分派来源
 
-- `workers/services/problem-statement.mjs` 新增 `parseAtCoderProblemNumber()`（题号即任务 ID，比赛 ID 取最后一个下划线之前的部分，与 `lib/problem-links.mjs` 生成原题链接的口径一致）、`parseAtCoderStatement()` 与 `fetchAtCoderStatement()`；`fetchStatement({platform,...})` 按平台分派——AtCoder 只取官方页，Codeforces 保持「官方英文题面 → 洛谷镜像」的来源链。
+- `workers/services/problem-statement.mjs` 新增 `parseAtCoderProblemNumber()`（题号即任务 ID，比赛 ID 取最后一个下划线之前的部分，与 `lib/problem-links.mjs` 生成原题链接的口径一致）、`parseAtCoderStatement()` 与 `fetchAtCoderStatement()`；`fetchStatement({platform,...})` 按平台分派，两个平台都是「官方页优先、洛谷镜像兜底」。
 - 路由 `handleProblemStatement` 的 `platform` 白名单扩为 `Codeforces` / `AtCoder`；AtCoder 题号拼不出题目页时直接 400，不发上游请求。
 - `lib/journal-api.js`、`lib/form.mjs` 改按当前平台与题号抓取（按钮文案改为「抓取题面」），AtCoder 题号形状不对时在客户端就提示「要写成 `abc381_a` 这样的任务 ID」。
-- `statementSource.kind` 新增 `atcoder-html`，`lib/problem-enrichment-schema.mjs` 按 kind 校验来源地址（只认 `atcoder.jp/contests/<比赛>/tasks/<任务>`）。
+- `statementSource.kind` 新增 `atcoder-html`；洛谷 `AT_` 镜像复用 `luogu-mirror` kind，`lib/problem-enrichment-schema.mjs` 按 kind 与地址形态校验（`atcoder.jp/contests/<比赛>/tasks/<任务>`、`www.luogu.com.cn/problem/CF<场次><代号>`、`www.luogu.com.cn/problem/AT_<任务 ID>`）。
 
 ### 3. 解析保真：AtCoder 页面用到的结构
 
@@ -21,16 +21,41 @@
 
 公式写在 `<var>` 里、内容是裸 TeX（`\frac{|T|+1}{2}`、`1 \leq N \leq 100`），转成 `$...$` 交给站内 KaTeX；`<code>` 转行内代码；表格的 `<tr>` 包在 `<thead>/<tbody>` 里，原来的 `tableMarkdown` 只认直接子节点、会把整张表丢掉，改为递归收集并跳过空行。这几处都在共享解析器里，因此 CF 与洛谷的 `parserVersion` 一并升到 `cf-html-v4` / `luogu-mirror-v3`。
 
+### 3.1 关键发现：atcoder.jp 对机房出口整体 403
+
+第一版只取官方页，部署后立刻用临时探针 Worker（挂 `atcoder-probe.xialiao.org`，验证后已 delete）在边缘实测，结果是**每一道题都 `blocked`**，于是补做了诊断：
+
+| 请求（Cloudflare 边缘） | 结果 |
+| --- | --- |
+| `https://atcoder.jp/`（首页） | **403**，Apache 错误页，`server: cloudflare` + `x-amz-cf-id` |
+| `https://atcoder.jp/contests/abc381/tasks/abc381_a?lang=en`（浏览器请求头） | **403**，同上（5–15 ms，明显是边缘/shield 直接拒绝） |
+| 同题，只发 `Accept: text/html` | **403** |
+| 同题，补 `Sec-Fetch-*` / `Upgrade-Insecure-Requests` / `Connection` 等全套头 | **403** |
+| `https://www.luogu.com.cn/problem/AT_abc381_a` | **200**，`lentille-context` 存在 |
+
+结论：**这是 IP 级拦截，不是 UA 或请求头问题**——AtCoder 拒绝机房出口（含 Cloudflare Workers），换头、换路径都没用；本机住宅网络同一份代码却能拿到官方英文题面（所以本机 `verify-import-live` 走的是 `atcoder-html`）。若不做兜底，这个功能在生产环境等于没修。
+
+### 3.2 兜底：洛谷的 `AT_` 镜像页
+
+洛谷按 `AT_<任务 ID>` 收录 AtCoder 题目，正文取自同一份 `lentille-context` JSON，于是 `fetchStatement` 的 AtCoder 分支与 CF 完全同构：官方页（占一半预算，失败得很快）→ 洛谷 `AT_` 镜像。镜像成功时 `source.kind="luogu-mirror"`、`parserVersion="luogu-atcoder-mirror-v1"`，并带 `mirror-source` 警告；两个来源都失败时回给官方页的原因（`blocked`），表单会补一句「AtCoder 官方页在服务端被拦截，且洛谷没有这道题的镜像」。
+
+顺带修了洛谷 AT_ 页面的两处形态差异（都是实测踩到的）：
+
+1. **正文是纯 Markdown 文本，不是 HTML**。原来的 `render()` 一律 `parseHtml` + 折叠空白，会把 `> 引用`、`- 列表` 压成一行；而且正文里的 `<` 会被当成标签开头吃掉。现在先按 `HTML_LIKE` 判断形态，纯 Markdown 走 `markdownText()`（只解码实体、登记图片、归一 `$$$` 公式，保留换行）。
+2. **样例是 `[in, out]` 数组对**，而旧代码只认 `{in,out}` 对象并显式过滤数组，导致 AT_ 镜像一条样例都没有；现在两种形态都接受。另外首行的 `[problemUrl]: <原题地址>` 是 Markdown 的链接引用定义、渲染时会整行消失，改写为可见的 `原题链接：<url>`。
+
+覆盖面上洛谷只收了部分 AtCoder 题目：ABC / ARC / AGC / DP 常见题都在（抽查 12 道命中 11 道），**Typical90、JOI 等没有**（实测 `AT_typical90_a`、`AT_typical90_br`、`AT_joi2019yo_a` 均 404）。这些题目在生产环境拿不到题面，只能粘贴正文或上传 PDF；这是上游限制，不是可以绕的 bug。
+
 ### 4. 预置 AtCoder 用户名
 
-`workers/oauth.mjs` 新增 `ATCODER_HANDLES = { "only-matthew": "only_matthew" }`（与 `CF_HANDLES` 并列，AtCoder 的 handle 与 CF 不同名），随会话响应下发 `atcoderHandle`，导入面板打开 AtCoder 时自动预填；没有预置的队员留空、可自行输入。
+`workers/oauth.mjs` 新增 `ATCODER_HANDLES = { "only-matthew": "only_matthew" }`（与 `CF_HANDLES` 并列，AtCoder 的 handle 与 CF 不同名），随会话响应下发 `atcoderHandle`，导入面板打开 AtCoder 时自动预填；没有预置的队员留空、可自行输入。已核实该 handle 在 AtCoder 与 kenkoooo API 上都存在且有提交。
 
 ### 5. 验证
 
-- 单元测试：`test/problem-statement.test.mjs` 新增 AtCoder 题号解析、英文题面解析（公式/行内代码/样例/表格）、日文兜底、`og:url` 不符判失败、真实抓取路径与图片归档、失败降级 6 项；`test/oauth-problem-statement.test.mjs` 新增路由层 AtCoder 成功、题号非法 400、平台不支持 400 三项；`test/problem-enrichment-schema.test.mjs` 新增 `atcoder-html` 来源的接受与拒绝；`test/oauth-import.test.mjs` 新增 `/api/session` 下发 `cfHandle` / `atcoderHandle`。
-- 真实网络（本机住宅网络，`node scripts/verify-import-live.mjs`）：`abc381_a` 抓到 1493 字符英文题面且不含日文小节；AtCoder 题号缺下划线时仍 400。另用临时探针对 8 道真机题目（abc381_a / abc337_e / abc230_c / dp_a / abc381_f / abc392_a / abc330_c / abc230_a）做了整页解析，公式、`<code>`、样例、表格均正常；在 abc340_e / abc345_d 上验证了 `img.atcoder.jp` 图片真实归档（`images=1`、无 `external-images` 警告，说明 referer 规则有效）。
-- **未验证**：Cloudflare 边缘出口对 `atcoder.jp` 的可达性与限流表现（本机可达且未被限流），以及部署后真人在界面上点一次「抓取题面」。上线前建议各跑一次。
-- 部署状态：前端已推 `main` 并由 GitHub Actions 发布（线上 `form-FFFMQJMR.js` 已含「抓取题面」/`atcoderHandle`/`ja-statement`/`atcoder-html` 标记），Worker `algo-oauth` 已 `npx wrangler deploy`（Version ID `169d68ac-2900-49a3-bd29-e0adcf2248b7`）。**仍差真人在界面里点一次「抓取题面」**（选一条 AtCoder 记录、题号如 `abc381_a`）做最终确认。
+- 单元测试：`test/problem-statement.test.mjs` 覆盖 AtCoder 题号解析、官方页解析（公式/行内代码/样例/表格）、日文兜底、`og:url` 不符判失败、AT_ 镜像解析（Markdown 结构 / `原题地址` / 数组样例 / pid 校验 / `<` 不被当标签）、官方页失败退回镜像、两源都失败保留官方原因、官方可达时不请求镜像；`test/oauth-problem-statement.test.mjs` 覆盖路由层 AtCoder 成功、题号非法 400、平台不支持 400；`test/problem-enrichment-schema.test.mjs` 覆盖 `atcoder-html` 与 `AT_` 镜像地址的接受与拒绝；`test/oauth-import.test.mjs` 覆盖 `/api/session` 下发 `cfHandle` / `atcoderHandle`。
+- 本机真实网络（`node scripts/verify-import-live.mjs`）：官方页走通（1493 字符英文题面、无日文小节），AT_ 镜像单独调用也解析成功（931 字符、`mirror-source`），题号缺下划线仍 400。
+- **边缘实测（临时探针 Worker，已删除）**：`abc381_a` / `abc337_e` / `abc340_e` / `dp_a` 全部 `ok · luogu-mirror · 300–800 ms`，`typical90_a` 如实报 `blocked`；`officialOnly` 全部 `blocked`、`mirrorOnly` 全部 `ok`，来源链的每一步都被单独验证过。
+- **仍差真人**：登录后在界面里点一次「抓取题面」（选一条 AtCoder 记录、题号如 `abc381_a`）做最终确认。
 
 ## 最新交接（2026-09-18）：题面图片随抓取归档到仓库
 

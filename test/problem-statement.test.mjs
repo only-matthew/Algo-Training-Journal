@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { archiveStatementImages, fetchAtCoderStatement, fetchCodeforcesStatement, fetchLuoguStatement, fetchStatement, parseAtCoderProblemNumber, parseAtCoderStatement, parseCodeforcesStatement, parseLuoguStatement, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
+import { archiveStatementImages, fetchAtCoderStatement, fetchCodeforcesStatement, fetchLuoguAtCoderStatement, fetchLuoguStatement, fetchStatement, parseAtCoderProblemNumber, parseAtCoderStatement, parseCodeforcesStatement, parseLuoguAtCoderStatement, parseLuoguStatement, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
 
 const HTML = `<div class="problem-statement"><div class="header"><div class="title">A. Test</div><div class="time-limit">1 second</div><div class="memory-limit">256 megabytes</div></div><p>Find $$$x$$$.</p><div class="input-specification"><p>Input</p></div><div class="output-specification"><p>Output</p></div><img src="/img.png"></div>`;
 const CHALLENGE = `<!DOCTYPE html><html><head><title>Just a moment...</title></head><body>cloudflare challenge</body></html>`;
@@ -363,7 +363,7 @@ test("AtCoder 抓取按官方页解析，题号大小写不敏感并归档题面
   assert.deepEqual(fetchImpl.calls.map((call) => call.url), [ATCODER_URL, ATCODER_IMAGE_URL]);
 });
 
-test("AtCoder 抓取不退回镜像，失败按原因降级", async () => {
+test("AtCoder 官方页单源抓取的失败原因（退回镜像由 fetchStatement 负责）", async () => {
   const notFound = await fetchAtCoderStatement({ problemNumber: "abc999_z" }, { fetchImpl: async () => new Response("", { status: 404 }) });
   assert.deepEqual(notFound, { status: "unavailable", problemNumber: "abc999_z", reason: "not-found", retryable: false });
   const limited = await fetchAtCoderStatement({ problemNumber: "abc381_a" }, { fetchImpl: async () => new Response("", { status: 429 }) });
@@ -374,4 +374,90 @@ test("AtCoder 抓取不退回镜像，失败按原因降级", async () => {
   const invalid = await fetchAtCoderStatement({ problemNumber: "abc381" }, { fetchImpl: async () => { calls += 1; return new Response(""); } });
   assert.equal(invalid.reason, "parse-failed");
   assert.equal(calls, 0);
+});
+
+// ── AtCoder 题面的洛谷镜像（www.luogu.com.cn/problem/AT_<task>）──────────────
+// 实测：atcoder.jp 对机房出口整体 403（Workers 取不到官方页），洛谷的 AT_ 页面则可达，
+// 因此官方页失败后必须能退回镜像，否则用户在生产环境里永远抓不到 AtCoder 题面。
+const LUOGU_AT_URL = "https://www.luogu.com.cn/problem/AT_abc381_a";
+// 形态照抄真实页面：洛谷的 AT_ 题面正文是纯 Markdown 文本（不是 HTML），
+// 样例单独以 `[in, out]` 数组对给出，正文首行是 `[problemUrl]: <原题地址>`。
+const luoguAtProblem = {
+  pid: "AT_abc381_a",
+  name: "[ABC381A] 11/22 String",
+  difficulty: 1,
+  content: {
+    name: "[ABC381A] 11/22 String",
+    description: "[problemUrl]: https://atcoder.jp/contests/abc381/tasks/abc381_a\n\n> この問題の定義は C 問題と同じです。\n\n文字列 $ T $ が与えられます。\n\n- $ 1 \\leq N \\leq 100 $\n- $ S $ は `1` からなる\n",
+    formatI: "入力は以下の形式で標準入力から与えられる。\n\n> $ N $ $ S $",
+    formatO: "$ S $ が条件を満たせば `Yes` を出力せよ。",
+    hint: "### 制約\n\n- $ N $ は整数",
+  },
+  samples: [["5\r\n11/22", "Yes"], ["1\r\n/", "Yes"]],
+};
+const luoguAtPage = (problem) => `<html><head><title>${problem.name} - 洛谷</title></head><body><script id="lentille-context" type="application/json">${JSON.stringify({ data: { problem } }).replace(/<\//g, "<\\/")}</script></body></html>`;
+const ATCODER_BLOCKED = [/^https:\/\/atcoder\.jp\//, () => new Response("", { status: 403 })];
+
+test("洛谷 AT_ 镜像页保留 Markdown 结构、原题地址与数组样例", () => {
+  const parsed = parseLuoguAtCoderStatement(luoguAtPage(luoguAtProblem), "abc381_a");
+  assert.match(parsed.description, /^# \[ABC381A\] 11\/22 String/);
+  assert.match(parsed.description, /## 题目描述/);
+  assert.match(parsed.description, /## 输入格式/);
+  assert.match(parsed.description, /## 输出格式/);
+  assert.match(parsed.description, /## 说明\/提示/);
+  // 「[problemUrl]: …」是 Markdown 的链接引用定义，渲染时会整行消失，必须改写。
+  assert.match(parsed.description, /原题链接：https:\/\/atcoder\.jp\/contests\/abc381\/tasks\/abc381_a/);
+  assert.doesNotMatch(parsed.description, /\[problemUrl\]/);
+  // 换行是结构：引用与列表不能被折叠成一行。
+  assert.match(parsed.description, /\n> この問題の定義は C 問題と同じです。\n/);
+  assert.match(parsed.description, /\n- \$ 1 \\leq N \\leq 100 \$\n/);
+  assert.match(parsed.description, /\$ S \$ が条件を満たせば `Yes` を出力せよ。/);
+  // 样例是数组对，也要转成 fenced code。
+  assert.match(parsed.description, /### 样例 1\n输入：\n```\n5\n11\/22\n```\n输出：\n```\nYes\n```/);
+  assert.match(parsed.description, /### 样例 2/);
+  // 页面是别的题（pid 不符）时不能把正文写进记录。
+  assert.throws(() => parseLuoguAtCoderStatement(luoguAtPage({ ...luoguAtProblem, pid: "AT_abc381_b" }), "abc381_a"), /parse-failed/);
+  // 正文里的 `<` 不是标签开头，不能被标签解析器吃掉。
+  const withComparison = parseLuoguAtCoderStatement(luoguAtPage({ ...luoguAtProblem, content: { description: "制約は $ 1 \\leq N $ と 2 < 3 です。" }, samples: [] }), "abc381_a");
+  assert.match(withComparison.description, /2 < 3/);
+});
+
+test("AtCoder 官方页被拦截时退回洛谷 AT_ 镜像", async () => {
+  const fetchImpl = routedFetch([ATCODER_BLOCKED, [new RegExp(`^${LUOGU_AT_URL}$`), () => new Response(luoguAtPage(luoguAtProblem))]]);
+  const result = await fetchStatement({ platform: "AtCoder", problemNumber: "abc381_a" }, { fetchImpl });
+  assert.equal(result.status, "ok");
+  assert.equal(result.problemNumber, "abc381_a");
+  assert.equal(result.source.kind, "luogu-mirror");
+  assert.equal(result.source.url, LUOGU_AT_URL);
+  assert.equal(result.source.parserVersion, "luogu-atcoder-mirror-v1");
+  assert.deepEqual(result.warnings, ["mirror-source"]);
+  assert.match(result.description, /# \[ABC381A\] 11\/22 String/);
+  assert.deepEqual(fetchImpl.calls.map((call) => call.url), [ATCODER_URL, LUOGU_AT_URL]);
+});
+
+test("AtCoder 两个来源都失败时保留官方页的失败原因", async () => {
+  const fetchImpl = routedFetch([ATCODER_BLOCKED, [new RegExp(`^${LUOGU_AT_URL}$`), () => new Response("", { status: 404 })]]);
+  const result = await fetchStatement({ platform: "AtCoder", problemNumber: "abc381_a" }, { fetchImpl });
+  assert.deepEqual(result, { status: "unavailable", problemNumber: "abc381_a", reason: "blocked", retryable: false });
+  assert.equal(fetchImpl.calls.length, 2);
+});
+
+test("AtCoder 官方页可达时不再请求镜像", async () => {
+  const fetchImpl = routedFetch([
+    [new RegExp(`^${ATCODER_URL.replace(/\?/g, "\\?")}$`), () => new Response(atcoderPage({ japanese: false }))],
+    [new RegExp(`^${ATCODER_IMAGE_URL.replace(/[/.]/g, "\\$&")}$`), () => new Response(PNG, { headers: { "Content-Type": "image/png" } })],
+  ]);
+  const result = await fetchStatement({ platform: "AtCoder", problemNumber: "abc381_a" }, { fetchImpl });
+  assert.equal(result.source.kind, "atcoder-html");
+  assert.deepEqual(fetchImpl.calls.map((call) => call.url), [ATCODER_URL, ATCODER_IMAGE_URL]);
+});
+
+test("洛谷镜像单独调用时同样解析 AT_ 页面", async () => {
+  const fetchImpl = routedFetch([[new RegExp(`^${LUOGU_AT_URL}$`), () => new Response(luoguAtPage(luoguAtProblem))]]);
+  const result = await fetchLuoguAtCoderStatement({ problemNumber: "ABC381_A" }, { fetchImpl });
+  assert.equal(result.status, "ok");
+  assert.equal(result.problemNumber, "abc381_a");
+  assert.equal(result.source.url, LUOGU_AT_URL);
+  const missing = await fetchLuoguAtCoderStatement({ problemNumber: "abc381" }, { fetchImpl });
+  assert.equal(missing.reason, "parse-failed");
 });

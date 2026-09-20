@@ -3,6 +3,7 @@
 // 覆盖：会话鉴权（构造加密会话）、CSRF、Origin 校验、Codeforces 真实 API、
 //       洛谷真实页面抓取、AtCoder 真实 API、限流不误伤。不依赖 wrangler / GitHub OAuth / 云端 secrets。
 import worker, { seal } from "../workers/oauth.mjs";
+import { fetchLuoguAtCoderStatement } from "../workers/services/problem-statement.mjs";
 
 const ENV = { SESSION_SECRET: "local-test-secret-0123456789abcdef0123456789abcdef" };
 const WORKER_ORIGIN = "https://algo-oauth.xialiao.org";
@@ -121,17 +122,27 @@ async function main() {
     res = await post("/api/problem-statement", { platform: "AtCoder", problemNumber: "abc381_a" }, { cookie, csrf: CSRF });
     const body = await res.json();
     check("AtCoder 题面请求成功（200）", res.status === 200, `HTTP ${res.status}`);
-    check("题面来源为 atcoder-html", body.source?.kind === "atcoder-html", body.source?.kind || JSON.stringify(body).slice(0, 120));
-    check(
-      "题面正文已解析（含小节标题）",
-      (body.description || "").includes("### Problem Statement") && (body.description || "").length > 200,
-      `${(body.description || "").length} 字符`,
-    );
-    check("只取英文题面（不含日文小节）", !/問題文/.test(body.description || ""), /問題文/.test(body.description || "") ? "正文里出现了日文小节标题" : "正文无日文小节");
+    // 本机（住宅网络）走官方页，机房出口会被 AtCoder 整体 403，那时是 luogu-mirror。
+    check("题面来源为官方页或洛谷 AT_ 镜像", ["atcoder-html", "luogu-mirror"].includes(body.source?.kind), `${body.source?.kind} · ${body.source?.url || ""}`);
+    check("题面正文已解析（有标题且够长）", (body.description || "").length > 200, `${(body.description || "").length} 字符`);
+    check("官方页来源时只取英文题面", body.source?.kind !== "atcoder-html" || !/問題文/.test(body.description || ""), /問題文/.test(body.description || "") ? "正文里出现了日文小节标题" : "正文无日文小节");
     res = await post("/api/problem-statement", { platform: "AtCoder", problemNumber: "abc381" }, { cookie, csrf: CSRF });
     check("AtCoder 题号缺下划线时仍是 400", res.status === 400, `HTTP ${res.status}`);
   } catch (error) {
     check("AtCoder 题面接口可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
+  }
+
+  console.log("── AtCoder 洛谷镜像（生产环境实际来源）──");
+  try {
+    const mirror = await fetchLuoguAtCoderStatement({ problemNumber: "abc381_a" });
+    check("AT_ 镜像抓取成功", mirror.status === "ok", mirror.status === "ok" ? `${mirror.description.length} 字符` : `${mirror.status} ${mirror.reason}`);
+    if (mirror.status === "ok") {
+      check("镜像来源与地址正确", mirror.source.kind === "luogu-mirror" && mirror.source.url === "https://www.luogu.com.cn/problem/AT_abc381_a", `${mirror.source.kind} · ${mirror.source.url}`);
+      check("镜像正文含洛谷小节标题", /## 题目描述/.test(mirror.description), mirror.description.slice(0, 40).replace(/\n/g, " "));
+      check("镜像带 mirror-source 警告", mirror.warnings.includes("mirror-source"), JSON.stringify(mirror.warnings));
+    }
+  } catch (error) {
+    check("洛谷 AT_ 镜像可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
   }
 
   console.log("── 限流不误伤 ──");

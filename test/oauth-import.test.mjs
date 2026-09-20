@@ -99,7 +99,7 @@ test("fetchLuoguProblems parses name, official difficulty and description from o
     platform: "洛谷",
     problemNumber: "P3376",
     difficulty: "提高+/省选-",
-    description: "# 【模板】网络最大流\n\n## 题目描述\n给定网络，求最大流。\n\n数据范围较大。",
+    description: "# 【模板】网络最大流\n\n## 题目描述\n\n给定网络，求最大流。\n\n数据范围较大。",
   });
   assert.ok(!problems[0].description.includes("[object Object]"), "description must not be [object Object]");
 });
@@ -126,7 +126,7 @@ test("fetchLuoguProblems archives statement images instead of inserting CDN link
 test("fetchLuoguProblems falls back to raw string content without breaking", async () => {
   const fetchImpl = async () => new Response(luoguPage({ pid: "P1001", name: "A+B Problem", difficulty: 1, content: "直接字符串题面" }));
   const [problem] = await fetchLuoguProblems("P1001", { fetchImpl });
-  assert.equal(problem.description, "# A+B Problem\n\n## 题目描述\n直接字符串题面");
+  assert.equal(problem.description, "# A+B Problem\n\n## 题目描述\n\n直接字符串题面");
 });
 
 test("fetchLuoguProblems maps all official difficulty levels", async () => {

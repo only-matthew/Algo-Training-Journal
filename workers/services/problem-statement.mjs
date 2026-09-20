@@ -82,6 +82,20 @@ function safeImageUrl(value, base) {
 function imageAlt(value) { return tidy(value || "image").replace(/[\[\]]/g, "\\$"); }
 
 /**
+ * 纯 Markdown 正文（洛谷的 AtCoder 题面就是这种形态）。
+ *
+ * 这里的换行即结构（`> 引用`、`- 列表`、缩进代码块），因此既不能按 HTML 文本折叠空白，
+ * 也不能交给标签解析器——正文里出现的 `<` 会被当成标签开头吃掉。只做三件事：解码实体、
+ * 登记待归档图片、把 CF 的三美元公式归一。
+ */
+function markdownText(value, context, warnings) {
+  return textWithImages(decode(value), context, warnings)
+    .replace(/\$\$\$([\s\S]*?)\$\$\$/g, (_all, formula) => `$${formula}$`)
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n");
+}
+
+/**
  * 行内代码（AtCoder 的 `<code>`、洛谷正文里的 Markdown 混排）。
  *
  * 围栏长度按内容里最长的反引号串加一：否则正文自己带的 `` ` `` 会提前闭合围栏，
@@ -125,7 +139,7 @@ function textWithImages(text, context, warnings) {
 function markdownFrom(node, warnings, context = {}) {
   if (node.text !== undefined) {
     const text = context.pre ? node.text : textWithImages(node.text, context, warnings);
-    return context.pre ? text : text.replace(/\$\$\$([\s\S]*?)\$\$\$/g, (_all, f) => `$${f}$`).replace(/\s+/g, " ");
+    return context.pre ? text : text.replace(/\$\$\$([\s\S]*?)\$\$\$/g, (_all, formula) => `$${formula}$`).replace(/\s+/g, " ");
   }
   const children = (extra = {}) => (node.children || []).map((part) => markdownFrom(part, warnings, { ...context, ...extra })).join(""); const tag = node.tag;
   // 脚本与样式在题面里没有语义，任何来源都不应把它们的源码混进正文。
@@ -332,6 +346,9 @@ export async function fetchCodeforcesStatement({ problemNumber, sourceUrl }, { f
 // 洛谷对匿名请求先下发 C3VK 挑战 cookie（302 回跳同 URL），带 cookie 再请求即可拿到页面；
 // 这个握手与 scripts/fetch-luogu-meta.mjs、洛谷导入走的是同一条链路。
 const LUOGU_CONTEXT = /<script[^>]*id=["']lentille-context["'][^>]*>([\s\S]*?)<\/script>/i;
+// 判断一段洛谷正文是 HTML 还是纯 Markdown：只有 `<` 紧跟着标签名才算标签，
+// 「1 < 2」「x <= y」这类数学写法不会被误判。
+const HTML_LIKE = /<\/?[a-z][a-z0-9]*[\s/>]/i;
 const LUOGU_SECTIONS = [["background", "背景"], ["description", "题目描述"], ["formatI", "输入格式"], ["formatO", "输出格式"], ["hint", "说明/提示"]];
 const isChallengePage = (html) => /captcha|challenge|access denied|cloudflare|just a moment/i.test(html);
 export const LUOGU_MIRROR_WARNING = "mirror-source";
@@ -355,23 +372,32 @@ export function readLuoguProblem(html) {
 /**
  * 把洛谷题目对象转成 Markdown 题面。
  *
- * 洛谷题号导入与 CF 镜像共用这一段：两条链路都从同一份页面数据出发，正文格式与
- * 图片归档方式必须一致，否则用户会在两个入口看到两种结果。
+ * 洛谷题号导入与两条镜像链路（CF / AtCoder）共用这一段：都从同一份页面数据出发，
+ * 正文格式与图片归档方式必须一致，否则用户会在不同入口看到不同结果。
  */
-export function parseLuoguProblem(problem, { expectedProblemNumber, collectImages = false } = {}) {
+export function parseLuoguProblem(problem, { expectedProblemNumber, expectedPid: declaredPid, collectImages = false } = {}) {
   const expected = expectedProblemNumber && parseCodeforcesProblemNumber(expectedProblemNumber);
   if (!problem || typeof problem !== "object") fail("parse-failed");
-  // pid 是洛谷自己的题目身份；镜像链路用它核对题号，导入链路按用户输入的题号取页面。
-  const pid = String(problem.pid || "").toUpperCase(); const expectedPid = expected ? `CF${expected.contestId}${expected.index}` : "";
+  // pid 是洛谷自己的题目身份：CF 镜像从题号推出 `CF<contestId><index>`，AtCoder 镜像
+  // 直接声明 `AT_<task>`，导入链路按用户输入的题号取页面（不校验）。两者都用它确认页面身份。
+  const pid = String(problem.pid || "").toUpperCase();
+  const expectedPid = expected ? `CF${expected.contestId}${expected.index}` : String(declaredPid || "").toUpperCase();
   if (pid && expectedPid && pid !== expectedPid) fail("parse-failed");
-  const warnings = new Set(); const parts = []; const context = imageContext(collectImages); const render = (raw) => tidy(markdownFrom(parseHtml(raw), warnings, { ...context, base: LUOGU_ORIGIN }));
+  const warnings = new Set(); const parts = []; const context = imageContext(collectImages);
+  const renderContext = { ...context, base: LUOGU_ORIGIN };
+  // 正文有两种形态：HTML（洛谷题目、CF 镜像）与纯 Markdown（AtCoder 的 AT_ 镜像）。
+  // 后者交给 HTML 解析器会把换行结构压扁、把 `<` 当成标签开头，必须分开处理。
+  const render = (raw) => (HTML_LIKE.test(String(raw)) ? tidy(markdownFrom(parseHtml(String(raw)), warnings, renderContext)) : tidy(markdownText(String(raw), renderContext, warnings)));
   if (typeof problem.content === "string") { const body = render(problem.content); if (body) parts.push(body); }
   else if (problem.content && typeof problem.content === "object") for (const [key, label] of LUOGU_SECTIONS) { const raw = problem.content[key]; if (typeof raw !== "string" || !raw.trim()) continue; const body = render(raw); if (body) parts.push(`## ${label}`, body); }
   // 样例可能嵌在正文里，也可能单列在 samples：后者只在正文没有代码块时补，避免重复。
-  const samples = Array.isArray(problem.samples) ? problem.samples.filter((sample) => sample && typeof sample === "object" && !Array.isArray(sample)) : [];
+  // 形态有两种：`{in,out}` 对象（洛谷题目与 CF 镜像）和 `[in, out]` 数组对（AtCoder 镜像）。
+  const samples = (Array.isArray(problem.samples) ? problem.samples : [])
+    .map((sample) => (Array.isArray(sample) ? { in: sample[0], out: sample[1] } : sample))
+    .filter((sample) => sample && typeof sample === "object");
   if (samples.length && !parts.join("\n").includes("```")) parts.push(...samples.map((sample, index) => sampleBlock(sample, index)));
   const title = tidy(problem.title || problem.name || (problem.content && typeof problem.content === "object" ? problem.content.name : "") || "");
-  const body = tidy(parts.join("\n")); if (!body) fail("parse-failed");
+  const body = tidy(parts.join("\n\n")); if (!body) fail("parse-failed");
   const description = tidy([title && `# ${title}`, body].filter(Boolean).join("\n\n")); if (description.length > MAX_MARKDOWN) fail("too-large");
   return { description, warnings: [...warnings], images: context.images || [] };
 }
@@ -394,33 +420,52 @@ async function requestLuoguPage(url, { fetchImpl, controller, headers }) {
   }
   return { response };
 }
-export async function fetchLuoguStatement({ problemNumber }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
-  const expected = parseCodeforcesProblemNumber(problemNumber); const normalized = expected ? expected.problemNumber : normalizeProblemNumber(problemNumber);
-  if (!expected) return unavailable(normalized, "parse-failed");
-  const url = `${LUOGU_ORIGIN}/problem/CF${expected.contestId}${expected.index}`;
+/**
+ * 洛谷镜像页的共同链路：C3VK 握手 → 解析 → 图片归档。
+ *
+ * 两个调用方（CF 同题镜像、AtCoder 的 AT_ 镜像）只差 URL、解析函数与来源版本，
+ * 降级原因与时限必须完全一致，因此共用这一段而不是各写一遍。
+ */
+async function fetchLuoguMirror({ url, problemNumber, parserVersion, parse }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
   const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeoutMs);
   const headers = { ...BROWSER_HEADERS, "Accept-Language": "zh-CN,zh;q=0.9" };
   try {
     const { response, error, blocked } = await requestLuoguPage(url, { fetchImpl, controller, headers });
-    if (error) return unavailable(normalized, error?.name === "AbortError" || controller.signal.aborted ? "timeout" : "upstream-error", true);
-    if (blocked || !response) return unavailable(normalized, "blocked");
-    if (response.status === 404) return unavailable(normalized, "not-found");
-    if (response.status === 403 || !response.ok) return unavailable(normalized, response.status >= 500 ? "upstream-error" : "blocked", response.status >= 500);
+    if (error) return unavailable(problemNumber, error?.name === "AbortError" || controller.signal.aborted ? "timeout" : "upstream-error", true);
+    if (blocked || !response) return unavailable(problemNumber, "blocked");
+    if (response.status === 404) return unavailable(problemNumber, "not-found");
+    if (response.status === 403 || !response.ok) return unavailable(problemNumber, response.status >= 500 ? "upstream-error" : "blocked", response.status >= 500);
     try {
-      const parsed = parseLuoguStatement(await readLimitedBody(response, controller.signal), normalized, { collectImages: true });
+      const parsed = parse(await readLimitedBody(response, controller.signal));
       const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, timeoutMs: imageTimeoutMs });
-      if (archived.description.length > MAX_MARKDOWN) return unavailable(normalized, "too-large");
-      return { status: "ok", problemNumber: normalized, description: archived.description, images: archived.images, source: { kind: "luogu-mirror", url, fetchedAt: now(), parserVersion: LUOGU_STATEMENT_PARSER_VERSION }, warnings: [LUOGU_MIRROR_WARNING, ...settledWarnings(parsed.warnings, archived)] };
-    } catch (error) { const reason = failureReason(error, controller.signal); return unavailable(normalized, reason, REASONS_RETRYABLE.has(reason)); }
+      if (archived.description.length > MAX_MARKDOWN) return unavailable(problemNumber, "too-large");
+      return { status: "ok", problemNumber, description: archived.description, images: archived.images, source: { kind: "luogu-mirror", url, fetchedAt: now(), parserVersion }, warnings: [LUOGU_MIRROR_WARNING, ...settledWarnings(parsed.warnings, archived)] };
+    } catch (error) { const reason = failureReason(error, controller.signal); return unavailable(problemNumber, reason, REASONS_RETRYABLE.has(reason)); }
   } finally { clearTimeout(timer); }
 }
+export async function fetchLuoguStatement({ problemNumber }, options = {}) {
+  const expected = parseCodeforcesProblemNumber(problemNumber); const normalized = expected ? expected.problemNumber : normalizeProblemNumber(problemNumber);
+  if (!expected) return unavailable(normalized, "parse-failed");
+  return fetchLuoguMirror({
+    url: `${LUOGU_ORIGIN}/problem/CF${expected.contestId}${expected.index}`,
+    problemNumber: normalized,
+    parserVersion: LUOGU_STATEMENT_PARSER_VERSION,
+    parse: (html) => parseLuoguStatement(html, normalized, { collectImages: true }),
+  }, options);
+}
 
-// ── AtCoder 官方题面 ────────────────────────────────────────────────────────
+// ── AtCoder 题面 ────────────────────────────────────────────────────────────
 // AtCoder 没有题面 API，但题目页是公开的：atcoder.jp/contests/<contest>/tasks/<task>。
 // 题号本身就是任务 ID（abc381_a），比赛 ID 是最后一个下划线之前的部分——这与
 // lib/problem-links.mjs 生成原题链接的口径一致，不另立一套解析规则。
 // 页面同时内嵌日文（span.lang-ja）与英文（span.lang-en）两套题面，只取英文那套。
+//
+// 现实约束（2026-09-21 边缘实测）：atcoder.jp 对机房出口整体返回 403（连首页都是，
+// 换请求头无效，属 IP 级拦截），Cloudflare Workers 因此取不到官方页。所以官方页仍然
+// 先试（上游放行、或本地/住宅网络都能拿到英文原题），失败后退回洛谷的 AT_ 镜像页
+// ——与 Codeforces 那条「官方优先、洛谷兜底」的来源链完全同构。
 export const ATCODER_JA_WARNING = "ja-statement";
+export const ATCODER_MIRROR_PARSER_VERSION = "luogu-atcoder-mirror-v1";
 
 export function parseAtCoderProblemNumber(problemNumber) {
   const value = String(problemNumber || "").trim().replace(/\s+/g, "").toLowerCase();
@@ -465,6 +510,7 @@ export function parseAtCoderStatement(html, expectedProblemNumber, { collectImag
   return { description, warnings: [...warnings], images: context.images || [] };
 }
 
+/** AtCoder 官方页 → Markdown（只在拿得到官方页时成功，见上面关于 403 的说明）。 */
 export async function fetchAtCoderStatement({ problemNumber }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
   const expected = parseAtCoderProblemNumber(problemNumber);
   if (!expected) return unavailable(normalizeProblemNumber(problemNumber), "parse-failed");
@@ -489,15 +535,60 @@ export async function fetchAtCoderStatement({ problemNumber }, { fetchImpl = fet
   } finally { clearTimeout(timer); }
 }
 
-// 抓取入口：AtCoder 只有官方页一个来源；Codeforces 先取官方英文题面，被反爬拦下
-// （或解析失败）时退回洛谷镜像，两个来源共用同一个总时限；主来源的失败原因最终回给
-// 前端，镜像失败不改变它。
+/**
+ * AtCoder 题面的洛谷镜像：`https://www.luogu.com.cn/problem/AT_<任务 ID>`。
+ *
+ * 洛谷按 `AT_` 前缀收录 AtCoder 题目，正文多是日文原题、部分是中文翻译，因此和 CF 镜像
+ * 一样带上 `mirror-source` 警告，由表单提示用户对照原题核对。覆盖面上洛谷只收了部分
+ * AtCoder 题目（ABC/ARC/AGC 常见题基本都在，typical90、部分 JOI 等没有），取不到时
+ * 返回 not-found，由调用方决定怎么提示。
+ */
+/**
+ * 洛谷的 AtCoder 题面首行固定是 `[problemUrl]: <atcoder 原题地址>`。这种写法在 Markdown
+ * 里是「链接引用定义」，渲染时会整行消失，原题地址就没了；改写成正文里可见的一行。
+ */
+function linkOriginalProblem(problem) {
+  const rewrite = (value) => (typeof value === "string" ? value.replace(/^\[problemUrl\]:[ \t]*(\S+)[ \t]*$/im, "原题链接：$1") : value);
+  const content = problem.content;
+  if (typeof content !== "object" || !content) return { ...problem, content: rewrite(content) };
+  return { ...problem, content: Object.fromEntries(Object.entries(content).map(([key, value]) => [key, rewrite(value)])) };
+}
+
+export function parseLuoguAtCoderStatement(html, expectedProblemNumber, options) {
+  const expected = parseAtCoderProblemNumber(expectedProblemNumber);
+  if (!expected) fail("parse-failed");
+  const problem = readLuoguProblem(html);
+  if (!problem) fail(isChallengePage(html) ? "blocked" : "parse-failed");
+  return parseLuoguProblem(linkOriginalProblem(problem), { ...options, expectedPid: `AT_${expected.problemNumber}` });
+}
+
+export async function fetchLuoguAtCoderStatement({ problemNumber }, options = {}) {
+  const expected = parseAtCoderProblemNumber(problemNumber);
+  if (!expected) return unavailable(normalizeProblemNumber(problemNumber), "parse-failed");
+  return fetchLuoguMirror({
+    url: `${LUOGU_ORIGIN}/problem/AT_${encodeURIComponent(expected.problemNumber)}`,
+    problemNumber: expected.problemNumber,
+    parserVersion: ATCODER_MIRROR_PARSER_VERSION,
+    parse: (html) => parseLuoguAtCoderStatement(html, expected.problemNumber, { collectImages: true }),
+  }, options);
+}
+
+// 抓取入口：Codeforces 与 AtCoder 都是「官方页优先、洛谷镜像兜底」，两条来源链共用同一套
+// 总时限；两个来源都失败时回给官方页的失败原因，镜像的失败原因不覆盖它。官方页明确回答
+// not-found 时不试镜像（说明页面可达且题目确实不存在）。
 export async function fetchStatement({ platform = "Codeforces", problemNumber, sourceUrl }, options = {}) {
-  // AtCoder 的题目地址由题号推出来，没有用户传入的 URL 需要校验，因此 sourceUrl 被忽略。
-  if (platform === "AtCoder") return fetchAtCoderStatement({ problemNumber }, options);
   const { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = options;
   const deadline = Date.now() + timeoutMs;
   const remaining = () => deadline - Date.now();
+  // AtCoder 的题目地址由题号推出来，没有用户传入的 URL 需要校验，因此 sourceUrl 被忽略。
+  if (platform === "AtCoder") {
+    const primary = await fetchAtCoderStatement({ problemNumber }, { fetchImpl, now, timeoutMs: Math.max(1000, Math.round(remaining() * 0.5)), imageTimeoutMs });
+    if (primary.status === "ok" || primary.reason === "not-found") return primary;
+    const atcoderBudget = remaining();
+    if (atcoderBudget < 1000) return primary;
+    const mirror = await fetchLuoguAtCoderStatement({ problemNumber }, { fetchImpl, now, timeoutMs: atcoderBudget, imageTimeoutMs });
+    return mirror.status === "ok" ? mirror : primary;
+  }
   const primary = await fetchCodeforcesStatement({ problemNumber, sourceUrl }, { fetchImpl, now, timeoutMs: Math.max(1000, Math.round(remaining() * 0.6)), imageTimeoutMs });
   if (primary.status === "ok" || primary.reason === "not-found") return primary;
   const budget = remaining();
