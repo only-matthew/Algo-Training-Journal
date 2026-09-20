@@ -40,6 +40,7 @@
 - 本机真实网络（`node scripts/verify-import-live.mjs`）：字典 505 条；`abc340_e → [42] → 线段树`；`only_matthew` 近 120 天 2 题全部带提交链接与标签（`abc472_b=模拟/前缀和`、`abc472_a=模拟/字符串`）。
 - 边缘探针（已删除）：导入链路 `dictionary.size=505`、一场比赛一次列表页拿到 `abc340_c/e/f/g/d` 的标签、2 题全部带标签与提交链接、整轮约 4.4 s；题面链路 `abc381_e → tagIds [45,254] → ["二分","前缀和"]`。
 - 顺带发现：自定义域上的 Worker 响应会被 Cloudflare 边缘缓存——探针换代码后同一 URL 仍返回旧响应，加随机 query 才拿到新的。**排查线上行为时记得带 cache-buster**（本功能自身不受影响，生产 API 响应都带 `Cache-Control: no-store`）。
+- 部署状态：前端 `74ba55c` 已推 `main` 并由 GitHub Actions 发布（线上入口 `app-R42MZZGI.js`，form 分包含「已带标签：」「标签取自洛谷镜像」标记）；Worker `algo-oauth` 最新版本 `28156591-7d52-42d1-ab57-a51a2f4cf6c6`。临时探针 `algo-tag-probe` 与 `tag-probe.xialiao.org` 已删除（DNS 确认不存在）。**仍差真人**：导入一次 AtCoder AC 记录，看列表里是否出现标签与「📄 提交」链接。
 
 ## 最新交接（2026-09-21）：AtCoder 题面抓取与预置 AtCoder 用户名
 
