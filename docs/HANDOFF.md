@@ -30,6 +30,7 @@
 - 单元测试：`test/problem-statement.test.mjs` 新增 AtCoder 题号解析、英文题面解析（公式/行内代码/样例/表格）、日文兜底、`og:url` 不符判失败、真实抓取路径与图片归档、失败降级 6 项；`test/oauth-problem-statement.test.mjs` 新增路由层 AtCoder 成功、题号非法 400、平台不支持 400 三项；`test/problem-enrichment-schema.test.mjs` 新增 `atcoder-html` 来源的接受与拒绝；`test/oauth-import.test.mjs` 新增 `/api/session` 下发 `cfHandle` / `atcoderHandle`。
 - 真实网络（本机住宅网络，`node scripts/verify-import-live.mjs`）：`abc381_a` 抓到 1493 字符英文题面且不含日文小节；AtCoder 题号缺下划线时仍 400。另用临时探针对 8 道真机题目（abc381_a / abc337_e / abc230_c / dp_a / abc381_f / abc392_a / abc330_c / abc230_a）做了整页解析，公式、`<code>`、样例、表格均正常；在 abc340_e / abc345_d 上验证了 `img.atcoder.jp` 图片真实归档（`images=1`、无 `external-images` 警告，说明 referer 规则有效）。
 - **未验证**：Cloudflare 边缘出口对 `atcoder.jp` 的可达性与限流表现（本机可达且未被限流），以及部署后真人在界面上点一次「抓取题面」。上线前建议各跑一次。
+- 部署状态：前端已推 `main` 并由 GitHub Actions 发布（线上 `form-FFFMQJMR.js` 已含「抓取题面」/`atcoderHandle`/`ja-statement`/`atcoder-html` 标记），Worker `algo-oauth` 已 `npx wrangler deploy`（Version ID `169d68ac-2900-49a3-bd29-e0adcf2248b7`）。**仍差真人在界面里点一次「抓取题面」**（选一条 AtCoder 记录、题号如 `abc381_a`）做最终确认。
 
 ## 最新交接（2026-09-18）：题面图片随抓取归档到仓库
 
