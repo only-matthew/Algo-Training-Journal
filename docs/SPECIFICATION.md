@@ -1,5 +1,9 @@
 # 队员自主算法训练平台：技术规格
 
+## 2026-09-21 专项规格补充：AtCoder 算法标签与提交页链接
+
+AtCoder 导入结果新增 `submissionUrl`（`https://atcoder.jp/contests/<比赛>/submissions/<id>`，取自 kenkoooo 提交记录的 id + contest_id）与 `tags`。AtCoder 官方与 kenkoooo 都不提供算法标签，`tags` 来自洛谷的 AtCoder 镜像：`/_lfe/tags` 提供 id→中文名的字典（按 isolate 缓存 6 小时），题目**列表页** `problem/list?keyword=<比赛>&type=AT` 一次给出整场比赛的题号与数字标签（按 `AT_<比赛>_` 前缀过滤，因为 keyword 是模糊匹配），单题页 `AT_<任务 ID>` 在抓题面时顺带给出该题标签。数字标签经 [lib/luogu-tag-map.mjs](lib/luogu-tag-map.mjs) 映射为站内标签：能对上规范标签的映射过去（262 个里 223 个），分类名与「语言入门」语法标签丢弃，站内没有的成熟技巧保留原名，带分隔符的先拆开，超过 30 字符的丢弃。标签是增强项：字典或列表页失败只是没有标签，导入与题面抓取照常成功。实现见 [最新交接](HANDOFF.md)、抓取服务 [workers/services/atcoder-tags.mjs](workers/services/atcoder-tags.mjs)。
+
 ## 2026-09-21 专项规格：AtCoder 题面抓取
 
 `POST /api/problem-statement` 的 `platform` 从只有 `Codeforces` 扩为 `Codeforces` 与 `AtCoder`：AtCoder 按题号（任务 ID，如 `abc381_a`）先试官方题目页 `atcoder.jp/contests/<比赛>/tasks/<任务>?lang=en`（只取 `span.lang-en` 题面，`<var>` 的裸 TeX 转 `$...$`，图片按 `Referer: https://atcoder.jp/` 归档），实测该站对机房出口整体返回 403，因此失败后退回洛谷的 `AT_<任务 ID>` 镜像页（`parserVersion="luogu-atcoder-mirror-v1"`，带 `mirror-source` 警告）。`statementSource.kind` 新增 `atcoder-html`，洛谷 `AT_` 镜像复用 `luogu-mirror`，来源地址按 kind 与平台形态校验。共享解析器同时补齐 `<code>`、`<var>`、`<thead>/<tbody>` 表格、`<blockquote>`，以及纯 Markdown 正文与 `[in, out]` 数组样例（洛谷 AT_ 页形态），因此 CF / 洛谷解析版本升级为 `cf-html-v4` / `luogu-mirror-v3`。导入面板同时预置队员的 AtCoder 用户名（`workers/oauth.mjs` 的 `ATCODER_HANDLES`，廖夏 `only_matthew`）。接口与取舍见 [题面归档规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) §5.1/§5.3 与 [最新交接](HANDOFF.md)。

@@ -7,30 +7,21 @@ import {
   sniffStatementImageMime,
   statementImageFileName,
 } from "../../lib/statement-images.mjs";
+import { LUOGU_ORIGIN, fail, isChallengePage, readLimitedBody, requestLuoguPage } from "./luogu-page.mjs";
+import { BROWSER_HEADERS } from "./http-headers.mjs";
 
 // 解析版本记录「正文是用哪一代解析器生成的」：同一个页面的输出格式变化时要 +1，
 // 便于日后判断某条记录的题面是旧的 Markdown 写法还是新的。
 export const CF_STATEMENT_PARSER_VERSION = "cf-html-v4";
 export const LUOGU_STATEMENT_PARSER_VERSION = "luogu-mirror-v3";
 export const ATCODER_STATEMENT_PARSER_VERSION = "atcoder-html-v1";
-const MAX_HTML_BYTES = 2 * 1024 * 1024;
 const MAX_MARKDOWN = 100_000;
 const CF_ORIGIN = "https://codeforces.com/";
-const LUOGU_ORIGIN = "https://www.luogu.com.cn";
 const ATCODER_ORIGIN = "https://atcoder.jp";
 // 题面图片的下载预算：与正文抓取分开计时，图片取不到不影响题面本身。
 const IMAGE_TIMEOUT_MS = 6000;
 const IMAGE_CONCURRENCY = 4;
-// codeforces.com 的题面页挂在 Cloudflare 后面：机房出口（含 Workers）大多只拿到
-// 403「Just a moment」挑战页。浏览器请求头能提高直取成功率，但不保证通过，
-// 也不做任何验证码绕过——拿不到时按规范降级。
-const BROWSER_HEADERS = Object.freeze({
-  "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36",
-  Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-  "Accept-Language": "en-US,en;q=0.9",
-});
 const unavailable = (problemNumber, reason, retryable = false) => ({ status: "unavailable", problemNumber, reason, retryable });
-const fail = (message) => { throw new Error(message); };
 const classes = (node) => (node?.attrs?.class || "").toLowerCase().split(/\s+/).filter(Boolean);
 const hasClass = (node, name) => classes(node).includes(name);
 function findFirst(node, predicate) { if (predicate(node)) return node; for (const child of node.children || []) { const hit = findFirst(child, predicate); if (hit) return hit; } return null; }
@@ -320,10 +311,6 @@ export function parseCodeforcesStatement(html, expectedProblemNumber, { collectI
   if (!body) { if (findFirst(container, (node) => node.tag === "a" && /\.pdf(?:$|[?#])/i.test(node.attrs.href || ""))) fail("unsupported"); fail("parse-failed"); }
   const description = tidy([`# ${title}`, time && `时间限制：${time}`, memory && `内存限制：${memory}`, body].filter(Boolean).join("\n\n")); if (description.length > MAX_MARKDOWN) fail("too-large"); return { description, warnings: [...warnings], images: context.images || [] };
 }
-async function readLimitedBody(response, signal) {
-  if (Number(response.headers.get("Content-Length") || 0) > MAX_HTML_BYTES) fail("too-large"); if (!response.body?.getReader) { const value = await response.text(); if (new TextEncoder().encode(value).byteLength > MAX_HTML_BYTES) fail("too-large"); return value; }
-  const reader = response.body.getReader(); const chunks = []; let bytes = 0; try { while (true) { if (signal.aborted) fail("timeout"); const part = await reader.read(); if (part.done) break; bytes += part.value.byteLength; if (bytes > MAX_HTML_BYTES) { await reader.cancel(); fail("too-large"); } chunks.push(part.value); } } finally { reader.releaseLock(); } return new TextDecoder().decode(await new Blob(chunks).arrayBuffer());
-}
 // 题面正文失败与网络失败用同一套降级原因，供两个来源共用。
 const failureReason = (error, signal) => signal.aborted || error?.message === "timeout" ? "timeout" : ["too-large", "unsupported", "blocked"].includes(error?.message) ? error.message : "parse-failed";
 const REASONS_RETRYABLE = new Set(["timeout", "upstream-error"]);
@@ -343,21 +330,14 @@ export async function fetchCodeforcesStatement({ problemNumber, sourceUrl }, { f
 }
 
 // 洛谷题面镜像：codeforces.com 被 Cloudflare 拦下时，用洛谷同题页面兜底。
-// 洛谷对匿名请求先下发 C3VK 挑战 cookie（302 回跳同 URL），带 cookie 再请求即可拿到页面；
-// 这个握手与 scripts/fetch-luogu-meta.mjs、洛谷导入走的是同一条链路。
+// 页面抓取（含 C3VK 握手与限额读取）见 luogu-page.mjs，与 AtCoder 标签抓取共用同一套。
 const LUOGU_CONTEXT = /<script[^>]*id=["']lentille-context["'][^>]*>([\s\S]*?)<\/script>/i;
 // 判断一段洛谷正文是 HTML 还是纯 Markdown：只有 `<` 紧跟着标签名才算标签，
 // 「1 < 2」「x <= y」这类数学写法不会被误判。
 const HTML_LIKE = /<\/?[a-z][a-z0-9]*[\s/>]/i;
 const LUOGU_SECTIONS = [["background", "背景"], ["description", "题目描述"], ["formatI", "输入格式"], ["formatO", "输出格式"], ["hint", "说明/提示"]];
-const isChallengePage = (html) => /captcha|challenge|access denied|cloudflare|just a moment/i.test(html);
 export const LUOGU_MIRROR_WARNING = "mirror-source";
 
-function setCookies(response) {
-  const list = typeof response.headers.getSetCookie === "function" ? response.headers.getSetCookie() : [];
-  const raw = list.length ? list : [response.headers.get("set-cookie")].filter(Boolean);
-  return raw.flatMap((value) => String(value).split(/,(?=[^;,=]+=)/)).map((value) => value.split(";")[0].trim()).filter(Boolean);
-}
 function sampleBlock(sample, index) {
   const value = (key) => String(sample[key] ?? "").replace(/\r\n?/g, "\n").replace(/\n+$/, "");
   const fence = (text) => ["```", text, "```"].join("\n");
@@ -399,26 +379,15 @@ export function parseLuoguProblem(problem, { expectedProblemNumber, expectedPid:
   const title = tidy(problem.title || problem.name || (problem.content && typeof problem.content === "object" ? problem.content.name : "") || "");
   const body = tidy(parts.join("\n\n")); if (!body) fail("parse-failed");
   const description = tidy([title && `# ${title}`, body].filter(Boolean).join("\n\n")); if (description.length > MAX_MARKDOWN) fail("too-large");
-  return { description, warnings: [...warnings], images: context.images || [] };
+  // 洛谷题目的算法标签是数字 id（如 [42] = 线段树），字典在 /_lfe/tags。这里把原始 id 一并
+  // 交出去，调用方（AtCoder 题面路由）用已经拿到的那份页面顺手换成站内标签，不必再抓一次。
+  const tagIds = Array.isArray(problem.tags) ? problem.tags.filter((id) => Number.isInteger(id)) : [];
+  return { description, warnings: [...warnings], images: context.images || [], tagIds };
 }
 export function parseLuoguStatement(html, expectedProblemNumber, options) {
   const problem = readLuoguProblem(html);
   if (!problem) fail(isChallengePage(html) ? "blocked" : "parse-failed");
   return parseLuoguProblem(problem, { ...options, expectedProblemNumber });
-}
-/** 洛谷页面 → C3VK 挑战 cookie 握手后的响应；两条洛谷链路共用同一套重试。 */
-async function requestLuoguPage(url, { fetchImpl, controller, headers }) {
-  const send = (extra = {}) => fetchImpl(url, { redirect: "manual", signal: controller.signal, headers: { ...headers, ...extra } });
-  let response; try { response = await send(); } catch (error) { return { error }; }
-  if ([301, 302, 303, 307, 308].includes(response.status)) {
-    // 挑战 cookie 可能挂在这次 302 上，也可能要再请求一次才下发。
-    let cookies = setCookies(response);
-    if (!cookies.length) { try { cookies = setCookies(await send()); } catch { cookies = []; } }
-    if (!cookies.length) return { blocked: true };
-    try { response = await send({ Cookie: cookies.join("; ") }); } catch (error) { return { error }; }
-    if ([301, 302, 303, 307, 308].includes(response.status)) return { blocked: true };
-  }
-  return { response };
 }
 /**
  * 洛谷镜像页的共同链路：C3VK 握手 → 解析 → 图片归档。
@@ -439,7 +408,8 @@ async function fetchLuoguMirror({ url, problemNumber, parserVersion, parse }, { 
       const parsed = parse(await readLimitedBody(response, controller.signal));
       const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, timeoutMs: imageTimeoutMs });
       if (archived.description.length > MAX_MARKDOWN) return unavailable(problemNumber, "too-large");
-      return { status: "ok", problemNumber, description: archived.description, images: archived.images, source: { kind: "luogu-mirror", url, fetchedAt: now(), parserVersion }, warnings: [LUOGU_MIRROR_WARNING, ...settledWarnings(parsed.warnings, archived)] };
+      // tagIds 是洛谷的原始数字标签；由调用方决定要不要换成站内标签（见 atcoder-tags.mjs）。
+      return { status: "ok", problemNumber, description: archived.description, images: archived.images, ...(parsed.tagIds?.length ? { tagIds: parsed.tagIds } : {}), source: { kind: "luogu-mirror", url, fetchedAt: now(), parserVersion }, warnings: [LUOGU_MIRROR_WARNING, ...settledWarnings(parsed.warnings, archived)] };
     } catch (error) { const reason = failureReason(error, controller.signal); return unavailable(problemNumber, reason, REASONS_RETRYABLE.has(reason)); }
   } finally { clearTimeout(timer); }
 }

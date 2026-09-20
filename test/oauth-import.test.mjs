@@ -181,15 +181,15 @@ test("fetchAtCoderAccepted keeps only recent AC submissions, deduped and enriche
     }
     assert.match(u, /user\/submissions\?user=tourist&from_second=\d+/);
     return new Response(JSON.stringify([
-      { id: 1, epoch_second: now - 3600, problem_id: "abc001_a", result: "AC" },
-      // 同一道题 3 天内多次 AC：应只保留最近一次
-      { id: 2, epoch_second: now - 2 * DAY, problem_id: "abc001_a", result: "AC" },
+      { id: 1, epoch_second: now - 3600, problem_id: "abc001_a", contest_id: "abc001", result: "AC" },
+      // 同一道题 3 天内多次 AC：应只保留最近一次（提交页链接也指向最近那次）
+      { id: 2, epoch_second: now - 2 * DAY, problem_id: "abc001_a", contest_id: "abc001", result: "AC" },
       // 3 天内的另一道题
-      { id: 3, epoch_second: now - 2 * DAY, problem_id: "abc001_b", result: "AC" },
+      { id: 3, epoch_second: now - 2 * DAY, problem_id: "abc001_b", contest_id: "abc001", result: "AC" },
       // 超过 3 天：不应出现（from_second 从窗口起点开始，API 不会返回更早记录）
-      { id: 4, epoch_second: now - 4 * DAY, problem_id: "abc001_c", result: "AC" },
+      { id: 4, epoch_second: now - 4 * DAY, problem_id: "abc001_c", contest_id: "abc001", result: "AC" },
       // 非 AC：应被过滤
-      { id: 5, epoch_second: now - 3600, problem_id: "abc001_d", result: "WA" },
+      { id: 5, epoch_second: now - 3600, problem_id: "abc001_d", contest_id: "abc001", result: "WA" },
       // 无题号：应被过滤
       { id: 6, epoch_second: now - 3600, result: "AC" },
     ]));
@@ -197,15 +197,17 @@ test("fetchAtCoderAccepted keeps only recent AC submissions, deduped and enriche
 
   const problems = await fetchAtCoderAccepted("tourist", { fetchImpl });
   assert.equal(problems.length, 2);
-  // 结果按最近 AC 时间倒序
+  // 结果按最近 AC 时间倒序；提交页链接由提交 id + 比赛 id 拼出（AtCoder 提交页公开可看源码）
   assert.deepEqual(problems[0], {
     name: "A - 高橋君とペンギン",
     platform: "AtCoder",
     problemNumber: "abc001_a",
+    submissionUrl: "https://atcoder.jp/contests/abc001/submissions/1",
     rating: 400,
   });
   assert.equal(problems[1].problemNumber, "abc001_b");
   assert.equal(problems[1].rating, -400, "负难度也应映射为 rating");
+  assert.equal(problems[1].submissionUrl, "https://atcoder.jp/contests/abc001/submissions/3");
 });
 
 test("fetchAtCoderAccepted pages forward until the page is not full", async () => {

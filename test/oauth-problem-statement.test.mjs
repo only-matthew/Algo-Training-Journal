@@ -8,6 +8,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import worker, { seal } from "../workers/oauth.mjs";
+import { clearLuoguTagDictionaryCache } from "../workers/services/atcoder-tags.mjs";
 
 const SECRET = "test-session-secret";
 const LOGIN = "only-matthew";
@@ -21,6 +22,8 @@ const LUOGU_HTML = `<html><body><script id="lentille-context" type="application/
   data: { problem: { pid: "CF4A", name: "Watermelon", content: { description: "<p>给定 $w$，判断能否分成两个正偶数。</p>" } } },
 }).replace(/<\//g, "<\\/")}</script></body></html>`;
 const ATCODER_URL = "https://atcoder.jp/contests/abc381/tasks/abc381_a?lang=en";
+const ATCODER_MIRROR_URL = "https://www.luogu.com.cn/problem/AT_abc381_a";
+const LUOGU_TAGS_URL = "https://www.luogu.com.cn/_lfe/tags";
 const ATCODER_HTML = `<html><head><title>A - 11/22 String</title><meta property="og:url" content="${ATCODER_URL}"></head><body><p>Time Limit: 2 sec / Memory Limit: 1024 MiB</p><div id="task-statement"><span class="lang-en"><div class="part"><section><h3>Problem Statement</h3><p>Given <var>N</var>.</p></section></div></span></div></body></html>`;
 
 function routedFetch(routes) {
@@ -123,4 +126,53 @@ test("不支持的平台仍是 400", async (context) => {
   const response = await call({ platform: "洛谷", problemNumber: "P1001" });
   assert.equal(response.status, 400);
   assert.equal(fetchImpl.calls.length, 0);
+});
+
+test("AtCoder 官方页被拦时路由退回洛谷镜像，并把算法标签一起带回", async (context) => {
+  const mirrorProblem = {
+    pid: "AT_abc381_a",
+    name: "[ABC381A] 11/22 String",
+    difficulty: 1,
+    content: { description: "[problemUrl]: https://atcoder.jp/contests/abc381/tasks/abc381_a\n\n文字列が与えられます。" },
+    samples: [["5\r\n11/22", "Yes"]],
+    // 洛谷的算法标签是数字 id：42 线段树、127 深度优先搜索 DFS、1997 是年份来源标签。
+    tags: [42, 127, 1997],
+  };
+  const mirrorHtml = `<html><body><script id="lentille-context" type="application/json">${JSON.stringify({ data: { problem: mirrorProblem } }).replace(/<\//g, "<\\/")}</script></body></html>`;
+  const fetchImpl = routedFetch([
+    [/^https:\/\/atcoder\.jp\//, () => new Response("", { status: 403 })],
+    [new RegExp(`^${ATCODER_MIRROR_URL}$`), () => new Response(mirrorHtml)],
+    [new RegExp(`^${LUOGU_TAGS_URL}$`), () => new Response(JSON.stringify({
+      tags: [{ id: 42, name: "线段树", type: 2 }, { id: 127, name: "深度优先搜索 DFS", type: 2 }, { id: 1997, name: "1997", type: 1 }],
+    }))],
+  ]);
+  context.mock.method(globalThis, "fetch", fetchImpl);
+  const response = await call({ platform: "AtCoder", problemNumber: "abc381_a" });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.status, "ok");
+  assert.equal(body.source.kind, "luogu-mirror");
+  assert.deepEqual(body.tags, ["线段树", "DFS"]);
+  // 洛谷的原始数字 id 是内部细节，不能漏给客户端。
+  assert.equal("tagIds" in body, false);
+  assert.match(body.description, /# \[ABC381A\] 11\/22 String/);
+});
+
+test("洛谷标签字典取不到时题面照常返回，只是没有标签", async (context) => {
+  // 字典在 isolate 内缓存：不清掉的话会命中上一个用例的假字典，这里要的是「拉不到」这一支。
+  clearLuoguTagDictionaryCache();
+  const mirrorHtml = `<html><body><script id="lentille-context" type="application/json">${JSON.stringify({
+    data: { problem: { pid: "AT_abc381_a", name: "A", content: { description: "本文" }, tags: [42] } },
+  }).replace(/<\//g, "<\\/")}</script></body></html>`;
+  const fetchImpl = routedFetch([
+    [/^https:\/\/atcoder\.jp\//, () => new Response("", { status: 403 })],
+    [new RegExp(`^${ATCODER_MIRROR_URL}$`), () => new Response(mirrorHtml)],
+    [new RegExp(`^${LUOGU_TAGS_URL}$`), () => new Response("", { status: 503 })],
+  ]);
+  context.mock.method(globalThis, "fetch", fetchImpl);
+  const response = await call({ platform: "AtCoder", problemNumber: "abc381_a" });
+  const body = await response.json();
+  assert.equal(body.status, "ok");
+  assert.equal(body.tags, undefined);
+  assert.equal(body.source.kind, "luogu-mirror");
 });

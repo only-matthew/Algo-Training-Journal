@@ -193,6 +193,8 @@ AtCoder 没有题面 API，但题目页是公开的：`https://atcoder.jp/contes
 
 题面图片同样先归档：AtCoder 官方页的题面图在 `img.atcoder.jp`，下载时补 `Referer: https://atcoder.jp/`；洛谷镜像走洛谷那条链路。`source.kind="atcoder-html"`、`parserVersion="atcoder-html-v1"`。共享解析器的这轮改动同时影响另外两个来源，因此版本一并升级为 `cf-html-v4` / `luogu-mirror-v3`。
 
+**算法标签（2026-09-21 补充）。** AtCoder 官方与 kenkoooo 都没有标签接口，洛谷的 AtCoder 镜像是唯一来源：镜像页解析时把洛谷的数字标签 id 一并交给路由（响应里的 `tagIds` 只在服务端流转），路由用 `/_lfe/tags` 字典换成中文名、再经 [lib/luogu-tag-map.mjs](lib/luogu-tag-map.mjs) 归一为站内标签，随题面返回 `tags`；表单把标签并入标签框（去重、不覆盖用户输入）。字典取不到时只是没有 `tags`，题面照常返回——标签不能成为题面抓取的单点故障。导入链路同理，按比赛批量取列表页补标签，见 [技术规格](SPECIFICATION.md) 与 [最新交接](HANDOFF.md)。
+
 ### 5.4 表单整合
 
 AC 列表不阻塞等待题面。只抓用户添加的题，按 recordId 绑定请求，保存 identity/fingerprint 和描述初始值。响应时若行已删除、账号/日期已切换、题号变化或用户改过描述，不自动写回；提供当前行重新抓取入口。

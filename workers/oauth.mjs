@@ -8,6 +8,7 @@ import { readCatalog, readTrainingContext, workbenchResponse } from "./services/
 import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
 import { archiveStatementImages, fetchStatement, parseAtCoderProblemNumber, parseLuoguProblem, readLuoguProblem } from "./services/problem-statement.mjs";
+import { attachAtCoderTags, resolveAtCoderTagIds } from "./services/atcoder-tags.mjs";
 import { createLogsV2Service, parseLogsV2Request, revisionFromEntries, statementImagePath, statementPath } from "./services/logs-v2.mjs";
 import { normalizeLearningState } from "../lib/learning-state.mjs";
 import { MAX_NEW_STATEMENT_IMAGE_BYTES } from "../lib/statement-images.mjs";
@@ -923,7 +924,15 @@ async function handleProblemStatement(request, user) {
   if (body.platform === "AtCoder" && !parseAtCoderProblemNumber(body.problemNumber)) {
     return v2Error(request, "INVALID_JSON", "AtCoder 题号必须形如 abc381_a", 400);
   }
-  return json(request, await fetchStatement({ platform: body.platform, problemNumber: body.problemNumber, sourceUrl: body.sourceUrl }));
+  const result = await fetchStatement({ platform: body.platform, problemNumber: body.problemNumber, sourceUrl: body.sourceUrl });
+  // 洛谷镜像页顺带带回了算法标签（数字 id，只有 AT_ 镜像才有）。换成站内标签一起返回，
+  // 前端就能在填题面时顺手把标签填好；字典取不到时只是没有 tags，不影响题面。
+  if (result.status === "ok" && Array.isArray(result.tagIds)) {
+    const { tagIds, ...statement } = result;
+    const tags = await resolveAtCoderTagIds(tagIds);
+    return json(request, tags.length ? { ...statement, tags } : statement);
+  }
+  return json(request, result);
 }
 
 // Codeforces 官方 API：拉取最近 days 天内的 AC 记录，按题目去重（公开接口，无需登录）。
@@ -1039,7 +1048,7 @@ export async function fetchAtCoderAccepted(handle, { fetchImpl = fetch, days = 3
   const h = String(handle || "").trim();
   if (!h) throw Object.assign(new TypeError("请输入 AtCoder 用户名"), { status: 400 });
   const cutoff = Math.floor(Date.now() / 1000) - days * 86400;
-  // problem_id → 最近一次 AC 时间，用于按题去重并让结果按最新 AC 排序
+  // problem_id → 最近一次 AC 的提交，用于按题去重（保留最近一次）、排序，并生成提交页链接。
   const byProblem = new Map();
   let fromSecond = cutoff;
   for (let page = 0; page < maxPages; page += 1) {
@@ -1052,7 +1061,9 @@ export async function fetchAtCoderAccepted(handle, { fetchImpl = fetch, days = 3
       const epoch = Number(submission.epoch_second);
       if (!Number.isFinite(epoch) || epoch < cutoff) continue;
       const prev = byProblem.get(submission.problem_id);
-      if (!prev || epoch > prev.epoch) byProblem.set(submission.problem_id, { problemId: submission.problem_id, epoch });
+      if (!prev || epoch > prev.epoch) {
+        byProblem.set(submission.problem_id, { problemId: submission.problem_id, epoch, submissionId: submission.id, contestId: submission.contest_id });
+      }
     }
     // API 按 epoch_second 升序返回、单页最多 perPage 条；满页时以下一条时间续页
     if (result.length < perPage) break;
@@ -1074,13 +1085,17 @@ export async function fetchAtCoderAccepted(handle, { fetchImpl = fetch, days = 3
   } catch {
     byId = null;
   }
-  return entries.map(({ problemId }) => {
+  return entries.map(({ problemId, submissionId, contestId }) => {
     const meta = byId ? byId.get(problemId) : null;
     const title = (meta && (meta.title || meta.name)) || "";
+    // 提交页是公开的（AtCoder 提交页可直接看源码，不像 CF 受 Cloudflare 保护），
+    // 与 CF 导入一样带上直达链接，省得用户自己去翻提交记录。
+    const submissionUrl = submissionId && contestId ? `https://atcoder.jp/contests/${encodeURIComponent(contestId)}/submissions/${encodeURIComponent(submissionId)}` : "";
     return {
       name: title || problemId,
       platform: "AtCoder",
       problemNumber: problemId,
+      ...(submissionUrl ? { submissionUrl } : {}),
       ...(meta && typeof meta.difficulty === "number" ? { rating: meta.difficulty } : {}),
     };
   });
@@ -1104,7 +1119,9 @@ async function handleImport(request, user) {
     if (rateExceeded(`import:atcoder:${user.member}`, RATE_LIMITS["import:atcoder"])) {
       return json(request, { error: "导入请求过于频繁，请稍后再试" }, 429);
     }
-    return json(request, { problems: await fetchAtCoderAccepted(handle) });
+    // 算法标签来自洛谷的 AtCoder 镜像（AtCoder 与 kenkoooo 都不提供）：按比赛批量补，
+    // 拿不到就只是没有标签，绝不影响导入本身（见 services/atcoder-tags.mjs）。
+    return json(request, { problems: await attachAtCoderTags(await fetchAtCoderAccepted(handle)) });
   }
   return json(request, { error: "不支持的导入平台，可选 codeforces、luogu 或 atcoder" }, 400);
 }

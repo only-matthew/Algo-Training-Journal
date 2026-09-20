@@ -2,8 +2,9 @@
 // 用法：node scripts/test-import-live.mjs
 // 覆盖：会话鉴权（构造加密会话）、CSRF、Origin 校验、Codeforces 真实 API、
 //       洛谷真实页面抓取、AtCoder 真实 API、限流不误伤。不依赖 wrangler / GitHub OAuth / 云端 secrets。
-import worker, { seal } from "../workers/oauth.mjs";
+import worker, { seal, fetchAtCoderAccepted } from "../workers/oauth.mjs";
 import { fetchLuoguAtCoderStatement } from "../workers/services/problem-statement.mjs";
+import { attachAtCoderTags, fetchLuoguContestTagIds, loadLuoguTagDictionary, resolveAtCoderTagIds } from "../workers/services/atcoder-tags.mjs";
 
 const ENV = { SESSION_SECRET: "local-test-secret-0123456789abcdef0123456789abcdef" };
 const WORKER_ORIGIN = "https://algo-oauth.xialiao.org";
@@ -143,6 +144,29 @@ async function main() {
     }
   } catch (error) {
     check("洛谷 AT_ 镜像可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
+  }
+
+  console.log("── AtCoder 算法标签（洛谷镜像） ──");
+  try {
+    const dictionary = await loadLuoguTagDictionary({ force: true });
+    check("洛谷标签字典可用", dictionary.size > 100, `${dictionary.size} 条`);
+    const contestTags = await fetchLuoguContestTagIds("abc340");
+    const abc340e = contestTags.get("abc340_e") || [];
+    check("按比赛批量取标签（一场一次请求）", abc340e.length > 0, `abc340_e → ${JSON.stringify(abc340e)}`);
+    const tags = await resolveAtCoderTagIds(abc340e);
+    check("数字标签换成站内标签（abc340_e 含线段树）", tags.includes("线段树"), JSON.stringify(tags));
+
+    const recent = await fetchAtCoderAccepted("only_matthew", { days: 120 });
+    const tagged = await attachAtCoderTags(recent);
+    check("AtCoder 真实导入返回结果", tagged.length > 0, `${tagged.length} 题（近 120 天 AC）`);
+    check("每题都带提交页链接", tagged.every((p) => /^https:\/\/atcoder\.jp\/contests\/[^/]+\/submissions\/\d+$/.test(p.submissionUrl || "")), tagged[0]?.submissionUrl || "无");
+    check(
+      "洛谷收录的题目带回算法标签",
+      tagged.some((p) => p.tags?.length),
+      tagged.slice(0, 4).map((p) => `${p.problemNumber}=${(p.tags || []).join("/") || "无标签"}`).join(" | "),
+    );
+  } catch (error) {
+    check("AtCoder 标签链路可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
   }
 
   console.log("── 限流不误伤 ──");

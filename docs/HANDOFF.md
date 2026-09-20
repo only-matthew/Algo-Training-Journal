@@ -1,5 +1,46 @@
 # 交接文档：Algo Training Journal
 
+## 最新交接（2026-09-21 补记）：AtCoder 算法标签与提交页链接
+
+用户追加要求：测试能否正常爬取 AtCoder 的算法标签等信息。结论是**能，但只有一条来源**。
+
+### 1. 先查清有哪些来源（结论：只有洛谷）
+
+| 来源 | 结果 |
+| --- | --- |
+| AtCoder 官方题目页 | 没有标签；而且对机房出口整体 403（见下一节） |
+| kenkoooo `merged-problems.json` | **没有 tags 字段**（实测字段：id/contest_id/problem_index/name/title/short_title/point/solver_count/最短-最快-首次提交 id 等） |
+| kenkoooo `problem-models.json` | 只有难度模型，没有标签 |
+| kenkoooo 其它资源（`tags.json`、`problem-tags.json`） | 404，不存在 |
+| 社区 AtCoder Tags（`atcoder-tags.herokuapp.com`） | 已下线（Heroku 免费额度取消后没了，本机 DNS/连接均失败） |
+| **洛谷 AtCoder 镜像** | ✅ 题目页与列表页都带数字标签，`/_lfe/tags` 提供 id→中文名 |
+
+所以标签来自洛谷的社区标注（不是 AtCoder 官方标签），简单题常常没有标签，洛谷未收录的题目完全没有。
+
+### 2. 三个上游都从 Cloudflare 边缘可达（临时探针实测，已删除）
+
+- kenkoooo 提交 API：200 / 415 ms，返回 `{id, contest_id, problem_id, point, result, ...}`。
+- kenkoooo `merged-problems.json`：200 / 38 ms，4.5 MB、9565 题。
+- 洛谷 `/_lfe/tags`：200 / 335 ms，505 条（其中 262 条是算法标签）。
+- 洛谷题目**列表页** `problem/list?keyword=<比赛>&type=AT`：200 / ~2 s，一次拿到整场比赛的题号与 tags。
+- 洛谷单题页 `AT_<任务 ID>`：200 / 313 ms。
+
+### 3. 实现
+
+- `lib/luogu-tag-map.mjs`（纯函数）：洛谷标签名 → 站内标签。三条规则：能对上规范标签就映射（262 个算法标签里 223 个，含 `深度优先搜索 DFS`→DFS、`状压 DP`→状压DP 这类带后缀的写法）；分类名与「语言入门」语法标签丢弃（15 个）；站内确实没有的成熟技巧保留原名（24 个：莫队、笛卡尔树、bitset、反悔贪心…）。带分隔符的名字先拆开（`集合幂级数，子集卷积`），超过 30 字符的丢弃（站内单标签上限），绝不让标签在下次保存时被拆成两个或被拒。
+- `workers/services/atcoder-tags.mjs`（网络）：字典按 isolate 缓存 6 小时；**按比赛批量**取列表页（一场一次请求，最多 6 场、并发 3），按 `AT_<比赛>_` 前缀过滤——列表页的 keyword 是模糊匹配，搜 `abc381` 会带回 `abc093`，只信搜索顺序会标错标签。
+- `workers/services/luogu-page.mjs`（抽取）：C3VK 握手、限额读取、挑战页判定从 `problem-statement.mjs` 抽出来，题面与标签两条链路共用；`http-headers.mjs` 收拢 `BROWSER_HEADERS`。
+- 导入：`fetchAtCoderAccepted` 顺带返回**提交页链接** `https://atcoder.jp/contests/<比赛>/submissions/<id>`（AtCoder 提交页公开可看源码，与 CF 的「📄 提交」一致）；`handleImport` 的 atcoder 分支再补标签。
+- 题面：洛谷 AT_ 页在解析时把原始数字标签一并交出（`tagIds`），路由用同一份页面顺手换成站内标签后返回 `tags`（不再多抓一次页面）；`tagIds` 是内部细节，不出现在 API 响应里。
+- 前端：抓取题面时把标签并入标签框（去重、不覆盖用户已填），并在提示里写「已带标签：…」；导入列表显示前 3 个标签，AtCoder 也显示「📄 提交」链接；导入提示语改成「标签取自洛谷镜像，洛谷未收录的题目需手动补充」。
+
+### 4. 验证
+
+- 单元测试新增 `test/atcoder-tags.test.mjs`（9 项：映射规则、长度/分隔符约束、字典缓存与失效、列表页前缀过滤、三种失败降级、批量补标签、字典不可用时不动数据）；`test/oauth-import.test.mjs` 补上提交页链接断言；`test/oauth-problem-statement.test.mjs` 补路由层「AT_ 镜像带标签」「字典取不到时题面无标签照常返回」。
+- 本机真实网络（`node scripts/verify-import-live.mjs`）：字典 505 条；`abc340_e → [42] → 线段树`；`only_matthew` 近 120 天 2 题全部带提交链接与标签（`abc472_b=模拟/前缀和`、`abc472_a=模拟/字符串`）。
+- 边缘探针（已删除）：导入链路 `dictionary.size=505`、一场比赛一次列表页拿到 `abc340_c/e/f/g/d` 的标签、2 题全部带标签与提交链接、整轮约 4.4 s；题面链路 `abc381_e → tagIds [45,254] → ["二分","前缀和"]`。
+- 顺带发现：自定义域上的 Worker 响应会被 Cloudflare 边缘缓存——探针换代码后同一 URL 仍返回旧响应，加随机 query 才拿到新的。**排查线上行为时记得带 cache-buster**（本功能自身不受影响，生产 API 响应都带 `Cache-Control: no-store`）。
+
 ## 最新交接（2026-09-21）：AtCoder 题面抓取与预置 AtCoder 用户名
 
 用户反馈：AtCoder 题面抓不下来；同时要求预置廖夏的 AtCoder 用户名 `only_matthew`。
