@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-21T01:32:40.274+08:00",
+  "problems": [
+    {
+      "id": "f913c8d7-b14e-4c94-a7e9-206a23c52066",
+      "name": "mnclr",
+      "platform": "AtCoder",
+      "problemNumber": "abc475_a",
+      "difficulty": "★ 800",
+      "difficultyRating": 800,
+      "tags": [
+        "模拟"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    },
+    {
+      "id": "d141bb39-9564-48d8-bcf0-60558f5c9883",
+      "name": "Chang",
+      "platform": "AtCoder",
+      "problemNumber": "abc475_b",
+      "difficulty": "★ 800",
+      "difficultyRating": 800,
+      "tags": [
+        "模拟"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 1
+    }
+  ]
+}

@@ -1279,6 +1279,46 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-18/12b92cbf-0c70-4381-bee9-9446c071e305/"
+    },
+    {
+      "subjectKey": "problem:AtCoder|ABC475_A",
+      "date": "2026-09-20",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-20",
+        "recordId": "f913c8d7-b14e-4c94-a7e9-206a23c52066"
+      },
+      "problem": {
+        "name": "mnclr",
+        "platform": "AtCoder",
+        "problemNumber": "abc475_a",
+        "difficulty": "★ 800"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-20/f913c8d7-b14e-4c94-a7e9-206a23c52066/"
+    },
+    {
+      "subjectKey": "problem:AtCoder|ABC475_B",
+      "date": "2026-09-20",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-20",
+        "recordId": "d141bb39-9564-48d8-bcf0-60558f5c9883"
+      },
+      "problem": {
+        "name": "Chang",
+        "platform": "AtCoder",
+        "problemNumber": "abc475_b",
+        "difficulty": "★ 800"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-20/d141bb39-9564-48d8-bcf0-60558f5c9883/"
     }
   ]
 }
