@@ -43,7 +43,7 @@ async function main() {
   res = await post("/api/import", { platform: "codeforces", handle: "tourist" }, { cookie, csrf: CSRF, origin: "https://evil.example.com" });
   check("非法 Origin 被拒绝（403）", res.status === 403, `HTTP ${res.status}`);
 
-  console.log("── 会话预置 CF handle ──");
+  console.log("── 会话预置 handle ──");
   const sessionReq = new Request(`${WORKER_ORIGIN}/api/session`, {
     method: "GET",
     headers: { Origin: SITE_ORIGIN, Cookie: `__Host-journal_session=${cookie}` },
@@ -51,6 +51,7 @@ async function main() {
   const sessionRes = await worker.fetch(sessionReq, ENV);
   const sessionBody = await sessionRes.json();
   check("会话返回预置 cfHandle", sessionBody.cfHandle === "onlymatt", sessionBody.cfHandle || "无");
+  check("会话返回预置 atcoderHandle", sessionBody.atcoderHandle === "only_matthew", sessionBody.atcoderHandle || "无");
   check("会话返回成员信息", sessionBody.member === "廖夏", sessionBody.member || "无");
 
   console.log("── Codeforces 真实导入（3 天窗口） ──");
@@ -86,7 +87,9 @@ async function main() {
     check("解析出 2 道题", body.problems?.length === 2, JSON.stringify(titles));
     check("P1001 题名正确（A+B Problem）", titles.includes("A+B Problem"), titles[0] || "");
     check("P3376 题名正确（网络最大流）", titles.some((t) => t.includes("网络最大流")), titles.join(", ") || "");
-    check("P3376 难度已解析（省选/NOI-）", p3376.difficulty === "省选/NOI-", p3376.difficulty || "无");
+    // 洛谷会重新评定难度（P3376 现已从「省选/NOI-」调整为「提高+/省选-」），
+    // 因此这里只验证「解析出了官方 8 级里的某一级」，不锁死具体等级。
+    check("P3376 难度已解析（洛谷官方 8 级之一）", ["暂无评定", "入门", "普及-", "普及", "普及+/提高-", "提高", "提高+/省选-", "省选/NOI-", "NOI/NOI+/CTS"].includes(p3376.difficulty), p3376.difficulty || "无");
     check("P3376 题面已解析（非 [object Object]）", (p3376.description || "").length > 20 && !String(p3376.description).includes("[object Object]"), `${(p3376.description || "").length} 字符`);
   } catch (error) {
     check("洛谷接口可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
@@ -111,6 +114,24 @@ async function main() {
     }
   } catch (error) {
     check("AtCoder 接口可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
+  }
+
+  console.log("── AtCoder 真实题面抓取 ──");
+  try {
+    res = await post("/api/problem-statement", { platform: "AtCoder", problemNumber: "abc381_a" }, { cookie, csrf: CSRF });
+    const body = await res.json();
+    check("AtCoder 题面请求成功（200）", res.status === 200, `HTTP ${res.status}`);
+    check("题面来源为 atcoder-html", body.source?.kind === "atcoder-html", body.source?.kind || JSON.stringify(body).slice(0, 120));
+    check(
+      "题面正文已解析（含小节标题）",
+      (body.description || "").includes("### Problem Statement") && (body.description || "").length > 200,
+      `${(body.description || "").length} 字符`,
+    );
+    check("只取英文题面（不含日文小节）", !/問題文/.test(body.description || ""), /問題文/.test(body.description || "") ? "正文里出现了日文小节标题" : "正文无日文小节");
+    res = await post("/api/problem-statement", { platform: "AtCoder", problemNumber: "abc381" }, { cookie, csrf: CSRF });
+    check("AtCoder 题号缺下划线时仍是 400", res.status === 400, `HTTP ${res.status}`);
+  } catch (error) {
+    check("AtCoder 题面接口可达", false, `${error.message}（网络不可达时请检查网络，不代表功能故障）`);
   }
 
   console.log("── 限流不误伤 ──");

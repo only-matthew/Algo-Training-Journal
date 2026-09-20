@@ -33,7 +33,17 @@ test("server rejects malformed attachment and metadata instead of silently dropp
     { statementSource: { kind: "codeforces-html", url: "https://evil.example/4/A" } },
     { statementSource: { kind: "luogu-mirror", url: "https://evil.example/problem/CF4A" } },
     { statementSource: { kind: "luogu-mirror", url: "https://www.luogu.com.cn/problem/P1001" } },
+    { statementSource: { kind: "atcoder-html", url: "https://evil.example/contests/abc381/tasks/abc381_a" } },
+    { statementSource: { kind: "atcoder-html", url: "https://atcoder.jp/contests/abc381" } },
+    { statementSource: { kind: "atcoder-html", url: "https://atcoder.jp/contests/abc381/tasks/" } },
   ]) assert.throws(() => validateLogInput({ problems: [{ id: "p1", name: "Example", ...patch }] }));
+});
+
+test("AtCoder 题面来源按 kind 校验地址并可保存", () => {
+  const source = { kind: "atcoder-html", url: "https://atcoder.jp/contests/abc381/tasks/abc381_a?lang=en", fetchedAt: "2026-09-19T00:00:00.000Z", parserVersion: "atcoder-html-v1" };
+  const saved = validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "p1", name: "A - 11/22 String", problemNumber: "abc381_a", statementSource: source }] });
+  assert.deepEqual(saved.problems[0].statementSource, source);
+  assert.deepEqual(normalizeMeta(metaFromProblems(saved.problems)).problems[0].statementSource, source);
 });
 
 test("洛谷镜像题面来源按 kind 校验地址并可保存", () => {

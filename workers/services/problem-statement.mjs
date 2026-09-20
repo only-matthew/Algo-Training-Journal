@@ -8,12 +8,16 @@ import {
   statementImageFileName,
 } from "../../lib/statement-images.mjs";
 
-export const CF_STATEMENT_PARSER_VERSION = "cf-html-v3";
-export const LUOGU_STATEMENT_PARSER_VERSION = "luogu-mirror-v2";
+// 解析版本记录「正文是用哪一代解析器生成的」：同一个页面的输出格式变化时要 +1，
+// 便于日后判断某条记录的题面是旧的 Markdown 写法还是新的。
+export const CF_STATEMENT_PARSER_VERSION = "cf-html-v4";
+export const LUOGU_STATEMENT_PARSER_VERSION = "luogu-mirror-v3";
+export const ATCODER_STATEMENT_PARSER_VERSION = "atcoder-html-v1";
 const MAX_HTML_BYTES = 2 * 1024 * 1024;
 const MAX_MARKDOWN = 100_000;
 const CF_ORIGIN = "https://codeforces.com/";
 const LUOGU_ORIGIN = "https://www.luogu.com.cn";
+const ATCODER_ORIGIN = "https://atcoder.jp";
 // 题面图片的下载预算：与正文抓取分开计时，图片取不到不影响题面本身。
 const IMAGE_TIMEOUT_MS = 6000;
 const IMAGE_CONCURRENCY = 4;
@@ -78,6 +82,21 @@ function safeImageUrl(value, base) {
 function imageAlt(value) { return tidy(value || "image").replace(/[\[\]]/g, "\\$"); }
 
 /**
+ * 行内代码（AtCoder 的 `<code>`、洛谷正文里的 Markdown 混排）。
+ *
+ * 围栏长度按内容里最长的反引号串加一：否则正文自己带的 `` ` `` 会提前闭合围栏，
+ * 后面半截代码就变成普通文本。内容里若含反引号，Markdown 还要求首尾各留一个空格。
+ */
+function inlineCode(value) {
+  const text = textOf(value).replace(/\s+/g, " ").trim();
+  if (!text) return "";
+  const longest = (text.match(/`+/g) || []).reduce((max, run) => Math.max(max, run.length), 0);
+  const fence = "`".repeat(longest + 1);
+  const pad = longest ? " " : "";
+  return `${fence}${pad}${text}${pad}${fence}`;
+}
+
+/**
  * 记下一张待归档的图片并返回正文里的占位符。
  *
  * 同一个地址只记一次：题面里同一张图重复出现时共用一个占位符，下载与哈希也只算一次。
@@ -116,6 +135,11 @@ function markdownFrom(node, warnings, context = {}) {
   if (tag === "img") return registerImage(node.attrs.src, node.attrs.alt, context, warnings);
   if (tag === "a") { const label = tidy(children()) || tidy(node.attrs.href); const url = safeUrl(node.attrs.href, false, context.base); return url ? `[${label}](${url})` : label; }
   if (tag === "sup") return `^(${tidy(children())})`; if (tag === "sub") return `_(${tidy(children())})`;
+  if (tag === "code") return inlineCode(node);
+  // AtCoder 把公式写成 <var>，内容是裸 TeX 片段（如 \frac{|T|+1}{2}）。站内用 KaTeX 渲染
+  // $...$，因此这里补上定界符；`pre` 里的 <var> 由 codeText 走纯文本分支，不会变成 $...$。
+  if (tag === "var") return `$${textOf(node).trim()}$`;
+  if (tag === "blockquote") { const quoted = tidy(children()).replace(/\n{2,}/g, "\n>\n"); return quoted ? `\n\n> ${quoted.replace(/\n/g, "\n> ")}\n\n` : ""; }
   if (hasClass(node, "test-example-line")) return `${children()}\n`;
   if (hasClass(node, "tex-span")) return `$${tidy(textOf(node)).replace(/^\$+|\$+$/g, "")}$`;
   if (hasClass(node, "tex-block")) return `\n\n$$\n${tidy(textOf(node)).replace(/^\$+|\$+$/g, "")}\n$$\n\n`;
@@ -124,8 +148,16 @@ function markdownFrom(node, warnings, context = {}) {
   if (tag === "p") return `\n\n${children()}\n\n`; if (["div", "section", "ul", "ol"].includes(tag)) return `\n${children()}\n`; return children();
 }
 // 表格按 GFM 输出：首行是 th 时补一行分隔符，否则渲染端只会看到一堆竖线文本。
+// 行要递归收集：AtCoder 的 <tr> 包在 <thead>/<tbody> 里（洛谷与 CF 直接挂在 table 下），
+// 只认直接子节点会让整张表凭空消失。没有单元格的空行（AtCoder 样例表里真实存在）跳过。
+function tableRows(node) {
+  const rows = [];
+  const walk = (current) => { for (const child of current.children || []) { if (child.tag === "tr") rows.push(child); else walk(child); } };
+  walk(node);
+  return rows.filter((row) => (row.children || []).some((cell) => cell.tag === "td" || cell.tag === "th"));
+}
 function tableMarkdown(node, warnings, context) {
-  const rows = (node.children || []).filter((child) => child.tag === "tr");
+  const rows = tableRows(node);
   if (!rows.length) return "";
   const cellsOf = (row) => (row.children || []).filter((child) => child.tag === "td" || child.tag === "th").map((cell) => tidy(markdownFrom(cell, warnings, context)).replace(/\|/g, "\\|"));
   const lines = rows.map((row) => `| ${cellsOf(row).join(" | ")} |`);
@@ -141,6 +173,8 @@ function imageReferer(url) {
     const { hostname, origin } = new URL(url);
     if (/(^|\.)luogu\.com\.cn$/i.test(hostname)) return `${LUOGU_ORIGIN}/`;
     if (/(^|\.)codeforces\.com$/i.test(hostname)) return CF_ORIGIN;
+    // AtCoder 的题面图挂在 img.atcoder.jp，referer 统一写题面所在站。
+    if (/(^|\.)atcoder\.jp$/i.test(hostname)) return `${ATCODER_ORIGIN}/`;
     return `${origin}/`;
   } catch { return ""; }
 }
@@ -381,9 +415,87 @@ export async function fetchLuoguStatement({ problemNumber }, { fetchImpl = fetch
   } finally { clearTimeout(timer); }
 }
 
-// 抓取入口：先取官方英文题面，被反爬拦下（或解析失败）时退回洛谷镜像，
-// 两个来源共用同一个总时限；主来源的失败原因最终回给前端，镜像失败不改变它。
-export async function fetchStatement({ problemNumber, sourceUrl }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
+// ── AtCoder 官方题面 ────────────────────────────────────────────────────────
+// AtCoder 没有题面 API，但题目页是公开的：atcoder.jp/contests/<contest>/tasks/<task>。
+// 题号本身就是任务 ID（abc381_a），比赛 ID 是最后一个下划线之前的部分——这与
+// lib/problem-links.mjs 生成原题链接的口径一致，不另立一套解析规则。
+// 页面同时内嵌日文（span.lang-ja）与英文（span.lang-en）两套题面，只取英文那套。
+export const ATCODER_JA_WARNING = "ja-statement";
+
+export function parseAtCoderProblemNumber(problemNumber) {
+  const value = String(problemNumber || "").trim().replace(/\s+/g, "").toLowerCase();
+  const cut = value.lastIndexOf("_");
+  if (cut <= 0 || cut === value.length - 1) return null;
+  const contest = value.slice(0, cut);
+  // 只接受能安全拼进 URL 的字符：拼不出题目页就不抓，也不去猜比赛 ID。
+  if (!/^[a-z0-9][a-z0-9_-]*$/.test(contest) || !/^[a-z0-9][a-z0-9_]*$/.test(value)) return null;
+  return { contest, problemNumber: value };
+}
+
+const ATCODER_TITLE = /<title>([\s\S]*?)<\/title>/i;
+const ATCODER_LIMITS = /Time Limit:\s*([^<>]{1,48}?)\s*\/\s*Memory Limit:\s*([^<>]{1,48}?)\s*</i;
+
+export function parseAtCoderStatement(html, expectedProblemNumber, { collectImages = false } = {}) {
+  const expected = parseAtCoderProblemNumber(expectedProblemNumber);
+  if (!expected) fail("parse-failed");
+  const source = String(html || "");
+  const document = parseHtml(source);
+  // 页面用 og:url 声明自己是谁：题号与页面对不上时，绝不能把别题（或别的比赛）的
+  // 题面写进记录。AtCoder 的 URL 大小写不敏感，比较时统一转小写。
+  const claimed = findFirst(document, (node) => node.tag === "meta" && String(node.attrs.property || "").toLowerCase() === "og:url")?.attrs?.content || "";
+  if (claimed) {
+    let path = "";
+    try { path = new URL(claimed).pathname; } catch { path = ""; }
+    if (path.toLowerCase() !== `/contests/${expected.contest}/tasks/${expected.problemNumber}`.toLowerCase()) fail("parse-failed");
+  }
+  const container = findFirst(document, (node) => node.tag === "div" && String(node.attrs.id || "").toLowerCase() === "task-statement");
+  if (!container) fail(isChallengePage(source) ? "blocked" : "parse-failed");
+  const warnings = new Set();
+  const english = findFirst(container, (node) => hasClass(node, "lang-en"));
+  // 少数老题（如 JOI 系列）只有日文题面：取日文原题并留下警告，不能假装是官方英文题面。
+  if (!english) warnings.add(ATCODER_JA_WARNING);
+  const bodyNode = english || findFirst(container, (node) => hasClass(node, "lang-ja")) || container;
+  const context = imageContext(collectImages);
+  const body = tidy(markdownFrom(bodyNode, warnings, { ...context, base: ATCODER_ORIGIN }));
+  if (!body) fail("parse-failed");
+  const title = tidy(decode(ATCODER_TITLE.exec(source)?.[1] || "")).replace(/\s*-\s*AtCoder\s*$/i, "");
+  const limits = ATCODER_LIMITS.exec(source);
+  const description = tidy([title && `# ${title}`, limits && `时间限制：${tidy(limits[1])}`, limits && `内存限制：${tidy(limits[2])}`, body].filter(Boolean).join("\n\n"));
+  if (description.length > MAX_MARKDOWN) fail("too-large");
+  return { description, warnings: [...warnings], images: context.images || [] };
+}
+
+export async function fetchAtCoderStatement({ problemNumber }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
+  const expected = parseAtCoderProblemNumber(problemNumber);
+  if (!expected) return unavailable(normalizeProblemNumber(problemNumber), "parse-failed");
+  const normalized = expected.problemNumber;
+  const url = `${ATCODER_ORIGIN}/contests/${encodeURIComponent(expected.contest)}/tasks/${encodeURIComponent(normalized)}?lang=en`;
+  const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const headers = { ...BROWSER_HEADERS, "Accept-Language": "en-US,en;q=0.9,ja;q=0.8" };
+  try {
+    let response;
+    try { response = await fetchImpl(url, { redirect: "follow", signal: controller.signal, headers }); }
+    catch (error) { return unavailable(normalized, error?.name === "AbortError" || controller.signal.aborted ? "timeout" : "upstream-error", true); }
+    if (response.status === 404) return unavailable(normalized, "not-found");
+    // 429 与 403 都是「现在拿不到，别再打」：AtCoder 会对异常流量直接限流。
+    if (response.status === 403 || response.status === 429) return unavailable(normalized, "blocked");
+    if (!response.ok) return unavailable(normalized, response.status >= 500 ? "upstream-error" : "blocked", response.status >= 500);
+    try {
+      const parsed = parseAtCoderStatement(await readLimitedBody(response, controller.signal), normalized, { collectImages: true });
+      const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, timeoutMs: imageTimeoutMs });
+      if (archived.description.length > MAX_MARKDOWN) return unavailable(normalized, "too-large");
+      return { status: "ok", problemNumber: normalized, description: archived.description, images: archived.images, source: { kind: "atcoder-html", url, fetchedAt: now(), parserVersion: ATCODER_STATEMENT_PARSER_VERSION }, warnings: settledWarnings(parsed.warnings, archived) };
+    } catch (error) { const reason = failureReason(error, controller.signal); return unavailable(normalized, reason, REASONS_RETRYABLE.has(reason)); }
+  } finally { clearTimeout(timer); }
+}
+
+// 抓取入口：AtCoder 只有官方页一个来源；Codeforces 先取官方英文题面，被反爬拦下
+// （或解析失败）时退回洛谷镜像，两个来源共用同一个总时限；主来源的失败原因最终回给
+// 前端，镜像失败不改变它。
+export async function fetchStatement({ platform = "Codeforces", problemNumber, sourceUrl }, options = {}) {
+  // AtCoder 的题目地址由题号推出来，没有用户传入的 URL 需要校验，因此 sourceUrl 被忽略。
+  if (platform === "AtCoder") return fetchAtCoderStatement({ problemNumber }, options);
+  const { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = options;
   const deadline = Date.now() + timeoutMs;
   const remaining = () => deadline - Date.now();
   const primary = await fetchCodeforcesStatement({ problemNumber, sourceUrl }, { fetchImpl, now, timeoutMs: Math.max(1000, Math.round(remaining() * 0.6)), imageTimeoutMs });

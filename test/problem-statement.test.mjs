@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { archiveStatementImages, fetchCodeforcesStatement, fetchLuoguStatement, fetchStatement, parseCodeforcesStatement, parseLuoguStatement, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
+import { archiveStatementImages, fetchAtCoderStatement, fetchCodeforcesStatement, fetchLuoguStatement, fetchStatement, parseAtCoderProblemNumber, parseAtCoderStatement, parseCodeforcesStatement, parseLuoguStatement, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
 
 const HTML = `<div class="problem-statement"><div class="header"><div class="title">A. Test</div><div class="time-limit">1 second</div><div class="memory-limit">256 megabytes</div></div><p>Find $$$x$$$.</p><div class="input-specification"><p>Input</p></div><div class="output-specification"><p>Output</p></div><img src="/img.png"></div>`;
 const CHALLENGE = `<!DOCTYPE html><html><head><title>Just a moment...</title></head><body>cloudflare challenge</body></html>`;
@@ -281,4 +281,97 @@ test("镜像返回解析失败不会覆盖主来源原因", async () => {
   const fetchImpl = routedFetch([BLOCKED, [new RegExp(`^${LUOGU_URL}$`), () => new Response("<html><body>没有题面</body></html>")]]);
   const result = await fetchStatement({ problemNumber: "4A" }, { fetchImpl });
   assert.equal(result.reason, "blocked");
+});
+
+// ── AtCoder 官方题面（atcoder.jp/contests/<contest>/tasks/<task>）─────────────
+const ATCODER_URL = "https://atcoder.jp/contests/abc381/tasks/abc381_a?lang=en";
+const ATCODER_IMAGE_URL = "https://img.atcoder.jp/abc381/fig.png";
+// 结构照抄真实题目页：题面在 #task-statement 里分 lang-ja / lang-en 两套，
+// 小节是 div.part > section > h3，公式写在 <var>，表格行包在 thead/tbody 里。
+function atcoderPage({ ogUrl = ATCODER_URL, english = true, japanese = true } = {}) {
+  const ja = japanese ? `<span class="lang-ja"><h3>問題文</h3><p>日本語の本文</p></span>` : "";
+  const en = english ? `<span class="lang-en"><p>Score : <var>150</var> points</p>
+<div class="part"><section><h3>Problem Statement</h3><p>Given <var>N</var>, print <var>\\frac{|T|+1}{2}</var> and <code>1</code>.</p>
+<ul><li><var>1 \\leq N \\leq 100</var></li></ul></section></div>
+<div class="part"><section><h3>Sample Input 1</h3><pre>5
+11/22
+</pre></section></div>
+<table class="table table-bordered"><thead><tr><th>Input</th><th>Output</th></tr></thead><tbody><tr><td><code>3</code></td><td><code>2</code></td></tr><tr></tr></tbody></table>
+<img src="${ATCODER_IMAGE_URL}" alt="figure"></span>` : "";
+  return `<!DOCTYPE html><html><head><title>A - 11/22 String</title><meta property="og:url" content="${ogUrl}"></head><body>
+<p>Time Limit: 2 sec / Memory Limit: 1024 MiB</p>
+<div id="task-statement"><span class="lang">${ja}${en}</span></div></body></html>`;
+}
+
+test("AtCoder 题号解析：比赛 ID 取最后一个下划线之前的部分", () => {
+  assert.deepEqual(parseAtCoderProblemNumber("ABC381_A"), { contest: "abc381", problemNumber: "abc381_a" });
+  assert.deepEqual(parseAtCoderProblemNumber(" chokudai_S001_a "), { contest: "chokudai_s001", problemNumber: "chokudai_s001_a" });
+  for (const value of ["abc381", "abc381_", "_a", "abc381/a", "abc381.a", ""]) {
+    assert.equal(parseAtCoderProblemNumber(value), null, `应拒绝：${JSON.stringify(value)}`);
+  }
+});
+
+test("AtCoder 题面取官方英文页，保留公式、行内代码、样例与表格", () => {
+  const parsed = parseAtCoderStatement(atcoderPage(), "abc381_a");
+  assert.match(parsed.description, /^# A - 11\/22 String/);
+  assert.match(parsed.description, /时间限制：2 sec/);
+  assert.match(parsed.description, /内存限制：1024 MiB/);
+  assert.match(parsed.description, /### Problem Statement/);
+  assert.match(parsed.description, /### Sample Input 1/);
+  assert.match(parsed.description, /\$150\$/);
+  assert.match(parsed.description, /\$1 \\leq N \\leq 100\$/);
+  assert.ok(parsed.description.includes("$\\frac{|T|+1}{2}$"), parsed.description);
+  assert.ok(parsed.description.includes("`1`"), parsed.description);
+  assert.match(parsed.description, /\| Input \| Output \|\n\| --- \| --- \|\n\| `3` \| `2` \|/);
+  assert.match(parsed.description, /```\n5\n11\/22\n```/);
+  // 日文那套题面不能被拼进正文。
+  assert.doesNotMatch(parsed.description, /日本語の本文/);
+  assert.deepEqual(parsed.warnings, ["external-images"]);
+});
+
+test("AtCoder 只有日文题面时取日文并留下警告", () => {
+  const parsed = parseAtCoderStatement(atcoderPage({ english: false }), "abc381_a");
+  assert.match(parsed.description, /日本語の本文/);
+  assert.deepEqual(parsed.warnings, ["ja-statement"]);
+});
+
+test("AtCoder 页面身份与题号不符时判为解析失败", () => {
+  assert.throws(() => parseAtCoderStatement(atcoderPage({ ogUrl: "https://atcoder.jp/contests/abc381/tasks/abc381_b?lang=en" }), "abc381_a"), /parse-failed/);
+  assert.throws(() => parseAtCoderStatement(atcoderPage(), "abc381"), /parse-failed/);
+  assert.throws(() => parseAtCoderStatement("<html><body>没有题面</body></html>", "abc381_a"), /parse-failed/);
+});
+
+test("AtCoder 抓取按官方页解析，题号大小写不敏感并归档题面图片", async () => {
+  const fetchImpl = routedFetch([
+    [new RegExp(`^${ATCODER_URL.replace(/\?/g, "\\?")}$`), () => new Response(atcoderPage())],
+    [new RegExp(`^${ATCODER_IMAGE_URL.replace(/[/.]/g, "\\$&")}$`), (_url, options) => {
+      // AtCoder 的题面图同样按来源站校验 referer。
+      assert.equal(options.headers.Referer, "https://atcoder.jp/");
+      return new Response(PNG, { headers: { "Content-Type": "image/png" } });
+    }],
+  ]);
+  const result = await fetchStatement({ platform: "AtCoder", problemNumber: "ABC381_A" }, { fetchImpl });
+  assert.equal(result.status, "ok");
+  assert.equal(result.problemNumber, "abc381_a");
+  assert.equal(result.source.kind, "atcoder-html");
+  assert.equal(result.source.url, ATCODER_URL);
+  assert.equal(result.source.parserVersion, "atcoder-html-v1");
+  const fileName = `statement-${sha(PNG)}.png`;
+  assert.match(result.description, new RegExp(`!\\[figure\\]\\(\\./${fileName}\\)`));
+  assert.equal(result.images.length, 1);
+  assert.deepEqual(result.warnings, []);
+  assert.deepEqual(fetchImpl.calls.map((call) => call.url), [ATCODER_URL, ATCODER_IMAGE_URL]);
+});
+
+test("AtCoder 抓取不退回镜像，失败按原因降级", async () => {
+  const notFound = await fetchAtCoderStatement({ problemNumber: "abc999_z" }, { fetchImpl: async () => new Response("", { status: 404 }) });
+  assert.deepEqual(notFound, { status: "unavailable", problemNumber: "abc999_z", reason: "not-found", retryable: false });
+  const limited = await fetchAtCoderStatement({ problemNumber: "abc381_a" }, { fetchImpl: async () => new Response("", { status: 429 }) });
+  assert.equal(limited.reason, "blocked");
+  assert.equal(limited.retryable, false);
+  // 题号拼不出题目页：一个请求都不发。
+  let calls = 0;
+  const invalid = await fetchAtCoderStatement({ problemNumber: "abc381" }, { fetchImpl: async () => { calls += 1; return new Response(""); } });
+  assert.equal(invalid.reason, "parse-failed");
+  assert.equal(calls, 0);
 });

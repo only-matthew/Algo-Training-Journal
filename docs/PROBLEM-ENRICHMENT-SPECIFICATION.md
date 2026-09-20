@@ -31,7 +31,7 @@
 
 文件路径仅服务端生成：`<resolvedLogRoot>/<fileIndex>-statement-<sha256>.pdf`。原始文件名、AI 字符串和客户端路径均不能参与仓库路径拼接。同日不同题即使哈希相同，也采用各自 fileIndex 路径，本期不引入共享引用计数。
 
-`statementSource={kind,url?,fetchedAt?,parserVersion?}`，kind 为 `manual | codeforces-html | luogu-mirror | ai-summary`。抓取 URL 必须与 kind 对应且经校验（codeforces-html 只认 codeforces.com 的题目路径，luogu-mirror 只认 `www.luogu.com.cn/problem/CF<contestId><index>`），时间由服务端产生。用户修改自动抓取正文后变为 manual；原 PDF 不受影响。
+`statementSource={kind,url?,fetchedAt?,parserVersion?}`，kind 为 `manual | codeforces-html | luogu-mirror | atcoder-html | ai-summary`。抓取 URL 必须与 kind 对应且经校验（codeforces-html 只认 codeforces.com 的题目路径，luogu-mirror 只认 `www.luogu.com.cn/problem/CF<contestId><index>`，atcoder-html 只认 `atcoder.jp/contests/<比赛>/tasks/<任务>`），时间由服务端产生。用户修改自动抓取正文后变为 manual；原 PDF 不受影响。
 
 `metadataSources.difficultyRating={kind,reference?,acceptedAt?}`；kind 为 `official | manual | ai-estimate | legacy-unknown`。`metadataSources.tags` 是 `{tag,kind}` 数组，kind 为 `official | manual | ai-suggested | legacy-unknown`，只包含当前 tags；同一标签优先保留已有来源。旧数据不按平台或数值猜来源。
 
@@ -145,11 +145,11 @@
 | 429 | RATE_LIMITED | 返回可重试时间 |
 | 502 | STORAGE_UNAVAILABLE | 不报成功，支持同 operationId 重试 |
 
-## 5. Codeforces 题面抓取接口
+## 5. Codeforces / AtCoder 题面抓取接口
 
 ### 5.1 `POST /api/problem-statement`
 
-认证与 CSRF 同导入；请求 `{platform:"Codeforces",problemNumber,sourceUrl?}`，仅单题，JSON 最多 4 KiB。不接受任意平台代理请求。
+认证与 CSRF 同导入；请求 `{platform,problemNumber,sourceUrl?}`，`platform` 只接受 `Codeforces` 与 `AtCoder`，仅单题，JSON 最多 4 KiB。不接受任意平台代理请求，也不接受其余平台（洛谷题面走导入链路）。`sourceUrl` 只对 Codeforces 有意义，AtCoder 的题目地址由题号推出，服务端忽略它。
 
 普通题号按现有身份规则解析 contestId/index，默认构造 `https://codeforces.com/problemset/problem/<contestId>/<index>?locale=en`。sourceUrl 仅允许 HTTPS、精确 codeforces.com 主机、无凭据/自定义端口，路径只允许 `/problemset/problem/:contestId/:index`、`/contest/:contestId/problem/:index`、`/gym/:contestId/problem/:index`；必须与题号一致。Gym 必须有明确来源路径，不仅凭数字大小猜测。私有 group 路径本期不支持。
 
@@ -179,11 +179,21 @@
 
 洛谷镜像的正文来自页面内嵌 `lentille-context` JSON 的 `data.problem`，与洛谷导入同款解析：`pid` 存在时必须等于 `CF<contestId><index>`，否则判 parse-failed；`content` 兼容字符串与 `{background,description,formatI,formatO,hint}` 对象两种形态，按小节转成 `## 题目描述 / ## 输入格式 / ## 输出格式 / ## 说明/提示`。样例可能嵌在正文（`pre`）也可能单列在 `samples`，后者只在正文没有代码块时补 `### 样例 n`，避免重复。脚本、样式与表格分别做丢弃和 GFM 表格转换；相对图片地址按 `www.luogu.com.cn` 解析为绝对 HTTPS URL。
 
-### 5.3 表单整合
+### 5.3 AtCoder 官方题面（2026-09-21 补充）
+
+AtCoder 没有题面 API，但题目页是公开的：`https://atcoder.jp/contests/<contest>/tasks/<task>?lang=en`。题号即任务 ID（`abc381_a`），比赛 ID 是最后一个下划线之前的部分——与 `lib/problem-links.mjs` 生成原题链接的口径一致，不另立规则；题号大小写不敏感，服务端统一按小写拼 URL（`chokudai_S001_a` 这类混合大小写的任务同样能取到页面）。拼不出「比赛_任务」形态的题号（如只填 `abc381`）在路由层就返回 400，一个上游请求都不发。
+
+页面在 `#task-statement` 内同时内嵌 `span.lang-ja` 与 `span.lang-en` 两套题面，只取英文那套；只有日文时取日文原题并在 `warnings` 里加 `ja-statement`，表单提示「这道题没有英文题面，正文是日文原题」。页面用 `og:url` 声明自己的身份，与请求题号不一致时判 `parse-failed`，绝不把别题正文写进记录。404 为 `not-found`；403 与 429 都按 `blocked` 降级（AtCoder 会对异常流量限流），不自动重试、不做任何绕过。
+
+解析保真（AtCoder 用到的映射）：`<var>` 里是裸 TeX（如 `\frac{|T|+1}{2}`、`1 \leq N \leq 100`），转成 `$...$` 交给站内 KaTeX；`<code>` 转行内代码（围栏长度按内容里最长的反引号串自适应）；`<h3>` 小节标题转 `###`；`<pre>` 样例保留空白并转 fenced code；表格行递归收集（AtCoder 的 `<tr>` 包在 `<thead>/<tbody>` 里，只认直接子节点会让整张表消失），没有单元格的空行跳过；`<blockquote>` 转引用块。标题取自 `<title>`，时间/内存限制从页面头部的 `Time Limit: … / Memory Limit: …` 抽取，写成 `时间限制：2 sec` / `内存限制：1024 MiB`。
+
+题面图片同样先归档：AtCoder 的题面图在 `img.atcoder.jp`，下载时补 `Referer: https://atcoder.jp/`，其余与 CF / 洛谷链路相同。`source.kind="atcoder-html"`、`parserVersion="atcoder-html-v1"`。共享解析器的这轮改动同时影响另外两个来源，因此版本一并升级为 `cf-html-v4` / `luogu-mirror-v3`。
+
+### 5.4 表单整合
 
 AC 列表不阻塞等待题面。只抓用户添加的题，按 recordId 绑定请求，保存 identity/fingerprint 和描述初始值。响应时若行已删除、账号/日期已切换、题号变化或用户改过描述，不自动写回；提供当前行重新抓取入口。
 
-抓取结果与失败原因都必须给用户可读的中文说明：镜像来源提示“可能是中文翻译，建议对照原题核对”，失败时把 reason 展开成可操作的建议（blocked → 上传 PDF 或手动粘贴），不能只显示英文代号。
+抓取结果与失败原因都必须给用户可读的中文说明：镜像来源提示“可能是中文翻译，建议对照原题核对”，AtCoder 只有日文题面时提示“这道题没有英文题面，正文是日文原题”，失败时把 reason 展开成可操作的建议（blocked → 上传 PDF 或手动粘贴），不能只显示英文代号。
 
 同题多个请求采用请求序号，仅最新结果有效。失败保留题名、官方元数据和原题链接；重新抓取不会隐式替换用户描述。现有历史记录按需补全，本期无后台全库回填。
 

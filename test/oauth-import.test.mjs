@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
 
-import { fetchCodeforcesAccepted, fetchLuoguProblems, fetchAtCoderAccepted } from "../workers/oauth.mjs";
+import worker, { fetchCodeforcesAccepted, fetchLuoguProblems, fetchAtCoderAccepted, seal } from "../workers/oauth.mjs";
 
 const now = Math.floor(Date.now() / 1000);
 const DAY = 86400;
@@ -255,4 +255,26 @@ test("fetchAtCoderAccepted rejects empty handle and handles empty results", asyn
   };
   const problems = await fetchAtCoderAccepted("ghost", { fetchImpl });
   assert.deepEqual(problems, []);
+});
+
+// ── 会话预置的用户名（导入面板自动预填）──
+
+test("/api/session 下发预置的 CF 与 AtCoder 用户名", async () => {
+  const secret = "test-session-secret";
+  const cookie = await seal({ token: "token", login: "only-matthew", member: "廖夏", csrfToken: "csrf", exp: Date.now() + 600000 }, secret);
+  const response = await worker.fetch(new Request("https://algo-oauth.xialiao.org/api/session", {
+    headers: { Origin: "https://train.xialiao.org", Cookie: `__Host-journal_session=${cookie}` },
+  }), { SESSION_SECRET: secret });
+  const body = await response.json();
+  assert.equal(body.cfHandle, "onlymatt");
+  assert.equal(body.atcoderHandle, "only_matthew");
+
+  // 没有预置的队员不能凭空得到别人的 handle。
+  const other = await seal({ token: "token", login: "wzzzzhhhhh", member: "王梓豪", csrfToken: "csrf", exp: Date.now() + 600000 }, secret);
+  const otherResponse = await worker.fetch(new Request("https://algo-oauth.xialiao.org/api/session", {
+    headers: { Origin: "https://train.xialiao.org", Cookie: `__Host-journal_session=${other}` },
+  }), { SESSION_SECRET: secret });
+  const otherBody = await otherResponse.json();
+  assert.equal(otherBody.cfHandle, "hnuwang");
+  assert.equal("atcoderHandle" in otherBody, false);
 });

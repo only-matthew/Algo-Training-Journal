@@ -7,7 +7,7 @@ import { isUuidV4 } from "../lib/training-schema.mjs";
 import { readCatalog, readTrainingContext, workbenchResponse } from "./services/training-read.mjs";
 import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
-import { archiveStatementImages, fetchStatement, parseLuoguProblem, readLuoguProblem } from "./services/problem-statement.mjs";
+import { archiveStatementImages, fetchStatement, parseAtCoderProblemNumber, parseLuoguProblem, readLuoguProblem } from "./services/problem-statement.mjs";
 import { createLogsV2Service, parseLogsV2Request, revisionFromEntries, statementImagePath, statementPath } from "./services/logs-v2.mjs";
 import { normalizeLearningState } from "../lib/learning-state.mjs";
 import { MAX_NEW_STATEMENT_IMAGE_BYTES } from "../lib/statement-images.mjs";
@@ -20,6 +20,8 @@ const LEGACY_COOKIE = "journal_session";
 const MEMBERS = { "only-matthew": "廖夏", wzzzzhhhhh: "王梓豪", "seanist-isx": "郭一鸣" };
 // 队员预置的 Codeforces 用户名：登录后导入面板自动预填（可在输入框内修改）
 const CF_HANDLES = { "only-matthew": "onlymatt", wzzzzhhhhh: "hnuwang", "seanist-isx": "ymguo" };
+// 队员预置的 AtCoder 用户名：AtCoder 的 handle 与 CF 不同名，同样在导入面板自动预填。
+const ATCODER_HANDLES = { "only-matthew": "only_matthew" };
 const ORIGINS = new Set(["https://train.xialiao.org", "http://localhost:3000", "http://localhost:4173", "http://localhost:5000"]);
 
 const RATE_LIMITS = { summarize: { max: 5, windowMs: 60000 }, "import:codeforces": { max: 10, windowMs: 60000 }, "import:luogu": { max: 10, windowMs: 60000 }, "import:atcoder": { max: 10, windowMs: 60000 }, "problem-statement": { max: 10, windowMs: 60000 } };
@@ -537,7 +539,7 @@ async function session(request, env) {
   for (const value of values) {
     const data = await open(value, env.SESSION_SECRET);
     if (data && MEMBERS[data.login] === data.member) {
-      return { ...data, cfHandle: CF_HANDLES[data.login] };
+      return { ...data, cfHandle: CF_HANDLES[data.login], atcoderHandle: ATCODER_HANDLES[data.login] };
     }
   }
   return null;
@@ -904,16 +906,24 @@ async function handleSummarize(request, user, env) {
   return json(request, { summary });
 }
 
+// 题面抓取只支持两个有官方公开页面的平台：Codeforces（英文题面，被反爬时退回洛谷镜像）
+// 与 AtCoder（官方英文题面，少数老题只有日文原题）。
+const STATEMENT_PLATFORMS = new Set(["Codeforces", "AtCoder"]);
+
 async function handleProblemStatement(request, user) {
   if (rateExceeded(`problem-statement:${user.login}`, RATE_LIMITS["problem-statement"])) {
     return v2Error(request, "RATE_LIMITED", "请求过于频繁，请稍后再试", 429);
   }
   const body = await readJsonBody(request, 4096);
-  if (!body || body.platform !== "Codeforces" || typeof body.problemNumber !== "string"
+  if (!body || !STATEMENT_PLATFORMS.has(body.platform) || typeof body.problemNumber !== "string"
     || (body.sourceUrl !== undefined && typeof body.sourceUrl !== "string")) {
-    return v2Error(request, "INVALID_JSON", "只支持一个 Codeforces 题号", 400);
+    return v2Error(request, "INVALID_JSON", "只支持一个 Codeforces 或 AtCoder 题号", 400);
   }
-  return json(request, await fetchStatement(body));
+  // AtCoder 的题号必须能拆出比赛与任务 ID，否则连题目页都拼不出来，不能靠猜。
+  if (body.platform === "AtCoder" && !parseAtCoderProblemNumber(body.problemNumber)) {
+    return v2Error(request, "INVALID_JSON", "AtCoder 题号必须形如 abc381_a", 400);
+  }
+  return json(request, await fetchStatement({ platform: body.platform, problemNumber: body.problemNumber, sourceUrl: body.sourceUrl }));
 }
 
 // Codeforces 官方 API：拉取最近 days 天内的 AC 记录，按题目去重（公开接口，无需登录）。
@@ -1126,7 +1136,7 @@ export default {
       // Reading the current session is public; an anonymous visitor is a normal state.
       if (url.pathname === "/api/session" && request.method === "GET") {
         const body = user
-          ? { login: user.login, member: user.member, avatar_url: user.avatar_url, csrfToken: user.csrfToken, ...(user.cfHandle ? { cfHandle: user.cfHandle } : {}) }
+          ? { login: user.login, member: user.member, avatar_url: user.avatar_url, csrfToken: user.csrfToken, ...(user.cfHandle ? { cfHandle: user.cfHandle } : {}), ...(user.atcoderHandle ? { atcoderHandle: user.atcoderHandle } : {}) }
           : null;
         return json(request, body, 200, { "Cache-Control": "no-store" });
       }

@@ -1,5 +1,36 @@
 # 交接文档：Algo Training Journal
 
+## 最新交接（2026-09-21）：AtCoder 题面抓取与预置 AtCoder 用户名
+
+用户反馈：AtCoder 题面抓不下来；同时要求预置廖夏的 AtCoder 用户名 `only_matthew`。
+
+### 1. 根因：抓取入口从来只认 Codeforces
+
+`POST /api/problem-statement` 在路由层写死 `body.platform !== "Codeforces"` 就 400，前端 `lib/journal-api.js#fetchProblemStatement` 也把 `platform` 固定成 `Codeforces`，表单里的按钮更是先判 `platform !== "Codeforces"` 就提示「请先填写 Codeforces 题号」。也就是说 AtCoder 记录点「抓取」不是抓失败，而是**根本没有发出请求**。按钮文案「抓取 CF 题面」正是这个边界的写照。
+
+### 2. 修法：一个入口，按平台分派来源
+
+- `workers/services/problem-statement.mjs` 新增 `parseAtCoderProblemNumber()`（题号即任务 ID，比赛 ID 取最后一个下划线之前的部分，与 `lib/problem-links.mjs` 生成原题链接的口径一致）、`parseAtCoderStatement()` 与 `fetchAtCoderStatement()`；`fetchStatement({platform,...})` 按平台分派——AtCoder 只取官方页，Codeforces 保持「官方英文题面 → 洛谷镜像」的来源链。
+- 路由 `handleProblemStatement` 的 `platform` 白名单扩为 `Codeforces` / `AtCoder`；AtCoder 题号拼不出题目页时直接 400，不发上游请求。
+- `lib/journal-api.js`、`lib/form.mjs` 改按当前平台与题号抓取（按钮文案改为「抓取题面」），AtCoder 题号形状不对时在客户端就提示「要写成 `abc381_a` 这样的任务 ID」。
+- `statementSource.kind` 新增 `atcoder-html`，`lib/problem-enrichment-schema.mjs` 按 kind 校验来源地址（只认 `atcoder.jp/contests/<比赛>/tasks/<任务>`）。
+
+### 3. 解析保真：AtCoder 页面用到的结构
+
+题面在 `#task-statement` 里同时内嵌日文与英文两套（`span.lang-ja` / `span.lang-en`），只取英文；只有日文的老题取日文原题并在 `warnings` 里加 `ja-statement`，表单提示「这道题没有英文题面，正文是日文原题」。页面用 `og:url` 声明身份，与请求题号不一致时判 `parse-failed`，绝不把别题正文写进记录。
+
+公式写在 `<var>` 里、内容是裸 TeX（`\frac{|T|+1}{2}`、`1 \leq N \leq 100`），转成 `$...$` 交给站内 KaTeX；`<code>` 转行内代码；表格的 `<tr>` 包在 `<thead>/<tbody>` 里，原来的 `tableMarkdown` 只认直接子节点、会把整张表丢掉，改为递归收集并跳过空行。这几处都在共享解析器里，因此 CF 与洛谷的 `parserVersion` 一并升到 `cf-html-v4` / `luogu-mirror-v3`。
+
+### 4. 预置 AtCoder 用户名
+
+`workers/oauth.mjs` 新增 `ATCODER_HANDLES = { "only-matthew": "only_matthew" }`（与 `CF_HANDLES` 并列，AtCoder 的 handle 与 CF 不同名），随会话响应下发 `atcoderHandle`，导入面板打开 AtCoder 时自动预填；没有预置的队员留空、可自行输入。
+
+### 5. 验证
+
+- 单元测试：`test/problem-statement.test.mjs` 新增 AtCoder 题号解析、英文题面解析（公式/行内代码/样例/表格）、日文兜底、`og:url` 不符判失败、真实抓取路径与图片归档、失败降级 6 项；`test/oauth-problem-statement.test.mjs` 新增路由层 AtCoder 成功、题号非法 400、平台不支持 400 三项；`test/problem-enrichment-schema.test.mjs` 新增 `atcoder-html` 来源的接受与拒绝；`test/oauth-import.test.mjs` 新增 `/api/session` 下发 `cfHandle` / `atcoderHandle`。
+- 真实网络（本机住宅网络，`node scripts/verify-import-live.mjs`）：`abc381_a` 抓到 1493 字符英文题面且不含日文小节；AtCoder 题号缺下划线时仍 400。另用临时探针对 8 道真机题目（abc381_a / abc337_e / abc230_c / dp_a / abc381_f / abc392_a / abc330_c / abc230_a）做了整页解析，公式、`<code>`、样例、表格均正常；在 abc340_e / abc345_d 上验证了 `img.atcoder.jp` 图片真实归档（`images=1`、无 `external-images` 警告，说明 referer 规则有效）。
+- **未验证**：Cloudflare 边缘出口对 `atcoder.jp` 的可达性与限流表现（本机可达且未被限流），以及部署后真人在界面上点一次「抓取题面」。上线前建议各跑一次。
+
 ## 最新交接（2026-09-18）：题面图片随抓取归档到仓库
 
 用户反馈：抓洛谷题面时正文里被插进了 `cdn.luogu.com.cn` 的外链图片，在本站加载不出来；要求修复抓取机制、把图片一并抓进仓库（「和 PDF 一样」），并顺带确认 Codeforces 有没有同样的问题。

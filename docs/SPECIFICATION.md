@@ -1,5 +1,9 @@
 # 队员自主算法训练平台：技术规格
 
+## 2026-09-21 专项规格：AtCoder 题面抓取
+
+`POST /api/problem-statement` 的 `platform` 从只有 `Codeforces` 扩为 `Codeforces` 与 `AtCoder`：AtCoder 按题号（任务 ID，如 `abc381_a`）取官方题目页 `atcoder.jp/contests/<比赛>/tasks/<任务>?lang=en`，只取 `span.lang-en` 题面，`<var>` 的裸 TeX 转 `$...$`，图片按 `Referer: https://atcoder.jp/` 归档；`statementSource.kind` 新增 `atcoder-html` 并按域名校验来源地址。共享解析器同时补齐 `<code>`、`<var>`、`<thead>/<tbody>` 表格与 `<blockquote>`，因此 CF / 洛谷解析版本升级为 `cf-html-v4` / `luogu-mirror-v3`。导入面板同时预置队员的 AtCoder 用户名（`workers/oauth.mjs` 的 `ATCODER_HANDLES`，廖夏 `only_matthew`）。接口与取舍见 [题面归档规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) §5.1/§5.3 与 [最新交接](HANDOFF.md)。
+
 ## 2026-09-18 专项规格：题面图片归档
 
 新增 `problem.statementImages`（schemaVersion 5 → 6）：抓取 CF 题面与洛谷题面时，正文里的图片一并下载、按 `statement-<sha256>.<ext>` 落到该日目录，与题面 PDF 同一套保存/读取/发布链路；站点 CSP 只允许 `img-src 'self'`，外链图片（洛谷 CDN、Codeforces 图床）在站内本来就加载不出来。命名、类型与限额集中在 [lib/statement-images.mjs](lib/statement-images.mjs)，接口与取舍见 [题面归档规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) §4.1/§4.2/§5.1 与 [最新交接](HANDOFF.md)。
