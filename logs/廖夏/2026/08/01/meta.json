@@ -1,6 +1,6 @@
 {
   "schemaVersion": 6,
-  "updatedAt": "2026-09-21T16:55:13.737+08:00",
+  "updatedAt": "2026-09-21T17:01:51.641+08:00",
   "problems": [
     {
       "id": "49bae4f3-19b4-45f0-ae7c-b9a98d1244ae",
@@ -38,8 +38,7 @@
       ],
       "masteryStatus": "unknown",
       "isMistake": false,
-      "reviewStatus": "todo",
-      "reviewDue": "2026-09-24",
+      "reviewStatus": "archived",
       "fileIndex": 1
     }
   ]
