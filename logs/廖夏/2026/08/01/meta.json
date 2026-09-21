@@ -1,12 +1,14 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-21T16:55:13.737+08:00",
   "problems": [
     {
       "id": "49bae4f3-19b4-45f0-ae7c-b9a98d1244ae",
       "name": "kkksc03 考前临时抱佛脚",
       "platform": "洛谷",
       "problemNumber": "P2392",
-      "difficulty": "普及-",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
       "tags": [
         "DP",
         "DFS",
@@ -14,17 +16,19 @@
         "枚举",
         "暴力"
       ],
+      "outcome": "editorial",
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "none",
-      "difficultyLegacy": "普及-",
-      "difficultyRating": 1000,
-      "difficultyRatingSource": "洛谷官方难度「普及-」"
+      "fileIndex": 0
     },
     {
       "id": "353ab477-cf29-40e4-a12e-8ee4541c9be1",
       "name": "kkksc03 考前临时抱佛脚【DFS版】",
       "platform": "洛谷",
       "problemNumber": "P2392",
-      "difficulty": "普及-",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
       "tags": [
         "DP",
         "DFS",
@@ -32,11 +36,11 @@
         "枚举",
         "暴力"
       ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
       "reviewStatus": "todo",
-      "difficultyLegacy": "普及-",
-      "difficultyRating": 1000,
-      "difficultyRatingSource": "洛谷官方难度「普及-」"
+      "reviewDue": "2026-09-24",
+      "fileIndex": 1
     }
-  ],
-  "updatedAt": "2026-08-01T22:18:55.000+08:00"
+  ]
 }
