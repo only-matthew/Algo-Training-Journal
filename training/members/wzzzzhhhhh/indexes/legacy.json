@@ -1167,6 +1167,26 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-18/a1dcf8d8-95f3-4f65-8f31-5cb6a7fe48d3/"
+    },
+    {
+      "subjectKey": "record:wzzzzhhhhh:2026-09-21:245750ef-d1dd-49de-a0b4-9aace74271dd",
+      "date": "2026-09-21",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-21",
+        "recordId": "245750ef-d1dd-49de-a0b4-9aace74271dd"
+      },
+      "problem": {
+        "name": "D. Falling Concrete",
+        "platform": "Codeforces",
+        "problemNumber": "",
+        "difficulty": "★ 1300"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-21/245750ef-d1dd-49de-a0b4-9aace74271dd/"
     }
   ]
 }
