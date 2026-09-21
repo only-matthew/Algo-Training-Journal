@@ -42,6 +42,16 @@
 - 顺带发现：自定义域上的 Worker 响应会被 Cloudflare 边缘缓存——探针换代码后同一 URL 仍返回旧响应，加随机 query 才拿到新的。**排查线上行为时记得带 cache-buster**（本功能自身不受影响，生产 API 响应都带 `Cache-Control: no-store`）。
 - 部署状态：前端 `74ba55c` 已推 `main` 并由 GitHub Actions 发布（线上入口 `app-R42MZZGI.js`，form 分包含「已带标签：」「标签取自洛谷镜像」标记）；Worker `algo-oauth` 最新版本 `28156591-7d52-42d1-ab57-a51a2f4cf6c6`。临时探针 `algo-tag-probe` 与 `tag-probe.xialiao.org` 已删除（DNS 确认不存在）。**仍差真人**：导入一次 AtCoder AC 记录，看列表里是否出现标签与「📄 提交」链接。
 
+### 5. 为什么没走 vjudge（2026-09-21 评估，结论：不可用）
+
+用户提议过用 vjudge 兜底。实测结论是**不能用，也不该用**：
+
+- **题目页对匿名请求一律跳登录**：`https://vjudge.net/problem/AtCoder-abc381_a`、`POJ-1000`、`CodeForces-4A`、`AtCoder-typical90_a` 全部返回 `303 → /?login=1&continue=…`。本机与 Cloudflare 边缘（临时探针 `algo-src-probe`，已删除）结果一致；robots.txt 只禁 `/user/`，但题面本身在登录墙后面。
+- `/problem/data` 对匿名请求返回空列表（`{"data":[],"recordsTotal":9999999}`，69 B），不是题面接口；`/problem/description/<id>` 是 404。
+- 走它意味着要在 Worker 里保存并携带某个 vjudge 账号的会话，这正是项目明确划出的红线（不读取私人 Cookie、不绕过登录与验证码），也有 ToS 风险。**因此不实现。**
+- 顺带评估了公开数据集 DeepMind CodeContests（HuggingFace `datasets-server`）：边缘可达（`rows` 接口 200 / 1.2 s），但 `search` 接口对该数据集返回 500，只能按 offset 顺序翻约 1.3 万行，Worker 里不可行，且只覆盖 2021 年前的题目。
+- 覆盖率缺口的现状（只能用粘贴正文或上传 PDF 兜底）：Typical90 洛谷没有收录（用洛谷列表页搜 `typical90` 只返回无关题目，`AT_typical90_*` 全 404）；JOI 洛谷有部分收录但 pid 与 AtCoder 任务 ID 不同名（`AT_joi2011yo_f`、`AT_joi2021_yo1a_b` 等在，`AT_joi2019yo_a` 是 404），照任务 ID 猜 pid 会违反「不猜」原则，故不做。
+
 ## 最新交接（2026-09-21）：AtCoder 题面抓取与预置 AtCoder 用户名
 
 用户反馈：AtCoder 题面抓不下来；同时要求预置廖夏的 AtCoder 用户名 `only_matthew`。
