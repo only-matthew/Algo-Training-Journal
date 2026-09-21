@@ -25,7 +25,7 @@ function withForm() {
   initDetailInteractions();
 
   document.getElementById("btn-hero-submit").addEventListener("click", async () => {
-    if (currentUser) (await withForm()).openModal();
+    if (currentUser) navigateTo("/submit/");
     else login();
   });
 
@@ -41,10 +41,12 @@ function withForm() {
   // 2. Event bindings（表单相关均按需动态导入 form.mjs）
   document.getElementById("btn-theme").addEventListener("click", toggleTheme);
   document.getElementById("btn-login").addEventListener("click", login);
+  document.getElementById("btn-submit-login").addEventListener("click", login);
   document.getElementById("btn-logout").addEventListener("click", logout);
-  document.getElementById("btn-submit").addEventListener("click", async () => currentUser ? (await withForm()).openModal() : login());
-  document.getElementById("btn-close-modal").addEventListener("click", async () => (await withForm()).closeModal());
+  document.getElementById("btn-submit").addEventListener("click", () => currentUser ? navigateTo("/submit/") : login());
   document.getElementById("btn-add-problem").addEventListener("click", async () => (await withForm()).addProblem());
+  document.getElementById("btn-add-problem-aside").addEventListener("click", async () => (await withForm()).addProblem());
+  document.getElementById("btn-add-problem-toolbar").addEventListener("click", async () => (await withForm()).addProblem());
   document.getElementById("btn-import-cf").addEventListener("click", async () => (await withForm()).openImportPanel("codeforces"));
   document.getElementById("btn-import-atcoder").addEventListener("click", async () => (await withForm()).openImportPanel("atcoder"));
   document.getElementById("btn-import-luogu").addEventListener("click", async () => (await withForm()).openImportPanel("luogu"));
@@ -52,11 +54,13 @@ function withForm() {
   document.getElementById("btn-import-cancel").addEventListener("click", async () => (await withForm()).closeImportPanel());
   document.getElementById("btn-import-add").addEventListener("click", async () => (await withForm()).addImportedToForm());
   document.getElementById("btn-save").addEventListener("click", async () => (await withForm()).handleSubmit());
+  document.getElementById("btn-save-draft").addEventListener("click", async () => (await withForm()).saveDraftNow());
   document.getElementById("submit-date").addEventListener("change", async () => (await withForm()).onDateChange());
   document.getElementById("btn-retry-date").addEventListener("click", async () => (await withForm()).onDateChange());
   document.getElementById("problem-list").addEventListener("click", async (e) => {
     if (e.target.classList.contains("btn-remove")) {
       e.target.closest(".problem-block").remove();
+      (await withForm()).reindexProblemBlocks();
       (await withForm()).markFormEdited();
       return;
     }
@@ -127,6 +131,10 @@ function withForm() {
   });
 
   // 3. Load journal
+  window.journalSubmissionRouteRenderer = async () => {
+    const form = await withForm();
+    await form.openSubmissionPage();
+  };
   try {
     const route = currentRoute();
     if (route === "analysis" || route === "report" || route === "review" || route.startsWith("member/")) {
@@ -139,6 +147,8 @@ function withForm() {
       initTagRenderer();
     } else if (route.startsWith("problem/")) {
       initShellRenderer();
+    } else if (route === "submit") {
+      await window.journalSubmissionRouteRenderer();
     } else {
       await initOverviewPage();
     }

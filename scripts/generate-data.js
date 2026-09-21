@@ -629,7 +629,7 @@ function writeRouteIndex(html, segments) {
 }
 
 function writeRouteIndexes(html, members, logs) {
-  const routeTitles = { analysis: "训练档案", review: "错题本" };
+  const routeTitles = { analysis: "训练档案", review: "错题本", submit: "提交训练日志" };
   for (const route of Object.keys(routeTitles)) {
     const routeHtml = replaceHeadMetadata(showOnlyPage(html, `${route}-page`), {
       title: `${routeTitles[route]} · ${SITE_NAME}`,

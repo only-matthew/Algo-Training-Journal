@@ -49,7 +49,7 @@ await page.route(`${WORKER}/**`, async (route) => {
 
 const checks = [];
 const check = (name, condition, detail = "") => { assert.ok(condition, `${name}${detail ? ` — ${detail}` : ""}`); checks.push(name); };
-const modal = "#submit-modal .problem-block";
+const modal = "#submission-page .problem-block";
 const state = () => page.evaluate((selector) => {
   const block = document.querySelector(selector);
   return {
@@ -68,9 +68,8 @@ const clickParse = async () => {
 };
 
 try {
-  await page.goto(`${ORIGIN}/`, { waitUntil: "networkidle" });
-  await page.click("#btn-submit");
-  await page.waitForSelector("#submit-modal", { state: "visible", timeout: 10000 });
+  await page.goto(`${ORIGIN}/submit/?date=${DATE}`, { waitUntil: "networkidle" });
+  await page.waitForSelector("#submission-workspace", { state: "visible", timeout: 10000 });
   await page.evaluate((date) => {
     const input = document.getElementById("submit-date");
     input.value = date;
@@ -81,6 +80,7 @@ try {
 
   await page.selectOption(`${modal} .problem-platform`, "AtCoder");
   await page.fill(`${modal} .problem-number`, "typical90_a");
+  await page.click(`${modal} > .journal-statement-tools > summary`);
   await page.click(`${modal} .statement-import summary`);
   await page.fill(`${modal} .statement-html`, PAGE_SOURCE);
 
