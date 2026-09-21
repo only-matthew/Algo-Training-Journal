@@ -2797,8 +2797,9 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .journal-editor .journal-statement-tools { margin:0 0 22px; padding:0; background:none; border:0; }
 .journal-editor .form-label-row { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
 .journal-editor .form-label-row > span { display:flex; flex-wrap:wrap; gap:6px; }
-.journal-editor :is(.btn-fetch-statement,.btn-ai-enrich,.btn-summarize,.btn-pick-statement,.btn-drop-statement,.btn-parse-analysis,.btn-apply-analysis,.btn-copy-bookmarklet,.btn-parse-statement-html,.btn-bookmarklet) { min-height:34px; padding:6px 10px; font:inherit; font-size:12px; font-weight:600; color:var(--green); background:var(--soft); border:1px solid var(--line); border-radius:6px; cursor:pointer; }
-.journal-editor :is(.btn-fetch-statement,.btn-ai-enrich,.btn-summarize,.btn-pick-statement,.btn-drop-statement,.btn-parse-analysis,.btn-apply-analysis,.btn-copy-bookmarklet,.btn-parse-statement-html,.btn-bookmarklet):hover { background:var(--hover); border-color:var(--green); }
+.journal-editor :is(.btn-fetch-statement,.btn-ai-enrich,.btn-summarize,.btn-pick-statement,.btn-drop-statement,.btn-parse-analysis,.btn-apply-analysis,.btn-copy-bookmarklet,.btn-parse-statement-html,.btn-bookmarklet,.btn-apply-statement) { min-height:34px; padding:6px 10px; font:inherit; font-size:12px; font-weight:600; color:var(--green); background:var(--soft); border:1px solid var(--line); border-radius:6px; cursor:pointer; }
+.journal-editor :is(.btn-fetch-statement,.btn-ai-enrich,.btn-summarize,.btn-pick-statement,.btn-drop-statement,.btn-parse-analysis,.btn-apply-analysis,.btn-copy-bookmarklet,.btn-parse-statement-html,.btn-bookmarklet,.btn-apply-statement):hover { background:var(--hover); border-color:var(--green); }
+.journal-editor .btn-apply-statement { color:var(--surface); background:var(--green); border-color:var(--green); }
 .journal-editor .btn-bookmarklet { display:inline-flex; align-items:center; text-decoration:none; }
 .journal-editor .statement-import-help { margin:0 0 10px; color:var(--muted); font-size:12px; line-height:1.6; }
 .journal-editor .statement-import-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 10px; }

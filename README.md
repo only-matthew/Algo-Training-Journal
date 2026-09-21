@@ -460,6 +460,8 @@ npx serve site
 | `npm run build` / `npm run generate` | 从 `logs/` 生成完整 `site/`。 |
 | `npm run verify` / `npm run check` | 语法检查、单元测试并生成站点；`check` 为兼容旧 CI 的别名。 |
 | `node scripts/verify-import-live.mjs` | 本地真实网络集成测试「自动导入」：直接驱动 Worker 全链路（鉴权/CSRF/Origin + 真实请求 Codeforces 与洛谷），无需 GitHub 登录或云端密钥。 |
+| `npm run smoke:statement` | 题面导入的浏览器冒烟（先 `npm run build` 并另开终端跑 `node scripts/preview-ui.mjs`）：描述为空直接填入、已有内容时给「用这份题面替换描述」按钮且点了真的替换、误粘整页源码时直接替换、重复解析不重复写入。 |
+| `npm run smoke:attachment` | 题面 PDF 附件选择 → IndexedDB 恢复 → 条件写入的浏览器冒烟（同样需要先构建并启动预览）。 |
 | `npm run migrate:date-layout` | 将旧日期目录迁移为 `YYYY/MM/DD`。 |
 
 更早期的单文件 Markdown 日志可使用 `node scripts/migrate-logs.js` 迁移。执行迁移前建议创建分支或备份，并在迁移后运行 `npm run check` 和 `git diff --check`。

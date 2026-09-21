@@ -79,6 +79,19 @@ test("抓取题面与「浏览器回传源码」两条入口共用同一套落�
   assert.match(formSource, /从 AtCoder 页面导入/);
 });
 
+test("描述里已有内容时，抓到的题面必须有一步到位的替换入口", () => {
+  // 曾经只给预览、不给按钮，用户看到「解析出来了」但描述没变——等于没填。
+  assert.match(formSource, /class="btn-apply-statement"/);
+  assert.match(formSource, /function applyStatementPreview\(div\)/);
+  assert.match(formSource, /function fillStatementDescription\(div, result\)/);
+  assert.match(formSource, /点「用这份题面替换描述」填入/);
+  // 描述里误粘了整页源码时直接替换，不必让用户自己做选择。
+  assert.match(formSource, /const PAGE_SOURCE = \/\^\\s\*\(\?:<!doctype/);
+  assert.match(formSource, /描述里原本是粘贴的页面源码，已替换为解析出的题面/);
+  // 重复解析同一份题面不重复写入。
+  assert.match(formSource, /描述里已经是这份题面，未重复写入/);
+});
+
 test("a saved attachment updates both the picker state and the legacy round-trip field", () => {
   // 只更新其中一处，会让下一次纯文字保存带着过期哈希被 422 拒绝。
   assert.match(formSource, /block\.dataset\.serverAttachment = JSON\.stringify\(attachment\)/);

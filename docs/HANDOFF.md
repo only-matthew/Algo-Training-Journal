@@ -72,6 +72,19 @@
 - 标注：`warnings` 加 `client-html`，表单提示「题面取自你浏览器抓回的 AtCoder 官方页面」；`source.url` 取页面自己声明的 `og:url`，`source.kind` 仍是 `atcoder-html`（schema 不用改）。图片仍会被归档层尝试下载，`img.atcoder.jp` 同样够不到 → 退回外链 + `external-images` 警告（正文照常可用）。
 - 真实页面实测：`typical90_a`（1052 字符，标题 `001 - Yokan Party（★4）`，日文原题 + `ja-statement` 警告）、`typical90_br`（070）、`abc381_a`（英文原题）全部解析正常；`joi2019yo_a` 在 AtCoder 本身就是 404（该任务 ID 不存在，与来源无关）。
 - 测试：`statementFromAtCoderHtml` 4 项（成功 / og:url 不符 / 题号非法 / 超限）+ 路由 2 项（接受源码且**零上游请求**、非 AtCoder 平台 400）+ 表单来源不变量 1 项。注意题面接口限流是「每账号 10 次/分钟且先计数后读 body」，用例变多会互相打爆配额，因此新用例换到第二个队员账号下。
+
+### 8. 上线后修复：描述里已有内容时「解析出来了但没填入」
+
+用户反馈小书签路径「解析出来了，但是没有填入」。用真实 Chromium 复现（`artifacts/repro-statement-import.mjs` + `scripts/preview-ui.mjs`）后定位到：`applyStatementResult()` 在**描述非空**时只把题面写进预览面板，**却不提供任何应用入口**——状态栏那句「请核对预览后再手动替换描述」是死胡同，用户只能手动从预览里抄。另外描述里如果被误粘了整页源码（很可能发生，两个框很容易搞混），同样落进这个分支，于是几百 KB 的源码留在描述里、真正的题面却没进去。
+
+修法（`lib/form.mjs` + `style.css`）：
+
+1. 新增 **「用这份题面替换描述」按钮**（预览分支才出现），点一下把 `dataset.statementPreview` 真正写进描述、登记来源、收起按钮与过期预览。
+2. 描述里匹配 `PAGE_SOURCE`（`<!DOCTYPE` / `<html` / `<?xml` / `id="task-statement"`）时判定为「误粘的页面源码」，**直接替换**并说明原因。
+3. 重复解析同一份题面时提示「描述里已经是这份题面，未重复写入」，不再弹预览。
+4. 填入逻辑收敛到 `fillStatementDescription()`，服务端抓取与小书签两条路径共用；`applyStatementResult()` 的三种分支（空 / 源码 / 有内容）都有明确出口。
+
+回归护栏：新增 `scripts/smoke-statement-import.mjs`（`npm run smoke:statement`，真实 Chromium + 预览服务，15 项断言覆盖上述四种情形与「点替换后真的替换」），以及 `test/form-drafts.test.mjs` 里的表单不变量断言。**这次的教训：只有 DOM 交互的路径，单测看不见，必须用浏览器冒烟脚本跑一遍。**
 - 部署状态：`39fbeff` 已推 `main` 并由 GitHub Actions 发布（线上入口 `app-HA4J6USX.js`，form 分包含 `btn-bookmarklet` / `btn-parse-statement-html` / 小书签脚本 / `statement-html` / 「从 AtCoder 页面导入」全部标记）；Worker `algo-oauth` 版本 `11ba534a-0daa-4a1c-8f18-84768452d7c8`。临时探针 `algo-src-probe` 与 `src-probe.xialiao.org` 已删除（DNS 延迟约 1 分钟后回收，需二次确认）。**仍差真人**：在 AtCoder 题目页（如 `typical90_a`）拖动并使用小书签，验证「复制 → 粘贴 → 解析并填入」这一整条链路。
 
 ## 最新交接（2026-09-21）：AtCoder 题面抓取与预置 AtCoder 用户名
