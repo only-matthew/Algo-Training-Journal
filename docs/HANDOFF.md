@@ -72,6 +72,7 @@
 - 标注：`warnings` 加 `client-html`，表单提示「题面取自你浏览器抓回的 AtCoder 官方页面」；`source.url` 取页面自己声明的 `og:url`，`source.kind` 仍是 `atcoder-html`（schema 不用改）。图片仍会被归档层尝试下载，`img.atcoder.jp` 同样够不到 → 退回外链 + `external-images` 警告（正文照常可用）。
 - 真实页面实测：`typical90_a`（1052 字符，标题 `001 - Yokan Party（★4）`，日文原题 + `ja-statement` 警告）、`typical90_br`（070）、`abc381_a`（英文原题）全部解析正常；`joi2019yo_a` 在 AtCoder 本身就是 404（该任务 ID 不存在，与来源无关）。
 - 测试：`statementFromAtCoderHtml` 4 项（成功 / og:url 不符 / 题号非法 / 超限）+ 路由 2 项（接受源码且**零上游请求**、非 AtCoder 平台 400）+ 表单来源不变量 1 项。注意题面接口限流是「每账号 10 次/分钟且先计数后读 body」，用例变多会互相打爆配额，因此新用例换到第二个队员账号下。
+- 部署状态：`39fbeff` 已推 `main` 并由 GitHub Actions 发布（线上入口 `app-HA4J6USX.js`，form 分包含 `btn-bookmarklet` / `btn-parse-statement-html` / 小书签脚本 / `statement-html` / 「从 AtCoder 页面导入」全部标记）；Worker `algo-oauth` 版本 `11ba534a-0daa-4a1c-8f18-84768452d7c8`。临时探针 `algo-src-probe` 与 `src-probe.xialiao.org` 已删除（DNS 延迟约 1 分钟后回收，需二次确认）。**仍差真人**：在 AtCoder 题目页（如 `typical90_a`）拖动并使用小书签，验证「复制 → 粘贴 → 解析并填入」这一整条链路。
 
 ## 最新交接（2026-09-21）：AtCoder 题面抓取与预置 AtCoder 用户名
 
