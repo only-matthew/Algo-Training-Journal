@@ -18,6 +18,7 @@
     "smoke:attachment": "node scripts/smoke-attachment.mjs",
     "smoke:statement": "node scripts/smoke-statement-import.mjs",
     "smoke:submission": "node scripts/smoke-submission-page.mjs",
+    "smoke:scale": "node scripts/smoke-scale.mjs",
     "probe:workerd": "node scripts/probe-workerd-multipart.mjs",
     "verify": "npm run check:syntax && npm run training:reindex -- --check && npm test && npm run build",
     "check": "npm run verify"

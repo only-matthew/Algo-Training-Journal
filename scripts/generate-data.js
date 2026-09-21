@@ -16,7 +16,14 @@ function addSelfClosingVoids(html) {
 const ROOT = path.join(__dirname, "..");
 const LOGS_DIR = path.join(ROOT, "logs");
 const OUTPUT_DIR = path.join(ROOT, "site");
+const BUILD_STATE_PATH = path.join(ROOT, ".build-cache", "site-state.json");
 let browserAssets;
+let previousBuildState = { entries: {} };
+let nextBuildState = { schemaVersion: 1, entries: {} };
+let buildShellHash = "";
+let problemShellHash = "";
+let incrementalHits = 0;
+let incrementalMisses = 0;
 const LEGACY_LOG_DIR_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 const YEAR_PATTERN = /^\d{4}$/;
 const MONTH_PATTERN = /^(0[1-9]|1[0-2])$/;
@@ -539,6 +546,10 @@ function writeHomePage(html, logs, totalVitality = 0) {
 function writeMemberPages(html, members, logs, vitality) {
   for (const member of members) {
     const memberLogs = logs.filter((log) => log.member === member);
+    const outputPath = path.join("member", member, "index.html");
+    const stateKey = `member:${member}`;
+    const stateHash = contentHash({ shell: buildShellHash, logs: memberLogs.map(logSummary), vitality: vitality.byMember[member] });
+    if (reuseGenerated(stateKey, stateHash, outputPath)) continue;
     const activeDays = new Set(memberLogs.map((log) => log.date)).size;
     const recentCount = memberLogs.filter((log) => log.date >= daysAgo(29)).length;
     const firstDate = memberLogs.at(-1)?.date;
@@ -563,8 +574,9 @@ function writeMemberPages(html, members, logs, vitality) {
     $("#member-days").removeClass("loading-value").text(activeDays);
     $("#member-recent").removeClass("loading-value").text(recentCount);
     $("#member-record-count").text(`共 ${memberLogs.length} 道题，每道题均可单独打开和分享`);
-    $("#member-records").html(memberLogs.map(recordCardHtml).join("\n") || "<p>暂无训练记录。</p>");
+    $("#member-records").html(memberLogs.slice(0, 40).map(recordCardHtml).join("\n") || "<p>暂无训练记录。</p>");
     writeRouteIndex(addSelfClosingVoids($.html()), memberSegments(member));
+    rememberGenerated(stateKey, stateHash, outputPath);
   }
 }
 
@@ -579,34 +591,52 @@ function problemPageHtml(html, log, related) {
   const canonical = absoluteUrl(problemSegments(log));
   const description = truncate(log.takeaway !== "未填写" ? log.takeaway : log.description)
     || `${log.member} 在 ${log.date} 记录的 ${log.problem} 训练题目、题解与代码。`;
-  // 正文结构与浏览器端共用 lib/problem-detail.mjs 模板，避免两份维护
   const article = problemDetailHtml({ ...log, related }, { memberHref: routePath(memberSegments(log.member)) });
-  let page = replaceHeadMetadata(showOnlyPage(html, "problem-page"), {
-    title: `${log.problem} · ${log.member} · ${SITE_NAME}`,
+  const $source = cheerio.load(html);
+  const dataVersion = $source('meta[name="journal-data-version"]').attr("content") || "";
+  const stylesheet = $source('link[rel="stylesheet"][href^="style.css"]').attr("href") || "/style.css";
+  const title = `${log.problem} · ${log.member} · ${SITE_NAME}`;
+  const jsonLd = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: log.problem,
     description,
-    canonical,
-    jsonLd: {
-      "@context": "https://schema.org",
-      "@type": "Article",
-      headline: log.problem,
-      description,
-      datePublished: log.date,
-      dateModified: log.updatedAt ? toUtc8(log.updatedAt).slice(0, 10) : log.date,
-      author: { "@type": "Person", name: log.member },
-      mainEntityOfPage: canonical,
-    },
-  });
-  const $ = cheerio.load(page);
-  $("#problem-back-member").attr("href", routePath(memberSegments(log.member)));
-  $("#problem-detail").attr("data-prerendered-path", routePath(problemSegments(log)));
-  return replaceProblemArticle(addSelfClosingVoids($.html()), article);
+    datePublished: log.date,
+    dateModified: log.updatedAt ? toUtc8(log.updatedAt).slice(0, 10) : log.date,
+    author: { "@type": "Person", name: log.member },
+    mainEntityOfPage: canonical,
+  }).replace(/</g, "\\u003c");
+  const memberHref = routePath(memberSegments(log.member));
+  const iconSvg = '<svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M4 15v6h16v-6"/></svg>';
+  return addSelfClosingVoids(`<!doctype html><html lang="zh-CN"><head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="journal-data-version" content="${escapeHtml(dataVersion)}"><meta name="description" content="${escapeHtml(description)}">
+  <meta name="robots" content="index,follow"><meta property="og:type" content="article"><meta property="og:site_name" content="${escapeHtml(SITE_NAME)}">
+  <meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}">
+  <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(title)}"><meta name="twitter:description" content="${escapeHtml(description)}">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://algo-oauth.xialiao.org; img-src 'self' https://avatars.githubusercontent.com data:;">
+  <base href="/"><title>${escapeHtml(title)}</title><link rel="canonical" href="${escapeHtml(canonical)}"><link rel="sitemap" type="application/xml" href="${SITE_ORIGIN}/sitemap.xml">
+  <link rel="stylesheet" href="/${escapeHtml(stylesheet.replace(/^\/+/, ""))}"><script type="application/ld+json">${jsonLd}</script>
+</head><body class="problem-standalone"><a class="skip-link" href="#main-content">跳到内容</a>
+<header class="app-header"><div class="header-inner"><a class="brand" href="/"><svg class="mountain-logo" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="m2 35 13-19 9 13-9-5-5 11zm14 0L34 3l28 32H49L34 17l8 18H30l-7-10 4 10z"/></svg><span>ACM 训练日志<small>记录 · 思考 · 成长</small></span></a>
+<nav class="desktop-nav" aria-label="主导航"><a href="/">首页</a><a href="/analysis/">训练档案</a><a href="/review/">复习</a><a href="/roadmap/">知识地图</a><a href="/tags/">标签</a></nav>
+<div class="header-actions"><button id="btn-theme" class="icon-btn" type="button" aria-label="切换主题"></button><span id="auth-status" class="auth-status" aria-hidden="true"></span><span id="account-label" class="account-label">公开浏览</span><button id="btn-login" class="btn btn-outline btn-sm" type="button">登录</button><button id="btn-logout" class="btn btn-outline btn-sm" type="button" style="display:none">退出</button><a id="btn-submit" class="btn btn-primary btn-sm" href="/submit/">提交记录</a></div></div></header>
+<main id="main-content" class="main"><section id="problem-page" class="page-view active"><div class="detail-toolbar"><a id="problem-back-member" href="${escapeHtml(memberHref)}">${escapeHtml(log.member)} / 题目列表</a><a href="/analysis/">训练档案</a><details id="export-bar" class="problem-export-menu"><summary class="btn btn-outline">导出</summary><div class="problem-export-options"><button type="button" id="btn-export-pdf" class="btn btn-outline">${iconSvg}导出 PDF</button><button type="button" id="btn-export-md" class="btn btn-outline">${iconSvg}导出 Markdown</button><button type="button" id="btn-export-latex" class="btn btn-outline">${iconSvg}导出 LaTeX</button></div></details></div><article id="problem-detail" class="problem-detail" data-prerendered-path="${escapeHtml(routePath(problemSegments(log)))}">${article}</article></section></main>
+<footer class="footer"><span>ACM 训练日志 · 记录 · 思考 · 成长</span><a href="https://xialiao.org/" target="_blank" rel="noopener noreferrer">© 2026 Xia Liao</a></footer>
+<script type="module" src="/assets/js/${escapeHtml(browserAssets.problemEntry)}"></script></body></html>`);
 }
 
 function writeProblemPages(html, logs, problemIndex) {
   for (const log of logs) {
     const key = problemStableKey(log.platform, log.problemNumber);
     const related = key ? (problemIndex.get(key) || []) : [];
+    const segments = problemSegments(log);
+    const output = path.join(...segments, "index.html");
+    const stateKey = `problem-page:${segments.join("/")}`;
+    const stateHash = problemDependencyHash(log, related, problemShellHash);
+    if (reuseGenerated(stateKey, stateHash, output)) continue;
     writeRouteIndex(problemPageHtml(html, log, related), problemSegments(log));
+    rememberGenerated(stateKey, stateHash, output);
   }
 }
 
@@ -651,7 +681,126 @@ function writeRouteIndexes(html, members, logs) {
 function writeJson(relativePath, value) {
   const outputPath = path.join(OUTPUT_DIR, relativePath);
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, JSON.stringify(value), "utf8");
+  const content = JSON.stringify(value);
+  if (fs.existsSync(outputPath) && fs.readFileSync(outputPath, "utf8") === content) return false;
+  fs.writeFileSync(outputPath, content, "utf8");
+  return true;
+}
+
+function contentHash(value) {
+  return crypto.createHash("sha256").update(typeof value === "string" ? value : JSON.stringify(value)).digest("hex");
+}
+
+function problemDependencyHash(log, related, shell = "") {
+  return contentHash({ shell, log, related });
+}
+
+function tagDependencyHash(entry, shell = "") {
+  return contentHash({ shell, entry });
+}
+
+function rememberGenerated(key, hash, output) {
+  nextBuildState.entries[key] = { hash, outputs: [output.split(path.sep).join("/")] };
+}
+
+function reuseGenerated(key, hash, output) {
+  const entry = previousBuildState.entries?.[key];
+  const exists = fs.existsSync(path.join(OUTPUT_DIR, output));
+  if (entry?.hash === hash && exists) {
+    nextBuildState.entries[key] = entry;
+    incrementalHits += 1;
+    return true;
+  }
+  incrementalMisses += 1;
+  return false;
+}
+
+function loadBuildState() {
+  try { return JSON.parse(fs.readFileSync(BUILD_STATE_PATH, "utf8")); } catch { return { entries: {} }; }
+}
+
+function finalizeBuildState() {
+  const keep = new Set(Object.values(nextBuildState.entries).flatMap((entry) => entry.outputs || []));
+  for (const [key, entry] of Object.entries(previousBuildState.entries || {})) {
+    for (const relative of entry.outputs || []) {
+      if (keep.has(relative)) continue;
+      const target = path.resolve(OUTPUT_DIR, relative);
+      if (!target.startsWith(path.resolve(OUTPUT_DIR) + path.sep)) throw new Error(`拒绝清理站点目录外文件：${target}`);
+      if (key.startsWith("problem-page:") && path.basename(target) === "index.html") {
+        fs.rmSync(path.dirname(target), { recursive: true, force: true });
+      } else {
+        fs.rmSync(target, { force: true });
+      }
+    }
+  }
+  fs.mkdirSync(path.dirname(BUILD_STATE_PATH), { recursive: true });
+  fs.writeFileSync(BUILD_STATE_PATH, JSON.stringify(nextBuildState), "utf8");
+}
+
+function removeUnlistedFiles(relativeRoot, keepRelativePaths) {
+  const root = path.resolve(OUTPUT_DIR, relativeRoot);
+  if (!fs.existsSync(root)) return;
+  const keep = new Set(keepRelativePaths.map((item) => path.resolve(OUTPUT_DIR, item)));
+  for (const entry of fs.readdirSync(root, { recursive: true, withFileTypes: true })) {
+    if (!entry.isFile()) continue;
+    const target = path.resolve(entry.parentPath, entry.name);
+    if (!target.startsWith(root + path.sep) || keep.has(target)) continue;
+    fs.rmSync(target, { force: true });
+  }
+}
+
+function cleanupBrowserAssets() {
+  const keep = Object.keys(browserAssets.metafile.outputs).map((name) => path.relative(OUTPUT_DIR, path.resolve(ROOT, name)));
+  removeUnlistedFiles(path.join("assets", "js"), keep);
+}
+
+function groupBy(items, keyOf) {
+  const groups = new Map();
+  for (const item of items) {
+    const key = keyOf(item);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+  return groups;
+}
+
+function writeJournalShards(summaryLogs, generatedAt, members) {
+  const months = [];
+  for (const [month, logs] of groupBy(summaryLogs, (log) => log.date.slice(0, 7))) {
+    const relativePath = path.join("data", "logs", `${month}.json`);
+    writeJson(relativePath, { schemaVersion: 1, generatedAt, logs });
+    months.push({ id: month, url: relativePath.split(path.sep).join("/"), count: logs.length });
+  }
+  months.sort((a, b) => b.id.localeCompare(a.id));
+
+  const memberIndex = {};
+  for (const member of members) {
+    const memberLogs = summaryLogs.filter((log) => log.member === member);
+    const years = [];
+    for (const [year, logs] of groupBy(memberLogs, (log) => log.date.slice(0, 4))) {
+      const relativePath = path.join("data", "members", member, `${year}.json`);
+      writeJson(relativePath, { schemaVersion: 1, generatedAt, member, logs });
+      years.push({ id: year, url: `data/members/${encodeURIComponent(member)}/${year}.json`, count: logs.length });
+    }
+    years.sort((a, b) => b.id.localeCompare(a.id));
+    memberIndex[member] = { count: memberLogs.length, years };
+  }
+
+  const reviewLogs = summaryLogs.filter((log) => log.reviewStatus !== "none" || log.isMistake === true);
+  const reviewUrl = path.join("data", "review.json");
+  writeJson(reviewUrl, { schemaVersion: 1, generatedAt, logs: reviewLogs });
+  const manifest = {
+    schemaVersion: 1,
+    generatedAt,
+    totalLogs: summaryLogs.length,
+    months,
+    members: memberIndex,
+    review: { url: reviewUrl.split(path.sep).join("/"), count: reviewLogs.length },
+  };
+  writeJson(path.join("data", "manifest.json"), manifest);
+  removeUnlistedFiles(path.join("data", "logs"), months.map((entry) => entry.url));
+  removeUnlistedFiles(path.join("data", "members"), Object.values(memberIndex).flatMap((entry) => entry.years.map((year) => decodeURIComponent(year.url))));
+  return manifest;
 }
 
 function writeProblemDetails(logs, generatedAt, problemIndex) {
@@ -661,6 +810,10 @@ function writeProblemDetails(logs, generatedAt, problemIndex) {
       ? (problemIndex.get(key) || [])
           .filter((r) => !(r.member === log.member && r.date === log.date && r.problemId === String(log.problemId || log.problemIndex || 0)))
       : [];
+    const detailOutput = path.join("data", "problems", log.member, log.date, `${log.problemId || log.problemIndex || 0}.json`);
+    const detailKey = `problem-data:${log.member}/${log.date}/${log.problemId || log.problemIndex || 0}`;
+    const detailHash = problemDependencyHash(log, related);
+    if (reuseGenerated(detailKey, detailHash, detailOutput)) continue;
     let attachmentUrl = "";
     if (log.statementAttachment) {
       if (!log.statementPath || !fs.existsSync(log.statementPath)) throw new Error(`缺少题面附件：${log.member}/${log.date}/${log.problemId}`);
@@ -676,7 +829,7 @@ function writeProblemDetails(logs, generatedAt, problemIndex) {
     // 描述在仓库里保持相对路径（GitHub 能直接渲染），站内靠这一步变成绝对地址。
     const description = publishStatementImages(log);
     const { statementPath, statementImagePaths, ...detailLog } = log;
-    writeJson(path.join("data", "problems", log.member, log.date, `${log.problemId || log.problemIndex || 0}.json`), {
+    writeJson(detailOutput, {
       schemaVersion: 3,
       generatedAt,
       ...detailLog,
@@ -684,6 +837,7 @@ function writeProblemDetails(logs, generatedAt, problemIndex) {
       ...(attachmentUrl ? { statementUrl: attachmentUrl } : {}),
       ...(related.length ? { related } : {}),
     });
+    rememberGenerated(detailKey, detailHash, detailOutput);
   }
 }
 
@@ -789,7 +943,7 @@ async function generateRoadmapData(logs) {
   const { phases, nodes } = curriculum;
   const matchIndex = buildMatchIndex(logs);
   const members = [...new Set(logs.map((log) => log.member))].sort((a, b) => a.localeCompare(b, "zh-CN"));
-  const generatedAt = new Date().toISOString();
+  const generatedAt = logs.map((log) => log.updatedAt).filter(Boolean).sort().at(-1) || new Date().toISOString();
   const nodeDataById = new Map();
   const nodeStatsById = new Map();
 
@@ -1029,7 +1183,15 @@ function writeRoadmapData(roadmapData, nodeDataById) {
 
 // 写入 site/data/tag-index.json（需在 site/ 清空重建之后调用）
 function writeTagIndex(tagIndex) {
-  writeJson(path.join("data", "tag-index.json"), tagIndex);
+  const tags = tagIndex.tags.map(({ records, ...summary }) => summary);
+  writeJson(path.join("data", "tag-index.json"), { ...tagIndex, tags });
+  const outputs = [];
+  for (const entry of tagIndex.tags) {
+    const relativePath = path.join("data", "tags", `${entry.tag}.json`);
+    writeJson(relativePath, entry);
+    outputs.push(relativePath);
+  }
+  removeUnlistedFiles(path.join("data", "tags"), outputs);
 }
 
 // 预渲染 /roadmap/ 三级页面
@@ -1106,6 +1268,10 @@ async function generateTagPages(html, tagIndex, roadmapData) {
   // 每个标签页（标签全集均生成，含 0 记录的知识树标签）
   for (const entry of tagIndex.tags) {
     const tag = entry.tag;
+    const outputPath = path.join("tags", tag, "index.html");
+    const stateKey = `tag-page:${tag}`;
+    const stateHash = tagDependencyHash(entry, buildShellHash);
+    if (reuseGenerated(stateKey, stateHash, outputPath)) continue;
     const recordCount = entry.recordCount;
     const nodeCount = entry.nodes.length;
     const description = `${tag} 的训练记录与知识树覆盖：${recordCount} 条记录、${nodeCount} 个知识树节点。`;
@@ -1130,6 +1296,7 @@ async function generateTagPages(html, tagIndex, roadmapData) {
     $("#tag-page-subtitle").text(`${recordCount} 条训练记录 · ${nodeCount} 个知识主题关联`);
     $("#tag-toolbar").removeAttr("hidden");
     writeRouteIndex(addSelfClosingVoids($.html()), ["tags", tag]);
+    rememberGenerated(stateKey, stateHash, outputPath);
   }
 }
 
@@ -1156,17 +1323,20 @@ async function main() {
   const vitalityAllDaily = vitality.allDaily;
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
-  const generatedAt = new Date().toISOString();
+  const generatedAt = logs.map((log) => log.updatedAt).filter(Boolean).sort().at(-1) || new Date().toISOString();
   const summaryLogs = logs.map(logSummary);
+  const allReviewQueue = buildReviewQueue(logs);
+  const today = toDateString(new Date());
+  const dueReviewQueue = allReviewQueue.filter((item) => item.reviewDue <= today);
   const heatmapData = { ...heatmap, vitalityByMember: vitality.byMember };
-  const fullData = { schemaVersion: 3, generatedAt, members, logs: summaryLogs, heatmap: heatmapData, recent30, vitality: vitality.byMember, totalLogs: logs.length, totalVitality, vitalityAllDaily, vitalityVersion: vitality.algorithmVersion };
   const overviewData = {
     schemaVersion: 3,
     generatedAt,
     members,
     totalLogs: logs.length, // 全队自建站以来的总刷题数（首页标题徽标）
     logs: summaryLogs.filter((log) => log.date >= daysAgo(29)),
-    reviewQueue: buildReviewQueue(logs),
+    reviewQueue: dueReviewQueue.slice(0, 100),
+    reviewQueueTotalDue: dueReviewQueue.length,
     heatmap: heatmapData,
     recent30,
     vitality: vitality.byMember,
@@ -1178,11 +1348,12 @@ async function main() {
   const roadmapData = roadmapResult?.roadmapData || null;
   const roadmapNodeData = roadmapResult?.nodeDataById || new Map();
   const tagIndex = roadmapResult?.tagIndex || null;
+  const versionJson = (value) => JSON.stringify(value, (key, item) => key === "generatedAt" ? undefined : item);
   const dataVersion = crypto.createHash("sha256")
     .update(
-      JSON.stringify(fullData)
-        + (roadmapData ? JSON.stringify(roadmapData) : "")
-        + (tagIndex ? JSON.stringify(tagIndex) : ""),
+      versionJson(overviewData)
+        + (roadmapData ? versionJson(roadmapData) : "")
+        + (tagIndex ? versionJson(tagIndex) : ""),
     )
     .digest("hex")
     .slice(0, 12);
@@ -1194,14 +1365,24 @@ async function main() {
     process.exit(1);
   }
 
-  fs.rmSync(OUTPUT_DIR, { recursive: true, force: true });
+  previousBuildState = loadBuildState();
+  nextBuildState = { schemaVersion: 1, entries: {} };
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   ({ trainingCardHtml } = await import("../lib/ui.mjs"));
   writeStylesheet();
   copyDirRecursive("assets", path.join(OUTPUT_DIR, "assets"));
   browserAssets = buildBrowser(ROOT, path.join(OUTPUT_DIR, "assets", "js"));
+  cleanupBrowserAssets();
   const html = writeVersionedIndex(dataVersion);
+  const $shellFingerprint = cheerio.load(html);
+  $shellFingerprint('meta[name="journal-data-version"]').attr("content", "dataset-version");
+  buildShellHash = contentHash($shellFingerprint.html());
+  problemShellHash = contentHash({
+    template: "standalone-problem-v1",
+    stylesheet: assetVersion("site/style.css"),
+    script: browserAssets.problemEntry,
+  });
   writeServiceWorker(dataVersion);
   const homeHtml = writeHomePage(html, logs, totalVitality);
   writeRouteIndexes(homeHtml, members, logs);
@@ -1225,9 +1406,12 @@ async function main() {
   if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
   fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");
   writeJson(path.join("data", "overview.json"), overviewData);
-  writeJson(path.join("data", "all.json"), fullData);
+  writeJournalShards(summaryLogs, generatedAt, members);
   writeProblemDetails(logs, generatedAt, problemIndex);
-  console.log(`Generated ${logs.length} logs for ${members.length} members.`);
+  fs.rmSync(path.join(OUTPUT_DIR, "data", "all.json"), { force: true });
+  fs.rmSync(path.join(OUTPUT_DIR, ".build-state.json"), { force: true });
+  finalizeBuildState();
+  console.log(`Generated ${logs.length} logs for ${members.length} members (${incrementalHits} reused, ${incrementalMisses} rebuilt).`);
 }
 
 if (require.main === module) {
@@ -1237,4 +1421,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { replaceProblemArticle, resolveStatsEnd, buildProblemIndex, buildReviewQueue, publishStatementImages };
+module.exports = { replaceProblemArticle, resolveStatsEnd, buildProblemIndex, buildReviewQueue, publishStatementImages, writeJournalShards, problemDependencyHash, tagDependencyHash };

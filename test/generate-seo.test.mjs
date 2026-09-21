@@ -41,11 +41,18 @@ test("generator emits crawlable member and problem pages", () => {
 
   assert.equal(fs.existsSync(path.join(siteDir, "training")), false, "removed training workbench must not be generated");
 
-  const journal = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "all.json"), "utf8"));
+  const overview = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "overview.json"), "utf8"));
+  const manifest = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "manifest.json"), "utf8"));
+  const journal = {
+    ...overview,
+    logs: manifest.months.flatMap((entry) => JSON.parse(fs.readFileSync(path.join(siteDir, entry.url), "utf8")).logs),
+  };
   assert.ok(journal.logs.length > 0);
   assert.ok(journal.members.length > 0);
-
-  const overview = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "overview.json"), "utf8"));
+  assert.equal(manifest.totalLogs, journal.logs.length);
+  assert.equal(fs.existsSync(path.join(siteDir, "data", "all.json")), false, "monolithic all.json must not be emitted");
+  assert.ok(manifest.months.every((entry) => entry.count > 0 && entry.url.startsWith("data/logs/")));
+  assert.ok(Object.values(manifest.members).every((entry) => entry.years.every((year) => year.url.startsWith("data/members/"))));
   assert.ok(Array.isArray(overview.reviewQueue), "overview.json must expose the review queue");
   for (const item of overview.reviewQueue) {
     assert.ok(item.problemId && item.member && item.reviewDue, "review queue entries must carry id/member/due");
@@ -80,6 +87,10 @@ test("generator emits crawlable member and problem pages", () => {
   assert.ok(problemPage.includes(`data-prerendered-path="${problemRoute}"`));
   assert.ok(problemPage.includes('type="application/ld+json"'));
   assert.ok(problemPage.includes('"@type":"Article"'));
+  assert.match(problemPage, /assets\/js\/problem-page-[A-Z0-9]+\.js/);
+  assert.equal(problemPage.includes('id="overview-page"'), false, "problem pages must not copy the full application shell");
+  assert.equal(problemPage.includes('id="submission-page"'), false, "problem pages must not embed the submission workspace");
+  assert.ok(Buffer.byteLength(problemPage) < 40 * 1024, "a typical problem page should stay lightweight");
   assert.ok(problemPage.includes(`<link rel="canonical" href="https://train.xialiao.org${problemRoute}" />`));
   assert.ok(problemPage.includes("收获 / 题解") || problemPage.includes("题目描述"));
 
@@ -154,6 +165,9 @@ test("generator emits crawlable member and problem pages", () => {
   // 标签页与题目页同等可爬取：预渲染静态页 + canonical + JSON-LD（有 curriculum 时校验）
   if (tagIndex && tagIndex.tags.length > 0) {
     const first = tagIndex.tags[0];
+    assert.equal("records" in first, false, "tag index summaries must not embed record lists");
+    const tagDetail = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "tags", `${first.tag}.json`), "utf8"));
+    assert.ok(Array.isArray(tagDetail.records));
     const tagRoute = routePath(["tags", first.tag]);
     const tagPage = fs.readFileSync(path.join(siteDir, "tags", first.tag, "index.html"), "utf8");
     assert.ok(

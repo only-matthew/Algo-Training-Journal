@@ -151,7 +151,7 @@
 ## 性能
 
 - [x] **每次按键触发 `logInputBytes`** — 添加 300ms debounce（`lib/form.mjs`）
-- [ ] **全量加载 `all.json`** — 概览/评估页无分页、无服务端过滤（`lib/data.mjs`）
+- [x] **全量加载 `all.json`** — 已移除单体文件；分析按月、成员按年度、错题按独立集合加载，列表每批渲染 40 条（`lib/data.mjs`, `lib/application.mjs`, `lib/renderer.mjs`）
 - [x] **筛选切换全部卡片重建** — 改用 DocumentFragment + replaceChildren（`lib/renderer.mjs`）
 - [x] **Prism + KaTeX（~600KB）同步加载** — 改为 Prism 与 KaTeX 并行加载（`lib/renderer.mjs`）
 - [ ] **热力图 365 单元格每次重建** — 可通过 CSS class 更新优化，当前影响较小
@@ -161,8 +161,8 @@
 - [x] **无 Service Worker** — 静态资源与数据 JSON 受 GitHub Pages/Vercel 默认缓存策略限制；已新增构建期生成 `sw.js`（缓存版本随代码+数据哈希+构建时间自动失效），导航网络优先、静态资源缓存优先，二次访问秒开且可离线（`scripts/generate-data.js`, `app.js`）
 - [x] **标签筛选栏/云每次重建** — 切队员时跳过全局标签重渲染（`lib/renderer.mjs`）
 - [x] **后台 refresh timer 无休眠** — 已直接删除自动定时刷新与 visibilitychange 补刷：切回标签页会强制重拉当前页 JSON 并重建 DOM，收益低于干扰；刷新改为仅由「🔄 刷新」按钮手动触发（`lib/application.mjs`, `app.js`）
-- [ ] **构建脚本同步 I/O** — 数据集较小，保持同步 I/O 可接受
-- [ ] **独立文件写入** — 每题写入独立 HTML + JSON，可批量处理
+- [ ] **构建脚本同步 I/O** — 仍使用同步 I/O，但 1 万条目标下由增量指纹避免重写未变化的重型产物
+- [x] **独立文件重复写入** — 题目页、详情 JSON 与成员页使用内容指纹复用；状态记录在 `.build-cache/site-state.json`，删除记录时清理旧产物
 - [x] **重复遍历日志** — 已添加注释标注优化方向（`scripts/generate-data.js`）
 - [x] **KaTeX + Prism 无条件加载** — 详情页无公式/无代码时仍加载 ~600KB；已改为内容含 `$` 才加载 KaTeX、含代码块才加载 Prism（`lib/renderer.mjs`）
 - [x] **Worker 保存时 GitHub API 调用爆炸** — 保存一天 15 题约 140 次调用（46 次串行存在性探测 + 46 次 blob 创建）；已改为目录列表一次性判定存在性 + 本地 SHA-1 对比跳过未变更文件（`workers/oauth.mjs`）

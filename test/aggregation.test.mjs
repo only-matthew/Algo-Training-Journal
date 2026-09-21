@@ -3,7 +3,7 @@ import test from "node:test";
 import { createRequire } from "node:module";
 
 const require = createRequire(import.meta.url);
-const { buildProblemIndex, buildReviewQueue } = require("../scripts/generate-data.js");
+const { buildProblemIndex, buildReviewQueue, problemDependencyHash, tagDependencyHash } = require("../scripts/generate-data.js");
 
 const LOGS = [
   { member: "廖夏", date: "2026-08-01", problemIndex: 0, problemId: "a", problem: "最大子段和", platform: "洛谷", problemNumber: "P1115", reviewStatus: "todo", reviewDue: "2026-08-03", difficulty: "普及-", tags: ["DP"] },
@@ -47,4 +47,19 @@ test("buildReviewQueue 只收集待复习且带日期的题，并按日期升序
   // 未设置复习日期的待复习题不会进入队列
   const noDue = buildReviewQueue([{ ...LOGS[0], reviewDue: undefined }]);
   assert.equal(noDue.length, 0);
+});
+
+test("增量指纹包含同题反向关系，新增同题会让旧题页面失效", () => {
+  const original = LOGS[0];
+  const related = [{ member: "廖夏", date: "2026-08-01", problemId: "a" }];
+  const before = problemDependencyHash(original, related, "shell-v1");
+  const after = problemDependencyHash(original, [...related, { member: "新队员", date: "2026-09-01", problemId: "new" }], "shell-v1");
+  assert.notEqual(after, before);
+});
+
+test("增量指纹包含标签反向记录，新增标签引用会让标签页失效", () => {
+  const entry = { tag: "DP", recordCount: 1, records: [{ member: "廖夏", date: "2026-08-01", problemId: "a" }], nodes: [] };
+  const before = tagDependencyHash(entry, "shell-v1");
+  const after = tagDependencyHash({ ...entry, recordCount: 2, records: [...entry.records, { member: "新队员", date: "2026-09-01", problemId: "new" }] }, "shell-v1");
+  assert.notEqual(after, before);
 });

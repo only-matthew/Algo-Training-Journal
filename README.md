@@ -538,7 +538,7 @@ npx serve site
 
 各模块之间通过明确的数据边界协作：`logs/` 是唯一源数据；浏览器端采用「`data.mjs` 数据仓库 → `application.mjs` 协调层 → `renderer.mjs` 视图」的单向依赖；`lib/log-schema.mjs`、`lib/tag-catalog.mjs`、`lib/cf-tag-map.mjs`、`lib/problem-detail.mjs` 由前端、Worker 与生成脚本按需共享。`site/` 只作为可重新生成的部署产物，不应直接维护。
 
-构建后的数据按用途拆分：`site/data/overview.json` 只包含近 30 天题目、首屏统计与全量「今日复习队列」，`site/data/all.json` 包含全部轻量题目元数据（含复习日期），`site/data/roadmap.json` 与 `site/data/roadmap/nodes/*.json` 驱动学习路线（节点 JSON 还带 `tagHits` 热度与 `relatedRecords` 相关记录），`site/data/tag-index.json` 记录每个标签的训练记录与知识树节点覆盖、驱动 `/tags/` 标签页，`site/data/problems/<成员>/<日期>/<题目ID>.json` 保存单题描述、题解、代码与同题历史（`related`）。首页不下载正文；分析与错题本按需加载全量元数据；成员页、题目详情页与标签页拥有可直接索引的预渲染 HTML，浏览器交互或刷新时仍可从对应 JSON 更新内容。
+构建后的数据按用途拆分，不再生成单体 `all.json`：`site/data/overview.json` 只包含近 30 天题目、首屏统计与最多 100 条已到期复习；`site/data/manifest.json` 描述按月日志、成员年度日志和错题集合；分析页仅加载所选月份，成员页仅加载该成员的年度分片，错题本只加载 `review.json`。`tag-index.json` 只保留标签摘要，单标签记录放在 `data/tags/*.json`；`data/problems/<成员>/<日期>/<题目ID>.json` 保存单题正文。成员、分析和错题列表均按 40 条渐进渲染。构建状态保存在被忽略的 `.build-cache/`，未变化的成员页、题目页和详情 JSON 会复用，删除的记录产物会被清理。
 
 ## 当前边界
 

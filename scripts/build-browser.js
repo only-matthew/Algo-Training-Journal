@@ -1,10 +1,12 @@
 const path = require("node:path");
+const fs = require("node:fs");
 const { buildSync } = require("esbuild");
 
 function buildBrowser(root, outdir) {
+  const hasProblemEntry = fs.existsSync(path.join(root, "problem-page.js"));
   const { metafile } = buildSync({
     absWorkingDir: root,
-    entryPoints: ["app.js"],
+    entryPoints: hasProblemEntry ? ["app.js", "problem-page.js"] : ["app.js"],
     outdir,
     bundle: true,
     splitting: true,
@@ -20,7 +22,9 @@ function buildBrowser(root, outdir) {
   });
   const outputs = metafile.outputs;
   const entry = Object.keys(outputs).find((name) => outputs[name].entryPoint === "app.js");
+  const problemEntry = Object.keys(outputs).find((name) => outputs[name].entryPoint === "problem-page.js");
   if (!entry) throw new Error("Browser build did not emit the app entry point");
+  if (hasProblemEntry && !problemEntry) throw new Error("Browser build did not emit the problem page entry point");
 
   // Only preload the static graph. Dynamic entries such as the form stay lazy.
   const preloads = new Set();
@@ -35,6 +39,7 @@ function buildBrowser(root, outdir) {
   const relative = (name) => path.relative(outdir, path.resolve(root, name)).split(path.sep).join("/");
   return {
     entry: relative(entry),
+    problemEntry: problemEntry ? relative(problemEntry) : null,
     preloads: [...preloads].map(relative),
     version: path.basename(entry, ".js"),
     metafile,

@@ -18,13 +18,16 @@ test("dashboard shows only the member's published history when recommendations f
     if (String(url).endsWith("/api/session")) return Response.json({ login: "test", member: "甲" });
     if (String(url).includes("/me/recommendations")) return Response.json({ error: { code: "UPSTREAM_UNAVAILABLE", message: "offline" } }, { status: 503 });
     if (String(url).includes("/me/workbench")) return Response.json({ plan: null, dueReviews: [], evidence: { attempts: 0, distinctProblems: 0 } });
-    if (String(url).startsWith("data/all.json")) {
+    if (String(url).startsWith("data/manifest.json")) {
+      return Response.json({ members: { "甲": { years: [{ id: "2026", url: "data/members/%E7%94%B2/2026.json", count: 1 }] } } });
+    }
+    if (String(url).startsWith("data/members/%E7%94%B2/2026.json")) {
       reads++;
       return Response.json({ logs: [
         { member: "甲", date: "2026-09-01", problemId: "a", platform: "洛谷", problemNumber: "P1001" },
-        { member: "乙", date: "2026-09-02", problemId: "b", platform: "洛谷", problemNumber: "P1002" },
       ] });
     }
+    if (String(url).startsWith("data/overview.json")) return Response.json({ members: ["甲", "乙"], heatmap: { all: {}, byMember: {} }, recent30: { byMember: {} } });
     throw new Error(`Unexpected request: ${url}`);
   });
   const { initSession } = await import("../lib/auth.mjs");

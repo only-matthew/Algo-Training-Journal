@@ -577,6 +577,19 @@ select {
   padding: clamp(20px, 4vw, 42px);
 }
 
+/* 独立题目页没有整站壳层的横向留白，在这里补齐详情页的容器边距。 */
+.problem-standalone .main {
+  width: min(1320px, calc(100% - 48px));
+  margin: 0 auto 40px;
+}
+
+@media (max-width: 720px) {
+  .problem-standalone .main {
+    width: calc(100% - 32px);
+    margin-bottom: 0;
+  }
+}
+
 .problem-detail-head {
   display: flex;
   align-items: flex-start;

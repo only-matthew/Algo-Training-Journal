@@ -10,8 +10,9 @@ page.on("pageerror", error => errors.push(error.message));
 await page.route("https://algo-oauth.xialiao.org/**", route => route.fulfill({status:401,contentType:"application/json",body:'{"error":"Unauthorized"}'}));
 const output = process.env.UI_OUTPUT || "artifacts/details";
 fs.mkdirSync(output,{recursive:true});
-const all = JSON.parse(fs.readFileSync("site/data/all.json","utf8"));
-const log = all.logs.find(log => log.problemNumber === "P2678") || all.logs[0];
+const manifest = JSON.parse(fs.readFileSync("site/data/manifest.json","utf8"));
+const logs = manifest.months.flatMap(entry => JSON.parse(fs.readFileSync(`site/${entry.url}`,"utf8")).logs);
+const log = logs.find(log => log.problemNumber === "P2678") || logs[0];
 const problemPath = `/problem/${encodeURIComponent(log.member)}/${log.date}/${log.problemId}/`;
 const nodePath = "/roadmap/phase-0/algo-binary-search/";
 const visit = async path => { await page.goto(`http://127.0.0.1:4173${path}`); await page.waitForLoadState("networkidle"); };
@@ -82,7 +83,10 @@ try {
   await page.locator('.knowledge-topic-card:visible h2 a').first().click();
   await page.waitForSelector("#node-problems");
   await page.locator('#roadmap-page .detail-intro .tag-chip').first().click();
-  await page.waitForSelector(".tag-detail");
+  await page.waitForSelector(".tag-detail").catch(async (error) => {
+    const diagnostic = await page.locator("#tag-content").textContent().catch(() => "");
+    throw new Error(`标签详情未加载：${diagnostic}；pageErrors=${JSON.stringify(errors)}`, { cause: error });
+  });
   await page.locator('#tag-page .detail-record-preview').first().click();
   await page.waitForSelector("#problem-thoughts");
   await page.waitForFunction(()=>typeof document.getElementById("btn-export-pdf").onclick === "function");
