@@ -909,8 +909,9 @@
         "name": "[NOIP 2012 提高组] 国王游戏",
         "platform": "洛谷",
         "problemNumber": "P1080",
-        "difficulty": "提高"
+        "difficulty": "★ 1700"
       },
+      "outcome": "editorial",
       "masteryStatus": "unknown",
       "isMistake": false,
       "reviewStatus": "archived",

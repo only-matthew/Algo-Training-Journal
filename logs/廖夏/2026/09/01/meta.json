@@ -1,19 +1,20 @@
 {
   "schemaVersion": 6,
-  "updatedAt": "2026-09-20T23:24:03.314+08:00",
+  "updatedAt": "2026-09-21T17:21:45.658+08:00",
   "problems": [
     {
       "id": "308a8e95-8860-411c-8899-0a71e03a3c93",
       "name": "[NOIP 2012 提高组] 国王游戏",
       "platform": "洛谷",
       "problemNumber": "P1080",
-      "difficulty": "提高",
+      "difficulty": "★ 1700",
       "difficultyRating": 1700,
       "tags": [
         "模拟",
         "高精度",
         "贪心"
       ],
+      "outcome": "editorial",
       "masteryStatus": "unknown",
       "isMistake": false,
       "reviewStatus": "archived",
