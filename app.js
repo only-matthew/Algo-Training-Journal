@@ -1,5 +1,5 @@
 import { initTheme, toggleTheme } from "./lib/theme.mjs";
-import { currentRoute, migrateLegacyHashRoute, initPageNavigation } from "./lib/router.mjs";
+import { currentRoute, migrateLegacyHashRoute, initPageNavigation, navigateTo } from "./lib/router.mjs";
 import { initSession, login, logout, currentUser } from "./lib/auth.mjs";
 import { apiRequest } from "./lib/journal-api.js";
 import { initDetailInteractions } from "./lib/detail-interactions.mjs";

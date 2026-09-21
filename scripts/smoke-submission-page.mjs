@@ -43,6 +43,12 @@ await page.route(`${WORKER}/**`, (route) => {
 });
 
 try {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto(`${ORIGIN}/`, { waitUntil: "networkidle" });
+  await page.click("#btn-submit");
+  await page.waitForURL((url) => url.pathname === "/submit/");
+  assert.equal(new URL(page.url()).pathname, "/submit/", "首页提交按钮应进入独立提交页");
+
   for (const width of [1440, 1024, 390]) {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
     await page.goto(`${ORIGIN}/submit/?date=${DATE}&problem=visual-p2678`, { waitUntil: "networkidle" });
