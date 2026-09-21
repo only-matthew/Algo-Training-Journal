@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { archiveStatementImages, fetchAtCoderStatement, fetchCodeforcesStatement, fetchLuoguAtCoderStatement, fetchLuoguStatement, fetchStatement, parseAtCoderProblemNumber, parseAtCoderStatement, parseCodeforcesStatement, parseLuoguAtCoderStatement, parseLuoguStatement, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
+import { archiveStatementImages, fetchAtCoderStatement, fetchCodeforcesStatement, fetchLuoguAtCoderStatement, fetchLuoguStatement, fetchStatement, parseAtCoderProblemNumber, parseAtCoderStatement, parseCodeforcesStatement, parseLuoguAtCoderStatement, parseLuoguStatement, statementFromAtCoderHtml, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
 
 const HTML = `<div class="problem-statement"><div class="header"><div class="title">A. Test</div><div class="time-limit">1 second</div><div class="memory-limit">256 megabytes</div></div><p>Find $$$x$$$.</p><div class="input-specification"><p>Input</p></div><div class="output-specification"><p>Output</p></div><img src="/img.png"></div>`;
 const CHALLENGE = `<!DOCTYPE html><html><head><title>Just a moment...</title></head><body>cloudflare challenge</body></html>`;
@@ -460,4 +460,39 @@ test("洛谷镜像单独调用时同样解析 AT_ 页面", async () => {
   assert.equal(result.source.url, LUOGU_AT_URL);
   const missing = await fetchLuoguAtCoderStatement({ problemNumber: "abc381" }, { fetchImpl });
   assert.equal(missing.reason, "parse-failed");
+});
+
+// ── 浏览器小书签回传的官方页源码 ─────────────────────────────────────────────
+// AtCoder 对机房出口整体 403、浏览器跨域又读不到，只有跑在 atcoder.jp 上的代码能取到
+// 官方页；这条路径不做任何上游请求，只用同一个解析器处理用户粘回来的源码。
+const noFetch = async (url) => { throw new Error(`不应发起请求：${url}`); };
+
+test("回传的官方页源码用同一个解析器处理，且不请求上游", async () => {
+  const result = await statementFromAtCoderHtml({ problemNumber: "abc381_a", html: atcoderPage({ japanese: false }) }, { fetchImpl: noFetch });
+  assert.equal(result.status, "ok");
+  assert.equal(result.problemNumber, "abc381_a");
+  assert.equal(result.source.kind, "atcoder-html");
+  assert.equal(result.source.url, ATCODER_URL, "来源地址取页面自己声明的 og:url");
+  assert.equal(result.source.parserVersion, "atcoder-html-v1");
+  assert.match(result.description, /# A - 11\/22 String/);
+  assert.match(result.description, /时间限制：2 sec/);
+  // 客户端来源要标注：正文是官方页原文，但抓取发生在浏览器里。
+  assert.deepEqual(result.warnings, ["client-html", "external-images"]);
+});
+
+test("回传的源码不是这道题时判 parse-failed（og:url 校验）", async () => {
+  const mismatch = await statementFromAtCoderHtml({ problemNumber: "abc381_a", html: atcoderPage({ ogUrl: "https://atcoder.jp/contests/abc381/tasks/abc381_b?lang=en" }) }, { fetchImpl: noFetch });
+  assert.equal(mismatch.status, "unavailable");
+  assert.equal(mismatch.reason, "parse-failed");
+  const notAProblem = await statementFromAtCoderHtml({ problemNumber: "abc381_a", html: "<html><body>随便一段文字</body></html>" }, { fetchImpl: noFetch });
+  assert.equal(notAProblem.reason, "parse-failed");
+  const badNumber = await statementFromAtCoderHtml({ problemNumber: "abc381", html: atcoderPage() }, { fetchImpl: noFetch });
+  assert.equal(badNumber.reason, "parse-failed");
+});
+
+test("回传的源码超过上限时拒绝，不解析", async () => {
+  const huge = `${atcoderPage()}<p>${"x".repeat(2 * 1024 * 1024)}</p>`;
+  const result = await statementFromAtCoderHtml({ problemNumber: "abc381_a", html: huge }, { fetchImpl: noFetch });
+  assert.equal(result.status, "unavailable");
+  assert.equal(result.reason, "too-large");
 });

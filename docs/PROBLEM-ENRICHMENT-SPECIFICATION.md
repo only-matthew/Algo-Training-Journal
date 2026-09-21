@@ -195,6 +195,8 @@ AtCoder 没有题面 API，但题目页是公开的：`https://atcoder.jp/contes
 
 **算法标签（2026-09-21 补充）。** AtCoder 官方与 kenkoooo 都没有标签接口，洛谷的 AtCoder 镜像是唯一来源：镜像页解析时把洛谷的数字标签 id 一并交给路由（响应里的 `tagIds` 只在服务端流转），路由用 `/_lfe/tags` 字典换成中文名、再经 [lib/luogu-tag-map.mjs](lib/luogu-tag-map.mjs) 归一为站内标签，随题面返回 `tags`；表单把标签并入标签框（去重、不覆盖用户输入）。字典取不到时只是没有 `tags`，题面照常返回——标签不能成为题面抓取的单点故障。导入链路同理，按比赛批量取列表页补标签，见 [技术规格](SPECIFICATION.md) 与 [最新交接](HANDOFF.md)。
 
+**浏览器回传源码（2026-09-21 补充，洛谷未收录题目的兜底）。** AtCoder 对机房出口整体 403、浏览器直接读又被 CORS 拒绝（不返回 `Access-Control-Allow-Origin`），因此官方页只能由运行在 `atcoder.jp` 上的代码取得。请求体新增可选 `html` 字段：`{platform:"AtCoder",problemNumber,html}`（上限 2 MiB）走 `statementFromAtCoderHtml()`——**不发起任何上游请求**，用与官方页完全相同的解析器处理（`og:url` 必须与题号一致，否则 `parse-failed`），`source.kind` 仍为 `atcoder-html`、`source.url` 取页面声明的 `og:url`，`warnings` 加 `client-html` 让表单标注来源。图片仍交给归档层，`img.atcoder.jp` 同样够不到时退回外链并保留 `external-images` 警告。`html` 只对 AtCoder 开放（CF 与洛谷的服务端链路可用，不需要客户端参与）。
+
 ### 5.4 表单整合
 
 AC 列表不阻塞等待题面。只抓用户添加的题，按 recordId 绑定请求，保存 identity/fingerprint 和描述初始值。响应时若行已删除、账号/日期已切换、题号变化或用户改过描述，不自动写回；提供当前行重新抓取入口。

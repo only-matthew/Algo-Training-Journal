@@ -38,8 +38,8 @@ function routedFetch(routes) {
   return impl;
 }
 
-async function call(body = { platform: "Codeforces", problemNumber: "4A" }) {
-  const cookie = await seal({ token: "token", login: LOGIN, member: MEMBER, csrfToken: CSRF, exp: Date.now() + 600000 }, SECRET);
+async function call(body = { platform: "Codeforces", problemNumber: "4A" }, actor = { login: LOGIN, member: MEMBER }) {
+  const cookie = await seal({ token: "token", login: actor.login, member: actor.member, csrfToken: CSRF, exp: Date.now() + 600000 }, SECRET);
   return worker.fetch(new Request("https://train.xialiao.org/api/problem-statement", {
     method: "POST",
     headers: {
@@ -51,6 +51,9 @@ async function call(body = { platform: "Codeforces", problemNumber: "4A" }) {
     body: JSON.stringify(body),
   }), { SESSION_SECRET: SECRET });
 }
+// 题面接口每账号 10 次/分钟，且限流在读取 body 之前就计数：用例多起来会互相打爆配额，
+// 因此把客户端回传源码那一组放到另一个队员的账号下。
+const SECOND_ACTOR = { login: "wzzzzhhhhh", member: "王梓豪" };
 
 test("题面路由先取官方题面", async (context) => {
   const fetchImpl = routedFetch([[/^https:\/\/codeforces\.com\//, () => new Response(CF_HTML)]]);
@@ -175,4 +178,29 @@ test("洛谷标签字典取不到时题面照常返回，只是没有标签", as
   assert.equal(body.status, "ok");
   assert.equal(body.tags, undefined);
   assert.equal(body.source.kind, "luogu-mirror");
+});
+
+test("路由接受浏览器回传的 AtCoder 官方页源码，且不请求上游", async (context) => {
+  const fetchImpl = routedFetch([]);
+  context.mock.method(globalThis, "fetch", fetchImpl);
+  const response = await call({ platform: "AtCoder", problemNumber: "abc381_a", html: ATCODER_HTML }, SECOND_ACTOR);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.status, "ok");
+  assert.equal(body.source.kind, "atcoder-html");
+  assert.equal(body.source.url, ATCODER_URL);
+  assert.deepEqual(body.warnings, ["client-html"]);
+  assert.match(body.description, /# A - 11\/22 String/);
+  assert.equal(fetchImpl.calls.length, 0, "客户端路径不应访问任何上游");
+});
+
+test("页面源码与题号不符、或非 AtCoder 平台时拒绝", async (context) => {
+  const fetchImpl = routedFetch([]);
+  context.mock.method(globalThis, "fetch", fetchImpl);
+  const mismatched = await call({ platform: "AtCoder", problemNumber: "abc381_a", html: "<html><body>不是题目页</body></html>" }, SECOND_ACTOR);
+  assert.equal(mismatched.status, 200);
+  assert.equal((await mismatched.json()).reason, "parse-failed");
+  const wrongPlatform = await call({ platform: "Codeforces", problemNumber: "4A", html: ATCODER_HTML }, SECOND_ACTOR);
+  assert.equal(wrongPlatform.status, 400);
+  assert.equal(fetchImpl.calls.length, 0);
 });

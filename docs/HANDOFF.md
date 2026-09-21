@@ -51,6 +51,27 @@
 - 走它意味着要在 Worker 里保存并携带某个 vjudge 账号的会话，这正是项目明确划出的红线（不读取私人 Cookie、不绕过登录与验证码），也有 ToS 风险。**因此不实现。**
 - 顺带评估了公开数据集 DeepMind CodeContests（HuggingFace `datasets-server`）：边缘可达（`rows` 接口 200 / 1.2 s），但 `search` 接口对该数据集返回 500，只能按 offset 顺序翻约 1.3 万行，Worker 里不可行，且只覆盖 2021 年前的题目。
 - 覆盖率缺口的现状（只能用粘贴正文或上传 PDF 兜底）：Typical90 洛谷没有收录（用洛谷列表页搜 `typical90` 只返回无关题目，`AT_typical90_*` 全 404）；JOI 洛谷有部分收录但 pid 与 AtCoder 任务 ID 不同名（`AT_joi2011yo_f`、`AT_joi2021_yo1a_b` 等在，`AT_joi2019yo_a` 是 404），照任务 ID 猜 pid 会违反「不猜」原则，故不做。
+- **补充（同一轮）**：该缺口已用「浏览器小书签回传页面源码」补上，见下一节。
+
+### 7. 缺口兜底：浏览器小书签回传官方页源码
+
+用户随后发来一个能正常抓 AtCoder 题面的 VS Code 插件（`yohan020/atcoder-helper`）作为参照。读了它的源码：它用 `axios.get('https://atcoder.jp/contests/<比赛>/tasks/<题目>')` + `cheerio` 读 `#task-statement` 的 `.lang-ja` / `.lang-en`——**没有任何代理或特殊技巧，区别只在于它跑在用户自己的电脑上**（住宅 IP），所以不受机房 IP 拦截。
+
+据此把三条路都验了一遍：
+
+| 路径 | 结果 |
+| --- | --- |
+| 服务器（Cloudflare Worker）直连 atcoder.jp | 403（IP 级拦截，见 §3.1） |
+| 本站页面里用 `fetch` 读 atcoder.jp | 不可能：AtCoder 不返回 `Access-Control-Allow-Origin`（带 `Origin` 实测，只有 `content-type` / `vary` / `x-content-type-options`） |
+| **跑在 atcoder.jp 上的代码（小书签/插件）** | ✅ 能拿到官方页 |
+
+于是实现「从 AtCoder 页面导入」：
+
+- 表单题面区新增一个可拖到书签栏的小书签（`javascript:`），在题目页点击时把 `document.documentElement.outerHTML` 复制到剪贴板（复制整份文档：服务端解析要 `<title>`、`og:url` 与 `#task-statement`）；旁边还有「复制小书签代码」按钮，以及 `Ctrl+U → Ctrl+A → Ctrl+C` 的无安装替代方案。
+- 粘贴回来后点「解析并填入」→ `POST /api/problem-statement` 带 `html` 字段 → 服务端**不请求任何上游**，直接用 `statementFromAtCoderHtml()`（与官方页同一条解析路径，含 `og:url` 校验：粘错题会判 `parse-failed`），返回与抓取完全相同的结构，前端由同一个 `applyStatementResult()` 落地（描述、标签、来源、预览分支全一致）。
+- 标注：`warnings` 加 `client-html`，表单提示「题面取自你浏览器抓回的 AtCoder 官方页面」；`source.url` 取页面自己声明的 `og:url`，`source.kind` 仍是 `atcoder-html`（schema 不用改）。图片仍会被归档层尝试下载，`img.atcoder.jp` 同样够不到 → 退回外链 + `external-images` 警告（正文照常可用）。
+- 真实页面实测：`typical90_a`（1052 字符，标题 `001 - Yokan Party（★4）`，日文原题 + `ja-statement` 警告）、`typical90_br`（070）、`abc381_a`（英文原题）全部解析正常；`joi2019yo_a` 在 AtCoder 本身就是 404（该任务 ID 不存在，与来源无关）。
+- 测试：`statementFromAtCoderHtml` 4 项（成功 / og:url 不符 / 题号非法 / 超限）+ 路由 2 项（接受源码且**零上游请求**、非 AtCoder 平台 400）+ 表单来源不变量 1 项。注意题面接口限流是「每账号 10 次/分钟且先计数后读 body」，用例变多会互相打爆配额，因此新用例换到第二个队员账号下。
 
 ## 最新交接（2026-09-21）：AtCoder 题面抓取与预置 AtCoder 用户名
 

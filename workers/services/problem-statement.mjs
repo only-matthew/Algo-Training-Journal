@@ -7,7 +7,7 @@ import {
   sniffStatementImageMime,
   statementImageFileName,
 } from "../../lib/statement-images.mjs";
-import { LUOGU_ORIGIN, fail, isChallengePage, readLimitedBody, requestLuoguPage } from "./luogu-page.mjs";
+import { LUOGU_ORIGIN, MAX_HTML_BYTES, fail, isChallengePage, readLimitedBody, requestLuoguPage } from "./luogu-page.mjs";
 import { BROWSER_HEADERS } from "./http-headers.mjs";
 
 // 解析版本记录「正文是用哪一代解析器生成的」：同一个页面的输出格式变化时要 +1，
@@ -436,6 +436,9 @@ export async function fetchLuoguStatement({ problemNumber }, options = {}) {
 // ——与 Codeforces 那条「官方优先、洛谷兜底」的来源链完全同构。
 export const ATCODER_JA_WARNING = "ja-statement";
 export const ATCODER_MIRROR_PARSER_VERSION = "luogu-atcoder-mirror-v1";
+// 题面由用户浏览器在 atcoder.jp 页面上抓回（小书签）时加的来源提示：正文是官方页原文，
+// 但抓取发生在客户端，与服务器直连拿到的同一份页面在可信度上略有差别。
+export const ATCODER_CLIENT_WARNING = "client-html";
 
 export function parseAtCoderProblemNumber(problemNumber) {
   const value = String(problemNumber || "").trim().replace(/\s+/g, "").toLowerCase();
@@ -477,7 +480,48 @@ export function parseAtCoderStatement(html, expectedProblemNumber, { collectImag
   const limits = ATCODER_LIMITS.exec(source);
   const description = tidy([title && `# ${title}`, limits && `时间限制：${tidy(limits[1])}`, limits && `内存限制：${tidy(limits[2])}`, body].filter(Boolean).join("\n\n"));
   if (description.length > MAX_MARKDOWN) fail("too-large");
-  return { description, warnings: [...warnings], images: context.images || [] };
+  return { description, warnings: [...warnings], images: context.images || [], pageUrl: claimed };
+}
+
+/**
+ * AtCoder 题面：由用户浏览器抓回的官方页源码。
+ *
+ * 为什么需要这条路：atcoder.jp 对机房出口整体 403（Workers 拿不到），而浏览器直接读
+ * 又受 CORS 限制（AtCoder 不返回 `Access-Control-Allow-Origin`）。唯一能拿到官方页的
+ * 是运行在 atcoder.jp 上的代码——于是给一个「小书签」：它在题目页里复制 `outerHTML`，
+ * 用户把源码粘回表单，这里用**同一个解析器**处理（含 og:url 校验，粘错题会判 parse-failed）。
+ *
+ * 图片仍按原样交给归档层：img.atcoder.jp 同样够不到，于是退回外链并保留
+ * `external-images` 警告——正文照常可用。
+ */
+export async function statementFromAtCoderHtml({ problemNumber, html }, { fetchImpl = fetch, now = () => new Date().toISOString(), imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
+  const expected = parseAtCoderProblemNumber(problemNumber);
+  if (!expected) return unavailable(normalizeProblemNumber(problemNumber), "parse-failed");
+  const normalized = expected.problemNumber;
+  const source = String(html ?? "");
+  if (source.length > MAX_HTML_BYTES) return unavailable(normalized, "too-large");
+  // 客户端抓回的源码里，图片地址是页面里的绝对地址（https://img.atcoder.jp/...），
+  // 归档层会尝试下载；够不到就退回外链，与官方页直取的行为一致。
+  const controller = new AbortController();
+  try {
+    const parsed = parseAtCoderStatement(source, normalized, { collectImages: true });
+    const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, timeoutMs: imageTimeoutMs });
+    if (archived.description.length > MAX_MARKDOWN) return unavailable(normalized, "too-large");
+    const url = parsed.pageUrl && /^https:\/\/atcoder\.jp\//i.test(parsed.pageUrl)
+      ? parsed.pageUrl
+      : `${ATCODER_ORIGIN}/contests/${encodeURIComponent(expected.contest)}/tasks/${encodeURIComponent(normalized)}`;
+    return {
+      status: "ok",
+      problemNumber: normalized,
+      description: archived.description,
+      images: archived.images,
+      source: { kind: "atcoder-html", url, fetchedAt: now(), parserVersion: ATCODER_STATEMENT_PARSER_VERSION },
+      warnings: [ATCODER_CLIENT_WARNING, ...settledWarnings(parsed.warnings, archived)],
+    };
+  } catch (error) {
+    const reason = failureReason(error, controller.signal);
+    return unavailable(normalized, reason, REASONS_RETRYABLE.has(reason));
+  }
 }
 
 /** AtCoder 官方页 → Markdown（只在拿得到官方页时成功，见上面关于 403 的说明）。 */
