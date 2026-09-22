@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-22T12:17:46.630+08:00",
+  "problems": [
+    {
+      "id": "154c4d57-6125-447a-baf5-ca43f6c32602",
+      "name": "Good Contest",
+      "platform": "Codeforces",
+      "problemNumber": "2266A",
+      "difficulty": "未标注",
+      "tags": [
+        "贪心"
+      ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}

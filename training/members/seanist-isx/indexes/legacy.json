@@ -878,6 +878,25 @@
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-11/86c5b124-cc93-4a39-b715-6d24e7e91bff/"
     },
     {
+      "subjectKey": "problem:Codeforces|2266A",
+      "date": "2026-09-20",
+      "recordRef": {
+        "memberId": "seanist-isx",
+        "date": "2026-09-20",
+        "recordId": "154c4d57-6125-447a-baf5-ca43f6c32602"
+      },
+      "problem": {
+        "name": "Good Contest",
+        "platform": "Codeforces",
+        "problemNumber": "2266A",
+        "difficulty": "未标注"
+      },
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-20/154c4d57-6125-447a-baf5-ca43f6c32602/"
+    },
+    {
       "subjectKey": "problem:Codeforces|2266B",
       "date": "2026-09-21",
       "recordRef": {
