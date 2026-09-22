@@ -9,6 +9,7 @@
   "scripts": {
     "generate": "node scripts/generate-data.js",
     "build": "npm run generate",
+    "sync:difficulty": "node scripts/sync-missing-difficulty.mjs --write",
     "backfill:updated-at": "node scripts/backfill-updated-at.js",
     "migrate:date-layout": "node scripts/migrate-date-layout.js",
     "training:reindex": "node scripts/reindex-training.mjs",

@@ -200,11 +200,13 @@ logs/
 
 队员反映 CF Rating 比其他难度标签更直观，因此**全站（含洛谷、AtCoder、校内自建平台）的难度只展示一个口径：Codeforces Rating 数值**（写作 `★ 1200`）。数据层每条记录带 `difficultyRating`（整数）：
 
-- **Codeforces / AtCoder**：直接用官方数值难度。AtCoder Problems 提供的难度与 CF Rating 同尺度，导入时原样写入；Codeforces 有官方 rating 的用精确值，尚未 rated 的场次按题位推断。
+- **Codeforces / AtCoder**：直接用来源提供的数值难度。AtCoder 使用 AtCoder Problems 的数值；Codeforces 使用官方 rating，尚未公布的题保留“未标注”。
 - **洛谷**：按其官方 8 级难度换算为等值 Rating（入门 800 / 普及- 1000 / 普及 1300 / 普及+/提高- 1500 / 提高 1700 / 提高+/省选- 2000 / 省选/NOI- 2400 / NOI 2900）。
 - **校内自建平台等非常见 OJ**：参与同一套统计。导入时若平台自报难度（数值或星级）则直接采用；否则按题面算法内容与代码规模推断，逐条在脚本里注明依据。**不需要为校内平台另建一套体系。**
 
 换算与展示集中在 [lib/rating.mjs](lib/rating.mjs)：`resolveDifficultyRating()` 是唯一的归一入口（数值优先 → 难度标签 → 旧档位 → 星级反解），构建端与浏览器端共用一份，表单导入也走它，因此任何新增平台只要提供难度就能自动落到 Rating。
+
+每次 GitHub Actions 部署构建前，会自动查询日志中未标注难度的 Codeforces、洛谷题目。同题合并查询，已有难度不覆盖；成功结果写回日志及训练索引，通过检查后由 Actions 提交到仓库，再发布网站。官方未公布或查询失败时保持原状，下次构建重试；没有新构建时不会主动查询。本地可运行 `npm run sync:difficulty` 补全，再运行 `npm run training:reindex` 更新索引；仅预览查询结果可运行 `node scripts/sync-missing-difficulty.mjs`。
 
 历史记录可用以下脚本批量换算（默认只报告，加 `--write` 才写入）：
 
