@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-22T12:17:12.455+08:00",
+  "problems": [
+    {
+      "id": "1077146b-d36d-41db-99f1-d90d5f8bea5e",
+      "name": "Three Piles",
+      "platform": "Codeforces",
+      "problemNumber": "2266B",
+      "difficulty": "未标注",
+      "tags": [
+        "博弈论",
+        "贪心",
+        "数学"
+      ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
