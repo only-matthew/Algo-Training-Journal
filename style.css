@@ -3020,6 +3020,16 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .submission-page.journal-editor .journal-disclosure { margin:18px 0 0; padding:0; border:1px solid var(--submission-line); border-radius:7px; background:#fff; }
 .submission-page.journal-editor .journal-disclosure>summary { padding:12px 14px; }
 .submission-page.journal-editor .journal-disclosure-body { padding:0 14px 15px; }
+.submission-page.journal-editor .journal-writing-grid { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr); gap:16px; align-items:start; margin-top:18px; }
+.submission-page.journal-editor .journal-writing-grid>.journal-disclosure { margin:0; }
+.submission-page.journal-editor .journal-solution-column { display:grid; gap:16px; min-width:0; }
+.submission-page.journal-editor .journal-solution-column>.form-group { margin:0; }
+.submission-page.journal-editor .journal-section-heading { display:flex; justify-content:space-between; gap:16px; padding:12px 14px; border-bottom:1px solid var(--submission-line); }
+.submission-page.journal-editor .journal-section-heading strong { color:var(--submission-ink); font-size:14px; }
+.submission-page.journal-editor .journal-section-heading span { color:var(--submission-muted); font-size:12px; text-align:right; }
+.submission-page.journal-editor .journal-writing-grid .journal-disclosure-body { padding-top:14px; }
+.submission-page.journal-editor .problem-description { min-height:300px; resize:vertical; }
+.submission-page.journal-editor .problem-code { min-height:340px; resize:vertical; font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace; line-height:1.55; tab-size:2; }
 .submission-page.journal-editor #btn-add-problem { min-height:72px; margin-top:16px; border:1px dashed #b8c9bf; border-radius:8px; background:rgb(251 252 250 / 72%); }
 [data-theme="dark"] .submission-page.journal-editor .problem-header { background:linear-gradient(90deg,#1d3027,#17231e); }
 [data-theme="dark"] .submission-page.journal-editor .journal-disclosure,[data-theme="dark"] .submission-page.journal-editor .journal-statement-tools { background:#101a16; }
@@ -3028,6 +3038,7 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
   .submission-page.journal-editor .problem-block { padding:0 16px 18px; }
   .submission-page.journal-editor .problem-header { margin-inline:-16px; }
   .submission-page.journal-editor .review-settings .learning-state-grid { grid-template-columns:1fr 1fr; }
+  .submission-page.journal-editor .journal-writing-grid { grid-template-columns:1fr; }
   .submission-savebar { padding:8px; gap:6px; }
   .submission-savebar .submit-status { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .submission-save-actions { display:flex; grid-template-columns:none; gap:6px; }

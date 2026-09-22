@@ -982,6 +982,32 @@ export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, days 
     const oldest = result[result.length - 1];
     if (result.length < perPage || !oldest || oldest.creationTimeSeconds < cutoff) break;
   }
+  // user.status 里的 problem 可能是提交当时的快照：新赛题当时尚未定级，后来
+  // Codeforces 已补 rating，这份快照仍可能缺字段。只在确有缺失时查询当前题库。
+  const missing = problems.filter((problem) => !Number.isFinite(problem.rating));
+  if (missing.length) {
+    try {
+      const response = await fetchImpl("https://codeforces.com/api/problemset.problems");
+      if (response.ok) {
+        const data = await response.json();
+        if (data.status === "OK") {
+          const wanted = new Set(missing.map((problem) => problem.problemNumber.toUpperCase()));
+          const metadata = new Map();
+          for (const problem of data.result?.problems || []) {
+            const number = `${problem.contestId || ""}${problem.index || ""}`.toUpperCase();
+            if (wanted.has(number)) metadata.set(number, problem);
+          }
+          for (const problem of missing) {
+            const current = metadata.get(problem.problemNumber.toUpperCase());
+            if (Number.isFinite(current?.rating)) problem.rating = current.rating;
+            if (!problem.tags?.length && Array.isArray(current?.tags)) problem.tags = current.tags;
+          }
+        }
+      }
+    } catch {
+      // 补查失败不应阻断 AC 记录导入。
+    }
+  }
   return problems;
 }
 

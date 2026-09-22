@@ -164,6 +164,16 @@ test("单字符行内公式（$n$）不再变成字面量 \\$n\\$", () => {
   assert.doesNotMatch(tex, /\\\$k\\\$/);
 });
 
+test("数学公式里的 text 标注可包含 Unicode 符号", () => {
+  const tex = buildSingleLatexDocument({
+    problem: "脚注标记",
+    description: "字符串$^{\\text{∗}}$ 与有序$^{\\text{†}}$，其中 $^{\\text{∗}}$ 表示 binary。",
+  });
+  assert.match(tex, /\$\^\{\\text\{\*\}\}\$/);
+  assert.match(tex, /\$\^\{\\text\{†\}\}\$/);
+  assert.doesNotMatch(tex, /\\text\{\\ast\}/);
+});
+
 test("公式块保留原样，并且前导包里有 amsmath / amssymb", () => {
   const tex = buildSingleLatexDocument({
     problem: "P1990",

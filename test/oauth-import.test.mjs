@@ -8,7 +8,9 @@ const now = Math.floor(Date.now() / 1000);
 const DAY = 86400;
 
 test("fetchCodeforcesAccepted keeps only AC submissions within the last 3 days, deduped", async () => {
-  const fetchImpl = async () => new Response(JSON.stringify({
+  const fetchImpl = async (url) => new Response(JSON.stringify(String(url).includes("problemset.problems") ? {
+    status: "OK", result: { problems: [] },
+  } : {
     status: "OK",
     result: [
       { id: 111, creationTimeSeconds: now - 3600, verdict: "OK", problem: { contestId: 20, index: "C", name: "Dijkstra?", rating: 1500, tags: ["graphs", "shortest paths"] } },
@@ -36,6 +38,24 @@ test("fetchCodeforcesAccepted keeps only AC submissions within the last 3 days, 
   assert.equal(problems[1].problemNumber, "4A");
 });
 
+test("fetchCodeforcesAccepted backfills ratings absent from the submission snapshot", async () => {
+  const fetchImpl = async (url) => new Response(JSON.stringify(String(url).includes("problemset.problems") ? {
+    status: "OK",
+    result: { problems: [
+      { contestId: 2260, index: "A", name: "Monocarp's Contest", rating: 800, tags: ["implementation"] },
+    ] },
+  } : {
+    status: "OK",
+    result: [
+      { id: 1, creationTimeSeconds: now - 3600, verdict: "OK", problem: { contestId: 2260, index: "A", name: "Monocarp's Contest", tags: [] } },
+    ],
+  }));
+
+  const [problem] = await fetchCodeforcesAccepted("student", { fetchImpl });
+  assert.equal(problem.rating, 800);
+  assert.deepEqual(problem.tags, ["implementation"]);
+});
+
 test("fetchCodeforcesAccepted pages forward until the 3-day window is covered", async () => {
   const urls = [];
   const fetchImpl = async (url) => {
@@ -60,8 +80,9 @@ test("fetchCodeforcesAccepted pages forward until the 3-day window is covered", 
   };
 
   const problems = await fetchCodeforcesAccepted("tourist", { fetchImpl, perPage: 2, maxPages: 3 });
-  assert.equal(urls.length, 2, "should fetch exactly two pages");
-  assert.match(urls[1], /from=3/);
+  const statusUrls = urls.filter((url) => url.includes("user.status"));
+  assert.equal(statusUrls.length, 2, "should fetch exactly two submission pages");
+  assert.match(statusUrls[1], /from=3/);
   assert.deepEqual(problems.map((p) => p.name), ["Fresh A", "Fresh B", "In Window"]);
 });
 
