@@ -876,6 +876,25 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-11/86c5b124-cc93-4a39-b715-6d24e7e91bff/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2266D",
+      "date": "2026-09-22",
+      "recordRef": {
+        "memberId": "seanist-isx",
+        "date": "2026-09-22",
+        "recordId": "be5259ff-8bcf-4841-9e99-ef523623031c"
+      },
+      "problem": {
+        "name": "Falling Concrete",
+        "platform": "Codeforces",
+        "problemNumber": "2266D",
+        "difficulty": "未标注"
+      },
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-22/be5259ff-8bcf-4841-9e99-ef523623031c/"
     }
   ]
 }

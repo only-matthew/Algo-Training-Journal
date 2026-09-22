@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-22T12:16:40.389+08:00",
+  "problems": [
+    {
+      "id": "be5259ff-8bcf-4841-9e99-ef523623031c",
+      "name": "Falling Concrete",
+      "platform": "Codeforces",
+      "problemNumber": "2266D",
+      "difficulty": "未标注",
+      "tags": [
+        "构造",
+        "数据结构",
+        "数学",
+        "排序"
+      ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
