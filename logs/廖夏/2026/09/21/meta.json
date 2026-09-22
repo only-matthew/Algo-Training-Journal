@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-22T13:42:43.679+08:00",
+  "problems": [
+    {
+      "id": "5d0ef180-d8ab-45e0-a90e-0114a94dcb9b",
+      "name": "AND, OR, Sort!",
+      "platform": "Codeforces",
+      "problemNumber": "2266C",
+      "difficulty": "未标注",
+      "tags": [
+        "贪心",
+        "字符串"
+      ],
+      "outcome": "hinted",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/2266/C?locale=en",
+        "fetchedAt": "2026-09-22T05:40:54.549Z",
+        "parserVersion": "cf-html-v4"
+      }
+    },
+    {
+      "id": "dd658bf9-ed05-41b5-826f-804d99b1d388",
+      "name": "Three Piles",
+      "platform": "Codeforces",
+      "problemNumber": "2266B",
+      "difficulty": "未标注",
+      "tags": [
+        "博弈论",
+        "贪心",
+        "数学"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 1,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/2266/B?locale=en",
+        "fetchedAt": "2026-09-22T05:41:58.993Z",
+        "parserVersion": "cf-html-v4"
+      }
+    },
+    {
+      "id": "8d14a0ef-4fbf-4bd2-9eae-ca2b0ef2bf03",
+      "name": "Good Contest",
+      "platform": "Codeforces",
+      "problemNumber": "2266A",
+      "difficulty": "未标注",
+      "tags": [
+        "贪心"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 2,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/2266/A?locale=en",
+        "fetchedAt": "2026-09-22T05:42:21.526Z",
+        "parserVersion": "cf-html-v4"
+      }
+    }
+  ]
+}

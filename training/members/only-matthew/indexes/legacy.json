@@ -1320,6 +1320,66 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-20/d141bb39-9564-48d8-bcf0-60558f5c9883/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2266C",
+      "date": "2026-09-21",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-21",
+        "recordId": "5d0ef180-d8ab-45e0-a90e-0114a94dcb9b"
+      },
+      "problem": {
+        "name": "AND, OR, Sort!",
+        "platform": "Codeforces",
+        "problemNumber": "2266C",
+        "difficulty": "未标注"
+      },
+      "outcome": "hinted",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-21/5d0ef180-d8ab-45e0-a90e-0114a94dcb9b/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2266B",
+      "date": "2026-09-21",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-21",
+        "recordId": "dd658bf9-ed05-41b5-826f-804d99b1d388"
+      },
+      "problem": {
+        "name": "Three Piles",
+        "platform": "Codeforces",
+        "problemNumber": "2266B",
+        "difficulty": "未标注"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-21/dd658bf9-ed05-41b5-826f-804d99b1d388/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2266A",
+      "date": "2026-09-21",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-21",
+        "recordId": "8d14a0ef-4fbf-4bd2-9eae-ca2b0ef2bf03"
+      },
+      "problem": {
+        "name": "Good Contest",
+        "platform": "Codeforces",
+        "problemNumber": "2266A",
+        "difficulty": "未标注"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-21/8d14a0ef-4fbf-4bd2-9eae-ca2b0ef2bf03/"
     }
   ]
 }
