@@ -9,3 +9,5 @@ build/
 .build-cache/
 # UI 冒烟与截图检查的本地产物，可随时重跑生成，不进仓库。
 artifacts/
+playwright-report/
+test-results/

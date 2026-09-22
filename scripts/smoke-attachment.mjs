@@ -6,12 +6,10 @@
 //
 // 用法：先 npm run build，再 node scripts/preview-ui.mjs（另开一个终端），
 // 然后运行本脚本。失败时以非零码退出。
-import { createRequire } from "node:module";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { chromium } from "@playwright/test";
 
-const require = createRequire("C:/Users/onlym/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json");
-const { chromium } = require("playwright");
 
 const ORIGIN = "http://127.0.0.1:4173";
 const WORKER = "https://algo-oauth.xialiao.org";
@@ -20,7 +18,7 @@ const DATE = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
 const REVISION = `sha256:${"a".repeat(64)}`;
 const PDF_BYTES = Buffer.from("%PDF-1.7\n1 0 obj\n<<>>\nendobj\ntrailer\n%%EOF\n", "utf8");
 
-const browser = await chromium.launch({ headless: true, channel: "msedge" });
+const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 const pageErrors = [];
 page.on("pageerror", (error) => pageErrors.push(error.message));

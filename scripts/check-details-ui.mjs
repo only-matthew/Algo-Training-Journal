@@ -1,9 +1,7 @@
-import { createRequire } from "node:module";
 import fs from "node:fs";
 import assert from "node:assert/strict";
-const require = createRequire("C:/Users/onlym/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json");
-const { chromium } = require("playwright");
-const browser = await chromium.launch({headless:true,channel:"msedge"});
+import { chromium } from "@playwright/test";
+const browser = await chromium.launch({headless:true});
 const page = await browser.newPage();
 const errors = [];
 page.on("pageerror", error => errors.push(error.message));

@@ -24,7 +24,11 @@ function withForm() {
   initPageNavigation();
   initDetailInteractions();
 
+  // 会话检查与公开数据并行进行，OAuth 服务变慢时不阻塞公开页面。
+  const sessionPromise = initSession();
+
   document.getElementById("btn-hero-submit").addEventListener("click", async () => {
+    await sessionPromise;
     if (currentUser) navigateTo("/submit/");
     else login();
   });
@@ -36,14 +40,16 @@ function withForm() {
       .catch((error) => console.warn("Service Worker 注册失败:", error));
   }
 
-  // 1. Auth
-  await initSession();
-  // 2. Event bindings（表单相关均按需动态导入 form.mjs）
+  // 1. Event bindings（表单相关均按需动态导入 form.mjs）
   document.getElementById("btn-theme").addEventListener("click", toggleTheme);
   document.getElementById("btn-login").addEventListener("click", login);
   document.getElementById("btn-submit-login").addEventListener("click", login);
   document.getElementById("btn-logout").addEventListener("click", logout);
-  document.getElementById("btn-submit").addEventListener("click", () => currentUser ? navigateTo("/submit/") : login());
+  document.getElementById("btn-submit").addEventListener("click", async () => {
+    await sessionPromise;
+    if (currentUser) navigateTo("/submit/");
+    else login();
+  });
   document.getElementById("btn-add-problem").addEventListener("click", async () => (await withForm()).addProblem());
   document.getElementById("btn-add-problem-aside").addEventListener("click", async () => (await withForm()).addProblem());
   document.getElementById("btn-add-problem-toolbar").addEventListener("click", async () => (await withForm()).addProblem());
@@ -130,8 +136,9 @@ function withForm() {
     if (calendar) calendar.scrollBy({ left: Number(button.dataset.shift) * 140, behavior: "smooth" });
   });
 
-  // 3. Load journal
+  // 2. Load journal
   window.journalSubmissionRouteRenderer = async () => {
+    await sessionPromise;
     const form = await withForm();
     await form.openSubmissionPage();
   };
@@ -157,17 +164,26 @@ function withForm() {
     for (const id of ["metric-total", "metric-days", "metric-weekly"]) document.getElementById(id).textContent = "加载失败";
   }
 
-  // 只有已登录队员需要表单；公开浏览不下载表单及其依赖。
-  const current = currentRoute();
-  if (currentUser && current !== "roadmap" && !current.startsWith("roadmap/")) {
-    if ("requestIdleCallback" in window) {
-      window.requestIdleCallback(() => { withForm().catch(() => { formModulePromise = null; }); }, { timeout: 3000 });
-    } else {
-      setTimeout(() => { withForm().catch(() => { formModulePromise = null; }); }, 1500);
+  // 会话回来后刷新一次含本人操作的公开视图；数据层已有缓存，不会重复下载分片。
+  void sessionPromise.then(async () => {
+    const current = currentRoute();
+    if (currentUser) {
+      if (current.startsWith("problem/")) await window.journalRouteRenderer?.();
+      else if (current === "analysis" || current === "report" || current === "review" || current.startsWith("member/")) await initJournalPage();
+      else if (!current) await initOverviewPage();
     }
-  }
 
-  // 4. 手动刷新（自动定时刷新与切回标签页补刷已移除，只保留按钮触发）
+    // 只有已登录队员需要表单；公开浏览不下载表单及其依赖。
+    if (currentUser && current !== "roadmap" && !current.startsWith("roadmap/")) {
+      if ("requestIdleCallback" in window) {
+        window.requestIdleCallback(() => { withForm().catch(() => { formModulePromise = null; }); }, { timeout: 3000 });
+      } else {
+        setTimeout(() => { withForm().catch(() => { formModulePromise = null; }); }, 1500);
+      }
+    }
+  });
+
+  // 3. 手动刷新（自动定时刷新与切回标签页补刷已移除，只保留按钮触发）
   document.getElementById("btn-refresh").addEventListener("click", async () => {
     await doRefresh();
   });

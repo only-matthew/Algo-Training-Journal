@@ -14,6 +14,8 @@
     "migrate:date-layout": "node scripts/migrate-date-layout.js",
     "training:reindex": "node scripts/reindex-training.mjs",
     "test": "node scripts/run-tests.mjs",
+    "test:e2e": "npm run build && playwright test",
+    "test:e2e:ci": "playwright test",
     "check:syntax": "node scripts/check-syntax.mjs",
     "preview": "node scripts/preview-ui.mjs",
     "smoke:attachment": "node scripts/smoke-attachment.mjs",
@@ -25,6 +27,7 @@
     "check": "npm run verify"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "esbuild": "0.28.1",
     "wrangler": "^4.114.0"
   },

@@ -206,7 +206,7 @@ logs/
 
 换算与展示集中在 [lib/rating.mjs](lib/rating.mjs)：`resolveDifficultyRating()` 是唯一的归一入口（数值优先 → 难度标签 → 旧档位 → 星级反解），构建端与浏览器端共用一份，表单导入也走它，因此任何新增平台只要提供难度就能自动落到 Rating。
 
-每次 GitHub Actions 部署构建前，会自动查询日志中未标注难度的 Codeforces、洛谷题目。同题合并查询，已有难度不覆盖；成功结果写回日志及训练索引，通过检查后由 Actions 提交到仓库，再发布网站。官方未公布或查询失败时保持原状，下次构建重试；没有新构建时不会主动查询。本地可运行 `npm run sync:difficulty` 补全，再运行 `npm run training:reindex` 更新索引；仅预览查询结果可运行 `node scripts/sync-missing-difficulty.mjs`。
+难度补全与网站发布相互独立：每日 03:30（北京时间）的 `Complete Missing Difficulties` Action 会查询日志中仍未标注难度的 Codeforces、洛谷题目，也可在 Actions 页面手动运行。同题合并查询，已有难度不覆盖；有新结果时写回日志及训练索引、提交到仓库，并显式触发一次网站部署。官方未公布或查询失败时保持原状，次日继续重试；普通打卡发布不再等待外部难度接口。本地可运行 `npm run sync:difficulty` 补全，再运行 `npm run training:reindex` 更新索引；仅预览查询结果可运行 `node scripts/sync-missing-difficulty.mjs`。
 
 历史记录可用以下脚本批量换算（默认只报告，加 `--write` 才写入）：
 
@@ -290,7 +290,7 @@ Worker 收到前端的受限日志请求后会：
 
 提交表单的“快速导入”会调用 Worker 的 `POST /api/import`：
 
-- **Codeforces**：通过官方公开 `user.status` API 拉取该用户**最近 3 天内的 AC 记录**（自动翻页覆盖窗口，避免一次性拉取全部历史），过滤非 AC、按题目去重，返回题名、题号、Rating 与标签，并携带「📄 提交」直达链接（CF 提交页受 Cloudflare 反爬保护，源码无法服务端自动抓取，浏览器中可直接查看复制）。
+- **Codeforces**：通过官方公开 `user.status` API 拉取该用户**最近 3 天内的 AC 记录**（自动翻页覆盖窗口，避免一次性拉取全部历史），过滤非 AC、按题目去重，返回题名、题号、Rating 与标签，并携带「📄 提交」直达链接（CF 提交页受 Cloudflare 反爬保护，源码无法服务端自动抓取，浏览器中可直接查看复制）。勾选并添加到表单后，会自动按题号抓取题面；失败不会撤销已导入的题目，可在对应题目块中重试。
 - **AtCoder**：通过 AtCoder Problems 公开 API（kenkoooo.com）拉取该用户**最近 3 天内的 AC 记录**（分页覆盖窗口、按题目去重），返回题名、题号、Rating、**该次 AC 的提交页链接**（`/contests/<比赛>/submissions/<id>`，公开可看源码）与**算法标签**。AtCoder 官方与 kenkoooo 都不提供标签，标签取自洛谷的 AtCoder 镜像：按比赛批量取题目列表页（一场一次请求、最多 6 场），再用 `/_lfe/tags` 字典把洛谷的数字标签换成站内中文标签；洛谷未收录的题目（Typical90、JOI 等）没有标签，需手动补充。题面不在导入时批量抓取（AC 列表不阻塞等待题面），导入后按题点「抓取题面」即可取回题面——服务端先试官方页，被 403 拦下时用洛谷的 `AT_<任务 ID>` 镜像页兜底，标签随题面一起回填到标签框。
 - **洛谷**：粘贴题号列表，Worker 抓取题目页内嵌 JSON 解析**题名、官方难度（8 级）与题目描述**；标签为数字 ID 且平台未提供公开名称接口，需在表单中手动补充。
 - 登录队员会在导入面板自动预填自己的 CF 与 AtCoder 用户名（维护在 `workers/oauth.mjs` 的 `CF_HANDLES` 与 `ATCODER_HANDLES` 中：CF 为廖夏 `onlymatt`、王梓豪 `hnuwang`、郭一鸣 `ymguo`，AtCoder 为廖夏 `only_matthew`），可修改。
@@ -317,15 +317,15 @@ https://algo-oauth.xialiao.org/auth/callback
 
 允许登录的 GitHub 用户与日志目录映射维护在 `workers/oauth.mjs` 的 `MEMBERS` 中，队员的 Codeforces 与 AtCoder 用户名维护在同文件的 `CF_HANDLES`、`ATCODER_HANDLES` 中（导入面板自动预填，没有预置的队员留空、可自行输入）。前端不再拥有通用 GitHub API 凭据，Worker 只允许已登录用户写入自己的 `logs/<姓名>/YYYY/MM/DD/` 路径。新增队员时，需要在 `MEMBERS`（以及需要的 `CF_HANDLES` / `ATCODER_HANDLES`）中加入映射、授予该账号仓库写权限，并让队员接受 Collaborator 邀请。
 
-工作流位于 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)。当 `main` 或 `master` 分支收到 push 后，Actions 会：
+发布工作流位于 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)。当 `main` 或 `master` 分支收到 push 后，Actions 会：
 
 1. 使用 Node.js 24 检出仓库。
 2. 执行 `npm run check`（语法检查 + 单元测试 + 生成 site）。
 3. 生成 `site` 部署目录。
-4. 上传 GitHub Pages artifact。
-5. 使用 `actions/deploy-pages` 发布网站。
+4. 并行执行 Chromium 浏览器回归测试。
+5. 上传 GitHub Pages artifact；构建与浏览器测试都通过后，使用 `actions/deploy-pages` 发布网站。
 
-Actions 只负责构建和部署，不执行 `git commit` 或 `git push`，也不会修改训练日志。
+发布 Action 不执行 `git commit` 或 `git push`。独立的 [.github/workflows/difficulty.yml](.github/workflows/difficulty.yml) 每天补全缺失难度；只有查到新结果时才提交难度字段与训练索引，并通过 `workflow_dispatch` 触发重新发布。
 
 ### 安全边界
 

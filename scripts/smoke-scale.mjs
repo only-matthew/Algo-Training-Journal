@@ -1,15 +1,13 @@
-import { createRequire } from "node:module";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { chromium } from "@playwright/test";
 
-const require = createRequire("C:/Users/onlym/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json");
-const { chromium } = require("playwright");
 const ORIGIN = "http://127.0.0.1:4173";
 const manifest = JSON.parse(fs.readFileSync("site/data/manifest.json", "utf8"));
 const member = Object.keys(manifest.members)[0];
 assert.ok(member, "scale smoke requires at least one member");
 
-const browser = await chromium.launch({ headless: true, channel: "msedge" });
+const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 const requests = [];
 const errors = [];

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { apiRequest, loadSession, saveDateLog, deleteDateLog, saveDateLogV2, statementUrl } from "../lib/journal-api.js";
+import { apiRequest, loadSession, saveDateLog, deleteDateLog, saveDateLogV2, statementUrl, SESSION_TIMEOUT_MS } from "../lib/journal-api.js";
 import worker, { logRoots, seal } from "../workers/oauth.mjs";
 
 test("anonymous session lookup succeeds without relaxing protected endpoints", async () => {
@@ -53,6 +53,14 @@ test("anonymous session clears a previously loaded CSRF token", async (context) 
   assert.equal(await loadSession(), null);
   await saveDateLog("2026-09-10", []);
   assert.equal(writeHeaders["X-CSRF-Token"], undefined);
+});
+
+test("session lookup has a bounded timeout", async (context) => {
+  assert.equal(SESSION_TIMEOUT_MS, 4000);
+  context.mock.method(globalThis, "fetch", async (_url, options = {}) => new Promise((_resolve, reject) => {
+    options.signal.addEventListener("abort", () => reject(options.signal.reason), { once: true });
+  }));
+  await assert.rejects(() => loadSession({ timeoutMs: 10 }), (error) => error?.name === "TimeoutError");
 });
 
 test("logRoots prefers the current date layout and retains the legacy fallback", () => {

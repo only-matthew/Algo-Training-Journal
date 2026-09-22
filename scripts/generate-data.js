@@ -382,18 +382,18 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // 页面导航：网络优先，失败时回退缓存的首页（离线可用）
+  // 页面导航：每个地址单独缓存，失败时优先回退该页，再回退首页。
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
           if (response.ok) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put("/", copy));
+            caches.open(CACHE).then((cache) => cache.put(request, copy));
           }
           return response;
         })
-        .catch(() => caches.match("/"))
+        .catch(() => caches.match(request).then((hit) => hit || caches.match("/")))
     );
     return;
   }

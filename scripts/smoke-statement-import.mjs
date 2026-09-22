@@ -6,11 +6,9 @@
 //
 // 用法：先 npm run build，再 node scripts/preview-ui.mjs（另开一个终端），
 // 然后运行本脚本。失败时以非零码退出。
-import { createRequire } from "node:module";
 import assert from "node:assert/strict";
+import { chromium } from "@playwright/test";
 
-const require = createRequire("C:/Users/onlym/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json");
-const { chromium } = require("playwright");
 
 const ORIGIN = "http://127.0.0.1:4173";
 const WORKER = "https://algo-oauth.xialiao.org";
@@ -19,7 +17,7 @@ const DATE = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
 const DESCRIPTION = "# 001 - Yokan Party（★4）\n\n时间限制：2 sec\n\n### 問題文\n\n左右の長さが $L$ [cm] のようかんがあります。";
 const PAGE_SOURCE = `<!DOCTYPE html><html><head><title>001 - Yokan Party</title><meta property="og:url" content="https://atcoder.jp/contests/typical90/tasks/typical90_a"></head><body><div id="task-statement"><span class="lang-ja"><h3>問題文</h3><p>本文</p></span></div></body></html>`;
 
-const browser = await chromium.launch({ headless: true, channel: "msedge" });
+const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 const pageErrors = [];
 page.on("pageerror", (error) => pageErrors.push(error.message));

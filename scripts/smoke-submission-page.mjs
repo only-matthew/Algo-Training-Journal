@@ -1,15 +1,13 @@
-import { createRequire } from "node:module";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { chromium } from "@playwright/test";
 
-const require = createRequire("C:/Users/onlym/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/package.json");
-const { chromium } = require("playwright");
 const ORIGIN = "http://127.0.0.1:4173";
 const WORKER = "https://algo-oauth.xialiao.org";
 const DATE = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
 
 fs.mkdirSync("artifacts", { recursive: true });
-const browser = await chromium.launch({ headless: true, channel: "msedge" });
+const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage();
 const pageErrors = [];
 page.on("pageerror", (error) => pageErrors.push(error.message));
