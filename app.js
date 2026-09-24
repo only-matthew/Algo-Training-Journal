@@ -61,13 +61,12 @@ function withForm() {
   document.getElementById("btn-import-add").addEventListener("click", async () => (await withForm()).addImportedToForm());
   document.getElementById("btn-save").addEventListener("click", async () => (await withForm()).handleSubmit());
   document.getElementById("btn-save-draft").addEventListener("click", async () => (await withForm()).saveDraftNow());
+  document.getElementById("btn-undo-remove").addEventListener("click", async () => (await withForm()).undoRemovedProblem());
   document.getElementById("submit-date").addEventListener("change", async () => (await withForm()).onDateChange());
   document.getElementById("btn-retry-date").addEventListener("click", async () => (await withForm()).onDateChange());
   document.getElementById("problem-list").addEventListener("click", async (e) => {
     if (e.target.classList.contains("btn-remove")) {
-      e.target.closest(".problem-block").remove();
-      (await withForm()).reindexProblemBlocks();
-      (await withForm()).markFormEdited();
+      (await withForm()).removeProblem(e.target.closest(".problem-block"));
       return;
     }
     // AI summarize button

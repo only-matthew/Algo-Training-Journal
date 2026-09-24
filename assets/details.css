@@ -131,6 +131,10 @@ html { container-type: inline-size; }
 .problem-hero .problem-meta { display: flex; flex-direction: row; justify-content: flex-start; align-items: center; gap: 20px; margin-bottom: 12px; font-size: 14px; }
 .problem-hero .hero-verse { left: 68%; top: 12px; font-size: 23px; }
 .problem-hero .detail-hero-actions { margin-top: 20px; }
+.problem-vitality { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px 14px; width: fit-content; max-width: 100%; margin-top: 16px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface); color: var(--ink); }
+.problem-vitality span { font-size: 13px; font-weight: 650; }
+.problem-vitality strong { color: var(--green); font-size: 26px; line-height: 1; font-variant-numeric: tabular-nums; }
+.problem-vitality small { color: var(--muted); font-size: 12px; line-height: 1.5; }
 .problem-layout { display: grid; grid-template-columns: minmax(0,2.1fr) minmax(280px,1fr); gap: 16px; }
 .problem-main, .problem-aside { min-width: 0; }
 .problem-facts { display: grid; grid-template-columns: 95px minmax(0,1fr); gap: 12px; margin: 0; }

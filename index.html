@@ -120,6 +120,7 @@
             </div>
             <details class="submission-interval">
               <summary>训练区间 <span>选填</span></summary>
+              <p class="submission-date-help">训练日期决定记录归属；区间只描述这次训练何时开始、何时结束，跨过午夜也不会自动改变记录日期。</p>
               <div class="journal-date-group">
                 <div class="form-group"><label for="submit-started-on">连续训练开始</label><input type="date" id="submit-started-on" class="form-input" /></div>
                 <div class="form-group"><label for="submit-solved-on">确认结束</label><input type="date" id="submit-solved-on" class="form-input" /></div>
@@ -137,8 +138,8 @@
           <button id="btn-add-problem" class="btn btn-outline btn-sm" type="button">添加下一题</button>
 
           <div class="submission-savebar">
-            <span class="submit-status"><span id="submit-msg" class="submit-msg" role="status" aria-live="polite"></span><button id="btn-retry-date" class="btn btn-outline btn-sm" type="button" hidden>重新加载</button></span>
-            <div class="submission-save-actions"><button id="btn-delete" class="btn btn-danger" type="button" style="display:none">删除整日记录</button><button id="btn-save-draft" class="btn btn-outline" type="button">保存草稿</button><button id="btn-save" class="btn btn-primary" type="button">保存训练记录</button></div>
+            <div class="submission-save-context"><p id="submission-save-preview" class="submission-save-preview" aria-live="polite"></p><span class="submit-status"><span id="submit-msg" class="submit-msg" role="status" aria-live="polite"></span><button id="btn-retry-date" class="btn btn-outline btn-sm" type="button" hidden>重新加载</button></span></div>
+            <div class="submission-save-actions"><button id="btn-undo-remove" class="btn btn-outline" type="button" hidden>撤销移除</button><button id="btn-delete" class="btn btn-danger" type="button" style="display:none">删除整日记录</button><button id="btn-save-draft" class="btn btn-outline" type="button">保存草稿</button><button id="btn-save" class="btn btn-primary" type="button">保存训练记录</button></div>
           </div>
         </div>
 

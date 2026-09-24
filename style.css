@@ -72,6 +72,7 @@
 .submission-page .submission-interval { grid-column:1 / -1; border-top:1px solid var(--submission-line); }
 .submission-page .submission-interval>summary { padding-top:12px; color:var(--submission-ink); font-size:13px; font-weight:650; cursor:pointer; }
 .submission-page .submission-interval>summary span { color:var(--submission-muted); font-size:11px; font-weight:400; }
+.submission-page .submission-date-help { margin:10px 0 0; color:var(--submission-muted); font-size:12px; line-height:1.6; }
 .submission-page .submission-interval .journal-date-group { grid-template-columns:1fr 1fr; margin-top:12px; }
 .submission-page .import-tools-hint { grid-column:1 / -1; margin:0; }
 .submission-page .import-panel { grid-column:1 / -1; background:#fff; }
@@ -107,6 +108,9 @@
 .submission-page #btn-add-problem { width:100%; min-height:72px; margin-top:16px; border:1px dashed #b8c9bf; background:rgb(251 252 250 / 72%); color:var(--submission-green); font-weight:650; }
 .submission-page .submission-summary { margin:13px 2px 0; text-align:right; font-variant-numeric:tabular-nums; }
 .submission-savebar { position:sticky; z-index:8; bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:14px; padding:12px 14px; border:1px solid var(--submission-line); border-radius:10px; background:rgb(251 252 250 / 96%); box-shadow:0 10px 20px rgb(0 0 0 / 12%); }
+.submission-save-context { min-width:0; }
+.submission-save-preview { margin:0 0 4px; color:var(--submission-ink); font-size:13px; font-weight:650; line-height:1.4; }
+.submission-save-preview.is-warning { color:var(--warning); }
 .submission-save-actions { display:flex; gap:8px; flex:none; }
 .submission-savebar .submit-status { min-width:0; color:var(--submission-muted); font-size:12px; }
 .submission-savebar .btn { min-height:40px; }
@@ -3042,6 +3046,8 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
   .submission-savebar { padding:8px; gap:6px; }
   .submission-savebar .submit-status { max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .submission-save-actions { display:flex; grid-template-columns:none; gap:6px; }
+  .submission-save-actions { flex-wrap:wrap; }
+  .submission-save-actions .btn { flex:1 1 calc(50% - 6px); }
   .submission-save-actions #btn-save { grid-column:auto; grid-row:auto; }
   .submission-save-actions .btn { min-width:0; padding-inline:10px; font-size:12px; }
 }

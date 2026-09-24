@@ -18,6 +18,18 @@ test("problem detail preserves thoughts and code safely, including missing field
   assert.match(empty("#problem-thoughts").text(),/尚未填写个人思考/);
 });
 
+test("problem detail shows the same per-record vitality and explains zero scores", () => {
+  const base = { member: "甲", date: "2026-09-08", problem: "题目", platform: "洛谷" };
+  const scored = load(problemDetailHtml({ ...base, vitality: 0.68, vitalityStatus: "counted" }));
+  assert.match(scored(".problem-vitality").text(), /本题活力0\.68/);
+  assert.match(scored(".problem-vitality").text(), /按难度、完成结果与训练证据估算/);
+  const duplicate = load(problemDetailHtml({ ...base, vitality: 0, vitalityStatus: "duplicate" }));
+  assert.match(duplicate(".problem-vitality").text(), /0\.00/);
+  assert.match(duplicate(".problem-vitality").text(), /同题已计/);
+  const unrated = load(problemDetailHtml({ ...base, vitality: 0, vitalityStatus: "missing_rating" }));
+  assert.match(unrated(".problem-vitality").text(), /补充难度后才能估算/);
+});
+
 test("knowledge categories classify subjects, retain all topics, and escape search metadata", () => {
   assert.ok(categoriesForTopic({title:"背包动态规划"}).includes("dp"));
   assert.ok(categoriesForTopic({title:"最短路"}).includes("graph"));

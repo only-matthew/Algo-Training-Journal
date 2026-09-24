@@ -10,6 +10,12 @@ test("public journal renders while the session service is still pending", async 
   await expect(page.locator("#metric-total")).not.toHaveText("—");
 });
 
+test("problem detail prominently shows its per-record vitality", async ({ page }) => {
+  await page.goto("/problem/%E5%BB%96%E5%A4%8F/2026-09-24/6267d57d-3af1-42e2-8ea3-db860b9d491b/");
+  await expect(page.locator(".problem-vitality")).toBeVisible();
+  await expect(page.locator(".problem-vitality")).toContainText("本题活力");
+});
+
 test("SPA member navigation reloads the requested member shard", async ({ page }) => {
   await page.route(`${WORKER}/api/session`, (route) => route.fulfill({ json: null }));
   await page.goto("/member/%E5%BB%96%E5%A4%8F/");
@@ -134,6 +140,41 @@ test("an old one-problem draft cannot replace another problem already saved for 
   await page.locator("#btn-save").click();
   await expect(page.locator("#submit-msg")).toContainText("更新已写入");
   expect(saved.problems.map((problem) => problem.problemNumber)).toEqual(["P1135", "P1443"]);
+});
+
+test("removing an existing problem can be undone and requires confirmation before saving", async ({ page }) => {
+  let putCount = 0;
+  await page.route(`${WORKER}/**`, (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    if (url.pathname === "/api/session") return route.fulfill({ json: { login: "only-matthew", member: "廖夏", csrfToken: "test-csrf", avatar_url: "" } });
+    if (url.pathname === "/api/logs/date" && request.method() === "GET") return route.fulfill({ json: {
+      revision: "sha256:existing", problems: [
+        { id: "first", name: "马的遍历", platform: "洛谷", problemNumber: "P1443", difficulty: "★ 1000", difficultyRating: 1000, tags: ["BFS"], outcome: "hinted", description: "原题面", takeaway: "原总结", code: "int main() {}" },
+        { id: "second", name: "奇怪的电梯", platform: "洛谷", problemNumber: "P1135", difficulty: "★ 1000", difficultyRating: 1000, tags: ["BFS"], outcome: "independent", description: "另一题面", takeaway: "另一总结", code: "int main() {}" },
+      ],
+    } });
+    if (url.pathname === "/api/logs/date" && request.method() === "PUT") putCount += 1;
+    return route.fulfill({ status: 404, json: { error: "unexpected request" } });
+  });
+
+  await page.goto(`/submit/?date=${TODAY}`);
+  await expect(page.locator("#submission-save-preview")).toContainText("将保存 2 道题；服务器已有 2 道");
+  await page.locator(".submission-interval summary").click();
+  await expect(page.locator(".submission-date-help")).toContainText("跨过午夜也不会自动改变记录日期");
+  await page.locator(".problem-block").first().locator(".btn-remove").click();
+  await expect(page.locator("#submission-save-preview")).toContainText("1 道将被移除");
+  await page.locator("#btn-undo-remove").click();
+  await expect(page.locator(".problem-block")).toHaveCount(2);
+  await expect(page.locator("#submission-save-preview")).not.toContainText("将被移除");
+  await page.locator(".problem-block").first().locator(".btn-remove").click();
+  page.once("dialog", (dialog) => {
+    expect(dialog.message()).toContain("P1443");
+    return dialog.dismiss();
+  });
+  await page.locator("#btn-save").click();
+  await expect(page.locator("#submit-msg")).toContainText("已取消保存");
+  expect(putCount).toBe(0);
 });
 
 test("a stale draft for the same problem requires confirmation before overwriting", async ({ page }) => {
