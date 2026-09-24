@@ -11,7 +11,7 @@ test("form wires drafts through the account-scoped v2 store without reading lega
   assert.match(formSource, /import \{ createDraftStore \} from "\.\/draft-store\.mjs"/);
   assert.match(formSource, /const memberId = ensureDraftOwner\(\);/);
   assert.match(formSource, /draftStore\.load\(memberId, date\)/);
-  assert.match(formSource, /draftStore\.save\(\{ memberId, date, problems: snapshot\.problems, exists: snapshot\.exists, interval: snapshot\.interval \}\)/);
+  assert.match(formSource, /draftStore\.save\(\{ memberId, date, baseRevision, problems: snapshot\.problems, exists: snapshot\.exists, interval: snapshot\.interval \}\)/);
   assert.doesNotMatch(formSource, /DRAFTS_KEY/);
   assert.doesNotMatch(formSource, /loadStoredDrafts/);
   assert.doesNotMatch(formSource, /localStorage\.(?:getItem|setItem|removeItem)/);

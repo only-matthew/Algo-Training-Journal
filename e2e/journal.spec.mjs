@@ -136,6 +136,34 @@ test("an old one-problem draft cannot replace another problem already saved for 
   expect(saved.problems.map((problem) => problem.problemNumber)).toEqual(["P1135", "P1443"]);
 });
 
+test("a stale draft for the same problem requires confirmation before overwriting", async ({ page }) => {
+  let putCount = 0;
+  await page.addInitScript((date) => {
+    localStorage.setItem(`journal-drafts-v2:only-matthew:${date}`, JSON.stringify({
+      draftVersion: 2, memberId: "only-matthew", date, baseRevision: "sha256:old",
+      problems: [{ id: "same-problem", problem: "马的遍历", platform: "洛谷", problemNumber: "P1443", difficulty: "★ 1000", difficultyRating: 1000, tags: ["BFS"], outcome: "hinted", description: "题面", takeaway: "本地草稿", code: "int main() {}" }],
+      exists: true, savedAt: new Date().toISOString(),
+    }));
+  }, TODAY);
+  await page.route(`${WORKER}/**`, (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    if (url.pathname === "/api/session") return route.fulfill({ json: { login: "only-matthew", member: "廖夏", csrfToken: "test-csrf", avatar_url: "" } });
+    if (url.pathname === "/api/logs/date" && request.method() === "GET") return route.fulfill({ json: {
+      revision: "sha256:new", problems: [{ id: "same-problem", name: "马的遍历", platform: "洛谷", problemNumber: "P1443", difficulty: "★ 1000", difficultyRating: 1000, tags: ["BFS"], outcome: "hinted", description: "题面", takeaway: "服务器更新", code: "int main() {}" }],
+    } });
+    if (url.pathname === "/api/logs/date" && request.method() === "PUT") putCount += 1;
+    return route.fulfill({ status: 404, json: { error: "unexpected request" } });
+  });
+
+  await page.goto(`/submit/?date=${TODAY}`);
+  await expect(page.locator("#submit-msg")).toContainText("保存前会要求确认");
+  page.once("dialog", (dialog) => dialog.dismiss());
+  await page.locator("#btn-save").click();
+  await expect(page.locator("#submit-msg")).toContainText("已取消覆盖");
+  expect(putCount).toBe(0);
+});
+
 test("adding a Codeforces AC import automatically fetches its statement", async ({ page }) => {
   let statementRequests = 0;
   await page.route(`${WORKER}/**`, async (route) => {
