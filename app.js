@@ -109,12 +109,8 @@ function withForm() {
   document.getElementById("global-search-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
     const value = document.getElementById("global-search")?.value?.trim() || "";
-    window.history.pushState(null, "", value ? `/?q=${encodeURIComponent(value)}` : "/");
+    window.history.pushState(null, "", value ? `/analysis/?q=${encodeURIComponent(value)}` : "/analysis/");
     window.dispatchEvent(new PopStateEvent("popstate"));
-    requestAnimationFrame(() => {
-      const search = document.getElementById("search-input");
-      if (search) { search.value = value; search.dispatchEvent(new Event("input")); }
-    });
   });
   document.querySelectorAll("[data-review-status]").forEach((button) => button.addEventListener("click", () => {
     document.querySelectorAll("[data-review-status]").forEach((item) => item.classList.toggle("active", item === button));

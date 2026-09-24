@@ -23,6 +23,21 @@ test("SPA member navigation reloads the requested member shard", async ({ page }
   await expect(page.locator("#member-record-count")).toContainText("道题");
 });
 
+test("header search opens the archive and finds a problem older than 30 days", async ({ page }) => {
+  await page.route(`${WORKER}/api/session`, (route) => route.fulfill({ json: null }));
+  await page.goto("/");
+  await page.locator("#global-search").fill("P5143");
+  await page.locator("#global-search-form").press("Enter");
+
+  await expect(page).toHaveURL(/\/analysis\/\?q=P5143$/);
+  await expect(page.locator("#analysis-search")).toHaveValue("P5143");
+  await expect(page.locator("#analysis-records").getByRole("link", { name: "P5143", exact: true })).toBeVisible();
+
+  await page.locator("#analysis-search").fill("P1104");
+  await expect(page).toHaveURL(/\/analysis\/\?q=P1104$/);
+  await expect(page.locator("#analysis-records").getByRole("link", { name: "P1104", exact: true })).toBeVisible();
+});
+
 test("version conflicts preserve the draft and require an explicit overwrite", async ({ page }) => {
   let revision = "sha256:initial";
   let putCount = 0;

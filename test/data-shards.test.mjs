@@ -38,6 +38,10 @@ test("journal data store loads only route-relevant shards and reuses cached requ
   await data.ensureAnalysisJournal("2026-09-01", "2026-09-30");
   assert.equal(requests.filter((item) => item === "data/logs/2026-09.json").length, 1, "month shard should be cached");
 
+  const full = await data.ensureFullJournal();
+  assert.deepEqual(full.logs.map((item) => item.problemId), ["sep", "aug", "jul"], "global search should receive every month");
+  assert.equal(requests.filter((item) => item === "data/logs/2026-09.json").length, 1, "full journal should reuse cached month shards");
+
   const member = await data.ensureMemberJournal("甲");
   assert.deepEqual(member.logs.map((item) => item.problemId), ["member"]);
   const review = await data.ensureReviewJournal();

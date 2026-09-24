@@ -34,6 +34,17 @@ test("public journal loading starts without awaiting the session lookup", () => 
   assert.match(source, /await sessionPromise;\s*\n\s*if \(currentUser\) navigateTo\("\/submit\/"\)/);
 });
 
+test("header search opens the archive and promotes it to the full journal", () => {
+  const app = fs.readFileSync(new URL("../app.js", import.meta.url), "utf8");
+  const application = fs.readFileSync(new URL("../lib/application.mjs", import.meta.url), "utf8");
+  const renderer = fs.readFileSync(new URL("../lib/renderer.mjs", import.meta.url), "utf8");
+  assert.match(app, /`\/analysis\/\?q=\$\{encodeURIComponent\(value\)\}`/);
+  assert.match(application, /if \(query\) \{\s*journal = await ensureFullJournal\(force\)/);
+  assert.match(renderer, /analysisSearchInput\.value = archiveQuery/);
+  assert.match(renderer, /log\.member\.toLowerCase\(\)\.includes\(searchTerm\)/);
+  assert.match(renderer, /log\.summary\.toLowerCase\(\)\.includes\(searchTerm\)/);
+});
+
 test("difficulty enrichment is scheduled separately from deployment", () => {
   const deploy = fs.readFileSync(new URL("../.github/workflows/deploy.yml", import.meta.url), "utf8");
   const difficulty = fs.readFileSync(new URL("../.github/workflows/difficulty.yml", import.meta.url), "utf8");
