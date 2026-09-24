@@ -1,19 +1,21 @@
 {
   "schemaVersion": 6,
-  "updatedAt": "2026-09-24T13:42:41.086+08:00",
+  "updatedAt": "2026-09-25T01:39:24.105+08:00",
+  "startedOn": "2026-09-24",
+  "solvedOn": "2026-09-25",
   "problems": [
     {
-      "id": "6267d57d-3af1-42e2-8ea3-db860b9d491b",
-      "name": "马的遍历",
+      "id": "2bcb957e-3677-45c7-b1d3-1f719b775d3c",
+      "name": "奇怪的电梯",
       "platform": "洛谷",
-      "problemNumber": "P1443",
+      "problemNumber": "P1135",
       "difficulty": "★ 1000",
       "difficultyRating": 1000,
       "tags": [
         "BFS",
-        "模拟"
+        "图论"
       ],
-      "outcome": "hinted",
+      "outcome": "independent",
       "masteryStatus": "unknown",
       "isMistake": false,
       "reviewStatus": "none",

@@ -1382,24 +1382,24 @@
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-21/8d14a0ef-4fbf-4bd2-9eae-ca2b0ef2bf03/"
     },
     {
-      "subjectKey": "problem:洛谷|P1443",
+      "subjectKey": "problem:洛谷|P1135",
       "date": "2026-09-24",
       "recordRef": {
         "memberId": "only-matthew",
         "date": "2026-09-24",
-        "recordId": "6267d57d-3af1-42e2-8ea3-db860b9d491b"
+        "recordId": "2bcb957e-3677-45c7-b1d3-1f719b775d3c"
       },
       "problem": {
-        "name": "马的遍历",
+        "name": "奇怪的电梯",
         "platform": "洛谷",
-        "problemNumber": "P1443",
+        "problemNumber": "P1135",
         "difficulty": "★ 1000"
       },
-      "outcome": "hinted",
+      "outcome": "independent",
       "masteryStatus": "unknown",
       "isMistake": false,
       "reviewStatus": "none",
-      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-24/6267d57d-3af1-42e2-8ea3-db860b9d491b/"
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-24/2bcb957e-3677-45c7-b1d3-1f719b775d3c/"
     }
   ]
 }
