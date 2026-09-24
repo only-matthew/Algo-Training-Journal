@@ -104,5 +104,10 @@ h1,h2,h3,h4,p{margin-top:0}h1{margin-bottom:12px;font-size:40px;line-height:1.25
 .member-dashboard #member-trend{display:grid;gap:16px;align-content:start;min-width:0;margin-top:8px}.trend-chart-svg{display:block;width:100%;height:auto;min-width:0;overflow:visible}.trend-gridline{stroke:var(--line);stroke-width:1}.trend-axis{stroke:var(--line-strong);stroke-width:1}.trend-axis-label,.trend-date-label{fill:var(--muted);font-size:11px}.trend-value{fill:var(--ink);font-size:13px;font-weight:700}.trend-bar{fill:var(--green);transition:opacity 140ms}.trend-bar:hover{opacity:.78}.trend-summary{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);padding-top:14px}.trend-summary span{display:grid;gap:2px;padding:0 10px;border-right:1px solid var(--line);text-align:center}.trend-summary span:last-child{border-right:0}.trend-summary strong{color:var(--ink);font-size:20px;line-height:1.1}.trend-summary small{color:var(--muted);font-size:11px}
 @media(max-width:767px){#member-page #member-trend{overflow-x:auto;padding-bottom:4px}#member-page #member-trend .trend-chart-svg{width:100%;max-width:100%;min-width:0}.trend-summary{min-width:320px}}
 .member-dashboard>.panel{min-width:0}
-.archive-filters>.archive-search{flex:1.4 1 260px}
-@media(max-width:767px){.archive-filters>.archive-search{flex:0 0 260px}}
+.archive-filters{flex-wrap:wrap;align-items:flex-end}
+.archive-filters>.archive-search{flex:1 0 100%;min-width:0}
+.archive-filters>.field:not(.archive-search):not(.date-field){flex:1 1 145px;min-width:135px}
+.archive-filters>.date-field{flex:2 1 300px;min-width:300px}
+.archive-filters .date-range input{flex:1 1 0;width:0;min-width:0}
+.archive-filters>.btn{flex:0 0 auto}
+@media(max-width:767px){.archive-filters{overflow-x:visible;align-items:flex-end}.archive-filters>.archive-search,.archive-filters>.date-field{flex:1 0 100%;min-width:0}.archive-filters>.field:not(.archive-search):not(.date-field){flex:1 1 calc(50% - 8px);min-width:0}.archive-filters>.btn{flex:1 1 calc(50% - 8px)}}

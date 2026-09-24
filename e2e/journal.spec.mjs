@@ -38,6 +38,30 @@ test("header search opens the archive and finds a problem older than 30 days", a
   await expect(page.locator("#analysis-records").getByRole("link", { name: "P1104", exact: true })).toBeVisible();
 });
 
+test("archive starts with every date and keeps its filters inside the page", async ({ page }) => {
+  await page.route(`${WORKER}/api/session`, (route) => route.fulfill({ json: null }));
+  await page.goto("/analysis/");
+  const manifest = await (await page.request.get("/data/manifest.json")).json();
+  await expect(page.locator("#analysis-summary")).toContainText(`全部日期 · 共 ${manifest.totalLogs} 题`);
+  await expect(page.locator("#analysis-start")).toHaveValue("");
+  await expect(page.locator("#analysis-end")).toHaveValue("");
+
+  for (const width of [2048, 1440, 768, 375, 320]) {
+    await page.setViewportSize({ width, height: 900 });
+    const layout = await page.locator(".archive-filters").evaluate((bar) => {
+      const bounds = bar.getBoundingClientRect();
+      const controls = [...bar.querySelectorAll(":scope > *")].map((item) => item.getBoundingClientRect());
+      return {
+        width: bounds.width,
+        scrollWidth: bar.scrollWidth,
+        contained: controls.every((item) => item.left >= bounds.left - 1 && item.right <= bounds.right + 1),
+      };
+    });
+    expect(layout.scrollWidth).toBeLessThanOrEqual(Math.ceil(layout.width));
+    expect(layout.contained).toBe(true);
+  }
+});
+
 test("version conflicts preserve the draft and require an explicit overwrite", async ({ page }) => {
   let revision = "sha256:initial";
   let putCount = 0;

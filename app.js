@@ -109,6 +109,8 @@ function withForm() {
   document.getElementById("global-search-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
     const value = document.getElementById("global-search")?.value?.trim() || "";
+    document.getElementById("analysis-start").value = "";
+    document.getElementById("analysis-end").value = "";
     window.history.pushState(null, "", value ? `/analysis/?q=${encodeURIComponent(value)}` : "/analysis/");
     window.dispatchEvent(new PopStateEvent("popstate"));
   });
