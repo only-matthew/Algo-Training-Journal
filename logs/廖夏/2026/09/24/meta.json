@@ -20,6 +20,23 @@
       "isMistake": false,
       "reviewStatus": "none",
       "fileIndex": 0
+    },
+    {
+      "id": "6267d57d-3af1-42e2-8ea3-db860b9d491b",
+      "name": "马的遍历",
+      "platform": "洛谷",
+      "problemNumber": "P1443",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [
+        "BFS",
+        "模拟"
+      ],
+      "outcome": "hinted",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 1
     }
   ]
 }

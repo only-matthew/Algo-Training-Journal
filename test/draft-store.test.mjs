@@ -32,6 +32,14 @@ test("a draft retains the existing-day marker needed to restore form mode", () =
   assert.equal(store.load("alice", "2026-09-06").draft.exists, true);
 });
 
+test("a cross-midnight interval survives draft recovery", () => {
+  const store = createDraftStore({ storage: memoryStorage(), now: () => "2026-09-25T00:02:03.000Z" });
+  const interval = { startedOn: "2026-09-24", solvedOn: "2026-09-25" };
+  const saved = store.save({ memberId: "alice", date: "2026-09-24", problems: [{ name: "A" }], interval });
+  assert.equal(saved.status, "saved");
+  assert.deepEqual(store.load("alice", "2026-09-24").draft.interval, interval);
+});
+
 test("load ignores malformed, mismatched, and legacy v1 data", () => {
   const storage = memoryStorage({
     "journal-drafts-v1": JSON.stringify({ "2026-09-06": { problems: [{ name: "legacy" }] } }),

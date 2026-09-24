@@ -98,6 +98,44 @@ test("version conflicts preserve the draft and require an explicit overwrite", a
   expect(putCount).toBe(1);
 });
 
+test("an old one-problem draft cannot replace another problem already saved for the date", async ({ page }) => {
+  const original = { id: "saved-p1443", name: "马的遍历", platform: "洛谷", problemNumber: "P1443", difficulty: "★ 1000", difficultyRating: 1000, tags: ["BFS"], outcome: "hinted", description: "原有题面", takeaway: "原有总结", code: "int main() {}" };
+  const draftProblem = { id: "draft-p1135", problem: "奇怪的电梯", platform: "洛谷", problemNumber: "P1135", difficulty: "★ 1000", difficultyRating: 1000, tags: ["BFS"], outcome: "independent", description: "新题面", takeaway: "新总结", code: "int main() {}" };
+  let saved;
+  let getCount = 0;
+  await page.addInitScript(({ date, problem }) => {
+    localStorage.setItem(`journal-drafts-v2:only-matthew:${date}`, JSON.stringify({
+      draftVersion: 2, memberId: "only-matthew", date, baseRevision: null,
+      problems: [problem], exists: false, savedAt: new Date().toISOString(),
+      interval: { startedOn: date, solvedOn: date },
+    }));
+  }, { date: TODAY, problem: draftProblem });
+  await page.route(`${WORKER}/**`, (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    const json = (body) => route.fulfill({ json: body });
+    if (url.pathname === "/api/session") return json({ login: "only-matthew", member: "廖夏", csrfToken: "test-csrf", avatar_url: "" });
+    if (url.pathname === "/api/logs/date" && request.method() === "GET") {
+      getCount += 1;
+      return json({ revision: "sha256:existing", problems: [original] });
+    }
+    if (url.pathname === "/api/logs/date" && request.method() === "PUT") {
+      saved = request.postDataJSON();
+      return json({ revision: "sha256:merged" });
+    }
+    return route.fulfill({ status: 404, json: { error: "unexpected request" } });
+  });
+
+  await page.goto(`/submit/?date=${TODAY}`);
+  await expect(page.locator(".problem-block")).toHaveCount(2);
+  expect(await page.locator(".problem-block input.problem-number").evaluateAll((inputs) => inputs.map((input) => input.value))).toEqual(["P1135", "P1443"]);
+  await expect(page.locator("#submit-msg")).toContainText("合并");
+  expect(getCount).toBe(1);
+  await page.locator("#btn-save").click();
+  await expect(page.locator("#submit-msg")).toContainText("更新已写入");
+  expect(saved.problems.map((problem) => problem.problemNumber)).toEqual(["P1135", "P1443"]);
+});
+
 test("adding a Codeforces AC import automatically fetches its statement", async ({ page }) => {
   let statementRequests = 0;
   await page.route(`${WORKER}/**`, async (route) => {

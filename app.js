@@ -105,6 +105,9 @@ function withForm() {
   });
   document.getElementById("problem-list").addEventListener("input", async () => (await withForm()).markFormEdited());
   document.getElementById("problem-list").addEventListener("change", async () => (await withForm()).markFormEdited());
+  for (const id of ["submit-started-on", "submit-solved-on"]) {
+    document.getElementById(id)?.addEventListener("change", async () => (await withForm()).markFormEdited());
+  }
 
   document.getElementById("global-search-form")?.addEventListener("submit", (event) => {
     event.preventDefault();
