@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-24T23:33:17.531+08:00",
+  "startedOn": "2026-09-22",
+  "solvedOn": "2026-09-24",
+  "problems": [
+    {
+      "id": "83c299ed-5cfa-4a39-93bc-6ad2755d2f68",
+      "name": "[NOIP 2008 提高组] 传纸条",
+      "platform": "洛谷",
+      "problemNumber": "P1006",
+      "difficulty": "★ 1500",
+      "difficultyRating": 1500,
+      "tags": [],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
