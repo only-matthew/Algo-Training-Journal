@@ -97,9 +97,10 @@ test("fetchCodeforcesAccepted rejects empty handle and failed API responses", as
   await assert.rejects(fetchCodeforcesAccepted("tourist", { fetchImpl: networkError }), /接口不可用/);
 });
 
-function luoguPage({ pid, name, difficulty, content }) {
+function luoguPage({ pid, name, difficulty, content, tags }) {
   const problem = { pid, name };
   if (difficulty !== undefined) problem.difficulty = difficulty;
+  if (tags !== undefined) problem.tags = tags;
   if (content !== undefined) {
     // 真实洛谷 content 为对象结构 { description, background, hint, ... }，而非字符串
     problem.content = typeof content === "string" ? { description: content } : content;
@@ -123,6 +124,42 @@ test("fetchLuoguProblems parses name, official difficulty and description from o
     description: "# 【模板】网络最大流\n\n## 题目描述\n\n给定网络，求最大流。\n\n数据范围较大。",
   });
   assert.ok(!problems[0].description.includes("[object Object]"), "description must not be [object Object]");
+});
+
+test("fetchLuoguProblems completes the C3VK handshake before parsing", async () => {
+  const calls = [];
+  const fetchImpl = async (url, init = {}) => {
+    calls.push({ url: String(url), init });
+    if (!init.headers?.Cookie) {
+      return new Response(null, { status: 302, headers: { "Set-Cookie": "C3VK=challenge-token; Path=/; HttpOnly" } });
+    }
+    assert.equal(init.headers.Cookie, "C3VK=challenge-token");
+    return new Response(luoguPage({ pid: "P1001", name: "A+B Problem", difficulty: 1, content: "求两数之和。" }));
+  };
+  const [problem] = await fetchLuoguProblems("P1001", { fetchImpl });
+  assert.equal(problem.name, "A+B Problem");
+  assert.equal(problem.difficulty, "入门");
+  assert.match(problem.description, /求两数之和/);
+  assert.equal(calls.length, 2);
+  assert.equal(calls[0].init.redirect, "manual");
+  assert.match(calls[0].init.headers["User-Agent"], /Mozilla/);
+});
+
+test("fetchLuoguProblems resolves numeric Luogu tags through the shared dictionary", async () => {
+  const calls = [];
+  const fetchImpl = async (url) => {
+    const target = String(url);
+    calls.push(target);
+    if (target.endsWith("/_lfe/tags")) return new Response(JSON.stringify({ tags: [
+      { id: 42, name: "线段树", type: 2 },
+      { id: 127, name: "深度优先搜索 DFS", type: 2 },
+      { id: 1997, name: "1997", type: 1 },
+    ] }));
+    return new Response(luoguPage({ pid: "P3376", name: "【模板】网络最大流", difficulty: 6, content: "求最大流。", tags: [42, 127, 1997] }));
+  };
+  const [problem] = await fetchLuoguProblems("P3376", { fetchImpl });
+  assert.deepEqual(problem.tags, ["线段树", "DFS"]);
+  assert.equal(calls.filter((url) => url.endsWith("/_lfe/tags")).length, 1);
 });
 
 test("fetchLuoguProblems archives statement images instead of inserting CDN links", async () => {

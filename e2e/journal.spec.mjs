@@ -125,3 +125,19 @@ test("adding a Codeforces AC import automatically fetches its statement", async 
   await expect(page.locator("#submit-msg")).toContainText("自动抓取 1 道 Codeforces 题面");
   expect(statementRequests).toBe(1);
 });
+
+test("code editor shows one heading and keeps an accessible label", async ({ page }) => {
+  await page.route(`${WORKER}/**`, async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    const json = (body) => route.fulfill({ contentType: "application/json", body: JSON.stringify(body) });
+    if (url.pathname === "/api/session") return json({ login: "only-matthew", member: "廖夏", csrfToken: "test-csrf", avatar_url: "" });
+    if (url.pathname === "/api/logs/date" && request.method() === "GET") return json({ revision: null, problems: [] });
+    return json({ error: "unexpected test request" });
+  });
+
+  await page.goto(`/submit/?date=${TODAY}`);
+  const codeSection = page.locator(".journal-code-tools").first();
+  await expect(codeSection.getByText("代码", { exact: true })).toHaveCount(1);
+  await expect(codeSection.getByRole("textbox", { name: "代码", exact: true })).toBeVisible();
+});

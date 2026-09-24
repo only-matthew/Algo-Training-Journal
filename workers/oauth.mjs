@@ -8,7 +8,10 @@ import { readCatalog, readTrainingContext, workbenchResponse } from "./services/
 import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
 import { archiveStatementImages, fetchStatement, parseAtCoderProblemNumber, parseLuoguProblem, readLuoguProblem, statementFromAtCoderHtml } from "./services/problem-statement.mjs";
-import { attachAtCoderTags, resolveAtCoderTagIds } from "./services/atcoder-tags.mjs";
+import { attachAtCoderTags, loadLuoguTagDictionary, resolveAtCoderTagIds } from "./services/atcoder-tags.mjs";
+import { BROWSER_HEADERS } from "./services/http-headers.mjs";
+import { LUOGU_ORIGIN, readLimitedBody, requestLuoguPage } from "./services/luogu-page.mjs";
+import { resolveLuoguTagIds } from "../lib/luogu-tag-map.mjs";
 import { createLogsV2Service, parseLogsV2Request, revisionFromEntries, statementImagePath, statementPath } from "./services/logs-v2.mjs";
 import { normalizeLearningState } from "../lib/learning-state.mjs";
 import { MAX_NEW_STATEMENT_IMAGE_BYTES } from "../lib/statement-images.mjs";
@@ -1015,11 +1018,12 @@ export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, days 
 // 0 暂无评定 | 1 入门 | 2 普及- | 3 普及 | 4 普及+/提高- | 5 提高 | 6 提高+/省选- | 7 省选/NOI- | 8 NOI/NOI+/CTS
 const LUOGU_DIFFICULTY = { 0: "暂无评定", 1: "入门", 2: "普及-", 3: "普及", 4: "普及+/提高-", 5: "提高", 6: "提高+/省选-", 7: "省选/NOI-", 8: "NOI/NOI+/CTS" };
 
-// 洛谷：抓取题目页解析题名、官方难度与题目描述（页面内嵌 lentille-context JSON）。
-// 标签为数字 ID 且平台未提供公开的标签名称接口，故不返回；洛谷提交记录 API 需登录态 + CSRF，
-// 故导入采用「粘贴题号 → 补全题名/难度/题面」的半自动方案。
+// 洛谷：抓取题目页解析题名、官方难度、算法标签与题目描述（页面内嵌 lentille-context JSON）。
+// 题目页只给数字标签 ID，再通过 /_lfe/tags 字典一次性换成站内标签；洛谷提交记录 API
+// 需登录态 + CSRF，故导入采用「粘贴题号 → 补全题名/难度/标签/题面」的半自动方案。
 // 题面与「抓取 CF 题面」走同一套解析与图片归档：裸 Markdown 图片语法里的 CDN 链接
 // 在站内加载不出来（CSP 只允许 'self' 与 data:），必须随保存归档到仓库。
+const LUOGU_IMPORT_TIMEOUT_MS = 12000;
 export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurrency = 3 } = {}) {
   const list = String(numbers || "")
     .split(/[\s,，、;；]+/)
@@ -1033,15 +1037,24 @@ export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurren
   // 一次导入最多回传 15 道题，图片是 base64 回传的：给整批设一个总量预算，
   // 超出的题目按「图片未归档」降级（正文保留外链），不会让响应体无限膨胀。
   let imageBudget = 4 * 1024 * 1024;
+  const tagIdsByIndex = new Map();
   let next = 0;
   async function worker() {
     while (next < list.length) {
       const index = next++;
       const number = list[index].toUpperCase();
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), LUOGU_IMPORT_TIMEOUT_MS);
       try {
-        const response = await fetchImpl(`https://www.luogu.com.cn/problem/${encodeURIComponent(number)}`);
-        if (!response.ok) throw new Error("页面不存在");
-        const html = await response.text();
+        const url = `${LUOGU_ORIGIN}/problem/${encodeURIComponent(number)}`;
+        const { response, error, blocked } = await requestLuoguPage(url, {
+          fetchImpl,
+          controller,
+          headers: { ...BROWSER_HEADERS, "Accept-Language": "zh-CN,zh;q=0.9" },
+        });
+        if (error) throw error;
+        if (blocked || !response?.ok) throw new Error("页面不存在或被风控拦截");
+        const html = await readLimitedBody(response, controller.signal);
         const item = fallback(number);
         const problem = readLuoguProblem(html);
         if (problem) {
@@ -1049,6 +1062,7 @@ export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurren
           if (typeof problem.difficulty === "number") item.difficulty = LUOGU_DIFFICULTY[problem.difficulty] || "未标注";
           try {
             const parsed = parseLuoguProblem(problem, { collectImages: true });
+            if (parsed.tagIds.length) tagIdsByIndex.set(index, parsed.tagIds);
             const budget = Math.max(0, Math.min(MAX_NEW_STATEMENT_IMAGE_BYTES, imageBudget));
             const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, maxTotalBytes: budget });
             imageBudget -= archived.images.reduce((sum, image) => sum + image.bytes, 0);
@@ -1066,10 +1080,19 @@ export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurren
         results[index] = item;
       } catch {
         results[index] = fallback(number);
-      }
+      } finally { clearTimeout(timer); }
     }
   }
   await Promise.all(Array.from({ length: Math.min(concurrency, list.length) }, worker));
+  if (tagIdsByIndex.size) {
+    try {
+      const dictionary = await loadLuoguTagDictionary({ fetchImpl });
+      for (const [index, ids] of tagIdsByIndex) {
+        const tags = resolveLuoguTagIds(ids, dictionary);
+        if (tags.length) results[index].tags = tags;
+      }
+    } catch { /* 标签字典不可用时仍返回题名、难度与题面。 */ }
+  }
   return results;
 }
 
