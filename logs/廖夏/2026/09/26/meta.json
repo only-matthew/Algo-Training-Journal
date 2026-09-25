@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-26T01:14:11.963+08:00",
+  "problems": [
+    {
+      "id": "cf5d62fc-c0b1-4212-b50f-17627454ba63",
+      "name": "GCD Treasury",
+      "platform": "Codeforces",
+      "problemNumber": "2267C",
+      "difficulty": "★ 800",
+      "difficultyRating": 800,
+      "tags": [
+        "数学",
+        "数论"
+      ],
+      "outcome": "hinted",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/2267/C?locale=en",
+        "fetchedAt": "2026-09-25T17:08:26.630Z",
+        "parserVersion": "cf-html-v4"
+      }
+    },
+    {
+      "id": "5c595b67-3c4e-4385-a033-1b4b9e6fff4e",
+      "name": "Fashionable Array",
+      "platform": "Codeforces",
+      "problemNumber": "2267B",
+      "difficulty": "★ 1100",
+      "difficultyRating": 1100,
+      "tags": [
+        "构造"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 1,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/2267/B?locale=en",
+        "fetchedAt": "2026-09-25T17:08:26.486Z",
+        "parserVersion": "cf-html-v4"
+      }
+    },
+    {
+      "id": "aa927ae9-79dd-4152-9884-2dadaf43747f",
+      "name": "Turn Into a Palindrome",
+      "platform": "Codeforces",
+      "problemNumber": "2267A",
+      "difficulty": "★ 1300",
+      "difficultyRating": 1300,
+      "tags": [
+        "字符串"
+      ],
+      "outcome": "hinted",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 2,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/2267/A?locale=en",
+        "fetchedAt": "2026-09-25T17:08:26.370Z",
+        "parserVersion": "cf-html-v4"
+      }
+    }
+  ]
+}

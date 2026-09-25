@@ -1441,6 +1441,66 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-09-28",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-25/9e3a2136-27ab-4e4e-b9c1-338068bbff1b/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2267C",
+      "date": "2026-09-26",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-26",
+        "recordId": "cf5d62fc-c0b1-4212-b50f-17627454ba63"
+      },
+      "problem": {
+        "name": "GCD Treasury",
+        "platform": "Codeforces",
+        "problemNumber": "2267C",
+        "difficulty": "★ 800"
+      },
+      "outcome": "hinted",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-26/cf5d62fc-c0b1-4212-b50f-17627454ba63/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2267B",
+      "date": "2026-09-26",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-26",
+        "recordId": "5c595b67-3c4e-4385-a033-1b4b9e6fff4e"
+      },
+      "problem": {
+        "name": "Fashionable Array",
+        "platform": "Codeforces",
+        "problemNumber": "2267B",
+        "difficulty": "★ 1100"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-26/5c595b67-3c4e-4385-a033-1b4b9e6fff4e/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2267A",
+      "date": "2026-09-26",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-26",
+        "recordId": "aa927ae9-79dd-4152-9884-2dadaf43747f"
+      },
+      "problem": {
+        "name": "Turn Into a Palindrome",
+        "platform": "Codeforces",
+        "problemNumber": "2267A",
+        "difficulty": "★ 1300"
+      },
+      "outcome": "hinted",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-26/aa927ae9-79dd-4152-9884-2dadaf43747f/"
     }
   ]
 }
