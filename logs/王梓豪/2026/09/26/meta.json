@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-26T00:04:56.651+08:00",
+  "problems": [
+    {
+      "id": "a43a373f-1f62-4a1e-ae04-822b2ca79d67",
+      "name": "GCD Treasury",
+      "platform": "Codeforces",
+      "problemNumber": "2267C",
+      "difficulty": "★ 1500",
+      "difficultyRating": 1500,
+      "tags": [],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    },
+    {
+      "id": "7d815b87-a444-4f8a-9094-e5054f3a4d9a",
+      "name": "Fashionable Array",
+      "platform": "Codeforces",
+      "problemNumber": "2267B",
+      "difficulty": "★ 1200",
+      "difficultyRating": 1200,
+      "tags": [],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 1
+    },
+    {
+      "id": "7ccb57fc-a7af-40a0-b296-881ccab1913c",
+      "name": "Turn Into a Palindrome",
+      "platform": "Codeforces",
+      "problemNumber": "2267A",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 2
+    }
+  ]
+}

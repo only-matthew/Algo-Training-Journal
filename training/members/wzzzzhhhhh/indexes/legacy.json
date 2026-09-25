@@ -1207,6 +1207,66 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-24/83c299ed-5cfa-4a39-93bc-6ad2755d2f68/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2267C",
+      "date": "2026-09-26",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-26",
+        "recordId": "a43a373f-1f62-4a1e-ae04-822b2ca79d67"
+      },
+      "problem": {
+        "name": "GCD Treasury",
+        "platform": "Codeforces",
+        "problemNumber": "2267C",
+        "difficulty": "★ 1500"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-26/a43a373f-1f62-4a1e-ae04-822b2ca79d67/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2267B",
+      "date": "2026-09-26",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-26",
+        "recordId": "7d815b87-a444-4f8a-9094-e5054f3a4d9a"
+      },
+      "problem": {
+        "name": "Fashionable Array",
+        "platform": "Codeforces",
+        "problemNumber": "2267B",
+        "difficulty": "★ 1200"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-26/7d815b87-a444-4f8a-9094-e5054f3a4d9a/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2267A",
+      "date": "2026-09-26",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-26",
+        "recordId": "7ccb57fc-a7af-40a0-b296-881ccab1913c"
+      },
+      "problem": {
+        "name": "Turn Into a Palindrome",
+        "platform": "Codeforces",
+        "problemNumber": "2267A",
+        "difficulty": "★ 1000"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-26/7ccb57fc-a7af-40a0-b296-881ccab1913c/"
     }
   ]
 }
