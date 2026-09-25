@@ -1,14 +1,14 @@
 {
   "schemaVersion": 6,
-  "updatedAt": "2026-09-26T01:14:11.963+08:00",
+  "updatedAt": "2026-09-26T01:14:27.434+08:00",
   "problems": [
     {
       "id": "cf5d62fc-c0b1-4212-b50f-17627454ba63",
       "name": "GCD Treasury",
       "platform": "Codeforces",
       "problemNumber": "2267C",
-      "difficulty": "★ 800",
-      "difficultyRating": 800,
+      "difficulty": "★ 1300",
+      "difficultyRating": 1300,
       "tags": [
         "数学",
         "数论"
@@ -52,8 +52,8 @@
       "name": "Turn Into a Palindrome",
       "platform": "Codeforces",
       "problemNumber": "2267A",
-      "difficulty": "★ 1300",
-      "difficultyRating": 1300,
+      "difficulty": "★ 800",
+      "difficultyRating": 800,
       "tags": [
         "字符串"
       ],
