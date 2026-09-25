@@ -1,6 +1,6 @@
 {
   "schemaVersion": 6,
-  "updatedAt": "2026-09-25T13:18:52.357+08:00",
+  "updatedAt": "2026-09-25T13:21:02.954+08:00",
   "problems": [
     {
       "id": "9e3a2136-27ab-4e4e-b9c1-338068bbff1b",
@@ -14,9 +14,10 @@
         "BFS"
       ],
       "outcome": "hinted",
-      "masteryStatus": "unknown",
+      "masteryStatus": "learning",
       "isMistake": false,
-      "reviewStatus": "none",
+      "reviewStatus": "todo",
+      "reviewDue": "2026-09-28",
       "fileIndex": 0
     }
   ]
