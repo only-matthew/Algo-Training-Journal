@@ -28,7 +28,7 @@ test("generated service worker caches navigation responses by request URL", () =
 });
 
 test("public journal loading starts without awaiting the session lookup", () => {
-  const source = fs.readFileSync(new URL("../app.js", import.meta.url), "utf8");
+  const source = fs.readFileSync(new URL("../src/app.js", import.meta.url), "utf8");
   assert.match(source, /const sessionPromise = initSession\(\)/);
   assert.doesNotMatch(source, /await initSession\(\)/);
   assert.match(source, /await sessionPromise;\s*\n\s*if \(currentUser\) navigateTo\("\/submit\/"\)/);

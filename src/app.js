@@ -1,15 +1,15 @@
-import { initTheme, toggleTheme } from "./lib/theme.mjs";
-import { currentRoute, migrateLegacyHashRoute, initPageNavigation, navigateTo } from "./lib/router.mjs";
-import { initSession, login, logout, currentUser } from "./lib/auth.mjs";
-import { apiRequest } from "./lib/journal-api.js";
-import { initDetailInteractions } from "./lib/detail-interactions.mjs";
-import { initOverviewPage, initJournalPage, initRoadmapRenderer, initTagRenderer, initShellRenderer, doRefresh } from "./lib/application.mjs";
+import { initTheme, toggleTheme } from "../lib/theme.mjs";
+import { currentRoute, migrateLegacyHashRoute, initPageNavigation, navigateTo } from "../lib/router.mjs";
+import { initSession, login, logout, currentUser } from "../lib/auth.mjs";
+import { apiRequest } from "../lib/journal-api.js";
+import { initDetailInteractions } from "../lib/detail-interactions.mjs";
+import { initOverviewPage, initJournalPage, initRoadmapRenderer, initTagRenderer, initShellRenderer, doRefresh } from "../lib/application.mjs";
 
 // 表单模块（~50KB，含 tag-catalog）按需动态导入：日志页与知识地图页都不加载，
 // 仅在用户首次打开提交表单/导入面板时才拉取。
 let formModulePromise = null;
 function withForm() {
-  formModulePromise ??= import("./lib/form.mjs");
+  formModulePromise ??= import("../lib/form.mjs");
   return formModulePromise;
 }
 

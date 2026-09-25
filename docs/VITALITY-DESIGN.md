@@ -162,11 +162,11 @@ credit = 0.3（没做出来） / 1（做出来了）
 
 | 位置 | 内容 | 实现 |
 | --- | --- | --- |
-| 首页统计卡 | `累计题数 165 · 活力指数 31.6`（并排，题数不动） | [index.html](../index.html) + [scripts/generate-data.js](../scripts/generate-data.js) |
+| 首页统计卡 | `累计题数 165 · 活力指数 31.6`（并排，题数不动） | [src/index.html](../src/index.html) + [scripts/generate-data.js](../scripts/generate-data.js) |
 | 记录卡片 | 难度徽章旁 `活力 0.70` | [lib/ui.mjs](../lib/ui.mjs) |
 | 热力图 | **按活力上色**（阈值 0.15 / 0.4 / 0.8），悬停显示活力与题数 | [lib/renderer.mjs](../lib/renderer.mjs) |
 | **活力曲线** | CF Rating 图风格：每日活力折线 + 累计底座 + 达标点着色 | 同上 |
-| 难度徽章配色 | 按 Rating 五档：entry / basic / easy / medium / hard / expert | [style.css](../style.css) |
+| 难度徽章配色 | 按 Rating 五档：entry / basic / easy / medium / hard / expert | [src/style.css](../src/style.css) |
 
 **活力曲线的读法**（横轴只放有训练的日子，与 CF 一致）：
 

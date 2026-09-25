@@ -3020,6 +3020,7 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .submission-page.journal-editor .learning-state-panel { margin:22px 0 0; padding:18px 0 0; border-top:1px solid var(--submission-line); border-bottom:0; }
 .submission-page.journal-editor .learning-state-grid { display:block; }
 .submission-page.journal-editor .review-settings .learning-state-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.submission-page.journal-editor .review-settings .review-due-group { grid-column:auto; }
 .submission-page.journal-editor .journal-statement-tools { margin:18px 0 0; padding:0; border:1px solid var(--submission-line); background:#fff; }
 .submission-page.journal-editor .journal-disclosure { margin:18px 0 0; padding:0; border:1px solid var(--submission-line); border-radius:7px; background:#fff; }
 .submission-page.journal-editor .journal-disclosure>summary { padding:12px 14px; }

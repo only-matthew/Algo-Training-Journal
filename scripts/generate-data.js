@@ -14,6 +14,7 @@ function addSelfClosingVoids(html) {
 }
 
 const ROOT = path.join(__dirname, "..");
+const FRONTEND_DIR = path.join(ROOT, "src");
 const LOGS_DIR = path.join(ROOT, "logs");
 const OUTPUT_DIR = path.join(ROOT, "site");
 const BUILD_STATE_PATH = path.join(ROOT, ".build-cache", "site-state.json");
@@ -296,9 +297,9 @@ function copyFile(name) {
 function writeStylesheet() {
   // Preserve the cascade while serving one compressed, versioned stylesheet.
   const source = ["style.css", "assets/final.css", "assets/details.css"]
-    .map((name) => fs.readFileSync(path.join(ROOT, name), "utf8"))
+    .map((name) => fs.readFileSync(path.join(FRONTEND_DIR, name), "utf8"))
     .join("\n")
-    .replaceAll("/assets/ink-mountains.webp", `/assets/ink-mountains.webp?v=${assetVersion("assets/ink-mountains.webp")}`);
+    .replaceAll("/assets/ink-mountains.webp", `/assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`);
   const { code } = transformSync(source, { loader: "css", minify: true, legalComments: "eof" });
   fs.writeFileSync(path.join(OUTPUT_DIR, "style.css"), code, "utf8");
 }
@@ -337,14 +338,14 @@ function appVersion() {
 }
 
 function writeVersionedIndex(dataVersion) {
-  const raw = fs.readFileSync(path.join(ROOT, "index.html"), "utf8");
+  const raw = fs.readFileSync(path.join(FRONTEND_DIR, "index.html"), "utf8");
   const $ = cheerio.load(raw);
   $('meta[name="journal-data-version"]').attr("content", dataVersion);
   const styleVersion = crypto.createHash("sha256")
     .update(fs.readFileSync(path.join(OUTPUT_DIR, "style.css"))).digest("hex").slice(0, 12);
   $('link[rel="stylesheet"][href^="style.css"]').attr("href", `style.css?v=${styleVersion}`);
   $('link[rel="stylesheet"][href^="assets/final.css"], link[rel="stylesheet"][href^="assets/details.css"]').remove();
-  $('link[rel="preload"][as="image"]').attr("href", `assets/ink-mountains.webp?v=${assetVersion("assets/ink-mountains.webp")}`);
+  $('link[rel="preload"][as="image"]').attr("href", `assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`);
   $('script[src^="app.js"]').attr("src", `assets/js/${browserAssets.entry}`);
   for (const dependency of browserAssets.preloads) {
     $("<link>").attr({ rel: "modulepreload", href: `assets/js/${dependency}` }).appendTo("head");
@@ -1371,7 +1372,7 @@ async function main() {
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   ({ trainingCardHtml } = await import("../lib/ui.mjs"));
   writeStylesheet();
-  copyDirRecursive("assets", path.join(OUTPUT_DIR, "assets"));
+  copyDirRecursive("src/assets", path.join(OUTPUT_DIR, "assets"));
   browserAssets = buildBrowser(ROOT, path.join(OUTPUT_DIR, "assets", "js"));
   cleanupBrowserAssets();
   const html = writeVersionedIndex(dataVersion);

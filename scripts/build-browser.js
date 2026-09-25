@@ -3,10 +3,13 @@ const fs = require("node:fs");
 const { buildSync } = require("esbuild");
 
 function buildBrowser(root, outdir) {
-  const hasProblemEntry = fs.existsSync(path.join(root, "problem-page.js"));
+  const sourceDir = fs.existsSync(path.join(root, "src", "app.js")) ? "src" : ".";
+  const appEntry = path.posix.join(sourceDir, "app.js");
+  const problemPageEntry = path.posix.join(sourceDir, "problem-page.js");
+  const hasProblemEntry = fs.existsSync(path.join(root, problemPageEntry));
   const { metafile } = buildSync({
     absWorkingDir: root,
-    entryPoints: hasProblemEntry ? ["app.js", "problem-page.js"] : ["app.js"],
+    entryPoints: hasProblemEntry ? [appEntry, problemPageEntry] : [appEntry],
     outdir,
     bundle: true,
     splitting: true,
@@ -21,8 +24,8 @@ function buildBrowser(root, outdir) {
     metafile: true,
   });
   const outputs = metafile.outputs;
-  const entry = Object.keys(outputs).find((name) => outputs[name].entryPoint === "app.js");
-  const problemEntry = Object.keys(outputs).find((name) => outputs[name].entryPoint === "problem-page.js");
+  const entry = Object.keys(outputs).find((name) => outputs[name].entryPoint === appEntry);
+  const problemEntry = Object.keys(outputs).find((name) => outputs[name].entryPoint === problemPageEntry);
   if (!entry) throw new Error("Browser build did not emit the app entry point");
   if (hasProblemEntry && !problemEntry) throw new Error("Browser build did not emit the problem page entry point");
 

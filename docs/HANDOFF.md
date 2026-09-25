@@ -1,5 +1,20 @@
 # 交接文档：Algo Training Journal
 
+## 最新交接（2026-09-25）：仓库目录整理
+
+- 浏览器端入口和自有静态资源已统一移入 `src/`：`src/app.js`、`src/problem-page.js`、`src/index.html`、`src/style.css`、`src/assets/`。共享渲染模块也会导入的第三方库保留在根级 `vendor/`。
+- `lib/` 继续作为浏览器、Worker、构建脚本和测试共享的模块目录，没有塞进 `src/`，避免服务端反向依赖前端目录。
+- 构建、语法检查和源码型回归测试均已改用新路径；生成站点的 URL 仍为 `/style.css`、`/assets/...`、`/vendor/...`，部署结构不变。
+- 新的目录职责与文件放置规则见 [REPOSITORY-STRUCTURE.md](REPOSITORY-STRUCTURE.md)。历史交接段落中的旧路径仅描述当时提交；当前开发以该文档和 README 的结构为准。
+
+## 最新交接（2026-09-25）：提交页布局与洛谷中文题面
+
+- 修复独立提交页“复习日期”被旧 `.journal-editor .review-due-group { grid-column: 3; }` 规则挤到下一行的问题；提交页作用域内恢复自动网格定位。四个复习字段在 1440/1024px 同排，800px 双列，390px 单列。
+- `scripts/smoke-submission-page.mjs` 现在主动展开复习设置，并在 1440、1024、800、390px 检查无横向溢出及字段行对齐。
+- 洛谷 `lentille-context` 的 `data.problem` 可能同时含原文 `content` 与中文本地化 `contenu`。`parseLuoguProblem()` 优先选择具有非空正文的 `contenu`，缺失或为空时回退 `content`；P2895 已用真实页面和 fixture 验证返回中文题面。
+- 回归覆盖 `test/problem-statement.test.mjs` 与 `test/oauth-import.test.mjs`；本次验证包含语法检查、构建、提交页浏览器冒烟、真实网络 P2895 抓取以及完整 `npm test`（426 + 70 项通过）。
+- 详细契约见 [题面专项规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) 与 [提交页规格](SUBMISSION-PAGE-SPECIFICATION.md)。
+
 ## 最新交接（2026-09-21）：一万条记录容量升级
 
 - 浏览器不再请求或生成 `site/data/all.json`。`manifest.json` 描述月份、成员年度和错题分片；分析页、成员页、错题本分别只加载当前视图需要的数据，并缓存已取分片。

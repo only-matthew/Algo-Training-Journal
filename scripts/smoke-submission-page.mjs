@@ -47,7 +47,7 @@ try {
   await page.waitForURL((url) => url.pathname === "/submit/");
   assert.equal(new URL(page.url()).pathname, "/submit/", "首页提交按钮应进入独立提交页");
 
-  for (const width of [1440, 1024, 390]) {
+  for (const width of [1440, 1024, 800, 390]) {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 });
     await page.goto(`${ORIGIN}/submit/?date=${DATE}&problem=visual-p2678`, { waitUntil: "networkidle" });
     await page.waitForSelector("#submission-workspace", { state: "visible" });
@@ -61,6 +61,7 @@ try {
     });
     await page.waitForFunction(() => !document.getElementById("btn-save")?.disabled);
     await page.waitForFunction(() => !document.querySelector(".problem-block")?.classList.contains("review-highlight"));
+    await page.locator(".review-settings").evaluate((element) => { element.open = true; });
     await page.evaluate(() => window.scrollTo(0, 0));
     const state = await page.evaluate(() => ({
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
@@ -69,6 +70,9 @@ try {
       notesVisible: getComputedStyle(document.querySelector(".submission-notes")).display !== "none",
       indexPosition: getComputedStyle(document.querySelector(".submission-index")).position,
       checkedOutcome: document.querySelector(".problem-outcome:checked")?.value,
+      reviewFieldTops: [...document.querySelectorAll(".review-settings .learning-state-grid > .form-group")]
+        .filter((element) => !element.hidden)
+        .map((element) => ({ className: element.className, top: Math.round(element.getBoundingClientRect().top), gridColumn: getComputedStyle(element).gridColumn })),
       overflowers: [...document.querySelectorAll("body *")].map((element) => {
         const rect = element.getBoundingClientRect();
         return { tag: element.tagName, id: element.id, className: String(element.className || ""), left: rect.left, right: rect.right, width: rect.width };
@@ -77,13 +81,24 @@ try {
     assert.ok(state.overflow <= 1, `${width}px 页面存在 ${state.overflow}px 横向溢出：${JSON.stringify(state.overflowers)}`);
     assert.equal(state.title, "编辑训练日志");
     assert.equal(state.checkedOutcome, "independent");
-    if (width === 1440) assert.equal(state.notesVisible, true);
-    if (width === 1024) assert.equal(state.notesVisible, false);
+    if (width === 1440) {
+      assert.equal(state.notesVisible, true);
+      const tops = state.reviewFieldTops.map((field) => field.top);
+      assert.ok(Math.max(...tops) - Math.min(...tops) <= 2, `宽屏复习设置应保持同一行：${JSON.stringify(state.reviewFieldTops)}`);
+    }
+    if (width === 1024) {
+      assert.equal(state.notesVisible, false);
+      const tops = state.reviewFieldTops.map((field) => field.top);
+      assert.ok(Math.max(...tops) - Math.min(...tops) <= 2, `中等宽屏复习设置应保持同一行：${JSON.stringify(state.reviewFieldTops)}`);
+    }
+    if (width === 800) {
+      assert.ok(Math.abs(state.reviewFieldTops[2]?.top - state.reviewFieldTops[3]?.top) <= 2, `双列布局的错题与日期应在同一行：${JSON.stringify(state.reviewFieldTops)}`);
+    }
     if (width === 390) assert.equal(state.indexPosition, "static");
     await page.screenshot({ path: `artifacts/submission-${width}.png`, fullPage: true });
   }
   assert.deepEqual(pageErrors, [], `页面脚本错误：${pageErrors.join("；")}`);
-  console.log("Submission page smoke passed at 1440, 1024 and 390 px.");
+  console.log("Submission page smoke passed at 1440, 1024, 800 and 390 px.");
 } finally {
   await browser.close();
 }

@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 
-const css = readFileSync(new URL("../style.css", import.meta.url), "utf8");
+const css = readFileSync(new URL("../src/style.css", import.meta.url), "utf8");
 const darkBlock = /\[data-theme="dark"\]\s*\{([^}]+)\}/.exec(css)?.[1] || "";
 const variables = Object.fromEntries([...darkBlock.matchAll(/--([a-z-]+):\s*(#[0-9a-f]{6})/gi)].map((match) => [match[1], match[2]]));
 

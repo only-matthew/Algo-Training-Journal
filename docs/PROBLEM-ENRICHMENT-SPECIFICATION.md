@@ -1,6 +1,6 @@
 # 题面归档与 AI 元数据补全：技术规格
 
-版本：1.0-draft · 日期：2026-09-15 · 状态：待实现，非现有 API 文档。
+版本：1.1 · 初稿日期：2026-09-15 · 最近更新：2026-09-25 · 状态：实现维护文档；实际行为以源码与自动化测试为准。
 
 产品流程见 [设计方案](PROBLEM-ENRICHMENT-DESIGN.md)。本文作为 [总规格](SPECIFICATION.md) 的专项补充；仅本功能字段、接口与验收冲突时以本文为准，不代表总规格其他未实现功能已完成。“必须”为验收要求。
 
@@ -101,7 +101,7 @@
 
 结果作为不可信文本经过现有 Markdown 安全渲染，禁止执行输出中的脚本、HTML 事件或链接动作。前端和 Worker 共用校验与字段白名单；服务端不得因为“前端校验过”而接受任意 aiAnalysis。
 
-## 4. 保存与附件读取接口（拟新增）
+## 4. 保存与附件读取接口
 
 ### 4.1 `PUT /api/v2/logs/:date`
 
@@ -177,7 +177,7 @@
 
 图片链接解析为绝对 HTTPS URL，经安全渲染链输出；不下载第三方任意资源。包含外链图片时返回 `external-images` 警告，表示归档文本仍依赖外部图片，可补 PDF。远程 SVG 不内联。仅提供 PDF 链接的页面返回 unsupported，提示手工下载上传。
 
-洛谷镜像的正文来自页面内嵌 `lentille-context` JSON 的 `data.problem`，与洛谷导入同款解析：`pid` 存在时必须等于 `CF<contestId><index>`，否则判 parse-failed；`content` 兼容字符串与 `{background,description,formatI,formatO,hint}` 对象两种形态，按小节转成 `## 题目描述 / ## 输入格式 / ## 输出格式 / ## 说明/提示`。样例可能嵌在正文（`pre`）也可能单列在 `samples`，后者只在正文没有代码块时补 `### 样例 n`，避免重复。脚本、样式与表格分别做丢弃和 GFM 表格转换；相对图片地址按 `www.luogu.com.cn` 解析为绝对 HTTPS URL。
+洛谷镜像的正文来自页面内嵌 `lentille-context` JSON 的 `data.problem`，与洛谷导入同款解析：`pid` 存在时必须等于 `CF<contestId><index>`，否则判 parse-failed。洛谷可能同时返回原文 `content` 与中文本地化 `contenu`；默认优先选择具有非空正文小节的 `contenu`（P2895 的 `content.locale=en`、`contenu.locale=zh-CN`），中文字段缺失或正文为空时回退 `content`。两者均兼容字符串与 `{background,description,formatI,formatO,hint,locale}` 对象形态，按小节转成 `## 题目描述 / ## 输入格式 / ## 输出格式 / ## 说明/提示`。样例可能嵌在正文（`pre`）也可能单列在 `samples`，后者只在正文没有代码块时补 `### 样例 n`，避免重复。脚本、样式与表格分别做丢弃和 GFM 表格转换；相对图片地址按 `www.luogu.com.cn` 解析为绝对 HTTPS URL。
 
 ### 5.3 AtCoder 官方题面（2026-09-21 补充）
 
@@ -215,13 +215,13 @@ AC 列表不阻塞等待题面。只抓用户添加的题，按 recordId 绑定�
 - 日志导出、静态预渲染、详情 JSON、读取 API、快捷复习、重排题目、删除题目、整日删除均覆盖新字段。训练索引不嵌 PDF 字节或完整分析。
 - 部署顺序：先更新可读写 v4 的 Worker 和所有写入口，再发布前端；回滚时保持 v4 读取能力，不能让旧 writer 覆盖新记录。
 
-## 7. 建议模块边界（文件尚未创建）
+## 7. 当前模块边界
 
 | 模块 | 职责 |
 | --- | --- |
 | `lib/problem-analysis.mjs` | 提示词、协议校验、差异计算与纯函数测试 |
-| `lib/statement-attachments.mjs` | 浏览器文件选择、IndexedDB、object URL 生命周期 |
-| `lib/problem-enrichment-ui.mjs` | 本题补全操作、预览与状态；由 form 按需加载 |
+| `lib/attachment-store.mjs`、`lib/statement-images.mjs` | 浏览器附件暂存、题面图片命名、类型与限额 |
+| `lib/form.mjs` | 本题补全操作、预览、表单状态与按需交互 |
 | `workers/services/problem-statement.mjs` | CF 抓取、地址验证、解析与失败分类 |
 | 现有 schema / API / Git 适配 | 来源字段、multipart、二进制、条件写入 |
 | 现有构建 / 详情 / 导出模块 | 附件发布与来源展示 |
@@ -247,10 +247,11 @@ AC 列表不阻塞等待题面。只抓用户添加的题，按 recordId 绑定�
 | C03 | 私有地址、恶意 URL、跨域重定向、错题号 | 无任意代理请求，拒绝不合法目标 |
 | C04 | 抓取期间删除行、切号、改题面、后发请求先返回 | 不写错题，不覆盖新输入 |
 | C05 | 老记录重新抓取 | 预览后再应用，不自动全库写回 |
+| C06 | 洛谷同时返回英文 `content` 与中文 `contenu`（P2895） | 使用中文题面；中文为空时安全回退原文 |
 | U01 | 桌面/窄屏、键盘、深浅主题 | 操作可达、错误可定位、无横向溢出 |
 
-测试层次：纯函数协议与解析 fixtures；Worker mock fetch 和 Git 事务故障注入；附件字节往返与静态产物集成；浏览器手工/自动流程。实际 DeepSeek 登录/附件能力和部署 Worker 抓取另列联网冒烟结果，不能用 fixture 通过替代。完成后运行项目 `npm run verify`，记录真实结果；本轮文档设计不执行业务测试。
+测试层次：纯函数协议与解析 fixtures；Worker mock fetch 和 Git 事务故障注入；附件字节往返与静态产物集成；浏览器手工/自动流程。实际 DeepSeek 登录/附件能力和部署 Worker 抓取另列联网冒烟结果，不能用 fixture 通过替代。完成后运行项目 `npm run verify` 并记录真实结果。
 
-## 9. 实施前核对项
+## 9. 部署与维护核对项
 
-这些是实现者的验证任务，不是本轮已经成立的事实：确认部署 Worker 对 CF 可达；确认当时 DeepSeek 的附件能力；验证 multipart 与 Git 二进制适配在设定限额内可用；对照总规格合并 v4 字段。若网络验证失败，保留明确降级路径并在交接中记录，不能宣称自动抓取已可用。
+每次部署或调整上游链路时重新确认 Worker 对 Codeforces / AtCoder / 洛谷的可达性；外部 DeepSeek 网页版的附件能力不属于本站保证；multipart 与 Git 二进制适配必须继续满足设定限额。若网络验证失败，保留明确降级路径并在交接中记录，不能仅凭 fixture 测试宣称自动抓取可用。

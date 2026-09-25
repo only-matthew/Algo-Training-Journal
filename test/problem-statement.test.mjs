@@ -93,6 +93,29 @@ test("洛谷镜像题面按小节转成 Markdown，保留公式并跳过空小�
   assert.match(result.description, /\$w\$/);
 });
 
+test("洛谷同时返回中英文题面时默认选择中文本地化内容", () => {
+  const problem = {
+    pid: "CF4A",
+    name: "[USACO08FEB] Meteor Shower S",
+    content: { locale: "en", description: "Bessie hears that a meteor shower is coming." },
+    contenu: { locale: "zh-CN", description: "贝茜听说一场特别的流星雨即将到来。" },
+  };
+  const result = parseLuoguStatement(luoguPage(problem), "4A");
+  assert.match(result.description, /贝茜听说一场特别的流星雨/);
+  assert.doesNotMatch(result.description, /Bessie hears/);
+});
+
+test("洛谷中文本地化内容为空时回退到原题面", () => {
+  const problem = {
+    pid: "CF4A",
+    name: "Watermelon",
+    content: { locale: "en", description: "Original statement." },
+    contenu: { locale: "zh-CN", description: "", hint: null },
+  };
+  const result = parseLuoguStatement(luoguPage(problem), "4A");
+  assert.match(result.description, /Original statement/);
+});
+
 test("洛谷镜像接受字符串题面，并在正文没有代码块时补上 samples", () => {
   const problem = { pid: "CF4A", name: "Watermelon", content: "<p>正文没有样例</p>", samples: [{ in: "8", out: "YES" }, { input: "2", output: "NO" }] };
   const result = parseLuoguStatement(luoguPage(problem), "4A");

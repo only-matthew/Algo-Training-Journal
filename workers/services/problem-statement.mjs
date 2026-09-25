@@ -365,18 +365,25 @@ export function parseLuoguProblem(problem, { expectedProblemNumber, expectedPid:
   if (pid && expectedPid && pid !== expectedPid) fail("parse-failed");
   const warnings = new Set(); const parts = []; const context = imageContext(collectImages);
   const renderContext = { ...context, base: LUOGU_ORIGIN };
+  // 洛谷会同时返回原文 `content` 与中文本地化 `contenu`。例如 P2895 的
+  // content.locale 是 en，而 contenu.locale 是 zh-CN；中文训练日志默认取后者。
+  // 老页面没有 contenu，继续回退到 content。
+  const hasBody = (value) => typeof value === "string"
+    ? Boolean(value.trim())
+    : Boolean(value && typeof value === "object" && LUOGU_SECTIONS.some(([key]) => typeof value[key] === "string" && value[key].trim()));
+  const localizedContent = hasBody(problem.contenu) ? problem.contenu : problem.content;
   // 正文有两种形态：HTML（洛谷题目、CF 镜像）与纯 Markdown（AtCoder 的 AT_ 镜像）。
   // 后者交给 HTML 解析器会把换行结构压扁、把 `<` 当成标签开头，必须分开处理。
   const render = (raw) => (HTML_LIKE.test(String(raw)) ? tidy(markdownFrom(parseHtml(String(raw)), warnings, renderContext)) : tidy(markdownText(String(raw), renderContext, warnings)));
-  if (typeof problem.content === "string") { const body = render(problem.content); if (body) parts.push(body); }
-  else if (problem.content && typeof problem.content === "object") for (const [key, label] of LUOGU_SECTIONS) { const raw = problem.content[key]; if (typeof raw !== "string" || !raw.trim()) continue; const body = render(raw); if (body) parts.push(`## ${label}`, body); }
+  if (typeof localizedContent === "string") { const body = render(localizedContent); if (body) parts.push(body); }
+  else if (localizedContent && typeof localizedContent === "object") for (const [key, label] of LUOGU_SECTIONS) { const raw = localizedContent[key]; if (typeof raw !== "string" || !raw.trim()) continue; const body = render(raw); if (body) parts.push(`## ${label}`, body); }
   // 样例可能嵌在正文里，也可能单列在 samples：后者只在正文没有代码块时补，避免重复。
   // 形态有两种：`{in,out}` 对象（洛谷题目与 CF 镜像）和 `[in, out]` 数组对（AtCoder 镜像）。
   const samples = (Array.isArray(problem.samples) ? problem.samples : [])
     .map((sample) => (Array.isArray(sample) ? { in: sample[0], out: sample[1] } : sample))
     .filter((sample) => sample && typeof sample === "object");
   if (samples.length && !parts.join("\n").includes("```")) parts.push(...samples.map((sample, index) => sampleBlock(sample, index)));
-  const title = tidy(problem.title || problem.name || (problem.content && typeof problem.content === "object" ? problem.content.name : "") || "");
+  const title = tidy(problem.title || problem.name || (localizedContent && typeof localizedContent === "object" ? localizedContent.name : "") || "");
   const body = tidy(parts.join("\n\n")); if (!body) fail("parse-failed");
   const description = tidy([title && `# ${title}`, body].filter(Boolean).join("\n\n")); if (description.length > MAX_MARKDOWN) fail("too-large");
   // 洛谷题目的算法标签是数字 id（如 [42] = 线段树），字典在 /_lfe/tags。这里把原始 id 一并

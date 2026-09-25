@@ -1,13 +1,21 @@
+# 依赖
 node_modules/
+
+# 本地配置与日志
 .env
 *.log
 .DS_Store
+
+# 构建产物与缓存
 site/
-oi-wiki/
-.wrangler/
 build/
 .build-cache/
-# UI 冒烟与截图检查的本地产物，可随时重跑生成，不进仓库。
+.wrangler/
+
+# 外部同步资料
+oi-wiki/
+
+# UI 冒烟、截图和测试报告，可随时重跑生成
 artifacts/
 playwright-report/
 test-results/

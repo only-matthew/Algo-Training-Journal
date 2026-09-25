@@ -97,7 +97,7 @@ test("fetchCodeforcesAccepted rejects empty handle and failed API responses", as
   await assert.rejects(fetchCodeforcesAccepted("tourist", { fetchImpl: networkError }), /接口不可用/);
 });
 
-function luoguPage({ pid, name, difficulty, content, tags }) {
+function luoguPage({ pid, name, difficulty, content, contenu, tags }) {
   const problem = { pid, name };
   if (difficulty !== undefined) problem.difficulty = difficulty;
   if (tags !== undefined) problem.tags = tags;
@@ -105,6 +105,7 @@ function luoguPage({ pid, name, difficulty, content, tags }) {
     // 真实洛谷 content 为对象结构 { description, background, hint, ... }，而非字符串
     problem.content = typeof content === "string" ? { description: content } : content;
   }
+  if (contenu !== undefined) problem.contenu = typeof contenu === "string" ? { description: contenu } : contenu;
   return `<html><head><title>${pid} ${name} - 洛谷 | 计算机科学教育新生态</title></head><body><script id="lentille-context" type="application/json">{"data":{"problem":${JSON.stringify(problem)}}}</script></body></html>`;
 }
 
@@ -124,6 +125,19 @@ test("fetchLuoguProblems parses name, official difficulty and description from o
     description: "# 【模板】网络最大流\n\n## 题目描述\n\n给定网络，求最大流。\n\n数据范围较大。",
   });
   assert.ok(!problems[0].description.includes("[object Object]"), "description must not be [object Object]");
+});
+
+test("fetchLuoguProblems prefers the Chinese contenu field used by P2895", async () => {
+  const fetchImpl = async () => new Response(luoguPage({
+    pid: "P2895",
+    name: "[USACO08FEB] Meteor Shower S",
+    difficulty: 3,
+    content: { locale: "en", description: "Bessie hears that an extraordinary meteor shower is coming." },
+    contenu: { locale: "zh-CN", description: "贝茜听说一场特别的流星雨即将到来。" },
+  }));
+  const [problem] = await fetchLuoguProblems("P2895", { fetchImpl });
+  assert.match(problem.description, /贝茜听说一场特别的流星雨/);
+  assert.doesNotMatch(problem.description, /Bessie hears/);
 });
 
 test("fetchLuoguProblems completes the C3VK handshake before parsing", async () => {

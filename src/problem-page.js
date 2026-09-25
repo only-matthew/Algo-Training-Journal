@@ -1,15 +1,15 @@
-import { initTheme, toggleTheme } from "./lib/theme.mjs";
-import { currentUser, initSession, login, logout } from "./lib/auth.mjs";
-import { initDetailInteractions } from "./lib/detail-interactions.mjs";
-import { loadProblemDetail } from "./lib/data.mjs";
-import { icon } from "./lib/icons.mjs";
+import { initTheme, toggleTheme } from "../lib/theme.mjs";
+import { currentUser, initSession, login, logout } from "../lib/auth.mjs";
+import { initDetailInteractions } from "../lib/detail-interactions.mjs";
+import { loadProblemDetail } from "../lib/data.mjs";
+import { icon } from "../lib/icons.mjs";
 import {
   exportToLatex,
   exportToMD,
   exportToPDF,
   quickReviewAction,
   renderEnhancements,
-} from "./lib/renderer.mjs";
+} from "../lib/renderer.mjs";
 
 function routeParts() {
   const parts = window.location.pathname.replace(/^\/+|\/+$/g, "").split("/");
