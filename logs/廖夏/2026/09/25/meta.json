@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-25T13:18:52.357+08:00",
+  "problems": [
+    {
+      "id": "9e3a2136-27ab-4e4e-b9c1-338068bbff1b",
+      "name": "[USACO08FEB] Meteor Shower S",
+      "platform": "洛谷",
+      "problemNumber": "P2895",
+      "difficulty": "★ 1300",
+      "difficultyRating": 1300,
+      "tags": [
+        "搜索",
+        "BFS"
+      ],
+      "outcome": "hinted",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}

@@ -1420,6 +1420,26 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-24/6267d57d-3af1-42e2-8ea3-db860b9d491b/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P2895",
+      "date": "2026-09-25",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-25",
+        "recordId": "9e3a2136-27ab-4e4e-b9c1-338068bbff1b"
+      },
+      "problem": {
+        "name": "[USACO08FEB] Meteor Shower S",
+        "platform": "洛谷",
+        "problemNumber": "P2895",
+        "difficulty": "★ 1300"
+      },
+      "outcome": "hinted",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-25/9e3a2136-27ab-4e4e-b9c1-338068bbff1b/"
     }
   ]
 }
