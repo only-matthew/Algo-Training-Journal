@@ -48,6 +48,7 @@ logs/ + training/ + curriculum/ ──> scripts/generate-data.js ──> site/
 - Worker 和构建脚本可以复用 `lib/`，不要从 `src/app.js` 或 `src/index.html` 获取业务规则。
 - `site/`、`build/`、`.build-cache/`、`artifacts/`、测试报告和工具缓存均为忽略项，不直接提交或手工维护。
 - 新增共享规则前先检查 `lib/` 是否已有相同能力，避免浏览器、Worker 与构建脚本各自实现一份。
+- 已完成的一次性迁移不要长期留在 `scripts/`；先确认仓库中已无旧格式数据，再删除脚本并在交接文档记录可恢复的提交。
 
 ## 新文件放置速查
 

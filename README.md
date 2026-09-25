@@ -250,21 +250,13 @@ node scripts/repair-problem-identity.mjs --write   # 应用（原值存 problemN
 
 补全依据是 [Codeforces 官方 API](https://codeforces.com/api/contest.list)（场次序号 ↔ contestId）与 [problemset](https://codeforces.com/api/problemset.problems)（题名 → 题号），以及洛谷官方题目页；脚本内维护映射表。**不做模糊猜测**——无法唯一确定的记录会列进「仍无法确定」，交本人补录。
 
-打卡记录的「最后更新时间」由 `meta.json` 中的 `updatedAt` 保存，统一使用 **UTC+8 时区**（如 `2026-08-11T01:09:44.000+08:00`）：通过站点 API 提交/更新时由后端自动写入；旧记录可用 `npm run backfill:updated-at`（[scripts/backfill-updated-at.js](scripts/backfill-updated-at.js)）从 git 提交历史回填——每次保存都会产生一次 commit，因此 git 提交时间比文件修改时间可靠（文件 mtime 会被 clone/pull 重置）。构建脚本也会在缺失时优先回退到 git 提交时间，并在记录卡片、题目详情页和编辑弹窗中展示（格式如「最后更新 2026.8.10」，始终按 UTC+8 显示）。
+打卡记录的「最后更新时间」由 `meta.json` 中的 `updatedAt` 保存，统一使用 **UTC+8 时区**（如 `2026-08-11T01:09:44.000+08:00`）。站点 API 提交或更新时由后端自动写入；构建脚本在历史记录缺失该字段时回退到 git 提交时间，并在记录卡片、题目详情页和编辑弹窗中展示（格式如「最后更新 2026.8.10」，始终按 UTC+8 显示）。现存日志已全部完成回填。
 
 描述、心得和代码分别保存，因此其中包含 Markdown 标题、分隔线或代码块时，不会影响其他字段的读取。
 
-### 数据迁移
+### 历史数据格式
 
-旧的 `logs/姓名/YYYY-MM-DD/` 目录可以迁移到新结构：
-
-```bash
-npm run migrate:date-layout
-```
-
-迁移脚本只移动旧日期目录；如果目标目录已经存在，会直接报错并停止，不会覆盖数据。
-
-项目还保留了 [migrate-logs.js](scripts/migrate-logs.js)，用于更早期的单文件 Markdown 格式迁移。
+当前日志统一使用 `logs/姓名/YYYY/MM/DD/`。仓库中已不存在 `YYYY-MM-DD/` 目录或更早期的单文件 Markdown 日志，因此一次性迁移脚本已在 2026-09-25 清理；如需处理从旧提交导出的数据，可从 Git 历史中的 `500e456` 恢复对应脚本后在独立分支运行。
 
 ## 提交流程
 
@@ -465,9 +457,7 @@ npx serve site
 | `npm run smoke:statement` | 题面导入的浏览器冒烟（先 `npm run build` 并另开终端跑 `node scripts/preview-ui.mjs`）：描述为空直接填入、已有内容时给「用这份题面替换描述」按钮且点了真的替换、误粘整页源码时直接替换、重复解析不重复写入。 |
 | `npm run smoke:submission` | 独立提交页浏览器冒烟（同样需先构建并启动预览）：验证 1440/1024/800/390px 无横向溢出、复习设置字段按四列/双列/单列响应式排列，并输出截图到 `artifacts/`。 |
 | `npm run smoke:attachment` | 题面 PDF 附件选择 → IndexedDB 恢复 → 条件写入的浏览器冒烟（同样需要先构建并启动预览）。 |
-| `npm run migrate:date-layout` | 将旧日期目录迁移为 `YYYY/MM/DD`。 |
-
-更早期的单文件 Markdown 日志可使用 `node scripts/migrate-logs.js` 迁移。执行迁移前建议创建分支或备份，并在迁移后运行 `npm run check` 和 `git diff --check`。
+| `npm run smoke:details` | 知识地图、标签、题目详情、SPA 跳转与 Markdown 下载的浏览器冒烟（同样需要先构建并启动预览）。 |
 
 ## 项目结构
 
@@ -503,15 +493,12 @@ npx serve site
 ├── know-tree/                   # 学习路线源资料（洛谷/罗勇军/刘汝佳/NOI大纲/蓝桥杯/OI知识树）
 ├── logs/                          # 按成员和日期组织的训练源数据
 ├── scripts/
-│   ├── backfill-updated-at.js     # 从 git 提交历史回填 updatedAt
 │   ├── apply-luogu-meta.mjs       # 把洛谷官方题名/难度批量应用到 curriculum/nodes/
 │   ├── convert-curriculum.js      # 从 know-tree/ 源资料生成 curriculum/（含 OI 树合并与 CF 补充合并、洛谷 meta 富化）
 │   ├── fetch-codeforces.js        # 调用 Codeforces API 扩充 CF 题单（需要能访问 CF 的网络）
 │   ├── fetch-luogu-meta.mjs       # 批量抓取洛谷官方题名/难度 → curriculum/luogu-problem-meta.json
 │   ├── generate-data.js          # 聚合 logs/、计算统计并生成 site/ 与路由入口
 │   ├── check-syntax.mjs           # 自动发现并检查全部项目 JavaScript 源码
-│   ├── migrate-date-layout.js    # YYYY-MM-DD → YYYY/MM/DD
-│   ├── migrate-logs.js           # 旧单文件 Markdown 格式迁移
 │   └── verify-import-live.mjs    # 本地真实网络验证自动导入（人工运行，不进 CI）
 ├── test/
 │   ├── aggregation.test.mjs      # 同题聚合与复习队列构建测试

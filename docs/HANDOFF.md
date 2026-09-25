@@ -1,5 +1,13 @@
 # 交接文档：Algo Training Journal
 
+## 最新交接（2026-09-25）：无用文件清理
+
+- 删除已完成使命且当前数据不再需要的 `migrate-logs.js`、`migrate-date-layout.js`、`backfill-updated-at.js` 和旧版 `backfill-difficulty.mjs`；清理前确认不存在旧日志目录/单文件格式，154 份日志均已有 `updatedAt`。
+- 删除无断言且已由 Playwright/e2e 与专项 smoke 覆盖的 `check-ui.mjs`，将仍有独立覆盖价值的 `check-details-ui.mjs` 规范化为 `smoke-details.mjs` 与 `npm run smoke:details`；同时删除内容已落入 `curriculum/cf-supplement.json`、可由在线抓取流程替代的 `build-cf-curated.mjs`。
+- 删除未被构建引用的 1.6 MB PNG 源图、根级 `.nojekyll`（构建仍会在 `site/` 生成）和非空成员目录中的 `.gitkeep`。
+- 保留 `backfill-rating.mjs`、`repair-problem-identity.mjs`、`sync-missing-difficulty.mjs`：审计仍发现少量待转换或待官方发布难度的数据，这些脚本仍有实际维护价值。
+- 清理前的完整状态已推送为 `500e456`，因此无需在仓库内再复制一份备份；所有删除项都可从该提交恢复。
+
 ## 最新交接（2026-09-25）：仓库目录整理
 
 - 浏览器端入口和自有静态资源已统一移入 `src/`：`src/app.js`、`src/problem-page.js`、`src/index.html`、`src/style.css`、`src/assets/`。共享渲染模块也会导入的第三方库保留在根级 `vendor/`。
@@ -372,7 +380,7 @@ PDF 有独立的「替换 / 移除」按钮，因为它是一次性的原件归�
 
 - `npm run verify`（即 CI 的 `npm run check`）退出码 0：语法检查 78 个文件、训练索引最新、测试 392 项全部通过（常规 342 + Worker/接口 50）、`npm run build` 生成 167 条记录。
 - 新增浏览器冒烟 `scripts/smoke-attachment.mjs`（Playwright + msedge，`npm run preview` 起静态服务后运行）：16 项断言全过——附件区确实出现在构建产物里、选中 PDF 后落入 IndexedDB、**刷新页面后仍能恢复**、保存发出的是带幂等键的 multipart 条件写入、payload 含 `schemaVersion:4` 与 replace 动作与 PDF 字节、**不含** `statementAttachment`、成功后本地待上传记录被清除、无未捕获页面错误。
-- 既有 UI 检查无回归：`scripts/check-ui.mjs` 无溢出无错误，`scripts/check-details-ui.mjs` SPA 与 Markdown 导出正常。
+- 当时的 UI 检查无回归：已删除的 `scripts/check-ui.mjs` 未发现溢出或错误；其详情页覆盖现由 `scripts/smoke-details.mjs` 负责，SPA 与 Markdown 导出正常。
 - 新增测试文件：`test/oauth-logs-date.test.mjs`（旧接口 6 项）、`test/attachment-store.test.mjs`（8 项）、`test/journal-api.test.mjs` 扩容（v2 multipart 请求构造）、`test/oauth-logs-v2.test.mjs` 增加跨路径版本一致性。
 
 **仍未验证 / 未完成（不要当成已验收）**
