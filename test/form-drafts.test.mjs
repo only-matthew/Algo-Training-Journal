@@ -65,18 +65,24 @@ test("crawled statement images are archived through the same save as the PDF", (
 });
 
 test("抓取题面与「浏览器回传源码」两条入口共用同一套落盘逻辑", () => {
-  // AtCoder 对机房出口整体 403、浏览器跨域又读不到：只有跑在 atcoder.jp 上的小书签能取到
-  // 官方页。两条入口必须走同一个结果落地函数，否则两种入口的结果会不一致。
+  // CF / AtCoder 都可能拦截服务器出口，但允许用户浏览器打开；两条入口必须走同一个结果
+  // 落地函数，否则浏览器兜底拿到的正文会和自动抓取行为不一致。
   assert.match(formSource, /async function applyStatementResult\(div, platform, result\)/);
   assert.match(formSource, /import \{[^}]*parseProblemStatementHtml[^}]*\} from "\.\/journal-api\.js"/);
   assert.match(formSource, /class="btn-parse-statement-html"/);
   assert.match(formSource, /class="btn-copy-bookmarklet"/);
-  assert.match(formSource, /const ATCODER_BOOKMARKLET = "javascript:/);
+  assert.match(formSource, /const STATEMENT_BOOKMARKLET = "javascript:/);
   assert.match(formSource, /await parseProblemStatementHtml\(platform, problemNumber, html\)/);
   // 题号/平台校验只写一处，两条入口都先过它。
   assert.match(formSource, /function readStatementTarget\(div\)/);
   // 被 403 拦下时要指路到小书签，而不是只说「失败」。
-  assert.match(formSource, /从 AtCoder 页面导入/);
+  assert.match(formSource, /从官方题目页导入/);
+});
+
+test("AI JSON 可直接应用，修改原文后会丢弃旧验证结果", () => {
+  assert.match(formSource, /function validateAnalysisForBlock\(div\)/);
+  assert.match(formSource, /cachedAnalysisResult\(div\) \|\| validateAnalysisForBlock\(div\)/);
+  assert.match(formSource, /analysisInput\.addEventListener\("input", \(\) => \{\s*delete div\.dataset\.analysisResult/s);
 });
 
 test("描述里已有内容时，抓到的题面必须有一步到位的替换入口", () => {

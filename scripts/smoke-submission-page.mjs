@@ -97,6 +97,87 @@ try {
     if (width === 390) assert.equal(state.indexPosition, "static");
     await page.screenshot({ path: `artifacts/submission-${width}.png`, fullPage: true });
   }
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.evaluate(() => localStorage.setItem("theme", "dark"));
+  await page.goto(`${ORIGIN}/submit/?date=${DATE}&problem=visual-p2678`, { waitUntil: "networkidle" });
+  await page.waitForSelector("#submission-workspace", { state: "visible" });
+  await page.click("#btn-import-cf");
+  const darkTheme = await page.evaluate(() => {
+    const luminance = (rgb) => {
+      const channels = rgb.match(/[\d.]+/g).slice(0, 3).map((value) => Number(value) / 255)
+        .map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+      return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+    };
+    const contrast = (foreground, background) => {
+      const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+      return (values[0] + 0.05) / (values[1] + 0.05);
+    };
+    const colors = (selector) => {
+      const style = getComputedStyle(document.querySelector(selector));
+      return { color: style.color, background: style.backgroundColor, contrast: contrast(style.color, style.backgroundColor) };
+    };
+    return {
+      theme: document.documentElement.dataset.theme,
+      importPanel: colors("#import-panel"),
+      input: colors("#import-input"),
+      sectionHeading: getComputedStyle(document.querySelector(".submission-notes h2")).color,
+      selectedOutcome: colors(".problem-outcome:checked + span"),
+      addProblem: colors("#btn-add-problem"),
+    };
+  });
+  assert.equal(darkTheme.theme, "dark");
+  assert.ok(darkTheme.importPanel.contrast >= 7, `导入面板文字对比度不足：${JSON.stringify(darkTheme.importPanel)}`);
+  assert.ok(darkTheme.input.contrast >= 7, `导入输入框文字对比度不足：${JSON.stringify(darkTheme.input)}`);
+  assert.equal(darkTheme.sectionHeading, "rgb(167, 227, 197)");
+  assert.ok(darkTheme.selectedOutcome.contrast >= 4.5, `选中状态文字对比度不足：${JSON.stringify(darkTheme.selectedOutcome)}`);
+  assert.ok(darkTheme.addProblem.contrast >= 4.5, `添加下一题按钮对比度不足：${JSON.stringify(darkTheme.addProblem)}`);
+  assert.notEqual(darkTheme.addProblem.background, "rgb(251, 252, 250)", "暗色模式不应出现浅色添加按钮");
+  await page.screenshot({ path: "artifacts/submission-dark-1440.png", fullPage: true });
+
+  // 粘贴 AI JSON 后可以直接应用；“预览 JSON”只是可选检查步骤，不再是隐藏前置条件。
+  await page.evaluate(() => {
+    window.open = () => null;
+    const block = document.querySelector(".problem-block");
+    block.querySelector(".problem-description").value = "";
+    block.querySelector(".problem-difficulty").value = "未标注";
+  });
+  await page.click(".problem-block .btn-ai-enrich");
+  await page.waitForFunction(() => Boolean(document.querySelector(".problem-block")?.dataset.analysisRequest));
+  const applyState = await page.evaluate(() => {
+    const block = document.querySelector(".problem-block");
+    const request = JSON.parse(block.dataset.analysisRequest);
+    const result = {
+      schemaVersion: 1,
+      requestId: request.requestId,
+      inputFingerprint: request.inputFingerprint,
+      problem: { platform: request.input.platform, problemNumber: request.input.problemNumber, name: request.input.name },
+      summary: "AI 生成的题意摘要",
+      tags: ["字符串"],
+      difficulty: { scale: "cf-rating", estimate: 1600, low: 1500, high: 1700, confidence: "medium", reason: "综合约束与实现复杂度" },
+      analysis: { approach: "分析字符串结构。", timeComplexity: "O(n)", spaceComplexity: "O(1)", pitfalls: [] },
+      missingInformation: [],
+    };
+    const input = block.querySelector(".analysis-json");
+    input.value = JSON.stringify(result);
+    input.dispatchEvent(new Event("input", { bubbles: true }));
+    return { applyDisabled: block.querySelector(".btn-apply-analysis").disabled };
+  });
+  assert.equal(applyState.applyDisabled, false, "粘贴 JSON 后应用按钮应立即可用");
+  await page.click(".problem-block .btn-apply-analysis");
+  const applied = await page.evaluate(() => {
+    const block = document.querySelector(".problem-block");
+    return {
+      description: block.querySelector(".problem-description").value,
+      difficulty: block.querySelector(".problem-difficulty").value,
+      tags: block.querySelector(".problem-tags").value,
+      status: block.querySelector(".summarize-status").textContent,
+    };
+  });
+  assert.equal(applied.description, "AI 生成的题意摘要");
+  assert.equal(applied.difficulty, "★ 1600");
+  assert.match(applied.tags, /字符串/);
+  assert.match(applied.status, /已应用选择的建议/);
   assert.deepEqual(pageErrors, [], `页面脚本错误：${pageErrors.join("；")}`);
   console.log("Submission page smoke passed at 1440, 1024, 800 and 390 px.");
 } finally {

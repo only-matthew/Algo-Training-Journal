@@ -7,7 +7,8 @@
       "name": "Falling Concrete",
       "platform": "Codeforces",
       "problemNumber": "2266D",
-      "difficulty": "未标注",
+      "difficulty": "★ 1500",
+      "difficultyRating": 1500,
       "tags": [
         "构造",
         "数据结构",

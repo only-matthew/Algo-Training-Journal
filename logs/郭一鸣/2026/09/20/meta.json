@@ -7,7 +7,8 @@
       "name": "Good Contest",
       "platform": "Codeforces",
       "problemNumber": "2266A",
-      "difficulty": "未标注",
+      "difficulty": "★ 800",
+      "difficultyRating": 800,
       "tags": [
         "贪心"
       ],

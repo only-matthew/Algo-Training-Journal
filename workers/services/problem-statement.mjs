@@ -314,6 +314,9 @@ export function parseCodeforcesStatement(html, expectedProblemNumber, { collectI
 // 题面正文失败与网络失败用同一套降级原因，供两个来源共用。
 const failureReason = (error, signal) => signal.aborted || error?.message === "timeout" ? "timeout" : ["too-large", "unsupported", "blocked"].includes(error?.message) ? error.message : "parse-failed";
 const REASONS_RETRYABLE = new Set(["timeout", "upstream-error"]);
+// 题面由用户浏览器抓回时的来源提示。Codeforces/AtCoder 的公开页都可能允许
+// 住宅网络里的真实浏览器访问，却拦截 Worker 出口；客户端源码回传是这种情况下的兜底。
+export const CLIENT_HTML_WARNING = "client-html";
 
 export async function fetchCodeforcesStatement({ problemNumber, sourceUrl }, { fetchImpl = fetch, now = () => new Date().toISOString(), timeoutMs = 12000, imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
   let url = validateCodeforcesUrl(sourceUrl, problemNumber); const normalized = parseCodeforcesProblemNumber(problemNumber).problemNumber; const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -327,6 +330,33 @@ export async function fetchCodeforcesStatement({ problemNumber, sourceUrl }, { f
       return { status: "ok", problemNumber: normalized, description: archived.description, images: archived.images, source: { kind: "codeforces-html", url: url.toString(), fetchedAt: now(), parserVersion: CF_STATEMENT_PARSER_VERSION }, warnings: settledWarnings(parsed.warnings, archived) };
     } catch (error) { const reason = failureReason(error, controller.signal); return unavailable(normalized, reason, REASONS_RETRYABLE.has(reason)); }
   } } finally { clearTimeout(timer); } return unavailable(normalized, "blocked");
+}
+
+/**
+ * 用户在可正常打开的 Codeforces 题目页复制源码后回传。正文仍用官方页解析器处理，
+ * 并校验题目序号；服务器不再请求被 Cloudflare 拦截的正文页。
+ */
+export async function statementFromCodeforcesHtml({ problemNumber, html }, { fetchImpl = fetch, now = () => new Date().toISOString(), imageTimeoutMs = IMAGE_TIMEOUT_MS } = {}) {
+  const expected = parseCodeforcesProblemNumber(problemNumber);
+  if (!expected) return unavailable(normalizeProblemNumber(problemNumber), "parse-failed");
+  const normalized = expected.problemNumber;
+  const source = String(html ?? "");
+  if (source.length > MAX_HTML_BYTES) return unavailable(normalized, "too-large");
+  try {
+    const parsed = parseCodeforcesStatement(source, normalized, { collectImages: true });
+    const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, timeoutMs: imageTimeoutMs });
+    if (archived.description.length > MAX_MARKDOWN) return unavailable(normalized, "too-large");
+    return {
+      status: "ok",
+      problemNumber: normalized,
+      description: archived.description,
+      images: archived.images,
+      source: { kind: "codeforces-html", url: validateCodeforcesUrl("", normalized).toString(), fetchedAt: now(), parserVersion: CF_STATEMENT_PARSER_VERSION },
+      warnings: [CLIENT_HTML_WARNING, ...settledWarnings(parsed.warnings, archived)],
+    };
+  } catch (error) {
+    return unavailable(normalized, failureReason(error, new AbortController().signal));
+  }
 }
 
 // 洛谷题面镜像：codeforces.com 被 Cloudflare 拦下时，用洛谷同题页面兜底。
@@ -445,7 +475,7 @@ export const ATCODER_JA_WARNING = "ja-statement";
 export const ATCODER_MIRROR_PARSER_VERSION = "luogu-atcoder-mirror-v1";
 // 题面由用户浏览器在 atcoder.jp 页面上抓回（小书签）时加的来源提示：正文是官方页原文，
 // 但抓取发生在客户端，与服务器直连拿到的同一份页面在可信度上略有差别。
-export const ATCODER_CLIENT_WARNING = "client-html";
+export const ATCODER_CLIENT_WARNING = CLIENT_HTML_WARNING;
 
 export function parseAtCoderProblemNumber(problemNumber) {
   const value = String(problemNumber || "").trim().replace(/\s+/g, "").toLowerCase();

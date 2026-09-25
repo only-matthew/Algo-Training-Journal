@@ -194,13 +194,27 @@ test("路由接受浏览器回传的 AtCoder 官方页源码，且不请求上�
   assert.equal(fetchImpl.calls.length, 0, "客户端路径不应访问任何上游");
 });
 
-test("页面源码与题号不符、或非 AtCoder 平台时拒绝", async (context) => {
+test("路由也接受浏览器回传的 Codeforces 官方页源码", async (context) => {
+  const fetchImpl = routedFetch([]);
+  context.mock.method(globalThis, "fetch", fetchImpl);
+  const response = await call({ platform: "Codeforces", problemNumber: "4A", html: CF_HTML }, SECOND_ACTOR);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.status, "ok");
+  assert.equal(body.source.kind, "codeforces-html");
+  assert.deepEqual(body.warnings, ["client-html"]);
+  assert.match(body.description, /# A\. Watermelon/);
+  assert.equal(fetchImpl.calls.length, 0, "客户端路径不应访问正文上游");
+});
+
+test("页面源码与题号或平台不符时返回可恢复的解析失败", async (context) => {
   const fetchImpl = routedFetch([]);
   context.mock.method(globalThis, "fetch", fetchImpl);
   const mismatched = await call({ platform: "AtCoder", problemNumber: "abc381_a", html: "<html><body>不是题目页</body></html>" }, SECOND_ACTOR);
   assert.equal(mismatched.status, 200);
   assert.equal((await mismatched.json()).reason, "parse-failed");
   const wrongPlatform = await call({ platform: "Codeforces", problemNumber: "4A", html: ATCODER_HTML }, SECOND_ACTOR);
-  assert.equal(wrongPlatform.status, 400);
+  assert.equal(wrongPlatform.status, 200);
+  assert.equal((await wrongPlatform.json()).reason, "parse-failed");
   assert.equal(fetchImpl.calls.length, 0);
 });

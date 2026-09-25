@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { archiveStatementImages, fetchAtCoderStatement, fetchCodeforcesStatement, fetchLuoguAtCoderStatement, fetchLuoguStatement, fetchStatement, parseAtCoderProblemNumber, parseAtCoderStatement, parseCodeforcesStatement, parseLuoguAtCoderStatement, parseLuoguStatement, statementFromAtCoderHtml, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
+import { archiveStatementImages, fetchAtCoderStatement, fetchCodeforcesStatement, fetchLuoguAtCoderStatement, fetchLuoguStatement, fetchStatement, parseAtCoderProblemNumber, parseAtCoderStatement, parseCodeforcesStatement, parseLuoguAtCoderStatement, parseLuoguStatement, statementFromAtCoderHtml, statementFromCodeforcesHtml, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
 
 const HTML = `<div class="problem-statement"><div class="header"><div class="title">A. Test</div><div class="time-limit">1 second</div><div class="memory-limit">256 megabytes</div></div><p>Find $$$x$$$.</p><div class="input-specification"><p>Input</p></div><div class="output-specification"><p>Output</p></div><img src="/img.png"></div>`;
 const CHALLENGE = `<!DOCTYPE html><html><head><title>Just a moment...</title></head><body>cloudflare challenge</body></html>`;
@@ -80,6 +80,19 @@ test("CF 请求带浏览器请求头，不再只发 Accept", async () => {
   await fetchCodeforcesStatement({ problemNumber: "4A" }, { fetchImpl });
   assert.match(fetchImpl.calls[0].headers["User-Agent"], /Mozilla\/5\.0/);
   assert.match(fetchImpl.calls[0].headers["Accept-Language"], /en-US/);
+});
+
+test("浏览器回传的 CF 官方页源码直接解析，不再请求被拦截的正文页", async () => {
+  const fetchImpl = async () => { throw new Error("不应请求正文上游"); };
+  const result = await statementFromCodeforcesHtml({ problemNumber: "4A", html: HTML }, { fetchImpl });
+  assert.equal(result.status, "ok");
+  assert.equal(result.source.kind, "codeforces-html");
+  assert.equal(result.source.url, "https://codeforces.com/problemset/problem/4/A?locale=en");
+  assert.deepEqual(result.warnings, ["client-html", "external-images"]);
+  assert.match(result.description, /^# A\. Test/);
+
+  const mismatch = await statementFromCodeforcesHtml({ problemNumber: "4B", html: HTML }, { fetchImpl });
+  assert.equal(mismatch.reason, "parse-failed");
 });
 
 test("洛谷镜像题面按小节转成 Markdown，保留公式并跳过空小节", () => {

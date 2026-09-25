@@ -174,6 +174,16 @@ test("数学公式里的 text 标注可包含 Unicode 符号", () => {
   assert.doesNotMatch(tex, /\\text\{\\ast\}/);
 });
 
+test("MathJax 的 gt/lt 别名会转换成标准 LaTeX 比较符", () => {
+  const tex = buildSingleLatexDocument({
+    problem: "比较符",
+    description: "选择 $a_i\\gt 0$，并保证 $x\\lt n$。",
+  });
+  assert.match(tex, /\$a_i> 0\$/);
+  assert.match(tex, /\$x< n\$/);
+  assert.doesNotMatch(tex, /\\(?:gt|lt)\b/);
+});
+
 test("公式块保留原样，并且前导包里有 amsmath / amssymb", () => {
   const tex = buildSingleLatexDocument({
     problem: "P1990",

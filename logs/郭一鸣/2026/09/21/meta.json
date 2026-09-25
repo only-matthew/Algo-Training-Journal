@@ -7,7 +7,8 @@
       "name": "Three Piles",
       "platform": "Codeforces",
       "problemNumber": "2266B",
-      "difficulty": "未标注",
+      "difficulty": "★ 1100",
+      "difficultyRating": 1100,
       "tags": [
         "博弈论",
         "贪心",

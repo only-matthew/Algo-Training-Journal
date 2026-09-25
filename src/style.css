@@ -31,7 +31,7 @@
 .submission-route { background:#f6f8f4; }
 .submission-route .container { width:100%; max-width:none; padding:0 28px 48px; }
 .submission-route .footer { display:none; }
-.submission-page { --submission-green:#185c43; --submission-green-deep:#104733; --submission-soft:#e7f0ea; --submission-paper:#fbfcfa; --submission-ink:#17251f; --submission-muted:#63726b; --submission-line:#d9e3dd; position:relative; max-width:1560px; margin:0 auto; color:var(--submission-ink); isolation:isolate; }
+.submission-page { --submission-green:#185c43; --submission-green-solid:#185c43; --submission-green-deep:#104733; --submission-soft:#e7f0ea; --submission-paper:#fbfcfa; --submission-control:#fff; --submission-add-surface:rgb(251 252 250 / 72%); --submission-ink:#17251f; --submission-muted:#63726b; --submission-line:#d9e3dd; --submission-header-start:#f7faf7; --submission-header-end:#fbfcfa; --submission-track:#dfe8e2; --submission-danger:#a33e3e; --submission-danger-soft:#f8eaea; position:relative; max-width:1560px; margin:0 auto; color:var(--submission-ink); isolation:isolate; }
 .submission-page[hidden] { display:none !important; }
 .submission-page::before { content:""; position:absolute; z-index:-2; top:0; right:-28px; width:min(46vw,720px); height:220px; background:url('/assets/ink-mountains.webp') right top / auto 100% no-repeat; opacity:.18; pointer-events:none; }
 .submission-backdrop { position:absolute; z-index:-3; inset:0 -28px auto; height:270px; background:linear-gradient(90deg,#f6f8f4 34%,rgb(232 241 235 / 48%) 100%); pointer-events:none; }
@@ -51,41 +51,41 @@
 .submission-index-disclosure>summary::-webkit-details-marker { display:none; }
 .submission-index-date { margin:0 0 18px; font-size:14px; font-variant-numeric:tabular-nums; }
 .submission-capacity { margin:0 0 8px; color:var(--submission-muted); font-size:13px; }
-.submission-capacity-track { height:5px; overflow:hidden; margin-bottom:18px; background:#dfe8e2; border-radius:999px; }
-.submission-capacity-track span { display:block; width:0; height:100%; background:var(--submission-green); border-radius:inherit; }
+.submission-capacity-track { height:5px; overflow:hidden; margin-bottom:18px; background:var(--submission-track); border-radius:999px; }
+.submission-capacity-track span { display:block; width:0; height:100%; background:var(--submission-green-solid); border-radius:inherit; }
 .submission-problem-index { display:grid; gap:8px; max-height:48vh; overflow:auto; padding-right:3px; scrollbar-color:#abc0b5 transparent; scrollbar-width:thin; }
 .submission-index-item { display:grid; grid-template-columns:38px minmax(0,1fr); gap:1px 10px; width:100%; padding:10px; border:0; border-radius:8px; color:var(--submission-ink); background:transparent; text-align:left; cursor:pointer; }
 .submission-index-item:hover,.submission-index-item:focus-visible { background:var(--submission-soft); }
-.submission-index-item>span { grid-row:1 / 3; display:grid; place-items:center; width:34px; height:34px; color:#fff; background:var(--submission-green); border-radius:7px; font-family:var(--serif); font-size:16px; }
+.submission-index-item>span { grid-row:1 / 3; display:grid; place-items:center; width:34px; height:34px; color:#fff; background:var(--submission-green-solid); border-radius:7px; font-family:var(--serif); font-size:16px; }
 .submission-index-item strong,.submission-index-item small { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .submission-index-item strong { font-size:13px; }
 .submission-index-item small { color:var(--submission-muted); font-size:11px; }
 .submission-index #btn-add-problem-aside { width:100%; margin-top:14px; border-style:dashed; }
 .submission-draft-state { display:flex; align-items:center; gap:7px; margin:24px 2px 0; color:var(--submission-muted); font-size:12px; }
-.submission-draft-state::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--submission-green); box-shadow:0 0 0 3px var(--submission-soft); }
+.submission-draft-state::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--submission-green-solid); box-shadow:0 0 0 3px var(--submission-soft); }
 .submission-editor-column { min-width:0; }
 .submission-toolbar { position:relative; display:grid; grid-template-columns:250px 1fr; gap:12px 16px; margin-bottom:16px; padding:16px 18px; border:1px solid var(--submission-line); border-radius:10px; background:rgb(251 252 250 / 94%); box-shadow:0 12px 32px rgb(28 68 49 / 6%); }
 .submission-date-control { display:grid; gap:5px; }
 .submission-date-control>span { color:var(--submission-muted); font-size:12px; font-weight:600; }
 .submission-page .journal-import-tools { align-self:end; margin:0; }
-.submission-page .journal-import-tools .btn { min-height:40px; background:#fff; }
+.submission-page .journal-import-tools .btn { min-height:40px; background:var(--submission-control); }
 .submission-page .submission-interval { grid-column:1 / -1; border-top:1px solid var(--submission-line); }
 .submission-page .submission-interval>summary { padding-top:12px; color:var(--submission-ink); font-size:13px; font-weight:650; cursor:pointer; }
 .submission-page .submission-interval>summary span { color:var(--submission-muted); font-size:11px; font-weight:400; }
 .submission-page .submission-date-help { margin:10px 0 0; color:var(--submission-muted); font-size:12px; line-height:1.6; }
 .submission-page .submission-interval .journal-date-group { grid-template-columns:1fr 1fr; margin-top:12px; }
 .submission-page .import-tools-hint { grid-column:1 / -1; margin:0; }
-.submission-page .import-panel { grid-column:1 / -1; background:#fff; }
+.submission-page .import-panel { grid-column:1 / -1; border-color:var(--submission-line); background:var(--submission-control); color:var(--submission-ink); }
 .submission-page #problem-list { display:grid; gap:16px; margin:0; }
 .submission-page .problem-block { scroll-margin-top:92px; margin:0; padding:0 22px 22px; border:1px solid var(--submission-line); border-radius:10px; background:var(--submission-paper); box-shadow:0 10px 30px rgb(28 68 49 / 5%); overflow:hidden; }
-.submission-page .problem-header { display:flex; align-items:center; gap:14px; margin:0 -22px 20px; padding:14px 18px; border:0; border-bottom:1px solid var(--submission-line); background:linear-gradient(90deg,#f7faf7,#fbfcfa); }
-.submission-page .problem-index { display:grid; place-items:center; flex:0 0 46px; height:46px; color:#fff; background:var(--submission-green); border-radius:9px; font-family:var(--serif); font-size:20px; font-weight:700; }
+.submission-page .problem-header { display:flex; align-items:center; gap:14px; margin:0 -22px 20px; padding:14px 18px; border:0; border-bottom:1px solid var(--submission-line); background:linear-gradient(90deg,var(--submission-header-start),var(--submission-header-end)); }
+.submission-page .problem-index { display:grid; place-items:center; flex:0 0 46px; height:46px; color:#fff; background:var(--submission-green-solid); border-radius:9px; font-family:var(--serif); font-size:20px; font-weight:700; }
 .submission-page .problem-card-heading { display:grid; gap:2px; min-width:0; }
 .submission-page .problem-card-heading strong { overflow:hidden; color:var(--submission-ink); font-family:var(--serif); font-size:20px; text-overflow:ellipsis; white-space:nowrap; }
 .submission-page .problem-card-heading small { color:var(--submission-muted); font-size:12px; }
 .submission-page .problem-header .btn-remove { margin-left:auto; color:var(--submission-muted); background:transparent; }
-.submission-page .problem-header .btn-remove:hover { color:#a33e3e; background:#f8eaea; }
-.submission-page .form-input { border-color:var(--submission-line); background:#fff; color:var(--submission-ink); }
+.submission-page .problem-header .btn-remove:hover { color:var(--submission-danger); background:var(--submission-danger-soft); }
+.submission-page .form-input { border-color:var(--submission-line); background:var(--submission-control); color:var(--submission-ink); }
 .submission-page .form-input:focus { border-color:var(--submission-green); box-shadow:0 0 0 3px rgb(24 92 67 / 10%); }
 .submission-page .journal-identity-row,.submission-page .journal-meta-row { margin-bottom:14px; }
 .submission-page .learning-state-panel { margin:22px 0 0; padding:18px 0 0; border-top:1px solid var(--submission-line); border-bottom:0; }
@@ -94,10 +94,10 @@
 .submission-page .outcome-options legend { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0); }
 .submission-page .outcome-options label { position:relative; min-width:0; cursor:pointer; }
 .submission-page .outcome-options input { position:absolute; inset:0; opacity:0; }
-.submission-page .outcome-options span { display:flex; justify-content:center; align-items:center; min-height:42px; padding:8px; border:1px solid var(--submission-line); border-radius:7px; color:var(--submission-muted); background:#fff; font-size:13px; text-align:center; }
+.submission-page .outcome-options span { display:flex; justify-content:center; align-items:center; min-height:42px; padding:8px; border:1px solid var(--submission-line); border-radius:7px; color:var(--submission-muted); background:var(--submission-control); font-size:13px; text-align:center; }
 .submission-page .outcome-options input:checked+span { border-color:var(--submission-green); color:var(--submission-green-deep); background:var(--submission-soft); box-shadow:inset 0 0 0 1px var(--submission-green); font-weight:650; }
 .submission-page .outcome-options input:focus-visible+span { outline:2px solid var(--submission-green); outline-offset:3px; }
-.submission-page .journal-disclosure { margin:18px 0 0; border:1px solid var(--submission-line); border-radius:7px; background:#fff; }
+.submission-page .journal-disclosure { margin:18px 0 0; border:1px solid var(--submission-line); border-radius:7px; background:var(--submission-control); }
 .submission-page .journal-disclosure>summary { display:flex; justify-content:space-between; gap:16px; padding:12px 14px; }
 .submission-page .journal-disclosure>summary span { color:var(--submission-muted); }
 .submission-page .journal-disclosure-body { padding:0 14px 15px; }
@@ -105,7 +105,7 @@
 .submission-page .journal-statement-tools { padding:0; }
 .submission-page .journal-statement-tools .statement-import { background:var(--submission-soft); }
 .submission-page .problem-takeaway { min-height:122px; }
-.submission-page #btn-add-problem { width:100%; min-height:72px; margin-top:16px; border:1px dashed #b8c9bf; background:rgb(251 252 250 / 72%); color:var(--submission-green); font-weight:650; }
+.submission-page #btn-add-problem { width:100%; min-height:72px; margin-top:16px; border:1px dashed var(--submission-line); background:var(--submission-add-surface); color:var(--submission-green); font-weight:650; }
 .submission-page .submission-summary { margin:13px 2px 0; text-align:right; font-variant-numeric:tabular-nums; }
 .submission-savebar { position:sticky; z-index:8; bottom:12px; display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:14px; padding:12px 14px; border:1px solid var(--submission-line); border-radius:10px; background:rgb(251 252 250 / 96%); box-shadow:0 10px 20px rgb(0 0 0 / 12%); }
 .submission-save-context { min-width:0; }
@@ -122,14 +122,13 @@
 .submission-notes blockquote p { margin:0 0 16px; color:var(--submission-ink); font-family:var(--serif); font-size:17px; line-height:1.8; }
 .submission-notes blockquote footer { color:var(--submission-muted); font-size:11px; text-align:right; }
 .submission-page button,.submission-page input,.submission-page select,.submission-page textarea { caret-color:var(--submission-green); }
-.submission-page ::selection { color:#fff; background:var(--submission-green); }
+.submission-page ::selection { color:#fff; background:var(--submission-green-solid); }
 
 [data-theme="dark"] .submission-route { background:#101a16; }
-[data-theme="dark"] .submission-page { --submission-paper:#17231e; --submission-ink:#edf5f0; --submission-muted:#adbbb4; --submission-line:#31433a; --submission-soft:#20362c; }
+[data-theme="dark"] .submission-page { --submission-green:#7dd3aa; --submission-green-solid:#276449; --submission-green-deep:#a7e3c5; --submission-paper:#17231e; --submission-control:#101a16; --submission-add-surface:#14221c; --submission-ink:#edf5f0; --submission-muted:#adbbb4; --submission-line:#587064; --submission-soft:#20362c; --submission-header-start:#1d3027; --submission-header-end:#17231e; --submission-track:#31433a; --submission-danger:#ff9b93; --submission-danger-soft:#3a2424; }
 [data-theme="dark"] .submission-backdrop { background:linear-gradient(90deg,#101a16 34%,rgb(29 53 42 / 55%)); }
 [data-theme="dark"] .submission-toolbar,[data-theme="dark"] .submission-page .problem-block,[data-theme="dark"] .submission-savebar,[data-theme="dark"] .submission-notes>section,[data-theme="dark"] .submission-notes blockquote { background:rgb(23 35 30 / 96%); }
-[data-theme="dark"] .submission-page .problem-header { background:linear-gradient(90deg,#1d3027,#17231e); }
-[data-theme="dark"] .submission-page .form-input,[data-theme="dark"] .submission-page .journal-disclosure,[data-theme="dark"] .submission-page .outcome-options span,[data-theme="dark"] .submission-page .journal-import-tools .btn { background:#101a16; color:var(--submission-ink); }
+[data-theme="dark"] .submission-page .form-input,[data-theme="dark"] .submission-page .journal-disclosure,[data-theme="dark"] .submission-page .outcome-options span,[data-theme="dark"] .submission-page .journal-import-tools .btn { color:var(--submission-ink); }
 
 @media (max-width:1279px) {
   .submission-hero { padding-right:24px; padding-left:244px; }
@@ -3015,14 +3014,14 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .submission-page .submission-hero h1:focus { outline:none; }
 .submission-page.journal-editor #problem-list { display:grid; gap:16px; margin:0; }
 .submission-page.journal-editor .problem-block { margin:0; padding:0 22px 22px; border:1px solid var(--submission-line); border-radius:10px; background:var(--submission-paper); box-shadow:0 10px 30px rgb(28 68 49 / 5%); }
-.submission-page.journal-editor .problem-header { margin:0 -22px 20px; padding:14px 18px; border:0; border-bottom:1px solid var(--submission-line); background:linear-gradient(90deg,#f7faf7,#fbfcfa); }
+.submission-page.journal-editor .problem-header { margin:0 -22px 20px; padding:14px 18px; border:0; border-bottom:1px solid var(--submission-line); background:linear-gradient(90deg,var(--submission-header-start),var(--submission-header-end)); }
 .submission-page.journal-editor .problem-index { color:#fff; font-size:20px; }
 .submission-page.journal-editor .learning-state-panel { margin:22px 0 0; padding:18px 0 0; border-top:1px solid var(--submission-line); border-bottom:0; }
 .submission-page.journal-editor .learning-state-grid { display:block; }
 .submission-page.journal-editor .review-settings .learning-state-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
 .submission-page.journal-editor .review-settings .review-due-group { grid-column:auto; }
-.submission-page.journal-editor .journal-statement-tools { margin:18px 0 0; padding:0; border:1px solid var(--submission-line); background:#fff; }
-.submission-page.journal-editor .journal-disclosure { margin:18px 0 0; padding:0; border:1px solid var(--submission-line); border-radius:7px; background:#fff; }
+.submission-page.journal-editor .journal-statement-tools { margin:18px 0 0; padding:0; border:1px solid var(--submission-line); background:var(--submission-control); }
+.submission-page.journal-editor .journal-disclosure { margin:18px 0 0; padding:0; border:1px solid var(--submission-line); border-radius:7px; background:var(--submission-control); }
 .submission-page.journal-editor .journal-disclosure>summary { padding:12px 14px; }
 .submission-page.journal-editor .journal-disclosure-body { padding:0 14px 15px; }
 .submission-page.journal-editor .journal-writing-grid { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr); gap:16px; align-items:start; margin-top:18px; }
@@ -3035,9 +3034,7 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .submission-page.journal-editor .journal-writing-grid .journal-disclosure-body { padding-top:14px; }
 .submission-page.journal-editor .problem-description { min-height:300px; resize:vertical; }
 .submission-page.journal-editor .problem-code { min-height:340px; resize:vertical; font-family:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace; line-height:1.55; tab-size:2; }
-.submission-page.journal-editor #btn-add-problem { min-height:72px; margin-top:16px; border:1px dashed #b8c9bf; border-radius:8px; background:rgb(251 252 250 / 72%); }
-[data-theme="dark"] .submission-page.journal-editor .problem-header { background:linear-gradient(90deg,#1d3027,#17231e); }
-[data-theme="dark"] .submission-page.journal-editor .journal-disclosure,[data-theme="dark"] .submission-page.journal-editor .journal-statement-tools { background:#101a16; }
+.submission-page.journal-editor #btn-add-problem { min-height:72px; margin-top:16px; border:1px dashed var(--submission-line); border-radius:8px; background:var(--submission-add-surface); }
 
 @media (max-width:899px) {
   .submission-page.journal-editor .problem-block { padding:0 16px 18px; }

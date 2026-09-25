@@ -7,7 +7,7 @@ import { isUuidV4 } from "../lib/training-schema.mjs";
 import { readCatalog, readTrainingContext, workbenchResponse } from "./services/training-read.mjs";
 import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
-import { archiveStatementImages, fetchStatement, parseAtCoderProblemNumber, parseLuoguProblem, readLuoguProblem, statementFromAtCoderHtml } from "./services/problem-statement.mjs";
+import { archiveStatementImages, fetchStatement, parseAtCoderProblemNumber, parseLuoguProblem, readLuoguProblem, statementFromAtCoderHtml, statementFromCodeforcesHtml } from "./services/problem-statement.mjs";
 import { attachAtCoderTags, loadLuoguTagDictionary, resolveAtCoderTagIds } from "./services/atcoder-tags.mjs";
 import { BROWSER_HEADERS } from "./services/http-headers.mjs";
 import { LUOGU_ORIGIN, readLimitedBody, requestLuoguPage } from "./services/luogu-page.mjs";
@@ -911,7 +911,7 @@ async function handleSummarize(request, user, env) {
 }
 
 // 题面抓取只支持两个有官方公开页面的平台：Codeforces（英文题面，被反爬时退回洛谷镜像）
-// 与 AtCoder（官方页优先、洛谷镜像兜底，另可接收浏览器抓回的官方页源码）。
+// 与 AtCoder（官方页优先、洛谷镜像兜底）；两者都可接收浏览器抓回的官方页源码。
 const STATEMENT_PLATFORMS = new Set(["Codeforces", "AtCoder"]);
 // 浏览器小书签回传的页面源码上限（与解析层允许的 HTML 上限一致，另留一点 JSON 包装余量）。
 const MAX_STATEMENT_HTML_BYTES = 2 * 1024 * 1024 + 4096;
@@ -930,11 +930,10 @@ async function handleProblemStatement(request, user) {
   if (body.platform === "AtCoder" && !parseAtCoderProblemNumber(body.problemNumber)) {
     return v2Error(request, "INVALID_JSON", "AtCoder 题号必须形如 abc381_a", 400);
   }
-  // 浏览器抓回的官方页源码：不再请求上游，直接用同一个解析器处理（客户端路径见
-  // services/problem-statement.mjs 的 statementFromAtCoderHtml）。
+  // 浏览器抓回的官方页源码：不再请求上游，直接用对应的官方页解析器处理。
   if (body.html !== undefined) {
-    if (body.platform !== "AtCoder") return v2Error(request, "INVALID_JSON", "只有 AtCoder 支持回传页面源码", 400);
-    return json(request, await statementFromAtCoderHtml({ problemNumber: body.problemNumber, html: body.html }));
+    const parseHtml = body.platform === "Codeforces" ? statementFromCodeforcesHtml : statementFromAtCoderHtml;
+    return json(request, await parseHtml({ problemNumber: body.problemNumber, html: body.html }));
   }
   const result = await fetchStatement({ platform: body.platform, problemNumber: body.problemNumber, sourceUrl: body.sourceUrl });
   // 洛谷镜像页顺带带回了算法标签（数字 id，只有 AT_ 镜像才有）。换成站内标签一起返回，
