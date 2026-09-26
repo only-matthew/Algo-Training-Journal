@@ -31,14 +31,19 @@ test("problem detail shows the same per-record vitality and explains zero scores
 });
 
 test("knowledge categories classify subjects, retain all topics, and escape search metadata", () => {
+  assert.ok(categoriesForTopic({title:"二分答案"}).includes("basic"));
   assert.ok(categoriesForTopic({title:"背包动态规划"}).includes("dp"));
   assert.ok(categoriesForTopic({title:"最短路"}).includes("graph"));
   assert.ok(categoriesForTopic({title:"KMP"}).includes("string"));
   assert.deepEqual(categoriesForTopic({title:"竞赛环境"}),["other"]);
   const $ = load(roadmapOverviewHtml({phases:[{id:"phase-0",nodes:[{id:"one",title:"二分",tags:['"><script>']},{id:"two",title:"DP"}]}]},"all"));
   assert.equal($(".knowledge-topic-card").length,2);
+  assert.deepEqual($(".learning-node-copy strong").map((_,element) => $(element).text()).get(),["二分","DP"]);
+  assert.equal($("[data-roadmap-panel=index]").is("[hidden]"),true);
+  assert.equal($("[data-roadmap-panel=route]").is("[hidden]"),false);
   assert.equal($(".topic-nav a").length,0);
   assert.ok($("[data-knowledge-category=all]").length);
+  assert.ok($("[data-knowledge-category=basic]").length);
   assert.equal($("script").length,0);
 });
 

@@ -21,8 +21,11 @@ try {
     for (const [name,path] of [["home","/"],["knowledge","/roadmap/"],["node",nodePath],["tag","/tags/二分/"],["problem",problemPath]]) {
       await visit(path);
       if (name === "knowledge") {
+        assert.ok(await page.locator("#roadmap-route-view").isVisible());
+        assert.equal(await page.locator("#roadmap-index-view").isVisible(),false);
+        await page.locator('[data-roadmap-view="index"]').click();
         const total = await page.locator(".knowledge-topic-card:visible").count();
-        await page.locator('[data-knowledge-category="binary"]').click();
+        await page.locator('[data-knowledge-category="basic"]').click();
         assert.equal(new URL(page.url()).pathname,"/roadmap/");
         const selected = await page.locator(".knowledge-topic-card:visible").count();
         assert.ok(selected > 0 && selected < total);
@@ -77,7 +80,8 @@ try {
   // Exercise SPA navigation as well as prerendered direct visits.
   await page.setViewportSize({width:1440,height:1000});
   await visit("/roadmap/");
-  await page.locator('[data-knowledge-category="binary"]').click();
+  await page.locator('[data-roadmap-view="index"]').click();
+  await page.locator('[data-knowledge-category="basic"]').click();
   await page.locator('.knowledge-topic-card:visible h2 a').first().click();
   await page.waitForSelector("#node-problems");
   await page.locator('#roadmap-page .detail-intro .tag-chip').first().click();
@@ -94,7 +98,8 @@ try {
   const download = await downloadPromise;
   assert.ok(download.suggestedFilename().endsWith(".md"));
   await page.locator('.desktop-nav [data-route="/roadmap/"]').click();
-  await page.waitForSelector("#knowledge-search");
+  await page.waitForSelector("#roadmap-route-view");
+  assert.ok(await page.locator("#roadmap-route-view").isVisible());
   assert.equal(await page.locator("#node-problems").count(),0);
   await page.locator('.desktop-nav [data-route="/tags/"]').click();
   await page.waitForSelector(".tag-index-grid");
