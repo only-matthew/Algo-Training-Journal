@@ -236,64 +236,7 @@ v2 下线后，项目的重心明确转向**把 v1 做扎实**：写入可靠性
 - `b125c6d`（09-25）整日保存预览 + 展示题目活力
 - `d3ef648` / `2c9f7d7` / `1152394`（09-25）恢复 09-24 题目、修复洛谷导入与代码编辑器标题、**无用文件清理**（删除三个迁移脚本与旧 PNG 源图，跟踪文件数回落）
 - **`500e456`（09-25）同时完成仓库目录整理**：根级 `app.js` 等浏览器入口统一移入 `src/`，`docs/REPOSITORY-STRUCTURE.md` 随后诞生为目录契约
-- `2f8b0bf`（09-26，HEAD）`fix submission flow and backfill CF ratings`
-
----
-
-## 三条贯穿主线
-
-### 主线一：数据布局迁移了三次
-
-| 时间 | 布局 | 触发 |
-| --- | --- | --- |
-| 07-23 | `logs/<队员>/YYYY-MM-DD.md`（单文件/天） | MVP |
-| 07-24 | `logs/<队员>/YYYY/MM/DD/` + 分文件正文 | 一天就发现单文件解析不可靠 |
-| 09-13 | 同日多题用 `fileIndex` 固定文件槽位 | 删除中间项会让正文串位 |
-| 09-19 | 附件（PDF / 图片）与正文同链路归档 | 外链图床被 CSP 拦截 |
-
-迁移脚本 `migrate-logs.js`、`migrate-date-layout.js`、`backfill-updated-at.js` 都**存续到 09-25 才被删除**。
-
-### 主线二：写入可靠性逐级加固
-
-```
-整日覆盖 PUT                      07-24 起
-→ 条件写入（revision / If-Match）  09-15
-→ 幂等键 + 快照一致性             09-15 ~
-→ 并发保存不覆盖个人索引           09-16（因 Pages 连续四次部署失败）
-→ v2 事件溯源 + 不可变操作回执      09-06 设计，09-08 UI 下线后未投入使用
-```
-
-### 主线三：上游站点攻防
-
-```
-CF 3 天 AC 导入          08-19
-→ CF 提交页被 Cloudflare 拦，改为跳转链接    08-19
-→ AtCoder 导入           08-23
-→ AtCoder 标签只能取自洛谷镜像               09-21
-→ 题面三级降级：官方页 → 洛谷镜像 → 浏览器回传 09-21
-→ 题面图片归档进仓库（外链被 CSP 拦截）       09-19
-```
-
----
-
-## 文档体系的演化
-
-| 时间 | 事件 |
-| --- | --- |
-| 07-23 → 08-27 | **只有 README**，无设计文档（约 5 周） |
-| 08-28 | `OPTIMIZATION.md`（自我审查）、`PRODUCT.md`（产品方案）、`HANDOFF.md`（交接）同一天诞生 |
-| 08-29 | `CONSTRUCTION-PLAN.md` 把审查改写成施工任务书（subagent 分工 + 独立验证） |
-| 09-06 | `SPECIFICATION.md` —— 技术规格与验收矩阵 |
-| 09-10 | `lighthouse-optimization-2026-09-10.md` |
-| 09-13 | `VITALITY-DESIGN.md`、`VITALITY-V2.md`、`PENDING-FEATURES.md`、`ui-repair-2026-09-13.md` |
-| 09-15 | `PROBLEM-ENRICHMENT-DESIGN.md`、`PROBLEM-ENRICHMENT-SPECIFICATION.md` |
-| 09-16 | `LEARNING-STATE-DESIGN.md`、`LEARNING-STATE-SPECIFICATION.md` |
-| 09-21 | `SCALE-10000.md`、`SUBMISSION-PAGE-*` |
-| 09-25 | `REPOSITORY-STRUCTURE.md` |
-
-一个明显规律：**文档是跟着"出过事"长的**。OPTIMIZATION 出现在功能审查之后，LEARNING-STATE 出现在 `reviewStatus` 语义混乱之后，SCALE-10000 出现在容量担忧之后，REPOSITORY-STRUCTURE 出现在目录整理之后。
-
-`HANDOFF.md` 是纯追加式的（79 KB / 684 行），但**有日期的小节只覆盖 09-11 之后**，更早的 7 周到 9 月初没有任何叙事记录 —— 那一段时间的历史只能从提交信息里还原（本文档的工作之一）。
+- `2f8b0bf`（09-26）`fix submission flow and backfill CF ratings` —— 阶段五的收尾提交
 
 ---
 
@@ -369,9 +312,66 @@ test/member-config.test.mjs       新增测试
 
 ---
 
+## 三条贯穿主线
+
+### 主线一：数据布局迁移了三次
+
+| 时间 | 布局 | 触发 |
+| --- | --- | --- |
+| 07-23 | `logs/<队员>/YYYY-MM-DD.md`（单文件/天） | MVP |
+| 07-24 | `logs/<队员>/YYYY/MM/DD/` + 分文件正文 | 一天就发现单文件解析不可靠 |
+| 09-13 | 同日多题用 `fileIndex` 固定文件槽位 | 删除中间项会让正文串位 |
+| 09-19 | 附件（PDF / 图片）与正文同链路归档 | 外链图床被 CSP 拦截 |
+
+迁移脚本 `migrate-logs.js`、`migrate-date-layout.js`、`backfill-updated-at.js` 都**存续到 09-25 才被删除**。
+
+### 主线二：写入可靠性逐级加固
+
+```
+整日覆盖 PUT                      07-24 起
+→ 条件写入（revision / If-Match）  09-15
+→ 幂等键 + 快照一致性             09-15 ~
+→ 并发保存不覆盖个人索引           09-16（因 Pages 连续四次部署失败）
+→ v2 事件溯源 + 不可变操作回执      09-06 设计，09-08 UI 下线后未投入使用
+```
+
+### 主线三：上游站点攻防
+
+```
+CF 3 天 AC 导入          08-19
+→ CF 提交页被 Cloudflare 拦，改为跳转链接    08-19
+→ AtCoder 导入           08-23
+→ AtCoder 标签只能取自洛谷镜像               09-21
+→ 题面三级降级：官方页 → 洛谷镜像 → 浏览器回传 09-21
+→ 题面图片归档进仓库（外链被 CSP 拦截）       09-19
+```
+
+---
+
+## 文档体系的演化
+
+| 时间 | 事件 |
+| --- | --- |
+| 07-23 → 08-27 | **只有 README**，无设计文档（约 5 周） |
+| 08-28 | `OPTIMIZATION.md`（自我审查）、`PRODUCT.md`（产品方案）、`HANDOFF.md`（交接）同一天诞生 |
+| 08-29 | `CONSTRUCTION-PLAN.md` 把审查改写成施工任务书（subagent 分工 + 独立验证） |
+| 09-06 | `SPECIFICATION.md` —— 技术规格与验收矩阵 |
+| 09-10 | `lighthouse-optimization-2026-09-10.md` |
+| 09-13 | `VITALITY-DESIGN.md`、`VITALITY-V2.md`、`PENDING-FEATURES.md`、`ui-repair-2026-09-13.md` |
+| 09-15 | `PROBLEM-ENRICHMENT-DESIGN.md`、`PROBLEM-ENRICHMENT-SPECIFICATION.md` |
+| 09-16 | `LEARNING-STATE-DESIGN.md`、`LEARNING-STATE-SPECIFICATION.md` |
+| 09-21 | `SCALE-10000.md`、`SUBMISSION-PAGE-*` |
+| 09-25 | `REPOSITORY-STRUCTURE.md` |
+
+一个明显规律：**文档是跟着"出过事"长的**。OPTIMIZATION 出现在功能审查之后，LEARNING-STATE 出现在 `reviewStatus` 语义混乱之后，SCALE-10000 出现在容量担忧之后，REPOSITORY-STRUCTURE 出现在目录整理之后。
+
+`HANDOFF.md` 是纯追加式的（79 KB / 684 行），但**有日期的小节只覆盖 09-11 之后**，更早的 7 周到 9 月初没有任何叙事记录 —— 那一段时间的历史只能从提交信息里还原（本文档的工作之一）。
+
+---
+
 ## 从历史看出的几个模式
 
-1. **单人维护 + 数据即提交**。维护者承担了 93% 的工程提交，另外两名队员的 119 个日志提交全部由 Worker 代写。项目的"协作"发生在数据层，不在代码层。
+1. **单人维护 + 数据即提交**。维护者承担了 96% 的工程提交（136/141，含 4 个用了另一种名字拼写），另外两名队员的 119 个日志提交全部由 Worker 代写。项目的"协作"发生在数据层，不在代码层。
 
 2. **每次大功能之后都有一次自我修正**。08-26 上午上功能、下午做性能瘦身；09-06 上 v2 工作台、09-08 因 UI 改版下线；09-15 上线条件写入、09-16 修并发覆盖。修正速度很快，但**修正的结论往往没有回写到设计文档**，这是文档与实现脱节的历史根源。
 
