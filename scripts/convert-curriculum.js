@@ -21,6 +21,7 @@
 
 const fs = require("fs");
 const path = require("path");
+const { assignBookProblemsToNodes, MAX_PROBLEMS_PER_NODE } = require("../lib/curriculum-book-problems.mjs");
 
 const ROOT = path.resolve(__dirname, "..");
 const KNOW_DIR = path.join(ROOT, "know-tree");
@@ -35,7 +36,7 @@ const NODES_DIR = path.join(ROOT, "curriculum", "nodes");
 const ROADMAP_FILE = path.join(ROOT, "curriculum", "roadmap.json");
 
 const FORCE = process.argv.includes("--force");
-const MAX_PROBLEMS_PER_NODE = 80; // 每个节点题单上限，超出按来源优先级截断
+// 每个节点题单上限由 lib/curriculum-book-problems.mjs 统一给出（含洛谷书系并入的题）。
 const MAX_LUO_PER_NODE = 25; // 罗勇军每节点最多并入题数（大节点保护）
 const MAX_LIU_PER_NODE = 12; // 刘汝佳每节点最多并入题数（大节点保护）
 
@@ -420,6 +421,27 @@ function loadLuoguMeta() {
   } catch (error) {
     console.warn(`[warn] luogu-problem-meta.json 解析失败，跳过富化：${error.message}`);
     return new Map();
+  }
+}
+
+// 洛谷书系题单（《算法竞赛进阶指南》/《洛谷精析》/《算法竞赛实战笔记》）：
+// 读取 curriculum/luogu-training-problems.json，按算法标签算出「节点 → 并入的题」。
+// 归属规则见 lib/curriculum-book-problems.mjs。文件缺失时返回空 Map（不影响生成）。
+function loadBookProblems() {
+  const file = path.join(ROOT, "curriculum", "luogu-training-problems.json");
+  if (!fs.existsSync(file)) {
+    console.warn("[warn] 缺少 luogu-training-problems.json，跳过洛谷书系题单并入");
+    return { byNode: new Map(), assigned: 0, dropped: [] };
+  }
+  try {
+    const dataset = JSON.parse(fs.readFileSync(file, "utf8"));
+    const nodeMeta = NODE_META.concat(OI_NEW_NODES.map((node) => ({ id: node.id, tags: node.tags })));
+    const result = assignBookProblemsToNodes(dataset, nodeMeta);
+    console.log(`[info] 洛谷书系题单：${(dataset.problems || []).length} 道唯一题目，按标签归入 ${result.byNode.size} 个节点（${result.assigned} 条），丢弃 ${result.dropped.length} 条`);
+    return result;
+  } catch (error) {
+    console.warn(`[warn] luogu-training-problems.json 解析失败，跳过：${error.message}`);
+    return { byNode: new Map(), assigned: 0, dropped: [] };
   }
 }
 
@@ -1301,6 +1323,7 @@ function buildRef(nodeId, hasLuogu, luoProblems, liuProblems) {
 function buildNodes(modules, luoSections, liuChapters, oiTreeDetails, syllabusMerges) {
   const nodes = [];
   const problemsByNode = new Map();
+  const bookProblems = loadBookProblems();
   const cfSupplement = loadCfSupplement();
   const luoguMeta = loadLuoguMeta();
 
@@ -1393,8 +1416,15 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails, syllabusMe
     for (const num of NEW_NODE_LUOGU[meta.id] || []) {
       push("洛谷", num, "洛谷", "练习", "");
     }
+    // 7) 洛谷书系题单（《算法竞赛进阶指南》/《洛谷精析》/《算法竞赛实战笔记》），
+    //    按算法标签归入本节点；与既有题单同题号时只补 name/difficulty/tags，不重复计入。
+    for (const entry of bookProblems.byNode.get(meta.id) || []) {
+      push(entry.platform, entry.number, entry.source, entry.role, entry.note, entry);
+    }
 
     if (problems.length === 0) throw new Error(`节点 ${meta.id} 无题目`);
+    // 上限只截断书系并入的题（它们排在列表末尾），既有题单保持完整：
+    // 宁可少收几道参考书题目，也不让「洛谷深入浅出 / 罗勇军 / 刘汝佳 / CF」这些核心题单被挤掉。
     const capped = problems.slice(0, MAX_PROBLEMS_PER_NODE);
 
     // OI 知识树覆盖（tree.txt 合并：主题 → 细节列表）
@@ -1457,6 +1487,10 @@ function buildNodes(modules, luoSections, liuChapters, oiTreeDetails, syllabusMe
     for (const p of def.problems) push(p.platform, p.number, p.source, p.role, p.note, p);
     for (const entry of cfSupplement[def.id] || []) {
       push("Codeforces", entry.number, entry.source || "Codeforces·精选", "练习", entry.note || "", entry);
+    }
+    // 洛谷书系题单同样按标签归入 OI 知识树新增的专题节点
+    for (const entry of bookProblems.byNode.get(def.id) || []) {
+      push(entry.platform, entry.number, entry.source, entry.role, entry.note, entry);
     }
     if (problems.length === 0) throw new Error(`节点 ${def.id} 无题目`);
     // OI 知识树覆盖（新节点同样合并 tree.txt 主题）

@@ -127,7 +127,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "DP",
+        "线性DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -154,7 +158,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "DP",
+        "背包"
+      ]
     },
     {
       "platform": "洛谷",
@@ -324,7 +332,13 @@
       "source": "罗勇军·算法竞赛",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "单调队列",
+        "背包",
+        "进制"
+      ]
     },
     {
       "platform": "洛谷",
@@ -521,6 +535,620 @@
       "role": "例题",
       "note": "",
       "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3624",
+      "name": "猫粮规划",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "DFS",
+        "剪枝",
+        "背包",
+        "折半搜索"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3873",
+      "name": "[GESP202309 六级] 小杨买饮料",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1048",
+      "name": "[NOIP 2005 普及组] 采药",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1049",
+      "name": "[NOIP 2001 普及组] 装箱问题",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "DFS",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1060",
+      "name": "[NOIP 2006 普及组] 开心的金明",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "枚举",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1064",
+      "name": "[NOIP 2006 提高组] 金明的预算方案",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包",
+        "树形DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10687",
+      "name": "True Liars",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集",
+        "背包"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10955",
+      "name": "正整数拆分",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10957",
+      "name": "环路运输",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "单调队列",
+        "线性DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10960",
+      "name": "SUBSTRACT",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包",
+        "构造"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10961",
+      "name": "划分大理石",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10964",
+      "name": "Fence Obstacle Course",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "线段树",
+        "珂朵莉树",
+        "线性DP"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10966",
+      "name": "K-Anonymous Sequence",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "斜率优化",
+        "四边形不等式",
+        "线性DP"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10972",
+      "name": "I-Country",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "线性DP"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10973",
+      "name": "Coins",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包",
+        "bitset"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10976",
+      "name": "统计重复个数",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "倍增",
+        "线性DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10977",
+      "name": "Cut the Sequence",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "线段树",
+        "单调队列",
+        "线性DP",
+        "STL"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10987",
+      "name": "[蓝桥杯 2023 国 Python A] 火车运输",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P11377",
+      "name": "[GESP202412 七级] 武器购买",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1164",
+      "name": "小 A 点菜",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "记忆化搜索",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12136",
+      "name": "[蓝桥杯 2025 省 B] 生产车间",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "背包",
+        "树形DP",
+        "bitset"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1273",
+      "name": "[CHCI 2002 Final Exam #2] 有线电视网",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "背包",
+        "树形DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1417",
+      "name": "烹调方案",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "排序",
+        "背包"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1504",
+      "name": "积木城堡",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "枚举",
+        "背包"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1507",
+      "name": "NASA的食物计划",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1510",
+      "name": "精卫填海",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1616",
+      "name": "疯狂的采药",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1679",
+      "name": "神奇的四次方数",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "DP",
+        "搜索",
+        "数学",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1757",
+      "name": "通天之分组背包",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1802",
+      "name": "5 倍经验日",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1855",
+      "name": "榨取kkksc03",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "数学",
+        "枚举",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2014",
+      "name": "[CTSC1997] 选课",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "搜索",
+        "背包",
+        "树形DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2066",
+      "name": "机器分配",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "搜索",
+        "背包"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2365",
+      "name": "[IOI 2002] 任务安排",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "线性DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2639",
+      "name": "[USACO09OCT] Bessie's Weight Problem G",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2722",
+      "name": "[USACO3.1] 总分 Score Inflation",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2842",
+      "name": "纸币问题 1",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4954",
+      "name": "[USACO09OPEN] Tower of Hay G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心",
+        "单调队列",
+        "前缀和",
+        "线性DP"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5020",
+      "name": "[NOIP 2018 提高组] 货币系统",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "数学",
+        "贪心",
+        "背包",
+        "生成函数"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP15637",
+      "name": "GNYR04H - Mr Youngs Picture Permutations",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "数学",
+        "线性DP"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP703",
+      "name": "SERVICE - Mobile Service",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "线性DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1222",
+      "name": "Bribing FIPA",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "离散化",
+        "背包"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1627",
+      "name": "Team them up!",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "背包",
+        "二分图"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA323",
+      "name": "Jury Compromise",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "枚举",
+        "背包",
+        "状态合并"
+      ],
+      "difficulty": "省选/NOI-"
     }
   ]
 }

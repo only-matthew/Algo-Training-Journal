@@ -39,7 +39,10 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "贪心"
+      ]
     },
     {
       "platform": "洛谷",
@@ -48,7 +51,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "贪心",
+        "排序"
+      ]
     },
     {
       "platform": "洛谷",
@@ -57,7 +64,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "贪心",
+        "排序"
+      ]
     },
     {
       "platform": "洛谷",
@@ -111,7 +123,10 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "贪心"
+      ]
     },
     {
       "platform": "洛谷",
@@ -129,7 +144,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "贪心",
+        "排序"
+      ]
     },
     {
       "platform": "洛谷",
@@ -147,7 +166,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "贪心",
+        "高精度",
+        "排序"
+      ]
     },
     {
       "platform": "Codeforces",
@@ -666,6 +690,850 @@
       "role": "习题",
       "note": "",
       "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3626",
+      "name": "跳跃机器人",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "BFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3637",
+      "name": "最长上升子序列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心",
+        "二分"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3675",
+      "name": "[语言月赛202210] 军训",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "排序",
+        "构造"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4051",
+      "name": "[GESP202409 五级] 小杨的武器",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4071",
+      "name": "[GESP202412 五级] 武器强化",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "枚举",
+        "排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "CF670C",
+      "name": "Cinema",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "离散化",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10387",
+      "name": "[蓝桥杯 2024 省 A] 训练士兵",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10452",
+      "name": "货仓选址",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10453",
+      "name": "七夕祭",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "前缀和"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10454",
+      "name": "奇数码问题",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "排序",
+        "Ad-hoc"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10455",
+      "name": "Genius Acm",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "倍增"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10464",
+      "name": "Task",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10465",
+      "name": "双端队列",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "Ad-hoc"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10478",
+      "name": "生日礼物",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "优先队列",
+        "链表",
+        "反悔贪心"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1059",
+      "name": "[NOIP 2006 普及组] 明明的随机数",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "排序",
+        "STL"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1084",
+      "name": "[NOIP 2012 提高组] 疫情控制",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "线段树",
+        "倍增",
+        "二分",
+        "排序",
+        "树链剖分"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1088",
+      "name": "[NOIP 2004 普及组] 火星人",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "搜索",
+        "数学",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10928",
+      "name": "走廊泼水节",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1093",
+      "name": "[NOIP 2007 普及组] 奖学金",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "数学",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10934",
+      "name": "西瓜种植",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "差分约束"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1097",
+      "name": "[NOIP 2007 提高组] 统计数字",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10971",
+      "name": "Cookies",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P11447",
+      "name": "「ALFR Round 3」C 割",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "贪心",
+        "鸽笼原理"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1177",
+      "name": "【模板】排序",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1181",
+      "name": "数列分段 Section I",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "贪心"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1209",
+      "name": "[USACO1.3] 修理牛棚 Barn Repair",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "贪心",
+        "排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12277",
+      "name": "[蓝桥杯 2024 国 Python A] 床底取牌",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "鸽笼原理"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1417",
+      "name": "烹调方案",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "排序",
+        "背包"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1525",
+      "name": "[NOIP 2010 提高组] 关押罪犯",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "贪心",
+        "二分",
+        "并查集",
+        "排序",
+        "二分图"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1678",
+      "name": "烦恼的高考志愿",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "贪心",
+        "二分",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1842",
+      "name": "[USACO05NOV] 奶牛玩杂技",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1873",
+      "name": "[COCI 2011/2012 #5] EKO / 砍树",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "二分"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1889",
+      "name": "[CEOI 1998] 士兵站队",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2114",
+      "name": "[NOI2014] 起床困难综合症",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心",
+        "位运算"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2168",
+      "name": "[NOI2015] 荷马史诗",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "堆",
+        "优先队列",
+        "霍夫曼树"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2234",
+      "name": "[HNOI2002] 营业额统计",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "二分",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2370",
+      "name": "yyy2015c01 的 U 盘",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心",
+        "二分",
+        "排序",
+        "背包"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2512",
+      "name": "[HAOI2008] 糖果传递",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "贪心",
+        "前缀和"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2676",
+      "name": "[USACO07DEC] Bookshelf B",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2678",
+      "name": "[NOIP 2015 提高组] 跳石头",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "二分"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2859",
+      "name": "[USACO06FEB] Stall Reservations S",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "线段树",
+        "优先队列"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2887",
+      "name": "[USACO07NOV] Sunscreen G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2909",
+      "name": "[USACO08OPEN] Cow Cars S",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3406",
+      "name": "海底高铁",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "前缀和",
+        "差分"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3620",
+      "name": "[APIO/CTSC2007] 数据备份",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "优先队列",
+        "wqs二分",
+        "差分",
+        "反悔贪心"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4408",
+      "name": "[NOI2003] 逃学的小孩 / 数据生成器",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "枚举",
+        "树的直径"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4551",
+      "name": "最长异或路径",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "贪心",
+        "Trie"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5020",
+      "name": "[NOIP 2018 提高组] 货币系统",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "数学",
+        "贪心",
+        "背包",
+        "生成函数"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5569",
+      "name": "[SDOI2008] 石子合并",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5687",
+      "name": "[CSP-S 2019 江西] 网格图",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "生成树"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6033",
+      "name": "[NOIP 2004 提高组] 合并果子 加强版",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "排序",
+        "队列"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6568",
+      "name": "[NOI Online #3 提高组] 水壶",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "前缀和"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6625",
+      "name": "[省选联考 2020 B 卷] 卡牌游戏",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "前缀和"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7072",
+      "name": "[CSP-J 2020] 直播获奖",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7910",
+      "name": "[CSP-J 2021] 插入排序",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "枚举",
+        "排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8697",
+      "name": "[蓝桥杯 2019 国 C] 最长子序列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8800",
+      "name": "[蓝桥杯 2022 国 B] 卡牌",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "二分",
+        "排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8837",
+      "name": "[传智杯 #3 决赛] 商店",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA10810",
+      "name": "Ultra-QuickSort",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1193",
+      "name": "Radar Installation",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "排序",
+        "优先队列"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1292",
+      "name": "Strategic game",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心",
+        "树形DP"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1316",
+      "name": "Supermarket",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "并查集",
+        "排序"
+      ],
+      "difficulty": "普及"
     }
   ]
 }

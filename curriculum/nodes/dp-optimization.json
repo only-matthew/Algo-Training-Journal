@@ -82,7 +82,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高+/省选-"
+      "difficulty": "提高+/省选-",
+      "tags": [
+        "DP",
+        "二分",
+        "单调队列",
+        "斜率优化",
+        "李超线段树"
+      ]
     },
     {
       "platform": "洛谷",
@@ -181,7 +188,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "省选/NOI-"
+      "difficulty": "省选/NOI-",
+      "tags": [
+        "DP",
+        "数学",
+        "四边形不等式",
+        "栈",
+        "决策单调性"
+      ]
     },
     {
       "platform": "洛谷",
@@ -585,6 +599,82 @@
       "role": "例题",
       "note": "",
       "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "CF311B",
+      "name": "Cats Transport",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "枚举",
+        "斜率优化",
+        "前缀和"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10966",
+      "name": "K-Anonymous Sequence",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "斜率优化",
+        "四边形不等式",
+        "线性DP"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10979",
+      "name": "任务安排 2",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "斜率优化"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10980",
+      "name": "任务安排 4.1",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "平衡树",
+        "单调队列",
+        "cdq分治",
+        "斜率优化",
+        "李超线段树"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10981",
+      "name": "任务安排 4.2",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "平衡树",
+        "单调队列",
+        "cdq分治",
+        "斜率优化",
+        "李超线段树"
+      ],
+      "difficulty": "提高+/省选-"
     }
   ]
 }

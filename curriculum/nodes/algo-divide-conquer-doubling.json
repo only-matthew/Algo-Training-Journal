@@ -55,7 +55,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "线段树",
+        "树状数组",
+        "递归",
+        "离散化",
+        "分治",
+        "排序"
+      ]
     },
     {
       "platform": "洛谷",
@@ -73,7 +81,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "数学",
+        "递推",
+        "递归",
+        "分治",
+        "位运算"
+      ]
     },
     {
       "platform": "洛谷",
@@ -91,7 +106,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "DP",
+        "贪心",
+        "递推",
+        "分治",
+        "前缀和",
+        "线性DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -432,7 +455,12 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "数学",
+        "分治",
+        "逆元"
+      ]
     },
     {
       "platform": "洛谷",
@@ -441,7 +469,10 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "分治"
+      ]
     },
     {
       "platform": "洛谷",
@@ -626,6 +657,262 @@
       "source": "刘汝佳·算法竞赛入门经典",
       "role": "练习",
       "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10455",
+      "name": "Genius Acm",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "倍增"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10459",
+      "name": "Raid",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "计算几何",
+        "分治",
+        "凸包"
+      ],
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10469",
+      "name": "后缀数组",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "倍增",
+        "二分",
+        "排序",
+        "哈希",
+        "后缀数组"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10479",
+      "name": "匹配统计",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "二分",
+        "哈希",
+        "KMP",
+        "Z函数"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10589",
+      "name": "楼兰图腾",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "分治",
+        "排序"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1081",
+      "name": "[NOIP 2012 提高组] 开车旅行",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10976",
+      "name": "统计重复个数",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "倍增",
+        "线性DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P11967",
+      "name": "[GESP202503 八级] 割裂",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "LCA",
+        "差分"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1967",
+      "name": "[NOIP 2013 提高组] 货车运输",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "贪心",
+        "倍增",
+        "并查集",
+        "Kruskal重构树",
+        "生成树"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2886",
+      "name": "[USACO07NOV] Cow Relays G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "倍增",
+        "最短路",
+        "矩阵乘法",
+        "Floyd"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3533",
+      "name": "[POI 2012] RAN-Rendezvous",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "并查集",
+        "LCA",
+        "基环树"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4149",
+      "name": "[IOI 2011] Race",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "点分治",
+        "递归",
+        "树上启发式合并",
+        "分治"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4169",
+      "name": "[Violet] 天使玩偶/SJY摆棋子",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "cdq分治",
+        "分治",
+        "剪枝",
+        "树套树"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4178",
+      "name": "Tree",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "点分治",
+        "树状数组",
+        "树上启发式合并",
+        "分治",
+        "容斥原理"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4180",
+      "name": "[BJWC2010] 严格次小生成树",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "并查集",
+        "Kruskal重构树",
+        "生成树",
+        "LCA",
+        "树链剖分"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4281",
+      "name": "[AHOI2008] 紧急集合 / 聚会",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "LCA",
+        "树链剖分"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4390",
+      "name": "[BalkanOI 2007] Mokia 摩基亚",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "cdq分治",
+        "分治",
+        "排序"
+      ],
+      "difficulty": "提高+/省选-"
     }
   ]
 }

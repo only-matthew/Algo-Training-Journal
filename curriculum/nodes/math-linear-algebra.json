@@ -150,7 +150,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "模拟退火",
+        "高斯消元",
+        "构造"
+      ]
     },
     {
       "platform": "洛谷",
@@ -531,6 +536,120 @@
       "role": "习题",
       "note": "",
       "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "CF24D",
+      "name": "Broken robot",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "期望",
+        "高斯消元"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10499",
+      "name": "开关问题",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "高斯消元"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1092",
+      "name": "[NOIP 2004 提高组] 虫食算",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "DFS",
+        "剪枝",
+        "高斯消元"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2886",
+      "name": "[USACO07NOV] Cow Relays G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "倍增",
+        "最短路",
+        "矩阵乘法",
+        "Floyd"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3211",
+      "name": "[HNOI2011] XOR和路径",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "期望",
+        "高斯消元",
+        "位运算"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3265",
+      "name": "[JLOI2015] 装备购买",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "高斯消元",
+        "线性基",
+        "向量"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4301",
+      "name": "[CQOI2013] 新Nim游戏",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "博弈论",
+        "线性基",
+        "构造"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP1716",
+      "name": "GSS3 - Can you answer these queries III",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "矩阵乘法",
+        "动态DP"
+      ],
+      "difficulty": "提高"
     }
   ]
 }

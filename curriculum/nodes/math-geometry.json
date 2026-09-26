@@ -426,6 +426,20 @@
       "role": "练习",
       "note": "",
       "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10459",
+      "name": "Raid",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "计算几何",
+        "分治",
+        "凸包"
+      ],
+      "difficulty": "NOI/NOI+/CTS"
     }
   ]
 }

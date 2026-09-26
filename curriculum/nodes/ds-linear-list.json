@@ -64,7 +64,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "字符串",
+        "栈"
+      ]
     },
     {
       "platform": "洛谷",
@@ -73,7 +78,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "树状数组",
+        "队列",
+        "链表"
+      ]
     },
     {
       "platform": "洛谷",
@@ -82,7 +93,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "模拟",
+        "构造",
+        "链表"
+      ]
     },
     {
       "platform": "洛谷",
@@ -91,7 +107,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "队列"
+      ]
     },
     {
       "platform": "洛谷",
@@ -100,7 +120,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "模拟",
+        "优先队列",
+        "队列",
+        "双指针"
+      ]
     },
     {
       "platform": "洛谷",
@@ -286,7 +312,11 @@
       "source": "罗勇军·算法竞赛",
       "role": "例题",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "单调队列",
+        "队列"
+      ]
     },
     {
       "platform": "HDU",
@@ -321,7 +351,15 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "线段树",
+        "树状数组",
+        "单调队列",
+        "前缀和",
+        "队列",
+        "ST表"
+      ]
     },
     {
       "platform": "洛谷",
@@ -392,7 +430,11 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "栈",
+        "单调栈"
+      ]
     },
     {
       "platform": "洛谷",
@@ -401,7 +443,12 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "入门"
+      "difficulty": "入门",
+      "tags": [
+        "模拟",
+        "字符串",
+        "栈"
+      ]
     },
     {
       "platform": "洛谷",
@@ -410,7 +457,12 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "模拟",
+        "字符串",
+        "栈"
+      ]
     },
     {
       "platform": "洛谷",
@@ -516,6 +568,590 @@
       "source": "刘汝佳·算法竞赛入门经典",
       "role": "练习",
       "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3614",
+      "name": "【模板】栈",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "栈"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3616",
+      "name": "【模板】队列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "队列"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3631",
+      "name": "单向链表",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "链表"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3656",
+      "name": "【模板】双端队列 1",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "队列"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4324",
+      "name": "【模板】双向链表",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "链表"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1044",
+      "name": "[NOIP 2003 普及组] 栈",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "数学",
+        "递推",
+        "Catalan数",
+        "栈"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10457",
+      "name": "占卜DIY",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "队列"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10466",
+      "name": "邻值查找",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "链表",
+        "STL"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10472",
+      "name": "括号画家",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "栈"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10473",
+      "name": "表达式计算4",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10478",
+      "name": "生日礼物",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "优先队列",
+        "链表",
+        "反悔贪心"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10590",
+      "name": "磁力块",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "BFS",
+        "队列",
+        "分块"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P11138",
+      "name": "[APC001] C - Not APC",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "队列"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1141",
+      "name": "01迷宫",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "并查集",
+        "BFS",
+        "DFS",
+        "队列"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1155",
+      "name": "[NOIP 2008 提高组] 双栈排序",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "贪心",
+        "二分图",
+        "栈"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1162",
+      "name": "填涂颜色",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "连通块",
+        "队列"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1165",
+      "name": "日志分析",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "堆",
+        "优先队列",
+        "栈"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12288",
+      "name": "[蓝桥杯 2024 国 Java A] 栈",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "链表"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12347",
+      "name": "[蓝桥杯 2025 省 A 第二场] 栈与乘积",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12368",
+      "name": "[蓝桥杯 2022 省 Python B] 消除游戏",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "链表"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1427",
+      "name": "小鱼的数字游戏",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "栈"
+      ],
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1443",
+      "name": "马的遍历",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "队列"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1638",
+      "name": "逛画展",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "二分",
+        "单调队列",
+        "队列",
+        "双指针"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1912",
+      "name": "[NOI2009] 诗人小G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "数学",
+        "四边形不等式",
+        "栈",
+        "决策单调性"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2201",
+      "name": "数列编辑器",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "前缀和",
+        "栈",
+        "链表"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2569",
+      "name": "[SCOI2010] 股票交易",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "线段树",
+        "单调队列",
+        "队列"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2827",
+      "name": "[NOIP 2016 提高组] 蚯蚓",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "队列"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2952",
+      "name": "[USACO09OPEN] Cow Line S",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "递推",
+        "队列"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3512",
+      "name": "[POI 2010] PIL-Pilots",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "单调队列",
+        "队列",
+        "双指针"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3628",
+      "name": "[APIO2010] 特别行动队",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "单调队列",
+        "斜率优化",
+        "四边形不等式",
+        "前缀和",
+        "队列"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4316",
+      "name": "绿豆蛙的归宿",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "记忆化搜索",
+        "拓扑排序",
+        "期望",
+        "栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6033",
+      "name": "[NOIP 2004 提高组] 合并果子 加强版",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "排序",
+        "队列"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6066",
+      "name": "[USACO05JAN] Watchcow S",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "DFS",
+        "欧拉回路",
+        "栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7505",
+      "name": "「Wdsr-2.5」小小的埴轮兵团",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "排序",
+        "队列"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7870",
+      "name": "「Wdoi-4」兔已着陆",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "栈"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7912",
+      "name": "[CSP-J 2021] 小熊的果篮",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "枚举",
+        "队列",
+        "链表"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7935",
+      "name": "[COCI 2007/2008 #5] AVOGADRO",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "枚举",
+        "队列"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P9422",
+      "name": "[蓝桥杯 2023 国 B] 合并数列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "队列"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP1805",
+      "name": "HISTOGRA - Largest Rectangle in a Histogram",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "并查集",
+        "栈",
+        "ST表",
+        "笛卡尔树",
+        "单调栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA11367",
+      "name": "Full Tank?",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "优先队列",
+        "队列"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1330",
+      "name": "City Game",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "前缀和",
+        "栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA540",
+      "name": "团体队列 Team Queue",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "队列"
+      ],
+      "difficulty": "普及"
     }
   ]
 }

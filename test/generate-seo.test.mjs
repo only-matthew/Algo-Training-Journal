@@ -11,6 +11,7 @@ const siteDir = path.join(root, "site");
 const require = createRequire(import.meta.url);
 const { replaceProblemArticle, resolveStatsEnd } = require("../scripts/generate-data.js");
 const { mergeTrainingDates } = await import("../lib/training-interval.mjs");
+const { tagStorageKey } = await import("../lib/tag-index.mjs");
 
 function routePath(segments) {
   return `/${segments.map((segment) => encodeURIComponent(String(segment))).join("/")}/`;
@@ -175,10 +176,10 @@ test("generator emits crawlable member and problem pages", () => {
   if (tagIndex && tagIndex.tags.length > 0) {
     const first = tagIndex.tags[0];
     assert.equal("records" in first, false, "tag index summaries must not embed record lists");
-    const tagDetail = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "tags", `${first.tag}.json`), "utf8"));
+    const tagDetail = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "tags", `${tagStorageKey(first.tag)}.json`), "utf8"));
     assert.ok(Array.isArray(tagDetail.records));
     const tagRoute = routePath(["tags", first.tag]);
-    const tagPage = fs.readFileSync(path.join(siteDir, "tags", first.tag, "index.html"), "utf8");
+    const tagPage = fs.readFileSync(path.join(siteDir, "tags", tagStorageKey(first.tag), "index.html"), "utf8");
     assert.ok(
       tagPage.includes(`<link rel="canonical" href="https://train.xialiao.org${tagRoute}" />`),
       `tag page must carry canonical ${tagRoute}`,
@@ -186,6 +187,15 @@ test("generator emits crawlable member and problem pages", () => {
     assert.ok(tagPage.includes('"@type":"CollectionPage"'), "tag page must embed CollectionPage JSON-LD");
     assert.ok(tagPage.includes(`data-tag="${first.tag}"`), "tag page must mark its prerendered tag");
     assert.ok(tagPage.includes("条训练记录"), "tag page must be fully server-rendered");
+
+    // 回归：标签名里的 `*` 在 Windows 上是通配符，分片与页面目录都不能直接用原名。
+    const starred = tagIndex.tags.find((entry) => /[*<>:"/\\|?]/.test(entry.tag));
+    if (starred) {
+      const key = tagStorageKey(starred.tag);
+      assert.notEqual(key, starred.tag, `含特殊字符的标签必须编码：${starred.tag}`);
+      assert.ok(fs.existsSync(path.join(siteDir, "data", "tags", `${key}.json`)), `${starred.tag} 的分片缺失`);
+      assert.ok(fs.existsSync(path.join(siteDir, "tags", key, "index.html")), `${starred.tag} 的标签页缺失`);
+    }
   }
 });
 

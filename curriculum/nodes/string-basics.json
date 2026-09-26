@@ -70,7 +70,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "字符串",
+        "哈希",
+        "Trie",
+        "STL"
+      ]
     },
     {
       "platform": "洛谷",
@@ -79,7 +85,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "数学",
+        "贪心",
+        "Trie"
+      ]
     },
     {
       "platform": "洛谷",
@@ -142,7 +153,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "字符串",
+        "哈希",
+        "Trie",
+        "STL"
+      ]
     },
     {
       "platform": "洛谷",
@@ -151,7 +168,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "省选/NOI-"
+      "difficulty": "省选/NOI-",
+      "tags": [
+        "可持久化",
+        "前缀和",
+        "Trie"
+      ]
     },
     {
       "platform": "洛谷",
@@ -534,6 +556,462 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4067",
+      "name": "[GESP202412 三级] 打印数字",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1030",
+      "name": "[NOIP 2001 普及组] 求先序排列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "递归",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1032",
+      "name": "[NOIP 2002 提高组] 字串变换（疑似错题）",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "搜索",
+        "BFS",
+        "剪枝",
+        "折半搜索"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10468",
+      "name": "兔子与兔子",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "哈希"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10469",
+      "name": "后缀数组",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "倍增",
+        "二分",
+        "排序",
+        "哈希",
+        "后缀数组"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10470",
+      "name": "前缀统计",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "哈希",
+        "Trie"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10471",
+      "name": "最大异或对 The XOR Largest Pair",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "Trie"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10475",
+      "name": "[USACO03FALL] Milking Grid（数据加强版）",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "哈希",
+        "KMP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10479",
+      "name": "匹配统计",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "二分",
+        "哈希",
+        "KMP",
+        "Z函数"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1055",
+      "name": "[NOIP 2008 普及组] ISBN 号码",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "字符串"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10690",
+      "name": "Fotile 模拟赛 L",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "可持久化",
+        "分块",
+        "Trie"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1087",
+      "name": "[NOIP 2004 普及组] FBI 树",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "搜索",
+        "递归"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1100",
+      "name": "高低位交换",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "数学",
+        "进制",
+        "位运算"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P11447",
+      "name": "「ALFR Round 3」C 割",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "贪心",
+        "鸽笼原理"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1210",
+      "name": "[USACO1.3] 最长的回文 Calf Flac",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "搜索",
+        "枚举",
+        "Manacher"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1279",
+      "name": "[CHCI 2002 National Competition #2 Seniors] 字串距离",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "DP"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1305",
+      "name": "新二叉树",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "搜索",
+        "递归"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1308",
+      "name": "[NOIP 2011 普及组] 统计单词数",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "字符串"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1449",
+      "name": "后缀表达式",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "字符串",
+        "栈"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1739",
+      "name": "表达式括号匹配",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "字符串",
+        "栈"
+      ],
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1781",
+      "name": "宇宙总统",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "高精度",
+        "排序"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1980",
+      "name": "[NOIP 2013 普及组] 计数问题",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "字符串"
+      ],
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1981",
+      "name": "[NOIP 2013 普及组] 表达式求值",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "字符串",
+        "栈"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2670",
+      "name": "[NOIP 2015 普及组] 扫雷游戏",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "搜索",
+        "枚举"
+      ],
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2758",
+      "name": "编辑距离",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "DP",
+        "数学"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2786",
+      "name": "英语1（eng1）- 英语作文",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "平衡树",
+        "哈希",
+        "STL"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7106",
+      "name": "双生独白",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "字符串",
+        "进制"
+      ],
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8871",
+      "name": "[传智杯 #5 初赛] C-莲子的排版设计学",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP263",
+      "name": "PERIOD - Period",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "KMP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP33",
+      "name": "TRIP - Trip",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "递归",
+        "枚举"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA11362",
+      "name": "Phone List",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "Trie"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1222",
+      "name": "Bribing FIPA",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "离散化",
+        "背包"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1630",
+      "name": "串折叠 Folding",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "DP"
+      ],
+      "difficulty": "普及+/提高-"
     }
   ]
 }

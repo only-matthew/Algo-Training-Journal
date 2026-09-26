@@ -43,7 +43,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "图论",
+        "优先队列",
+        "最短路"
+      ]
     },
     {
       "platform": "洛谷",
@@ -52,7 +57,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "图论",
+        "最短路"
+      ]
     },
     {
       "platform": "洛谷",
@@ -124,7 +133,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "图论",
+        "二分",
+        "最短路"
+      ]
     },
     {
       "platform": "洛谷",
@@ -133,7 +147,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "搜索",
+        "图论",
+        "最短路",
+        "强连通分量",
+        "Tarjan"
+      ]
     },
     {
       "platform": "洛谷",
@@ -160,7 +182,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "图论",
+        "最短路",
+        "Floyd"
+      ]
     },
     {
       "platform": "洛谷",
@@ -205,7 +232,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "图论",
+        "最短路",
+        "Floyd"
+      ]
     },
     {
       "platform": "Codeforces",
@@ -377,7 +409,13 @@
       "source": "罗勇军·算法竞赛",
       "role": "例题",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "搜索",
+        "二分",
+        "最短路",
+        "分数规划"
+      ]
     },
     {
       "platform": "洛谷",
@@ -395,7 +433,11 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "图论",
+        "最短路"
+      ]
     },
     {
       "platform": "洛谷",
@@ -541,6 +583,328 @@
       "role": "习题",
       "note": "",
       "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3647",
+      "name": "【模板】Floyd",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路",
+        "Floyd"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4292",
+      "name": "[蓝桥杯青少年组省赛 2022] 路线",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "图遍历",
+        "最短路"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10927",
+      "name": "[CEOI 1999] Sightseeing trip",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "最短路",
+        "最小环",
+        "Floyd"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10929",
+      "name": "黑暗城堡",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路",
+        "生成树"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10934",
+      "name": "西瓜种植",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "差分约束"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10935",
+      "name": "银河",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "拓扑排序",
+        "最短路",
+        "Tarjan",
+        "差分约束"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10941",
+      "name": "[ICPC 2000 Tehran R] Cashier Employment",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "二分",
+        "差分约束"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10942",
+      "name": "GF和猫咪的玩具",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "BFS",
+        "最短路",
+        "Floyd"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10947",
+      "name": "[BAPC 2006 资格赛] Sightseeing",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10948",
+      "name": "升降梯上",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1135",
+      "name": "奇怪的电梯",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "BFS",
+        "DFS",
+        "最短路"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P11966",
+      "name": "[GESP202503 八级] 上学",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "最短路"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1364",
+      "name": "医院设置",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "BFS",
+        "DFS",
+        "树形DP",
+        "最短路",
+        "树的重心"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2886",
+      "name": "[USACO07NOV] Cow Relays G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "倍增",
+        "最短路",
+        "矩阵乘法",
+        "Floyd"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2901",
+      "name": "[USACO08MAR] Cow Jogging G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "BFS",
+        "拓扑排序",
+        "最短路",
+        "A*"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3003",
+      "name": "[USACO10DEC] Apple Delivery S",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "最短路"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3008",
+      "name": "[USACO11JAN] Roads and Planes G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "拓扑排序",
+        "最短路"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3956",
+      "name": "[NOIP 2017 普及组] 棋盘",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "剪枝",
+        "记忆化搜索",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4667",
+      "name": "[BalticOI 2011] Switch the Lamp On (Day1)",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6833",
+      "name": "[Cnoi2020] 雷雨",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8693",
+      "name": "[蓝桥杯 2019 国 AC] 大胖子走迷宫",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8794",
+      "name": "[蓝桥杯 2022 国 A] 环境治理",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "二分",
+        "最短路"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8802",
+      "name": "[蓝桥杯 2022 国 B] 出差",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "最短路"
+      ],
+      "difficulty": "普及"
     }
   ]
 }

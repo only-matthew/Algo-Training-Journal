@@ -92,6 +92,11 @@
   - 每个标签拥有独立的静态聚合页 `/tags/<标签>/`：同时展示该标签的训练记录、覆盖它的知识树节点（含各节点进度）与「在总览中按此标签筛选」入口；`/tags/` 索引页汇总全部标签的记录数与节点覆盖数。记录卡片、知识树节点、题单问题行与题目详情页的标签芯片全部链接到对应标签页。
   - 构建期生成 `data/tag-index.json`（标签 → 训练记录 + 知识树节点覆盖），并预渲染全部标签页；Codeforces 题目的英文算法标签（如 `greedy`、`sortings`）经 `lib/cf-tag-map.mjs` 映射为中文规范标签后，与日志中文标签同源显示与跳转。
 - Codeforces 内容增强：`curriculum/cf-supplement.json` 内置精选 CF 题单（含官方题名、rating 与算法标签）；`scripts/fetch-codeforces.js` 可联网调用 Codeforces 官方 API（`problemset.problems`，含算法标签体系），按知识点映射与难度区间自动扩充题单。
+- **洛谷书系题单（v2.1）**：并入洛谷三个官方书系题单共 26 个题单 —— 李煜东《算法竞赛进阶指南》（14 个题单）、罗勇军《算法竞赛试炼场：洛谷 300 题精析》（8 个）、《算法竞赛实战笔记》（4 个），712 道唯一题目。题单里题目的**来源短名**分别是 `洛谷·进阶指南`、`《洛谷精析》`、`《实战笔记》`。
+  - `scripts/fetch-luogu-training.mjs` 抓取：题单目录页与标签字典匿名可读，**题单详情页需要洛谷登录态**（匿名一律 401「请先登录」），因此凭证只从环境变量 `LUOGU_COOKIE` 读取、不落盘：`$env:LUOGU_COOKIE="__client_id=...; _uid=..."; node scripts/fetch-luogu-training.mjs`。脚本自带 C3VK 挑战握手、断点续抓（`--skip-existing` 只跳过已抓到题名的题）与失败重试，产出 `curriculum/luogu-training-problems.json`。
+  - **归属口径是按算法标签，不是按书的章节**：`lib/curriculum-book-problems.mjs` 用题目在洛谷的算法标签与节点标签匹配，并按「标签独特性」加权（`DP` 同时挂两个节点时权重 1/2，`背包` 只挂 dp-linear 时权重 1），所以「DP+背包」的采药归 dp-linear 而不是被泛化的 dp-intro 抢走；一道题可同时并入最多 3 个节点（SPECIFICATION 允许多节点）；标签缺失约 4% 的题不猜归属，直接丢弃。
+  - 节点题单上限 120 题，**只截断书系并入的题**（它们排在列表末尾），既有「深入浅出 / 罗勇军 / 刘汝佳 / CF」题单保持完整。
+  - 节点页题目区新增「全部来源」下拉，可按来源筛选；书系题目自带洛谷算法标签芯片，可直接跳到对应标签页。
 - 洛谷题目元数据：`curriculum/luogu-problem-meta.json` 内置洛谷官方题名与官方难度（洛谷帮助中心当前 8 级：入门/普及-/普及/普及+/提高-/提高/提高+/省选-/省选/NOI-/NOI/NOI+/CTS）；`scripts/fetch-luogu-meta.mjs` 可联网批量抓取刷新（复用洛谷导入的页面解析逻辑；洛谷对匿名抓取有约 300 次/窗口的风控，重抓失败项建议 `--skip-existing --concurrency 1 --delay 2500` 慢速续抓），`scripts/apply-luogu-meta.mjs` 把抓取结果批量应用到节点题单（只填空位、可重复执行）。`convert-curriculum.js` 重新生成时也会自动按此 meta 富化洛谷题目的题名与难度。
 - 修改路线内容：编辑 `know-tree/` 源文件后运行 `node scripts/convert-curriculum.js --force` 重新生成 `curriculum/`，或直接编辑 `curriculum/*.json`；然后 `npm run generate` 重建站点。
 
@@ -490,14 +495,15 @@ npx serve site
 │   ├── router.mjs               # 客户端路由与历史栈管理
 │   ├── statement-images.mjs      # 题面图片的命名、类型与限额约定（Worker/浏览器/构建共用）
 │   └── theme.mjs                # 浅色/深色主题切换
-├── curriculum/                  # 学习路线数据（roadmap.json + nodes/*.json + cf-supplement.json + luogu-problem-meta.json）
+├── curriculum/                  # 学习路线数据（roadmap.json + nodes/*.json + cf-supplement.json + luogu-problem-meta.json + luogu-training-problems.json）
 ├── know-tree/                   # 学习路线源资料（洛谷/罗勇军/刘汝佳/NOI大纲/蓝桥杯/OI知识树）
 ├── logs/                          # 按成员和日期组织的训练源数据
 ├── scripts/
 │   ├── apply-luogu-meta.mjs       # 把洛谷官方题名/难度批量应用到 curriculum/nodes/
-│   ├── convert-curriculum.js      # 从 know-tree/ 源资料生成 curriculum/（含 OI 树合并与 CF 补充合并、洛谷 meta 富化）
+│   ├── convert-curriculum.js      # 从 know-tree/ 源资料生成 curriculum/（含 OI 树合并、CF 补充合并、洛谷 meta 富化、书系题单按标签并入）
 │   ├── fetch-codeforces.js        # 调用 Codeforces API 扩充 CF 题单（需要能访问 CF 的网络）
 │   ├── fetch-luogu-meta.mjs       # 批量抓取洛谷官方题名/难度 → curriculum/luogu-problem-meta.json
+│   ├── fetch-luogu-training.mjs   # 抓取洛谷三个书系题单（需 LUOGU_COOKIE）→ curriculum/luogu-training-problems.json
 │   ├── generate-data.js          # 聚合 logs/、计算统计并生成 site/ 与路由入口
 │   ├── check-syntax.mjs           # 自动发现并检查全部项目 JavaScript 源码
 │   └── verify-import-live.mjs    # 本地真实网络验证自动导入（人工运行，不进 CI）

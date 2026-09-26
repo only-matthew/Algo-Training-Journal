@@ -129,7 +129,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "DP",
+        "枚举",
+        "轮廓线DP",
+        "状压DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -138,7 +144,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "搜索",
+        "记忆化搜索",
+        "进制",
+        "轮廓线DP",
+        "状压DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -417,7 +430,15 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "搜索",
+        "DFS",
+        "剪枝",
+        "模拟退火",
+        "状压DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -471,6 +492,266 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3636",
+      "name": "文字工作",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "BFS",
+        "进制",
+        "位运算"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3695",
+      "name": "集合运算 3",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "位运算",
+        "bitset"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4060",
+      "name": "位运算 1",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "位运算"
+      ],
+      "difficulty": "入门"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4061",
+      "name": "位运算 2",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "位运算"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10447",
+      "name": "最短 Hamilton 路径",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "状压DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10449",
+      "name": "费解的开关",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "DFS",
+        "状压DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10460",
+      "name": "防线",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "二分",
+        "前缀和",
+        "位运算"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10480",
+      "name": "可达性统计",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "拓扑排序",
+        "位运算",
+        "bitset"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1074",
+      "name": "[NOIP 2009 提高组] 靶形数独",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "剪枝",
+        "Dancing Links",
+        "位运算"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10949",
+      "name": "四叶草魔杖",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "生成树",
+        "状压DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10950",
+      "name": "太鼓达人",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "欧拉回路",
+        "位运算"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10963",
+      "name": "[ICPC 2004 Shanghai R] Islands and Bridges",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "状压DP"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10975",
+      "name": "Mondriaan's Dream / 蒙德里安的梦想",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "轮廓线DP",
+        "状压DP"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1100",
+      "name": "高低位交换",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "数学",
+        "进制",
+        "位运算"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1226",
+      "name": "【模板】快速幂",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "递推",
+        "递归",
+        "分治",
+        "位运算"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1469",
+      "name": "找筷子",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "位运算"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2114",
+      "name": "[NOI2014] 起床困难综合症",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心",
+        "位运算"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3211",
+      "name": "[HNOI2011] XOR和路径",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "期望",
+        "高斯消元",
+        "位运算"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7689",
+      "name": "[CEOI 2002] Bugs Integrated,Inc.",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "状压DP"
+      ],
       "difficulty": "省选/NOI-"
     }
   ]

@@ -98,7 +98,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "字符串",
+        "搜索",
+        "递归"
+      ]
     },
     {
       "platform": "洛谷",
@@ -273,7 +278,12 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "字符串",
+        "搜索",
+        "递归"
+      ]
     },
     {
       "platform": "洛谷",
@@ -397,6 +407,148 @@
       "source": "刘汝佳·算法竞赛入门经典",
       "role": "练习",
       "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1028",
+      "name": "[NOIP 2001 普及组] 数的计算",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递推",
+        "递归"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10458",
+      "name": "Fractal",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "递归"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1096",
+      "name": "[NOIP 2007 普及组] Hanoi 双塔问题",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "高精度",
+        "递推",
+        "递归"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1157",
+      "name": "组合的输出",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "递归",
+        "排列组合"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1464",
+      "name": "[PacNW 1999] Function",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "递归",
+        "记忆化搜索"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1541",
+      "name": "[NOIP 2010 提高组] 乌龟棋",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "枚举"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1706",
+      "name": "全排列问题",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "数学",
+        "递归",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1760",
+      "name": "通天之汉诺塔",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "高精度",
+        "递推",
+        "递归"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2089",
+      "name": "烤鸡",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "递归",
+        "枚举"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4149",
+      "name": "[IOI 2011] Race",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "点分治",
+        "递归",
+        "树上启发式合并",
+        "分治"
+      ],
+      "difficulty": "提高+/省选-"
     }
   ]
 }

@@ -8,6 +8,7 @@ const cheerio = require("cheerio");
 const { transformSync } = require("esbuild");
 const { buildBrowser } = require("./build-browser.js");
 const { execFileSync } = require("child_process");
+const { tagStorageKey } = require("../lib/tag-index.mjs");
 
 function addSelfClosingVoids(html) {
   return html.replace(/<(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)\b([^>]*?)>/gi, "<$1$2 />");
@@ -1197,7 +1198,10 @@ function writeTagIndex(tagIndex) {
   writeJson(path.join("data", "tag-index.json"), { ...tagIndex, tags });
   const outputs = [];
   for (const entry of tagIndex.tags) {
-    const relativePath = path.join("data", "tags", `${entry.tag}.json`);
+    // 文件名必须与浏览器端一致：lib/data.mjs 用 tagStorageKey(tag) 取分片。
+    // 直接用标签原名会踩两个坑：`A*` / `IDA*` 在 Windows 上是通配符（实测 ENOENT），
+    // 而 `/`、空格等字符在跨平台文件系统上也不安全。
+    const relativePath = path.join("data", "tags", `${tagStorageKey(entry.tag)}.json`);
     writeJson(relativePath, entry);
     outputs.push(relativePath);
   }
@@ -1278,7 +1282,9 @@ async function generateTagPages(html, tagIndex, roadmapData) {
   // 每个标签页（标签全集均生成，含 0 记录的知识树标签）
   for (const entry of tagIndex.tags) {
     const tag = entry.tag;
-    const outputPath = path.join("tags", tag, "index.html");
+    // 页面目录同样必须用 tagStorageKey(tag)：`A*` / `IDA*` 这类标签在 Windows 上
+    // 是通配符（实测 ENOENT），`/` 与空格也不安全；站内链接与 canonical 走的都是同一套编码。
+    const outputPath = path.join("tags", tagStorageKey(tag), "index.html");
     const stateKey = `tag-page:${tag}`;
     const stateHash = tagDependencyHash(entry, buildShellHash);
     if (reuseGenerated(stateKey, stateHash, outputPath)) continue;
@@ -1305,7 +1311,7 @@ async function generateTagPages(html, tagIndex, roadmapData) {
     $("#tag-page-title").text(tag);
     $("#tag-page-subtitle").text(`${recordCount} 条训练记录 · ${nodeCount} 个知识主题关联`);
     $("#tag-toolbar").removeAttr("hidden");
-    writeRouteIndex(addSelfClosingVoids($.html()), ["tags", tag]);
+    writeRouteIndex(addSelfClosingVoids($.html()), ["tags", tagStorageKey(tag)]);
     rememberGenerated(stateKey, stateHash, outputPath);
   }
 }

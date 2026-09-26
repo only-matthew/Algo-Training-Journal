@@ -44,7 +44,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "搜索",
+        "DFS"
+      ]
     },
     {
       "platform": "洛谷",
@@ -62,7 +66,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "搜索",
+        "BFS",
+        "队列"
+      ]
     },
     {
       "platform": "洛谷",
@@ -71,7 +80,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "模拟",
+        "BFS",
+        "DFS",
+        "最短路"
+      ]
     },
     {
       "platform": "洛谷",
@@ -89,7 +104,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "搜索",
+        "DFS",
+        "剪枝",
+        "素数判断"
+      ]
     },
     {
       "platform": "洛谷",
@@ -107,7 +128,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "搜索",
+        "DFS",
+        "剪枝",
+        "模拟退火",
+        "状压DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -152,7 +181,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "搜索",
+        "图论",
+        "BFS",
+        "DFS",
+        "连通块"
+      ]
     },
     {
       "platform": "洛谷",
@@ -161,7 +197,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "连通块",
+        "队列"
+      ]
     },
     {
       "platform": "洛谷",
@@ -170,7 +213,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "字符串",
+        "搜索",
+        "BFS",
+        "剪枝",
+        "折半搜索"
+      ]
     },
     {
       "platform": "洛谷",
@@ -321,7 +371,15 @@
       "source": "罗勇军·算法竞赛",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "剪枝",
+        "记忆化搜索",
+        "最短路"
+      ]
     },
     {
       "platform": "洛谷",
@@ -494,6 +552,1037 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3621",
+      "name": "枚举元组",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3622",
+      "name": "枚举子集（递归实现指数型枚举）",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3623",
+      "name": "枚举排列（递归实现排列型枚举）",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3624",
+      "name": "猫粮规划",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "DFS",
+        "剪枝",
+        "背包",
+        "折半搜索"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3625",
+      "name": "迷宫寻路",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "DFS",
+        "图遍历"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3626",
+      "name": "跳跃机器人",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "BFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3636",
+      "name": "文字工作",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "BFS",
+        "进制",
+        "位运算"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3642",
+      "name": "二叉树的遍历",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "树的遍历"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4016",
+      "name": "树的直径",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "树形DP",
+        "树的直径"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4286",
+      "name": "[蓝桥杯青少年组省赛 2022] 农作物",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "连通块"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1004",
+      "name": "[NOIP 2000 提高组] 方格取数",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "DFS",
+        "剪枝",
+        "记忆化搜索"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10294",
+      "name": "[CCC 2024 J5] Harvest Waterloo",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1030",
+      "name": "[NOIP 2001 普及组] 求先序排列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "递归",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10377",
+      "name": "[GESP202403 六级] 好斗的牛",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "搜索",
+        "枚举",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10448",
+      "name": "组合型枚举",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10449",
+      "name": "费解的开关",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "DFS",
+        "状压DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10477",
+      "name": "[NWERC 2003] Subway tree systems",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "图遍历",
+        "树的遍历",
+        "哈希"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10481",
+      "name": "[SEERC 2005] Sudoku",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "Dancing Links"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10483",
+      "name": "小猫爬山",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10485",
+      "name": "Bloxorz I",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10487",
+      "name": "Nightmare II",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10488",
+      "name": "[BAPC 2006 资格赛] Booksort",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "IDA*",
+        "折半搜索"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10489",
+      "name": "[IOI 1994] The Buses",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "剪枝",
+        "迭代加深搜索"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1049",
+      "name": "[NOIP 2001 普及组] 装箱问题",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "DFS",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10490",
+      "name": "Missile Defence System",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "DFS",
+        "剪枝"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10491",
+      "name": "[USACO09NOV] The Chivalrous Cow B",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10492",
+      "name": "[ICPC 2003 Aizu R] Weather Forecast",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "DFS",
+        "剪枝",
+        "记忆化搜索"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10493",
+      "name": "Bloxorz II",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10494",
+      "name": "[USACO02FEB] Power Hungry Cows",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "剪枝",
+        "迭代加深搜索",
+        "IDA*"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10590",
+      "name": "磁力块",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "BFS",
+        "队列",
+        "分块"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1092",
+      "name": "[NOIP 2004 提高组] 虫食算",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "DFS",
+        "剪枝",
+        "高斯消元"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10927",
+      "name": "[CEOI 1999] Sightseeing trip",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "最短路",
+        "最小环",
+        "Floyd"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10930",
+      "name": "异象石",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "LCA",
+        "虚树"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10942",
+      "name": "GF和猫咪的玩具",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "BFS",
+        "最短路",
+        "Floyd"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10944",
+      "name": "Going from u to v or from v to u?",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "拓扑排序",
+        "Tarjan",
+        "bitset"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10956",
+      "name": "金字塔",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "枚举",
+        "DFS",
+        "记忆化搜索",
+        "区间DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1118",
+      "name": "[USACO06FEB] Backward Digit Sums G/S",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "枚举",
+        "DFS"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1120",
+      "name": "[CERC 1995] 小木棍",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "枚举",
+        "DFS",
+        "剪枝",
+        "启发式搜索"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1141",
+      "name": "01迷宫",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "并查集",
+        "BFS",
+        "DFS",
+        "队列"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12270",
+      "name": "[蓝桥杯 2024 国 Python B] 马与象",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1256",
+      "name": "[POI 1999 R2] 显示图像",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1312",
+      "name": "[NOIP 2011 提高组] Mayan 游戏",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "DFS",
+        "剪枝"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1332",
+      "name": "血色先锋队",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "搜索",
+        "BFS"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1364",
+      "name": "医院设置",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "BFS",
+        "DFS",
+        "树形DP",
+        "最短路",
+        "树的重心"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1379",
+      "name": "八数码难题",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "枚举",
+        "BFS",
+        "IDA*",
+        "哈希",
+        "A*"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1395",
+      "name": "会议",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "BFS",
+        "DFS",
+        "树形DP",
+        "树的重心"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1451",
+      "name": "求细胞数量",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1463",
+      "name": "[POI 2001 R1 / ZJOI2006 / HAOI2007] 反素数",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "数学",
+        "DFS",
+        "剪枝",
+        "素数判断"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1706",
+      "name": "全排列问题",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "数学",
+        "递归",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1948",
+      "name": "[USACO08JAN] Telephone Lines S",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "图论",
+        "二分",
+        "BFS",
+        "DFS",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2324",
+      "name": "[SCOI2005] 骑士精神",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "启发式搜索",
+        "IDA*",
+        "A*",
+        "折半搜索"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2419",
+      "name": "[USACO08JAN] Cow Contest S",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "DFS",
+        "拓扑排序",
+        "Floyd"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2661",
+      "name": "[NOIP 2015 提高组] 信息传递",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "并查集",
+        "DFS",
+        "拓扑排序",
+        "强连通分量",
+        "Tarjan"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2901",
+      "name": "[USACO08MAR] Cow Jogging G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "BFS",
+        "拓扑排序",
+        "最短路",
+        "A*"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3225",
+      "name": "[ICPC 2011 WF / HNOI2012] 矿场搭建",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "Tarjan",
+        "双连通分量",
+        "圆方树"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3304",
+      "name": "[SDOI2013] 直径",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "树的直径"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3629",
+      "name": "[APIO2010] 巡逻",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "搜索",
+        "贪心",
+        "DFS",
+        "树形DP",
+        "树的直径"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3916",
+      "name": "图的遍历",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "图论",
+        "BFS",
+        "DFS",
+        "强连通分量"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3958",
+      "name": "[NOIP 2017 提高组] 奶酪",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "数学",
+        "并查集",
+        "BFS",
+        "DFS"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4017",
+      "name": "最大食物链计数",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "搜索",
+        "图论",
+        "排序",
+        "DFS",
+        "记忆化搜索"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4151",
+      "name": "[WC2011] 最大 XOR 和路径",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "贪心",
+        "枚举",
+        "DFS",
+        "线性基",
+        "向量"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4667",
+      "name": "[BalticOI 2011] Switch the Lamp On (Day1)",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5318",
+      "name": "【深基18.例3】查找文献",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "图论",
+        "BFS",
+        "DFS",
+        "图遍历"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6066",
+      "name": "[USACO05JAN] Watchcow S",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "DFS",
+        "欧拉回路",
+        "栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6566",
+      "name": "[NOI Online #3 入门组] 观星",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7689",
+      "name": "[CEOI 2002] Bugs Integrated,Inc.",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "状压DP"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8604",
+      "name": "[蓝桥杯 2013 国 C] 危险系数",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "BFS",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8662",
+      "name": "[蓝桥杯 2018 省 AB] 全球变暖",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8673",
+      "name": "[蓝桥杯 2018 国 C] 迷宫与陷阱",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "图论"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8693",
+      "name": "[蓝桥杯 2019 国 AC] 大胖子走迷宫",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P9425",
+      "name": "[蓝桥杯 2023 国 B] AB 路线",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS"
+      ],
+      "difficulty": "普及"
     }
   ]
 }

@@ -52,7 +52,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "搜索",
+        "DFS",
+        "剪枝",
+        "素数判断"
+      ]
     },
     {
       "platform": "洛谷",
@@ -61,7 +67,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "搜索",
+        "DFS",
+        "剪枝",
+        "模拟退火",
+        "状压DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -70,7 +84,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "搜索",
+        "枚举",
+        "DFS",
+        "剪枝",
+        "启发式搜索"
+      ]
     },
     {
       "platform": "洛谷",
@@ -115,7 +136,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "搜索",
+        "BFS",
+        "启发式搜索",
+        "IDA*",
+        "A*",
+        "折半搜索"
+      ]
     },
     {
       "platform": "洛谷",
@@ -124,7 +153,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "搜索",
+        "剪枝",
+        "Dancing Links",
+        "位运算"
+      ]
     },
     {
       "platform": "洛谷",
@@ -133,7 +168,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "模拟",
+        "DFS",
+        "剪枝"
+      ]
     },
     {
       "platform": "洛谷",
@@ -142,7 +182,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "省选/NOI-"
+      "difficulty": "省选/NOI-",
+      "tags": [
+        "搜索",
+        "贪心",
+        "枚举",
+        "剪枝",
+        "模拟退火",
+        "随机化"
+      ]
     },
     {
       "platform": "洛谷",
@@ -516,7 +564,14 @@
       "source": "罗勇军·算法竞赛",
       "role": "例题",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "字符串",
+        "搜索",
+        "BFS",
+        "剪枝",
+        "折半搜索"
+      ]
     },
     {
       "platform": "OpenJ_Bailian",
@@ -575,6 +630,228 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3624",
+      "name": "猫粮规划",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "DFS",
+        "剪枝",
+        "背包",
+        "折半搜索"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4219",
+      "name": "[常州市赛 2023] 数学作业",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "剪枝"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1004",
+      "name": "[NOIP 2000 提高组] 方格取数",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "DFS",
+        "剪枝",
+        "记忆化搜索"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10482",
+      "name": "Sudoku 2",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "剪枝",
+        "Dancing Links"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10489",
+      "name": "[IOI 1994] The Buses",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "剪枝",
+        "迭代加深搜索"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10490",
+      "name": "Missile Defence System",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "DFS",
+        "剪枝"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10492",
+      "name": "[ICPC 2003 Aizu R] Weather Forecast",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "DFS",
+        "剪枝",
+        "记忆化搜索"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10494",
+      "name": "[USACO02FEB] Power Hungry Cows",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "剪枝",
+        "迭代加深搜索",
+        "IDA*"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1092",
+      "name": "[NOIP 2004 提高组] 虫食算",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "DFS",
+        "剪枝",
+        "高斯消元"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1463",
+      "name": "[POI 2001 R1 / ZJOI2006 / HAOI2007] 反素数",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "数学",
+        "DFS",
+        "剪枝",
+        "素数判断"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1731",
+      "name": "[NOI1999] 生日蛋糕",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "剪枝"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3956",
+      "name": "[NOIP 2017 普及组] 棋盘",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "剪枝",
+        "记忆化搜索",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4169",
+      "name": "[Violet] 天使玩偶/SJY摆棋子",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "cdq分治",
+        "分治",
+        "剪枝",
+        "树套树"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1343",
+      "name": "旋转游戏 The Rotation Game",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "剪枝",
+        "IDA*",
+        "构造"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA529",
+      "name": "Addition Chains",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "枚举",
+        "剪枝",
+        "迭代加深搜索"
+      ],
+      "difficulty": "提高"
     }
   ]
 }

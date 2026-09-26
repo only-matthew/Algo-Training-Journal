@@ -35,7 +35,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "高精度",
+        "递推",
+        "Fibonacci"
+      ]
     },
     {
       "platform": "洛谷",
@@ -62,7 +67,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "DP",
+        "递推",
+        "递归"
+      ]
     },
     {
       "platform": "洛谷",
@@ -71,7 +81,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "搜索",
+        "递归",
+        "记忆化搜索"
+      ]
     },
     {
       "platform": "洛谷",
@@ -279,6 +294,401 @@
         "sortings",
         "strings"
       ]
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1004",
+      "name": "[NOIP 2000 提高组] 方格取数",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "DFS",
+        "剪枝",
+        "记忆化搜索"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1030",
+      "name": "[NOIP 2001 普及组] 求先序排列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "递归",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1040",
+      "name": "[NOIP 2003 提高组] 加分二叉树",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "区间DP",
+        "树形DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10458",
+      "name": "Fractal",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "递归"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1049",
+      "name": "[NOIP 2001 普及组] 装箱问题",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "DFS",
+        "背包"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1057",
+      "name": "[NOIP 2008 普及组] 传球游戏",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "DP",
+        "递推",
+        "记忆化搜索"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1063",
+      "name": "[NOIP 2006 提高组] 能量项链",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "枚举",
+        "区间DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1087",
+      "name": "[NOIP 2004 普及组] FBI 树",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "搜索",
+        "递归"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1096",
+      "name": "[NOIP 2007 普及组] Hanoi 双塔问题",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "高精度",
+        "递推",
+        "递归"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10967",
+      "name": "[IOI 2000] 邮局（原始版）",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递推",
+        "前缀和"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1113",
+      "name": "[USACO02FEB] 杂务",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "图论",
+        "递推",
+        "拓扑排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1137",
+      "name": "旅行计划",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "图论",
+        "递推",
+        "记忆化搜索",
+        "拓扑排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1157",
+      "name": "组合的输出",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "递归",
+        "排列组合"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1216",
+      "name": "[IOI 1994 / USACO1.5] 数字三角形 Number Triangles",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递推"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1226",
+      "name": "【模板】快速幂",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "递推",
+        "递归",
+        "分治",
+        "位运算"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1273",
+      "name": "[CHCI 2002 Final Exam #2] 有线电视网",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "背包",
+        "树形DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1305",
+      "name": "新二叉树",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "搜索",
+        "递归"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1309",
+      "name": "[NOIP 2011 普及组] 瑞士轮",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "递归",
+        "排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1541",
+      "name": "[NOIP 2010 提高组] 乌龟棋",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "枚举"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1706",
+      "name": "全排列问题",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "数学",
+        "递归",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1736",
+      "name": "创意吃鱼法",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "搜索",
+        "递推",
+        "双指针"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1760",
+      "name": "通天之汉诺塔",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "高精度",
+        "递推",
+        "递归"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2089",
+      "name": "烤鸡",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "递归",
+        "枚举"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2893",
+      "name": "[USACO08FEB] Making the Grade G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心",
+        "递推",
+        "构造",
+        "slope trick",
+        "反悔贪心"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2952",
+      "name": "[USACO09OPEN] Cow Line S",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "递推",
+        "队列"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4149",
+      "name": "[IOI 2011] Race",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "点分治",
+        "递归",
+        "树上启发式合并",
+        "分治"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP33",
+      "name": "TRIP - Trip",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "字符串",
+        "递归",
+        "枚举"
+      ],
+      "difficulty": "提高"
     }
   ]
 }

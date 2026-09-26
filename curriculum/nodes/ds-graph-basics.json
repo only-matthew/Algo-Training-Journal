@@ -52,7 +52,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "搜索",
+        "图论",
+        "BFS",
+        "DFS",
+        "图遍历"
+      ]
     },
     {
       "platform": "洛谷",
@@ -61,7 +68,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "搜索",
+        "图论",
+        "BFS",
+        "DFS",
+        "强连通分量"
+      ]
     },
     {
       "platform": "洛谷",
@@ -70,7 +84,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "DP",
+        "图论",
+        "递推",
+        "拓扑排序"
+      ]
     },
     {
       "platform": "洛谷",
@@ -79,7 +99,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "DP",
+        "搜索",
+        "图论",
+        "排序",
+        "DFS",
+        "记忆化搜索"
+      ]
     },
     {
       "platform": "洛谷",
@@ -124,7 +152,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "图论",
+        "并查集",
+        "拓扑排序"
+      ]
     },
     {
       "platform": "洛谷",
@@ -390,6 +423,829 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3625",
+      "name": "迷宫寻路",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "DFS",
+        "图遍历"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3643",
+      "name": "图的存储",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3644",
+      "name": "【模板】拓扑排序 / 家谱树",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "拓扑排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3647",
+      "name": "【模板】Floyd",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路",
+        "Floyd"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4292",
+      "name": "[蓝桥杯青少年组省赛 2022] 路线",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "图遍历",
+        "最短路"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10287",
+      "name": "[GESP样题 七级] 最长不下降子序列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "拓扑排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10477",
+      "name": "[NWERC 2003] Subway tree systems",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "图遍历",
+        "树的遍历",
+        "哈希"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10480",
+      "name": "可达性统计",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "拓扑排序",
+        "位运算",
+        "bitset"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10722",
+      "name": "[GESP202406 六级] 二叉树",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图遍历",
+        "树的遍历"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1073",
+      "name": "[NOIP 2009 提高组] 最优贸易",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "搜索",
+        "图论",
+        "最短路",
+        "强连通分量",
+        "Tarjan"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10929",
+      "name": "黑暗城堡",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路",
+        "生成树"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10932",
+      "name": "Freda的传呼机",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "Tarjan",
+        "双连通分量",
+        "仙人掌",
+        "LCA",
+        "树链剖分"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10935",
+      "name": "银河",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "拓扑排序",
+        "最短路",
+        "Tarjan",
+        "差分约束"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10936",
+      "name": "导弹防御塔",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "二分",
+        "图论",
+        "二分图"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10937",
+      "name": "車的放置",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "网络流",
+        "图论",
+        "二分图"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10938",
+      "name": "Vani和Cl2捉迷藏",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "二分图"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10939",
+      "name": "骑士放置",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "网络流",
+        "二分图"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10942",
+      "name": "GF和猫咪的玩具",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "BFS",
+        "最短路",
+        "Floyd"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10944",
+      "name": "Going from u to v or from v to u?",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "拓扑排序",
+        "Tarjan",
+        "bitset"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10947",
+      "name": "[BAPC 2006 资格赛] Sightseeing",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10948",
+      "name": "升降梯上",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10951",
+      "name": "最优高铁环",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "二分",
+        "分数规划"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1137",
+      "name": "旅行计划",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "图论",
+        "递推",
+        "记忆化搜索",
+        "拓扑排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1155",
+      "name": "[NOIP 2008 提高组] 双栈排序",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "贪心",
+        "二分图",
+        "栈"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1195",
+      "name": "口袋的天空",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12343",
+      "name": "[蓝桥杯 2025 省 AB/Python B 第二场] 树上寻宝",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "树的遍历"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1462",
+      "name": "通往奥格瑞玛的道路",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "二分",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1596",
+      "name": "[USACO10OCT] Lake Counting S",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "图论",
+        "BFS",
+        "DFS",
+        "连通块"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1948",
+      "name": "[USACO08JAN] Telephone Lines S",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "图论",
+        "二分",
+        "BFS",
+        "DFS",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1967",
+      "name": "[NOIP 2013 提高组] 货车运输",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "贪心",
+        "倍增",
+        "并查集",
+        "Kruskal重构树",
+        "生成树"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2016",
+      "name": "[SEERC 2000] 战略游戏",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "图论",
+        "贪心",
+        "树形DP"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2047",
+      "name": "[NOI2007] 社交网络",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路",
+        "Floyd"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2330",
+      "name": "[SCOI2005] 繁忙的都市",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "二分",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2419",
+      "name": "[USACO08JAN] Cow Contest S",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "DFS",
+        "拓扑排序",
+        "Floyd"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2661",
+      "name": "[NOIP 2015 提高组] 信息传递",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "并查集",
+        "DFS",
+        "拓扑排序",
+        "强连通分量",
+        "Tarjan"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2746",
+      "name": "[IOI 1996 / USACO5.3] 校园网 Network of Schools",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "强连通分量",
+        "Tarjan"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2860",
+      "name": "[USACO06JAN] Redundant Paths G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "Tarjan",
+        "双连通分量"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2901",
+      "name": "[USACO08MAR] Cow Jogging G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "BFS",
+        "拓扑排序",
+        "最短路",
+        "A*"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3008",
+      "name": "[USACO11JAN] Roads and Planes G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "拓扑排序",
+        "最短路"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3366",
+      "name": "【模板】最小生成树",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3371",
+      "name": "【模板】单源最短路径（弱化版）",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4151",
+      "name": "[WC2011] 最大 XOR 和路径",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "贪心",
+        "枚举",
+        "DFS",
+        "线性基",
+        "向量"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4316",
+      "name": "绿豆蛙的归宿",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "记忆化搜索",
+        "拓扑排序",
+        "期望",
+        "栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4568",
+      "name": "[JLOI2011] 飞行路线",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4644",
+      "name": "[USACO05DEC] Cleaning Shifts S",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递推",
+        "线段树",
+        "排序",
+        "优先队列",
+        "图论"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4779",
+      "name": "【模板】单源最短路径（标准版）",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "优先队列",
+        "最短路"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4819",
+      "name": "[中山市选] 杀人游戏",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "强连通分量"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6062",
+      "name": "[USACO05JAN] Muddy Fields G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "二分图"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6464",
+      "name": "[传智杯 #2 决赛] 传送门",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路",
+        "Floyd"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6833",
+      "name": "[Cnoi2020] 雷雨",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "最短路"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7113",
+      "name": "[NOIP2020] 排水系统",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "高精度",
+        "拓扑排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8604",
+      "name": "[蓝桥杯 2013 国 C] 危险系数",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "BFS",
+        "DFS"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8605",
+      "name": "[蓝桥杯 2013 国 AC] 网络寻路",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8673",
+      "name": "[蓝桥杯 2018 国 C] 迷宫与陷阱",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "BFS",
+        "图论"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA10369",
+      "name": "Arctic Network",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "二分",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1411",
+      "name": "Ants",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "网络流",
+        "图论",
+        "二分图",
+        "费用流"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA302",
+      "name": "John's trip",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "欧拉回路"
+      ],
+      "difficulty": "普及+/提高-"
     }
   ]
 }

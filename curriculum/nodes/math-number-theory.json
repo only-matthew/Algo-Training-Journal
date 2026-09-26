@@ -65,7 +65,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "数学",
+        "数论",
+        "扩展欧几里德算法",
+        "CRT"
+      ]
     },
     {
       "platform": "洛谷",
@@ -92,7 +98,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "数学",
+        "数论",
+        "CRT"
+      ]
     },
     {
       "platform": "洛谷",
@@ -119,7 +130,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "素数判断",
+        "前缀和",
+        "欧拉函数"
+      ]
     },
     {
       "platform": "洛谷",
@@ -128,7 +144,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "数学",
+        "欧拉函数"
+      ]
     },
     {
       "platform": "洛谷",
@@ -137,7 +157,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "数学",
+        "数论",
+        "扩展欧几里德算法",
+        "逆元"
+      ]
     },
     {
       "platform": "洛谷",
@@ -236,7 +262,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "素数判断",
+        "莫比乌斯反演",
+        "容斥原理",
+        "欧拉函数"
+      ]
     },
     {
       "platform": "洛谷",
@@ -774,6 +806,257 @@
       "source": "刘汝佳·算法竞赛入门经典",
       "role": "练习",
       "note": ""
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3715",
+      "name": "分解质因子 2",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数论",
+        "素数判断"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3871",
+      "name": "[GESP202309 五级] 因数分解",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数论"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3941",
+      "name": "[GESP样题 五级] 小杨的锻炼",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数论",
+        "gcd"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B4070",
+      "name": "[GESP202412 五级] 奇妙数字",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "数论"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10136",
+      "name": "[USACO24JAN] Cowlendar S",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数论",
+        "鸽笼原理"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10415",
+      "name": "[蓝桥杯 2023 国 A] 切割",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "数论"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10496",
+      "name": "[ICPC-Hefei 2008 Online] The Luckiest Number",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数论",
+        "gcd",
+        "欧拉函数"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12256",
+      "name": "[蓝桥杯 2024 国 Java B] 数据库",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "组合数学",
+        "逆元"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12323",
+      "name": "[蓝桥杯 2023 省 Java B] 阶乘求和",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "数论"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1593",
+      "name": "因子和",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "分治",
+        "逆元"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2480",
+      "name": "[SDOI2010] 古代猪文",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "素数判断",
+        "CRT",
+        "Lucas定理",
+        "欧拉降幂",
+        "欧拉函数"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2485",
+      "name": "[SDOI2011] 计算器",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "素数判断",
+        "gcd",
+        "逆元",
+        "BSGS"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3383",
+      "name": "【模板】线性筛素数",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "数论",
+        "素数判断",
+        "线性筛"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4071",
+      "name": "[SDOI2016] 排列计数",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "递推",
+        "枚举",
+        "组合数学",
+        "线性递推",
+        "逆元"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4777",
+      "name": "【模板】扩展中国剩余定理（EXCRT）",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "数论",
+        "gcd",
+        "扩展欧几里德算法",
+        "不定方程",
+        "CRT"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8754",
+      "name": "[蓝桥杯 2021 省 AB2] 完全平方数",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数论",
+        "素数判断"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8799",
+      "name": "[蓝桥杯 2022 国 B] 齿轮",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数论"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8807",
+      "name": "[蓝桥杯 2022 国 C] 取模",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数论",
+        "枚举",
+        "鸽笼原理"
+      ],
+      "difficulty": "普及"
     }
   ]
 }

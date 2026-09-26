@@ -41,7 +41,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "图论",
+        "并查集",
+        "生成树"
+      ]
     },
     {
       "platform": "洛谷",
@@ -77,7 +82,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "图论",
+        "并查集",
+        "生成树"
+      ]
     },
     {
       "platform": "洛谷",
@@ -408,7 +418,12 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "二分",
+        "并查集",
+        "生成树"
+      ]
     },
     {
       "platform": "洛谷",
@@ -418,6 +433,126 @@
       "role": "习题",
       "note": "",
       "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10686",
+      "name": "Rochambeau",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10687",
+      "name": "True Liars",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集",
+        "背包"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1196",
+      "name": "[NOI2002] 银河英雄传说",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1347",
+      "name": "[ECNA 2001] 排序",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "并查集",
+        "拓扑排序"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1955",
+      "name": "[NOI2015] 程序自动分析",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集",
+        "离散化",
+        "哈希",
+        "启发式合并"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2024",
+      "name": "[NOI2001] 食物链",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3402",
+      "name": "【模板】可持久化并查集",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集",
+        "可持久化"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3958",
+      "name": "[NOIP 2017 提高组] 奶酪",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "数学",
+        "并查集",
+        "BFS",
+        "DFS"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5937",
+      "name": "[CEOI 1999] Parity Game",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集",
+        "离散化"
+      ],
+      "difficulty": "普及+/提高-"
     }
   ]
 }

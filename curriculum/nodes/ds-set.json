@@ -142,7 +142,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "并查集",
+        "离散化",
+        "哈希",
+        "启发式合并"
+      ]
     },
     {
       "platform": "洛谷",
@@ -451,7 +457,14 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "搜索",
+        "数学",
+        "并查集",
+        "BFS",
+        "DFS"
+      ]
     },
     {
       "platform": "洛谷",
@@ -469,7 +482,10 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "并查集"
+      ]
     },
     {
       "platform": "洛谷",
@@ -487,7 +503,257 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "并查集"
+      ]
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10686",
+      "name": "Rochambeau",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集"
+      ],
       "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10687",
+      "name": "True Liars",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集",
+        "背包"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10928",
+      "name": "走廊泼水节",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1141",
+      "name": "01迷宫",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "并查集",
+        "BFS",
+        "DFS",
+        "队列"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1195",
+      "name": "口袋的天空",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12241",
+      "name": "[蓝桥杯 2023 国 C] 最大区间",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "二分",
+        "并查集",
+        "ST表",
+        "笛卡尔树",
+        "单调栈"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1347",
+      "name": "[ECNA 2001] 排序",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "并查集",
+        "拓扑排序"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2330",
+      "name": "[SCOI2005] 繁忙的都市",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "二分",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3366",
+      "name": "【模板】最小生成树",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3402",
+      "name": "【模板】可持久化并查集",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集",
+        "可持久化"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3533",
+      "name": "[POI 2012] RAN-Rendezvous",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "并查集",
+        "LCA",
+        "基环树"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4047",
+      "name": "[JSOI2010] 部落划分",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "二分",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4180",
+      "name": "[BJWC2010] 严格次小生成树",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "并查集",
+        "Kruskal重构树",
+        "生成树",
+        "LCA",
+        "树链剖分"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5937",
+      "name": "[CEOI 1999] Parity Game",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "并查集",
+        "离散化"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP1805",
+      "name": "HISTOGRA - Largest Rectangle in a Histogram",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "并查集",
+        "栈",
+        "ST表",
+        "笛卡尔树",
+        "单调栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA10369",
+      "name": "Arctic Network",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "二分",
+        "并查集",
+        "生成树"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1316",
+      "name": "Supermarket",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "并查集",
+        "排序"
+      ],
+      "difficulty": "普及"
     }
   ]
 }

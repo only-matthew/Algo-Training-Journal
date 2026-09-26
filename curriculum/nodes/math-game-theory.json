@@ -274,6 +274,58 @@
         "implementation",
         "math"
       ]
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10501",
+      "name": "Cutting Game",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "博弈论",
+        "SG函数"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10506",
+      "name": "魔法珠",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "博弈论"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10507",
+      "name": "Georgia and Bob",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "博弈论"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4301",
+      "name": "[CQOI2013] 新Nim游戏",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "博弈论",
+        "线性基",
+        "构造"
+      ],
+      "difficulty": "提高+/省选-"
     }
   ]
 }

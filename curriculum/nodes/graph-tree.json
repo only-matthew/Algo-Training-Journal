@@ -77,7 +77,10 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "LCA"
+      ]
     },
     {
       "platform": "洛谷",
@@ -86,7 +89,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "LCA",
+        "树链剖分",
+        "差分"
+      ]
     },
     {
       "platform": "洛谷",
@@ -203,7 +211,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "省选/NOI-"
+      "difficulty": "省选/NOI-",
+      "tags": [
+        "线段树",
+        "树上启发式合并",
+        "LCA",
+        "树链剖分",
+        "LCT",
+        "ST表"
+      ]
     },
     {
       "platform": "洛谷",
@@ -485,7 +501,12 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "倍增",
+        "LCA",
+        "树链剖分"
+      ]
     },
     {
       "platform": "OpenJ_Bailian",
@@ -638,6 +659,160 @@
       "role": "习题",
       "note": "",
       "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10113",
+      "name": "[GESP202312 八级] 大量的工作沟通",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "LCA"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10930",
+      "name": "异象石",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DFS",
+        "LCA",
+        "虚树"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10931",
+      "name": "闇の連鎖",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "LCA",
+        "树链剖分",
+        "差分"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10932",
+      "name": "Freda的传呼机",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "图论",
+        "Tarjan",
+        "双连通分量",
+        "仙人掌",
+        "LCA",
+        "树链剖分"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10953",
+      "name": "逃不掉的路",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "双连通分量",
+        "LCA"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P11967",
+      "name": "[GESP202503 八级] 割裂",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "LCA",
+        "差分"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3533",
+      "name": "[POI 2012] RAN-Rendezvous",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "并查集",
+        "LCA",
+        "基环树"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4180",
+      "name": "[BJWC2010] 严格次小生成树",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "倍增",
+        "并查集",
+        "Kruskal重构树",
+        "生成树",
+        "LCA",
+        "树链剖分"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8805",
+      "name": "[蓝桥杯 2022 国 B] 机房",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "LCA",
+        "前缀和"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P9245",
+      "name": "[蓝桥杯 2023 省 B] 景区导游",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "LCA"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P9246",
+      "name": "[蓝桥杯 2023 省 B] 砍树",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "LCA",
+        "差分"
+      ],
+      "difficulty": "普及+/提高-"
     }
   ]
 }

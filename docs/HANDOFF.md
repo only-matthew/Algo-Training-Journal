@@ -2,6 +2,75 @@
 
 > 本文件是按时间追加的历史记录，不再作为“当前实现”的单一权威。当前产品状态以 README、PRODUCT、SPECIFICATION 的 2026-09-26 状态标记为准；易变的测试数量与部署版本只代表各段落注明日期的快照。
 
+## 最新交接（2026-09-27，v2.1）：知识地图配色修复与洛谷书系题单
+
+用户提出两条已知问题：知识地图「黑底黑字」、增加洛谷三个书系题单。两条都已落地并验证，**尚未部署**（前端与 Worker 都不需要改 Worker，纯前端 + 数据）。
+
+### 1. 黑底黑字：同一套色阶被写了两遍，后一处把前一处抹掉
+
+先量后改。`artifacts/badge-colors.mjs` 把知识地图上的每类徽标注入真实页面，在浅深两套主题下读计算色与 WCAG 对比度，结果直接定位到病根：
+
+| 徽标 | 修复前实测 |
+| --- | --- |
+| `.roadmap-luogu-difficulty[data-level="8"]`（NOI/NOI+/CTS） | 深字 `rgb(16,35,28)` 落在近黑底 `rgb(17,24,39)` 上，**1.08:1** |
+| `.roadmap-difficulty[data-difficulty="4"]` | 白字落 `#eab308`，1.92:1 |
+| 洛谷等级 1/6/7 | 4.15–4.46:1，均低于 4.5 |
+
+根因是 `src/style.css` 中段已定义洛谷 8 级配色，文件末尾又追加了一条同特异性的 `.roadmap-luogu-difficulty{color:var(--text);background:var(--surface-soft)}`，位置更靠后 → 整条色阶被折叠成灰底；`data-level=8` 原本用近黑 `#111827` 作底，深色字落上去就是 1.08:1。
+
+处置：色阶收敛到 **`lib/roadmap-badges.mjs`（唯一来源）**，`foregroundFor()` 按 WCAG 相对亮度自动选深墨或白色前景，模板把结果内联到徽标（样式表再覆盖也打不回来）。取色微调到达标：难度 9-10 由 `#ef4444` → `#b91c1c`；洛谷入门/提高+/省选- 由 `#ef4444`/`#3b82f6`/`#a855f7` → `#b91c1c`/`#1d4ed8`/`#7e22ce`；NOI 档改 `#475569`。样式表侧删掉了 8 条洛谷硬编码色、6 条掌握度硬编码色、4 组节点难度色，以及 `[data-theme="dark"]` 段的重复色阶，只保留排版 + 「浅底深字」兜底；五个掌握度状态色改为下发 `--evidence-light`/`--evidence-dark` 自定义属性，未登记状态回落到 `#4f5c56`/`#cbd5e1`（原来的 `var(--muted)` 只有 4.04:1）。
+
+**端到端测完之后又补了一轮**：把测量从「注入合成标记」改成「直接测真实渲染页面」后发现还有两类 12px 小字不达标，也都修了：
+
+| 元素 | 修复前 | 修复后 |
+| --- | --- | --- |
+| `.tag-chip`（标签/来源/热度/考纲芯片，浅色主题） | `--muted` 在 `--surface-soft` 上 4.37:1 | 新增 `--tag-chip-ink:#57655f` → 5.56:1 |
+| `.review-chip.todo` / `.difficulty-badge.hard` | `#b94845` 在 `#fde8e7` 上 4.39:1 | `final.css` 的 `--hard` 改 `#a63c39` → 5.37:1 |
+| `.difficulty-badge.medium` | `--medium#a66605` 偏低 | 改 `#8f5404` |
+
+最终实测（`node artifacts/badge-colors.mjs`，4 个真实页面 × 2 套主题、490 个徽标去重成 30 种）：**严重 0 项、低于 AA 0 项**，同一徽标在两套主题下的配色完全一致。
+
+
+### 2. 洛谷书系题单：26 个题单、712 道题，按算法标签归并
+
+- 数据源：《算法竞赛进阶指南》（李煜东）14 个 + 《算法竞赛试炼场：洛谷 300 题精析》（罗勇军）8 个 + 《算法竞赛实战笔记》4 个。
+- 题目 `source` 短名：《实战笔记》/《洛谷精析》/`洛谷·进阶指南`（用户指定写法；书籍全名只出现在 `collections[].seriesName` 与抓取日志里）。
+- **题单详情页需要登录**：匿名一律 401 `UserUnloginException`，`/problem/list?trainingId=` 会被静默忽略返回全站题单；目录页与 `/_lfe/tags` 标签字典匿名可读。
+- `scripts/fetch-luogu-training.mjs`：目录页 → 详情页（只认正文 `<ol><li><a href="/problem/…">` 的行，说明区的纯文本题号不算）→ 题目页（题名/难度/标签 id）→ 标签字典归一。凭证**只从环境变量 `LUOGU_COOKIE` 读**，不落盘；支持 `--skip-existing` 断点续抓（失败项会自动重抓）。实测 712 道唯一题目 0 失败。
+  用法：`$env:LUOGU_COOKIE="__client_id=…; _uid=…"; node scripts/fetch-luogu-training.mjs`
+- `lib/curriculum-book-problems.mjs`：**按标签独特性加权**归并（`Σ 1/标签所属节点数`）。第一版按"命中标签个数"排序时，「DP+背包」的采药被泛化的 dp-intro 抢走、dp-linear 几乎收不到题；加权后独有标签（`背包`）胜过泛化标签（`DP`）。一题最多并 3 个节点，缺标签约 4% 不猜归属。
+- 结果：712 道唯一题目 → 1322 条节点记录（覆盖 39 个节点），书系题 1138 条；核心题单 1719 题一条未少（上限 120 只截断排在末尾的书系题）。
+- 界面：题目卡片加 `data-problem-source`，节点页题目区加「全部来源」下拉（8 个来源）；书系题自带标签芯片。
+- 重新生成：`node scripts/convert-curriculum.js --force` → `npm run generate`。
+
+### 3. 顺带修掉的潜伏 bug：`A*` 标签会写坏构建
+
+并入题单后构建直接 `ENOENT: site/data/tags/A*.json`。根因：**`encodeURIComponent` 按 RFC 3986 保留 `*`**（保留集 `! ~ * ' ( )`），而 `*` 在 Windows 是通配符；标签分片与标签页目录此前都用 `encodeURIComponent(tag)` 拼路径。`A*`、`IDA*` 这两个标签一直在 `lib/luogu-tag-map.mjs` 里，只是此前没有日志用到，所以一直没暴露。
+
+处置：新增 `lib/tag-index.mjs#tagStorageKey()`（只留字母/数字/连字符/下划线/点，其余按 UTF-8 字节百分号编码），构建端（分片、标签页目录、路由 index）与浏览器端（取分片、`tagHref()`）共用；`scripts/generate-data.js`、`lib/data.mjs`、`lib/roadmap.mjs`、`lib/ui.mjs`、`lib/problem-detail.mjs`、`lib/renderer.mjs` 全部切过去。`scripts/preview-ui.mjs` 的静态服务器改为"解码路径不存在时回退原样路径"，与静态托管一致。
+
+### 4. 验证与新增文件
+
+| 项目 | 结果 |
+| --- | --- |
+| 语法检查 | 90 个源文件通过 |
+| 测试 | 460 + 76 = **536 项全绿**（本轮 +22） |
+| 构建 | 193 条日志；书系题嵌入 39 个节点 |
+| 浏览器复核 | `node artifacts/verify-v21.mjs` 10 项断言全过 |
+| 对比度扫描 | `node artifacts/contrast-audit.mjs` 严重级（<2.2）条目 2 → 0 |
+
+新增：`lib/roadmap-badges.mjs`、`lib/curriculum-book-problems.mjs`、`scripts/fetch-luogu-training.mjs`、`curriculum/luogu-training-problems.json`、`test/roadmap-badges.test.mjs`、`test/curriculum-book-problems.test.mjs`、`test/tag-storage-key.test.mjs`。
+
+`artifacts/` 下的浏览器脚本（`contrast-audit.mjs` 全站逐元素扫描 / `badge-colors.mjs` 徽标配色台账 / `verify-v21.mjs` 功能复核 / `roadmap-shots.mjs` 截图）不进仓库（`artifacts/` 已忽略），重跑需要先 `npm run preview` 起预览服务。
+
+**踩到的工具陷阱（值得记住）**：`scripts/preview-ui.mjs` 原来不发缓存头，浏览器用启发式缓存留住了旧的 `style.css` —— 重建后截图与测量都还是旧样式，而带 `?v=` 的 JS 请求会绕过 `no-store`，于是出现「浏览器探针说没改、CSS 文件里明明改了」的假象，浪费了好几轮排查。现在预览服务统一返回 `no-store, no-cache, must-revalidate`。**教训：本地预览的样式变更，先确认浏览器真的拿到了新文件。**
+
+### 5. 尚未做
+
+- 未部署：本轮没有推送，也没有 `wrangler deploy`（本次没改 Worker）。
+- 未覆盖：按标签算出的 1322 条书系记录里有 **184 条**因落在超过 120 题上限的节点末尾被截断（实际写入 1138 条），涉及 `algo-search-basics` / `dp-intro` / `dp-tree-graph` 三个节点（都恰好卡在 120）。
+- 数据刷新是手动的：洛谷新增题单后需要重新跑抓取脚本并提交 `curriculum/luogu-training-problems.json`。
+
 ## 最新交接（2026-09-25）：无用文件清理
 
 - 删除已完成使命且当前数据不再需要的 `migrate-logs.js`、`migrate-date-layout.js`、`backfill-updated-at.js` 和旧版 `backfill-difficulty.mjs`；清理前确认不存在旧日志目录/单文件格式，154 份日志均已有 `updatedAt`。

@@ -1,5 +1,41 @@
 # 队员自主算法训练平台：技术规格
 
+## 2026-09-27 专项规格（v2.1）：知识地图徽标配色与洛谷书系题单
+
+### 1. 徽标配色只有一个来源
+
+知识地图上的难度徽标与训练证据徽标，**底色与前景色都不得在样式表里声明第二遍**。色阶集中在 [lib/roadmap-badges.mjs](lib/roadmap-badges.mjs)，由模板内联到徽标上；样式表只保留排版属性。
+
+- `NODE_DIFFICULTY_PALETTE`（知识点难度 1-10，五档）与 `LUOGU_DIFFICULTY_PALETTE`（洛谷官方 8 级 + 暂无评定）各定义一次底色。
+- `foregroundFor(background)` 按 WCAG 2.1 相对亮度在深墨 `#10231c` 与白色之间选前景，**保证每个底色上的文字对比度 ≥ 4.5:1**；`auditBadgeContrast()` 是可被测试调用的自检入口，要求返回空数组。
+- 禁止把近黑底色（如原来的 `#111827`）用于徽标：深色主题下它会与页面底色 `#0b1511` 糊在一起。
+- 掌握度状态色以 `--evidence-light` / `--evidence-dark` 两个自定义属性下发，样式表仅用 `color-mix` 计算底色；**未登记的状态必须回落到中性配色**（`#4f5c56` / `#cbd5e1`），不得出现"新增状态没有颜色"或落到 `var(--muted)`（后者在混色底上只有 4.04:1）的静默失效。
+- 12px 小字的标签芯片同样要过 AA：`.tag-chip` 的字色用 `--tag-chip-ink`（浅色 `#57655f`、深色沿用 `--muted`），不得直接依赖 `--muted`（浅色主题下只有 4.37:1）。修改芯片字色时注意：标签芯片既可能是 `<a>` 也可能是 `<span>`，且 `src/assets/final.css` 的 token（`--hard`、`--medium`…）会覆盖同名语义的状态色 —— 依据是**构建后 `site/style.css` 里的实际取值**，不是源文件里的字面值。
+
+历史教训：`src/style.css` 末尾曾有一条 `.roadmap-luogu-difficulty{color:var(--text);background:var(--surface-soft)}` 的兼容规则，位置更靠后、特异性相同，把整条 8 级色阶折叠成灰底；`data-level="8"` 因此变成深字落近黑底，实测对比度 **1.08:1**。任何"为兼容而追加"的覆盖规则都必须先确认它没有抹掉另一处声明的分级语义。
+
+### 2. 洛谷书系题单的并入口径
+
+数据源：洛谷三个官方书系题单 —— 李煜东《算法竞赛进阶指南》（14 个题单）/ 罗勇军《算法竞赛试炼场：洛谷 300 题精析》（8 个）/《算法竞赛实战笔记》（4 个）。
+
+**抓取**（[scripts/fetch-luogu-training.mjs](scripts/fetch-luogu-training.mjs)）：题单目录页与标签字典 `/_lfe/tags` 匿名可读；**题单详情页需要登录态**，匿名请求返回 401 `UserUnloginException`，`/problem/list?trainingId=` 之类参数会被静默忽略。因此凭证只从环境变量 `LUOGU_COOKIE` 读取（不落盘、不进仓库），请求走与题面抓取相同的 C3VK 挑战握手。题目清单从详情页正文的 `<ol><li><a href="/problem/…">题号 - 名称</a></li>` 提取，**只认带链接的行**；题单说明区里的纯文本题号不是题单成员，不得计入。产出 `curriculum/luogu-training-problems.json`（`schemaVersion`、`series`、`collections`、`problems`，每题含 `pid/name/difficulty/tags/collections`）。
+
+**归属**（[lib/curriculum-book-problems.mjs](lib/curriculum-book-problems.mjs)）：按**算法标签**而非书籍章节合并。
+
+| 规则 | 口径 |
+| --- | --- |
+| 匹配 | 题目的站内标签（经 `lib/luogu-tag-map.mjs` 归一）与节点标签求交 |
+| 排序 | 按标签独特性加权：`Σ 1 / 该标签所属节点数`。泛化标签（如 `DP` 同时挂两个节点）权重减半，独有标签权重为 1 |
+| 下限 | 得分 < 0.5 的弱匹配不并入 |
+| 多归属 | 一道题最多并入 `MAX_NODES_PER_PROBLEM = 3` 个节点，按得分降序、并列按节点元数据顺序 |
+| 缺标签 | 不猜归属，计入 `dropped`（`no-tags` / `no-node-match`）并输出计数 |
+
+节点题单上限 `MAX_PROBLEMS_PER_NODE = 120`，**只截断书系并入的题**（书系题排在列表末尾），既有「深入浅出 / 罗勇军 / 刘汝佳 / CF」题单必须保持完整。题目条目新增 `tags`（洛谷算法标签）与 `source`，来源短名固定为 `洛谷·进阶指南` / `《洛谷精析》` / `《实战笔记》`（`BOOK_SERIES_LABELS`，用户指定写法，见 `test/curriculum-book-problems.test.mjs` 的固定断言）；题目卡片新增 `data-problem-source` 供节点页「全部来源」下拉筛选。注意区分「书籍全名」（用于 `collections[].seriesName` 与抓取脚本日志）与「来源短名」（用于题目 `source`），两者不要互相替代。
+
+### 3. 标签文件路径必须用 `tagStorageKey`
+
+标签分片与标签页目录的路径**不得直接用标签原名或 `encodeURIComponent(tag)`**：`encodeURIComponent` 按 RFC 3986 保留 `! ~ * ' ( )`，而 `*` 在 Windows 上是通配符（`data/tags/A*.json` 实测 ENOENT，构建直接失败），`/`、空格等字符跨平台也不安全。[lib/tag-index.mjs](lib/tag-index.mjs) 的 `tagStorageKey(tag)` 只保留字母/数字/连字符/下划线/点，其余按 UTF-8 字节百分号编码；构建端（分片写入、标签页目录、路由 index 与 sitemap）与浏览器端（取分片、`tagHref()` 生成链接）必须共用同一份实现。链接生成也必须走 `tagHref()`：`encodeURIComponent("A*")` 仍是 `A*`，浏览器访问 `/tags/A*/` 时路径会被规范化成字面星号，与按 `%2A` 落盘的目录对不上。
+
 ## 2026-09-21 专项规格补充：AtCoder 算法标签与提交页链接
 
 AtCoder 导入结果新增 `submissionUrl`（`https://atcoder.jp/contests/<比赛>/submissions/<id>`，取自 kenkoooo 提交记录的 id + contest_id）与 `tags`。AtCoder 官方与 kenkoooo 都不提供算法标签，`tags` 来自洛谷的 AtCoder 镜像：`/_lfe/tags` 提供 id→中文名的字典（按 isolate 缓存 6 小时），题目**列表页** `problem/list?keyword=<比赛>&type=AT` 一次给出整场比赛的题号与数字标签（按 `AT_<比赛>_` 前缀过滤，因为 keyword 是模糊匹配），单题页 `AT_<任务 ID>` 在抓题面时顺带给出该题标签。数字标签经 [lib/luogu-tag-map.mjs](lib/luogu-tag-map.mjs) 映射为站内标签：能对上规范标签的映射过去（262 个里 223 个），分类名与「语言入门」语法标签丢弃，站内没有的成熟技巧保留原名，带分隔符的先拆开，超过 30 字符的丢弃。标签是增强项：字典或列表页失败只是没有标签，导入与题面抓取照常成功。实现见 [最新交接](HANDOFF.md)、抓取服务 [workers/services/atcoder-tags.mjs](workers/services/atcoder-tags.mjs)。

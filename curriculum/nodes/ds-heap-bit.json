@@ -54,7 +54,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "线段树",
+        "平衡树",
+        "堆"
+      ]
     },
     {
       "platform": "洛谷",
@@ -72,7 +77,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "贪心",
+        "堆",
+        "优先队列",
+        "霍夫曼树"
+      ]
     },
     {
       "platform": "洛谷",
@@ -90,7 +101,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "线段树",
+        "二分",
+        "堆",
+        "树状数组",
+        "优先队列",
+        "STL"
+      ]
     },
     {
       "platform": "洛谷",
@@ -108,7 +127,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "二分",
+        "堆",
+        "排序"
+      ]
     },
     {
       "platform": "洛谷",
@@ -153,7 +177,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "树状数组",
+        "差分"
+      ]
     },
     {
       "platform": "洛谷",
@@ -162,7 +190,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "线段树",
+        "树状数组",
+        "递归",
+        "离散化",
+        "分治",
+        "排序"
+      ]
     },
     {
       "platform": "洛谷",
@@ -584,6 +620,244 @@
       "role": "习题",
       "note": "",
       "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1020",
+      "name": "[NOIP 1999 提高组] 导弹拦截",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "贪心",
+        "线段树",
+        "二分",
+        "树状数组",
+        "离散化"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10454",
+      "name": "奇数码问题",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "排序",
+        "Ad-hoc"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10497",
+      "name": "[USACO03OPEN] Lost Cows",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "线段树",
+        "树状数组",
+        "枚举"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10589",
+      "name": "楼兰图腾",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "分治",
+        "排序"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10688",
+      "name": "Buy Tickets",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "二分",
+        "树状数组"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1165",
+      "name": "日志分析",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "堆",
+        "优先队列",
+        "栈"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1439",
+      "name": "两个排列的最长公共子序列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "二分",
+        "树状数组"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1996",
+      "name": "约瑟夫问题",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "模拟",
+        "树状数组",
+        "队列",
+        "链表"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2617",
+      "name": "Dynamic Rankings",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "莫队",
+        "线段树",
+        "平衡树",
+        "树状数组",
+        "树套树",
+        "可持久化线段树"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4169",
+      "name": "[Violet] 天使玩偶/SJY摆棋子",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "cdq分治",
+        "分治",
+        "剪枝",
+        "树套树"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4178",
+      "name": "Tree",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "点分治",
+        "树状数组",
+        "树上启发式合并",
+        "分治",
+        "容斥原理"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4390",
+      "name": "[BalkanOI 2007] Mokia 摩基亚",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "cdq分治",
+        "分治",
+        "排序"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP16809",
+      "name": "EST - Estimation",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "堆"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA10810",
+      "name": "Ultra-QuickSort",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "树状数组",
+        "排序"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA1205",
+      "name": "Color a Tree",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "贪心",
+        "并查集",
+        "堆",
+        "优先队列",
+        "树形DP"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA12983",
+      "name": "The Battle of Chibi",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "树状数组",
+        "离散化"
+      ],
+      "difficulty": "普及+/提高-"
     }
   ]
 }

@@ -68,7 +68,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "数学",
+        "组合数学",
+        "容斥原理"
+      ]
     },
     {
       "platform": "洛谷",
@@ -113,7 +118,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "数学",
+        "递推",
+        "枚举",
+        "组合数学",
+        "线性递推",
+        "逆元"
+      ]
     },
     {
       "platform": "洛谷",
@@ -122,7 +135,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "数学",
+        "组合数学",
+        "排列组合",
+        "二项式定理"
+      ]
     },
     {
       "platform": "Codeforces",
@@ -140,7 +159,14 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及-"
+      "difficulty": "普及-",
+      "tags": [
+        "DP",
+        "数学",
+        "递推",
+        "Catalan数",
+        "栈"
+      ]
     },
     {
       "platform": "洛谷",
@@ -176,7 +202,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "数学",
+        "组合数学",
+        "前缀和"
+      ]
     },
     {
       "platform": "洛谷",
@@ -663,6 +694,222 @@
       "role": "习题",
       "note": "",
       "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "B3901",
+      "name": "[NICA #3] 星空（Easy Version）",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "排列组合"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "CF451E",
+      "name": "Devu and Flowers",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "状态合并",
+        "进制",
+        "组合数学",
+        "容斥原理"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "CF559C",
+      "name": "Gerald and Giant Chess",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "组合数学"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10112",
+      "name": "[GESP202312 八级] 奖品分配",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "组合数学",
+        "排列组合"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10982",
+      "name": "Connected Graph",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "组合数学",
+        "容斥原理"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P11250",
+      "name": "[GESP202409 八级] 手套配对",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "组合数学",
+        "排列组合"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1157",
+      "name": "组合的输出",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "递归",
+        "排列组合"
+      ],
+      "difficulty": "普及-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12256",
+      "name": "[蓝桥杯 2024 国 Java B] 数据库",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "组合数学",
+        "逆元"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3799",
+      "name": "小 Y 拼木棒",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "枚举",
+        "组合数学"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4778",
+      "name": "Counting swaps",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "组合数学"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5684",
+      "name": "[CSP-J 2019 江西] 非回文串",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "组合数学"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P6596",
+      "name": "How Many of Them",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "组合数学",
+        "生成函数"
+      ],
+      "difficulty": "NOI/NOI+/CTS"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P7961",
+      "name": "[NOIP2021] 数列",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "排列组合"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8557",
+      "name": "炼金术（Alchemy）",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "组合数学",
+        "容斥原理"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8692",
+      "name": "[蓝桥杯 2019 国 C] 数正方形",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "枚举",
+        "组合数学"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P8762",
+      "name": "[蓝桥杯 2021 国 ABC] 123",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "枚举",
+        "组合数学"
+      ],
+      "difficulty": "普及"
     }
   ]
 }

@@ -125,7 +125,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高+/省选-"
+      "difficulty": "提高+/省选-",
+      "tags": [
+        "莫队",
+        "线段树",
+        "平衡树",
+        "树状数组",
+        "树套树",
+        "可持久化线段树"
+      ]
     },
     {
       "platform": "洛谷",
@@ -394,7 +402,11 @@
       "source": "罗勇军·算法竞赛",
       "role": "习题",
       "note": "",
-      "difficulty": "提高+/省选-"
+      "difficulty": "提高+/省选-",
+      "tags": [
+        "并查集",
+        "可持久化"
+      ]
     },
     {
       "platform": "洛谷",
@@ -526,6 +538,189 @@
       "role": "习题",
       "note": "",
       "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10690",
+      "name": "Fotile 模拟赛 L",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "可持久化",
+        "分块",
+        "Trie"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10964",
+      "name": "Fence Obstacle Course",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "线段树",
+        "珂朵莉树",
+        "线性DP"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12347",
+      "name": "[蓝桥杯 2025 省 A 第二场] 栈与乘积",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "栈"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1502",
+      "name": "窗口的星星",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "离散化",
+        "扫描线"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1600",
+      "name": "[NOIP 2016 提高组] 天天爱跑步",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "树上启发式合并",
+        "LCA",
+        "树链剖分",
+        "LCT",
+        "ST表"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1801",
+      "name": "黑匣子",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "平衡树",
+        "堆"
+      ],
+      "difficulty": "普及"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1856",
+      "name": "[IOI 1998 / USACO5.5] 矩形周长 Picture",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "扫描线"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P2894",
+      "name": "[USACO08FEB] Hotel G",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "二分",
+        "珂朵莉树"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3372",
+      "name": "【模板】线段树 1",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4556",
+      "name": "【模板】线段树合并 / [Vani 有约会] 雨天的尾巴",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "平衡树",
+        "树上启发式合并",
+        "线段树合并"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4735",
+      "name": "最大异或和",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "可持久化",
+        "前缀和",
+        "Trie"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5490",
+      "name": "【模板】扫描线 & 矩形面积并",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "离散化",
+        "扫描线"
+      ],
+      "difficulty": "提高"
+    },
+    {
+      "platform": "洛谷",
+      "number": "SP1716",
+      "name": "GSS3 - Can you answer these queries III",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "矩阵乘法",
+        "动态DP"
+      ],
+      "difficulty": "提高"
     }
   ]
 }

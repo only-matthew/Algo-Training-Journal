@@ -1553,29 +1553,11 @@ textarea.form-input {
   border-color: #1d4ed8;
 }
 
-[data-theme="dark"] .roadmap-difficulty[data-difficulty="1"],
-[data-theme="dark"] .roadmap-difficulty[data-difficulty="2"],
-[data-theme="dark"] .roadmap-difficulty[data-difficulty="3"] {
-  background: #3fb950;
-  color: #071a0d;
-}
-
-[data-theme="dark"] .roadmap-difficulty[data-difficulty="4"],
-[data-theme="dark"] .roadmap-difficulty[data-difficulty="5"],
-[data-theme="dark"] .roadmap-difficulty[data-difficulty="6"] {
-  background: #d29922;
-  color: #0d1117;
-}
-
-[data-theme="dark"] .roadmap-luogu-difficulty:not([data-level="8"]) {
-  color: #0d1117;
+/* 深色主题下不再需要给难度徽标补配色：色阶由 lib/roadmap-badges.mjs 内联下发，
+   foregroundFor 选出的前景在两套主题下都已达标（原 #3fb950/#d29922/#0d1117 等
+   以及 `.roadmap-luogu-difficulty` 的 8 条硬编码色已随 2026-09-27 的修复删除）。 */
+.roadmap-luogu-difficulty[data-level] {
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.16);
-}
-
-[data-theme="dark"] .roadmap-luogu-difficulty[data-level="8"] {
-  background: #30363d;
-  color: var(--text);
-  box-shadow: inset 0 0 0 1px var(--line-strong);
 }
 
 [data-theme="dark"] .roadmap-level-chip.lanqiao {
@@ -1987,36 +1969,17 @@ textarea.form-input {
   color: var(--muted);
 }
 
+/* 知识点难度徽标：同上，配色由 lib/roadmap-badges.mjs 内联下发，
+   这里只保留排版与兜底（浅底 + 深字），不再声明第二套色阶 ——
+   此前这里与 [data-theme="dark"] 段各有一份，正是"同一套色阶写两遍"的来源。 */
 .roadmap-difficulty {
   display: inline-block;
   padding: 2px 8px;
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-  color: #fff;
-  background: #16a34a;
-}
-
-.roadmap-difficulty[data-difficulty="1"],
-.roadmap-difficulty[data-difficulty="2"],
-.roadmap-difficulty[data-difficulty="3"] {
-  background: #22c55e;
-}
-
-.roadmap-difficulty[data-difficulty="4"],
-.roadmap-difficulty[data-difficulty="5"],
-.roadmap-difficulty[data-difficulty="6"] {
-  background: #eab308;
-}
-
-.roadmap-difficulty[data-difficulty="7"],
-.roadmap-difficulty[data-difficulty="8"] {
-  background: #f97316;
-}
-
-.roadmap-difficulty[data-difficulty="9"],
-.roadmap-difficulty[data-difficulty="10"] {
-  background: #ef4444;
+  color: var(--text);
+  background: var(--surface-soft);
 }
 
 .roadmap-tree {
@@ -2126,13 +2089,15 @@ textarea.form-input {
   font-size: 13px;
 }
 
+/* 来源徽标也是 .tag-chip，配色一律由 .tag-chip 决定；
+   这里不再声明 color —— 此前它写了 color:var(--muted)，因同特异性且更靠后，
+   把 .tag-chip 的字色（含 --tag-chip-ink）整个盖掉，12px 下只有 4.37:1。 */
 .roadmap-source {
   display: inline-block;
   padding: 1px 8px;
   border-radius: 999px;
   font-size: 12px;
   background: var(--line);
-  color: var(--muted);
 }
 
 .roadmap-note {
@@ -2195,7 +2160,11 @@ textarea.form-input {
   color: var(--warning);
 }
 
-/* 洛谷官方难度徽标（8 级，颜色对应洛谷帮助中心《题目难度体系》） */
+/* 洛谷官方难度徽标（8 级）。
+   配色不在这里声明：色阶是 lib/roadmap-badges.mjs 的唯一职责，模板会把底色与字色内联到
+   徽标上（WCAG 对比度由 foregroundFor 保证）。这里只保留排版，以及**兜底**：
+   万一某条数据的 difficulty 不在 8 级表内、模板拿不到配色，就用「浅底 + 深字」，
+   而不是原来那套 `color:#fff` + 灰底（浅色主题下只有 2.54:1）。 */
 .roadmap-luogu-difficulty {
   display: inline-block;
   padding: 1px 7px;
@@ -2203,18 +2172,10 @@ textarea.form-input {
   font-size: 11px;
   font-weight: 600;
   line-height: 1.5;
-  color: #fff;
-  background: #9ca3af; /* 0 暂无评定 */
   vertical-align: middle;
+  color: var(--text);
+  background: var(--surface-soft);
 }
-.roadmap-luogu-difficulty[data-level="1"] { background: #ef4444; } /* 入门 */
-.roadmap-luogu-difficulty[data-level="2"] { background: #f97316; } /* 普及- */
-.roadmap-luogu-difficulty[data-level="3"] { background: #d97706; } /* 普及 */
-.roadmap-luogu-difficulty[data-level="4"] { background: #22c55e; } /* 普及+/提高- */
-.roadmap-luogu-difficulty[data-level="5"] { background: #06b6d4; } /* 提高 */
-.roadmap-luogu-difficulty[data-level="6"] { background: #3b82f6; } /* 提高+/省选- */
-.roadmap-luogu-difficulty[data-level="7"] { background: #a855f7; } /* 省选/NOI- */
-.roadmap-luogu-difficulty[data-level="8"] { background: #111827; } /* NOI/NOI+/CTS */
 
 .roadmap-problem-tags {
   display: inline-flex;
@@ -2369,13 +2330,20 @@ textarea.form-input {
   background: color-mix(in srgb, var(--brand) 10%, transparent);
 }
 
-/* 知识点训练证据：与题单进度并列，提示题单外训练同样参与覆盖判断。 */
+/* 知识点训练证据：与题单进度并列，提示题单外训练同样参与覆盖判断。
+   已知状态的颜色由 lib/roadmap-badges.mjs 以 --evidence-light/--evidence-dark 下发；
+   这里只是**未知状态**的兜底（色板里没有的状态），所以用足够深的中性色，
+   保证 12px 小字在 color-mix 混出的浅底上也达标（原来的 var(--muted) 只有 4.04:1）。 */
 .roadmap-evidence {
   display: inline-flex;
   align-items: center;
   margin-top: 8px;
-  color: var(--text);
+  color: var(--evidence-light, #4f5c56);
   background: color-mix(in srgb, #8b5cf6 12%, transparent);
+}
+
+[data-theme="dark"] .roadmap-evidence {
+  color: var(--evidence-dark, #cbd5e1);
 }
 
 .roadmap-evidence-section {
@@ -2475,84 +2443,33 @@ textarea.form-input {
    知识点掌握度状态配色（追加块，不改写既有选择器）。
    掌握度语义：建议复习=警示色、较熟练=强调色、其余=中性。
    徽标（.roadmap-evidence）与证据区块（.roadmap-evidence-section）
-   均以 data-state 属性匹配；新类名统一使用 mastery- 前缀。
+   均以 data-state 属性匹配；状态色由 lib/roadmap-badges.mjs 以
+   --evidence-light / --evidence-dark 两个自定义属性下发，
+   这里只负责把它们交给当前主题，避免出现“深底深字”。
+   未登记的状态没有这两个属性，回落到中性配色（浅色 #4f5c56 / 深色 #cbd5e1，
+   两者在 12px 小字 + 14%/20% 混色底上都 ≥4.5:1；原来的 var(--muted) 只有 4.04:1）。
    ============================================================ */
-.roadmap-evidence[data-state="建议复习"] {
-  color: #b45309;
-  background: color-mix(in srgb, #f59e0b 16%, transparent);
-  border-color: color-mix(in srgb, #f59e0b 45%, transparent);
+.roadmap-evidence[data-state] {
+  color: var(--evidence-light, #4f5c56);
+  border-color: color-mix(in srgb, var(--evidence-light, #4f5c56) 40%, transparent);
+  background: color-mix(in srgb, var(--evidence-light, #4f5c56) 14%, transparent);
 }
 
-.roadmap-evidence[data-state="较熟练"] {
-  color: #15803d;
-  background: color-mix(in srgb, #22c55e 16%, transparent);
-  border-color: color-mix(in srgb, #22c55e 45%, transparent);
-}
-
-.roadmap-evidence[data-state="有基础"] {
-  color: #1d4ed8;
-  background: color-mix(in srgb, #3b82f6 14%, transparent);
-  border-color: color-mix(in srgb, #3b82f6 40%, transparent);
-}
-
-.roadmap-evidence[data-state="已接触"] {
-  color: #475569;
-  background: color-mix(in srgb, #64748b 14%, transparent);
-  border-color: color-mix(in srgb, #64748b 35%, transparent);
-}
-
-.roadmap-evidence[data-state="未接触"] {
-  color: var(--muted);
-  background: color-mix(in srgb, var(--muted) 10%, transparent);
-  border-color: color-mix(in srgb, var(--muted) 25%, transparent);
+[data-theme="dark"] .roadmap-evidence[data-state] {
+  color: var(--evidence-dark, #cbd5e1);
+  border-color: color-mix(in srgb, var(--evidence-dark, #cbd5e1) 45%, transparent);
+  background: color-mix(in srgb, var(--evidence-dark, #cbd5e1) 20%, transparent);
 }
 
 /* 证据区块：边框与底色随状态微调，与徽标配色保持一致 */
-.roadmap-evidence-section[data-state="建议复习"] {
-  border-color: color-mix(in srgb, #f59e0b 45%, var(--line));
-  background: color-mix(in srgb, #f59e0b 7%, var(--card));
+.roadmap-evidence-section[data-state] {
+  border-color: color-mix(in srgb, var(--evidence-light, #4f5c56) 35%, var(--line));
+  background: color-mix(in srgb, var(--evidence-light, #4f5c56) 6%, var(--card));
 }
 
-.roadmap-evidence-section[data-state="较熟练"] {
-  border-color: color-mix(in srgb, #22c55e 40%, var(--line));
-  background: color-mix(in srgb, #22c55e 6%, var(--card));
-}
-
-.roadmap-evidence-section[data-state="有基础"] {
-  border-color: color-mix(in srgb, #3b82f6 40%, var(--line));
-  background: color-mix(in srgb, #3b82f6 6%, var(--card));
-}
-
-.roadmap-evidence-section[data-state="已接触"],
-.roadmap-evidence-section[data-state="未接触"] {
-  border-color: color-mix(in srgb, var(--muted) 30%, var(--line));
-  background: color-mix(in srgb, var(--muted) 5%, var(--card));
-}
-
-/* 暗黑模式：提升状态色对比度 */
-[data-theme="dark"] .roadmap-evidence[data-state="建议复习"] {
-  color: #fbbf24;
-  background: color-mix(in srgb, #f59e0b 22%, transparent);
-  border-color: color-mix(in srgb, #f59e0b 50%, transparent);
-}
-
-[data-theme="dark"] .roadmap-evidence[data-state="较熟练"] {
-  color: #4ade80;
-  background: color-mix(in srgb, #22c55e 22%, transparent);
-  border-color: color-mix(in srgb, #22c55e 50%, transparent);
-}
-
-[data-theme="dark"] .roadmap-evidence[data-state="有基础"] {
-  color: #93c5fd;
-  background: color-mix(in srgb, #3b82f6 20%, transparent);
-  border-color: color-mix(in srgb, #3b82f6 45%, transparent);
-}
-
-[data-theme="dark"] .roadmap-evidence[data-state="已接触"],
-[data-theme="dark"] .roadmap-evidence[data-state="未接触"] {
-  color: #cbd5e1;
-  background: color-mix(in srgb, var(--muted) 20%, transparent);
-  border-color: color-mix(in srgb, var(--muted) 35%, transparent);
+[data-theme="dark"] .roadmap-evidence-section[data-state] {
+  border-color: color-mix(in srgb, var(--evidence-dark, var(--muted)) 35%, var(--line));
+  background: color-mix(in srgb, var(--evidence-dark, var(--muted)) 8%, var(--card));
 }
 
 /* ── 复习闭环快捷操作（任务 B/C 追加，review-quick- 前缀）── */
@@ -2704,7 +2621,17 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .problem-number { color:var(--brand); margin-right:8px; }
 .record-summary { color:var(--muted); display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; line-height:1.6; }
 .record-badges { display:flex; gap:6px; flex-wrap:wrap; margin:0; }
+/* 标签芯片用 --tag-chip-ink 而不是 --muted：12px 小字下 --muted（#66756f）在
+   --surface-soft 上只有 4.37:1，差一点过不了 AA；深色主题的 --muted 本身有 ~8:1，
+   所以只在浅色主题收紧，并把主题值也交给自定义属性。
+   标签芯片既可能是 <a>（标签链接）也可能是 <span>（来源、热度、考纲等纯展示芯片），
+   两种标签名都写上并借「元素 + 类」把权重抬到 (0,1,1)：
+   这样不必依赖"本规则必须排在合并样式表最后"这种脆弱前提。 */
+:root { --tag-chip-ink: #57655f; }
+[data-theme="dark"] { --tag-chip-ink: var(--muted); }
 .tag-chip, [data-theme="dark"] .tag-chip { display:inline-flex; align-items:center; background:var(--surface-soft); color:var(--muted); border:0; border-radius:6px; padding:2px 8px; font-size:12px; text-decoration:none; }
+a.tag-chip, span.tag-chip,
+[data-theme="dark"] a.tag-chip, [data-theme="dark"] span.tag-chip { color: var(--tag-chip-ink, var(--muted)); }
 .tag-chip:hover, [data-theme="dark"] .tag-chip:hover { color:var(--brand); background:var(--surface-hover); }
 .tag-filter-chip.active, [data-theme="dark"] .tag-filter-chip.active { background:var(--brand-solid); color:#fff; }
 .difficulty-badge, .review-chip { border:0; border-radius:6px; padding:3px 8px; font-size:12px; line-height:18px; white-space:nowrap; font-weight:500; }
@@ -2713,7 +2640,9 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .difficulty-badge.basic { color:#2f5fa8; background:#e6eefb; }
 .difficulty-badge.easy, .review-chip.mastered { color:#26734d; background:#e6f4ec; }
 .difficulty-badge.medium { color:#925800; background:#fff3d9; }
-.difficulty-badge.hard, .review-chip.todo { color:#b94845; background:#fde8e7; }
+/* 待复习芯片是 12px 小字，原 #b94845 在 #fde8e7 上只有 4.39:1；
+   压深一档到 #a63c39（4.72:1）以过 AA，观感不变。 */
+.difficulty-badge.hard, .review-chip.todo { color:#a63c39; background:#fde8e7; }
 .difficulty-badge.expert { color:#6d4c8d; background:#efe9f7; }
 [data-theme="dark"] .difficulty-badge.entry { color:#9fd0dd; background:#1e343a; }
 [data-theme="dark"] .difficulty-badge.basic { color:#a8c4ef; background:#1f2c44; }
@@ -2807,7 +2736,10 @@ h2 .ui-icon { margin-right:10px; color:var(--brand); }
 .roadmap-problem-name { overflow-wrap:anywhere; font-size:16px; }
 .roadmap-problem-done { margin-top:auto; }
 .roadmap-problem-meta { display:flex; flex-wrap:wrap; gap:6px; }
-.roadmap-luogu-difficulty { color:var(--text); background:var(--surface-soft); }
+/* 洛谷难度徽标的排版与兜底见文件上方的 `.roadmap-luogu-difficulty` 单条规则；
+   2026-09 在此追加的 `.roadmap-luogu-difficulty{color:var(--text);background:var(--surface-soft)}`
+   因位置更靠后而抹平了整条 8 级色阶（深色主题下 data-level=8 实测 1.08:1 的“黑底黑字”），
+   已随 2026-09-27 的修复删除，不再重复声明。 */
 .roadmap-tag-section, .roadmap-related-section { background:var(--card); padding:20px; border:1px solid var(--line); border-radius:10px; margin:0 0 16px; }
 .roadmap-node-list { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; list-style:none; padding:0; }
 .related-list li { padding:16px 0; border-bottom:1px solid var(--line); }

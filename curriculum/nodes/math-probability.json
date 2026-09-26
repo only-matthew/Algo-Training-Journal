@@ -90,7 +90,15 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "递归",
+        "记忆化搜索",
+        "拓扑排序",
+        "期望",
+        "栈"
+      ]
     },
     {
       "platform": "洛谷",
@@ -117,7 +125,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "提高"
+      "difficulty": "提高",
+      "tags": [
+        "DP",
+        "期望",
+        "Floyd"
+      ]
     },
     {
       "platform": "Codeforces",
@@ -290,6 +303,73 @@
         "implementation",
         "math"
       ]
+    },
+    {
+      "platform": "洛谷",
+      "number": "CF24D",
+      "name": "Broken robot",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "期望",
+        "高斯消元"
+      ],
+      "difficulty": "提高+/省选-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10500",
+      "name": "Rainbow 的信号",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "期望"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10504",
+      "name": "守卫者的挑战",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "期望"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P12225",
+      "name": "[蓝桥杯 2023 国 Java B] 游戏",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "单调队列",
+        "期望"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P3211",
+      "name": "[HNOI2011] XOR和路径",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "期望",
+        "高斯消元",
+        "位运算"
+      ],
+      "difficulty": "省选/NOI-"
     }
   ]
 }

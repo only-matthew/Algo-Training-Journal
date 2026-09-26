@@ -256,6 +256,63 @@
         "greedy",
         "implementation"
       ]
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10590",
+      "name": "磁力块",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "线段树",
+        "BFS",
+        "队列",
+        "分块"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10690",
+      "name": "Fotile 模拟赛 L",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "可持久化",
+        "分块",
+        "Trie"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4135",
+      "name": "作诗",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "枚举",
+        "分块",
+        "bitset"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4168",
+      "name": "[Violet] 蒲公英",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "离散化",
+        "枚举",
+        "分块"
+      ],
+      "difficulty": "省选/NOI-"
     }
   ]
 }

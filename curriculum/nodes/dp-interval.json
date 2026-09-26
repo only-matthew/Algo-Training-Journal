@@ -37,7 +37,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "DP",
+        "区间DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -46,7 +50,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "DP",
+        "区间DP",
+        "前缀和"
+      ]
     },
     {
       "platform": "Codeforces",
@@ -73,7 +82,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "区间DP",
+        "四边形不等式"
+      ]
     },
     {
       "platform": "洛谷",
@@ -82,7 +96,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及"
+      "difficulty": "普及",
+      "tags": [
+        "DP",
+        "区间DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -100,7 +118,12 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "枚举",
+        "区间DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -109,7 +132,13 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "递归",
+        "枚举",
+        "区间DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -127,7 +156,11 @@
       "source": "洛谷深入浅出",
       "role": "练习",
       "note": "",
-      "difficulty": "普及+/提高-"
+      "difficulty": "普及+/提高-",
+      "tags": [
+        "DP",
+        "区间DP"
+      ]
     },
     {
       "platform": "洛谷",
@@ -374,6 +407,108 @@
       "role": "习题",
       "note": "",
       "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10236",
+      "name": "[yLCPC2024] D. 排卡",
+      "source": "《洛谷精析》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "区间DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1040",
+      "name": "[NOIP 2003 提高组] 加分二叉树",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "区间DP",
+        "树形DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P1043",
+      "name": "[NOIP 2003 普及组] 数字游戏",
+      "source": "《实战笔记》",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "搜索",
+        "区间DP",
+        "前缀和"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P10956",
+      "name": "金字塔",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "递归",
+        "枚举",
+        "DFS",
+        "记忆化搜索",
+        "区间DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P4767",
+      "name": "[IOI 2000] 邮局 加强版",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "数学",
+        "枚举",
+        "区间DP",
+        "四边形不等式"
+      ],
+      "difficulty": "省选/NOI-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "P5752",
+      "name": "[NOI1999] 棋盘分割",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "DP",
+        "记忆化搜索",
+        "区间DP"
+      ],
+      "difficulty": "普及+/提高-"
+    },
+    {
+      "platform": "洛谷",
+      "number": "UVA10559",
+      "name": "方块消除 Blocks",
+      "source": "洛谷·进阶指南",
+      "role": "练习",
+      "note": "",
+      "tags": [
+        "搜索",
+        "记忆化搜索",
+        "区间DP"
+      ],
+      "difficulty": "省选/NOI-"
     }
   ]
 }
