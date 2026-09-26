@@ -47,6 +47,7 @@
 - 按日期新增、加载、覆盖和删除当天的训练记录。
 - 一天可提交多道题，每道题可记录名称、题号、平台、难度、标签、描述、心得/题解和 C++ 代码。
 - 每个日期最多提交 15 道题，总提交内容不超过 1.5 MB；超限会明确提示，不会静默截断。
+- 可选填写连续训练区间：起止日期最多包含 120 天，结束日期不得晚于 UTC+8 今天。区间用于训练日历与每日活力分摊；累计题数仍按日志中的题目记录计算，训练日按日期并集计算。
 - 洛谷和 Codeforces 题目可通过题号从详情页直接跳转到原题；旧记录的题号默认留空。
 - 使用永久题目 ID 保持详情链接稳定，不依赖题目在当天记录中的顺序。
 - 将题目标记为“非错题”“待复习”或“已掌握”，形成团队共享的复盘状态。
@@ -223,7 +224,7 @@ node scripts/backfill-rating.mjs --write    # 应用
 
 - 缺少训练历史时采用入门先验和中性匹配度，不把未知能力当成零能力。
 - 随知识点证据增多，逐步采用难度匹配；多标签取平均能力，日内按日初证据统一计算。
-- 完成质量系数：独立 1、提示 0.7、题解 0.5、历史未知 0.6、未完成 0.15。历史日志当前缺少结果字段，保持 unknown，不从“已掌握”推断独立完成。
+- 完成质量系数：独立 1、提示 0.7、题解 0.5、未知 0.6、未完成 0.15。新日志可保存真实结果，旧记录缺失时保持 unknown，不从“已掌握”推断独立完成。
 - 同一成员同题冻结首次计分基准，完成质量提高时只补差额。无可靠题号按记录 ID 计，不按题名合并。
 - 未完成不增加能力证据；重复/复习不重复计分。累计曲线按事件记录时点增加，不把旧部分分再加一遍。
 
@@ -285,7 +286,7 @@ Worker 收到前端的受限日志请求后会：
 - **Codeforces**：通过官方公开 `user.status` API 拉取该用户**最近 3 天内的 AC 记录**（自动翻页覆盖窗口，避免一次性拉取全部历史），过滤非 AC、按题目去重，返回题名、题号、Rating 与标签，并携带「📄 提交」直达链接（CF 提交页受 Cloudflare 反爬保护，源码无法服务端自动抓取，浏览器中可直接查看复制）。勾选并添加到表单后，会自动按题号抓取题面；失败不会撤销已导入的题目，可在对应题目块中重试。
 - **AtCoder**：通过 AtCoder Problems 公开 API（kenkoooo.com）拉取该用户**最近 3 天内的 AC 记录**（分页覆盖窗口、按题目去重），返回题名、题号、Rating、**该次 AC 的提交页链接**（`/contests/<比赛>/submissions/<id>`，公开可看源码）与**算法标签**。AtCoder 官方与 kenkoooo 都不提供标签，标签取自洛谷的 AtCoder 镜像：按比赛批量取题目列表页（一场一次请求、最多 6 场），再用 `/_lfe/tags` 字典把洛谷的数字标签换成站内中文标签；洛谷未收录的题目（Typical90、JOI 等）没有标签，需手动补充。题面不在导入时批量抓取（AC 列表不阻塞等待题面），导入后按题点「抓取题面」即可取回题面——服务端先试官方页，被 403 拦下时用洛谷的 `AT_<任务 ID>` 镜像页兜底，标签随题面一起回填到标签框。
 - **洛谷**：粘贴题号列表，Worker 抓取题目页内嵌 JSON 解析**题名、官方难度（8 级）与题目描述**。正文优先取中文本地化字段 `data.problem.contenu`，其内容为空或旧页面未提供该字段时回退 `data.problem.content`；P2895 已作为中英双字段回归样例。标签为数字 ID 且平台未提供公开名称接口，需在表单中手动补充。
-- 登录队员会在导入面板自动预填自己的 CF 与 AtCoder 用户名（维护在 `workers/oauth.mjs` 的 `CF_HANDLES` 与 `ATCODER_HANDLES` 中：CF 为廖夏 `onlymatt`、王梓豪 `hnuwang`、郭一鸣 `ymguo`，AtCoder 为廖夏 `only_matthew`），可修改。
+- 登录队员会在导入面板自动预填自己的 CF 与 AtCoder 用户名（维护在 `config/members.json`：CF 为廖夏 `onlymatt`、王梓豪 `hnuwang`、郭一鸣 `ymguo`，AtCoder 为廖夏 `only_matthew`），可修改。
 - 导入的 CF 英文标签自动合并为中文标签（如 `graphs` → 图论）；AtCoder 的标签同样是中文规范标签（洛谷镜像 → `lib/luogu-tag-map.mjs` 映射），导入题目优先填入未填写的空题目位。
 - 所有导入接口复用登录会话、CSRF 校验与独立限流（每分钟每队员 10 次）。
 
@@ -307,7 +308,7 @@ npx wrangler deploy
 https://algo-oauth.xialiao.org/auth/callback
 ```
 
-允许登录的 GitHub 用户与日志目录映射维护在 `workers/oauth.mjs` 的 `MEMBERS` 中，队员的 Codeforces 与 AtCoder 用户名维护在同文件的 `CF_HANDLES`、`ATCODER_HANDLES` 中（导入面板自动预填，没有预置的队员留空、可自行输入）。前端不再拥有通用 GitHub API 凭据，Worker 只允许已登录用户写入自己的 `logs/<姓名>/YYYY/MM/DD/` 路径。新增队员时，需要在 `MEMBERS`（以及需要的 `CF_HANDLES` / `ATCODER_HANDLES`）中加入映射、授予该账号仓库写权限，并让队员接受 Collaborator 邀请。
+允许登录的 GitHub 数字用户 ID、固定 `memberId`、当前 login、日志目录及可选 OJ 用户名统一维护在 `config/members.json`。OAuth 按不可改名的数字用户 ID 识别队员，GitHub login 只作当前资料与旧会话兼容用途。前端不拥有通用 GitHub API 凭据，Worker 只允许已登录用户写入自己的 `logs/<姓名>/YYYY/MM/DD/` 路径。新增队员时，需要先核实其 GitHub 数字用户 ID，再加入配置、授予仓库写权限，并让队员接受 Collaborator 邀请。
 
 发布工作流位于 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)。当 `main` 或 `master` 分支收到 push 后，Actions 会：
 
@@ -502,17 +503,9 @@ npx serve site
 │   └── verify-import-live.mjs    # 本地真实网络验证自动导入（人工运行，不进 CI）
 ├── test/
 │   ├── aggregation.test.mjs      # 同题聚合与复习队列构建测试
-│   ├── curriculum.test.mjs       # 学习路线数据读取/校验/匹配/统计测试
 │   ├── generate-seo.test.mjs    # SEO 与构建产物测试
-│   ├── journal-api.test.mjs      # 浏览器端 API client 测试
 │   ├── log-schema.test.mjs       # Schema、日期、标签、复习日期和稳定 key 测试
-│   ├── oauth-import.test.mjs     # Codeforces / 洛谷导入解析测试
-│   ├── oauth-plan.test.mjs       # Worker 保存/读取/删除规划与增量写入测试
-│   ├── oauth-problem-statement.test.mjs # 题面路由：官方题面优先、反爬拦截时回退洛谷镜像
-│   ├── oauth-summary.test.mjs   # AI 概括与 Worker 边界测试
-│   ├── render-safety.test.mjs    # Markdown、公式和链接安全测试
-│   ├── statement-image-publish.test.mjs # 题面图片的构建期校验、发布与正文改写
-│   └── tag-normalize.test.mjs    # 标签规范化与别名测试
+│   └── …                         # 其余 Worker、导入、渲染与训练服务测试由 npm test 自动发现
 ├── workers/
 │   ├── oauth.mjs                 # OAuth、加密会话、受限日志 API、AI 概括与题目导入
 │   └── wrangler.toml             # Worker 配置
@@ -524,7 +517,7 @@ npx serve site
 │   ├── PRODUCT.md                 # 一站式 ICPC 训练中心产品规划
 │   ├── SPECIFICATION.md           # 技术规格与验收矩阵
 │   ├── VITALITY-DESIGN.md         # 活力指数与难度体系的设计记录
-│   ├── PENDING-FEATURES.md        # 待实现：区间打卡与同日多次打卡
+│   ├── PENDING-FEATURES.md        # 区间基础已实现；事件投影与同日多次记录待完成
 │   ├── HANDOFF.md                 # 当前技术交接与后续重构建议
 │   └── OPTIMIZATION.md            # 优化清单与完成状态
 ├── package.json                   # 构建、测试与迁移命令

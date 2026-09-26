@@ -29,11 +29,15 @@ let failed = false;
 for (const file of files.sort()) {
   const result = spawnSync(process.execPath, ["--check", file], {
     cwd: root,
-    encoding: "utf8",
+    stdio: "inherit",
   });
   if (result.status === 0) continue;
   failed = true;
-  process.stderr.write(`Syntax check failed: ${file}\n${result.stderr || result.stdout}`);
+  if (result.error) {
+    process.stderr.write(`Unable to start syntax check for ${file}: ${result.error.code || "SPAWN_ERROR"} ${result.error.message}\n`);
+    break;
+  }
+  process.stderr.write(`Syntax check failed: ${file} (exit ${result.status ?? "unknown"})\n`);
 }
 
 if (failed) process.exitCode = 1;

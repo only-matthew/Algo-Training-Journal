@@ -1,6 +1,5 @@
 let trainingCardHtml;
 let expandTrainingInterval;
-let mergeTrainingDates;
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
@@ -218,14 +217,22 @@ function readLogs() {
 // 热力图两套口径：
 //   count —— 当天做了几道题（保留原口径，供“题数”展示对照）
 //   value —— 当天的活力指数合计（做 1 道提高题 = 深色，做 3 道入门题 = 浅色）
-function buildHeatmapCounts(logs) {
+function buildHeatmapCounts(logs, today = toUtc8(new Date()).slice(0, 10)) {
   const all = {};
   const byMember = {};
   const valueAll = {};
   const valueByMember = {};
 
   for (const log of logs) {
-    const dates = expandTrainingInterval(log, log.date);
+    let dates;
+    try {
+      dates = expandTrainingInterval({ ...log, today }, log.date);
+    } catch (error) {
+      // Historical data must never take the whole site offline. Keep the
+      // record visible on its canonical date and identify the bad source.
+      dates = [log.date];
+      console.warn(`[training-interval] ${log.member}/${log.date}/${log.problemId || log.problemIndex}: ${error.message}; using record date only`);
+    }
     for (const day of dates) {
       all[day] = (all[day] || 0) + 1;
       byMember[log.member] ??= {};
@@ -344,7 +351,6 @@ function writeVersionedIndex(dataVersion) {
   const styleVersion = crypto.createHash("sha256")
     .update(fs.readFileSync(path.join(OUTPUT_DIR, "style.css"))).digest("hex").slice(0, 12);
   $('link[rel="stylesheet"][href^="style.css"]').attr("href", `style.css?v=${styleVersion}`);
-  $('link[rel="stylesheet"][href^="assets/final.css"], link[rel="stylesheet"][href^="assets/details.css"]').remove();
   $('link[rel="preload"][as="image"]').attr("href", `assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`);
   $('script[src^="app.js"]').attr("src", `assets/js/${browserAssets.entry}`);
   for (const dependency of browserAssets.preloads) {
@@ -621,7 +627,9 @@ function problemPageHtml(html, log, related) {
 </head><body class="problem-standalone"><a class="skip-link" href="#main-content">跳到内容</a>
 <header class="app-header"><div class="header-inner"><a class="brand" href="/"><svg class="mountain-logo" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="m2 35 13-19 9 13-9-5-5 11zm14 0L34 3l28 32H49L34 17l8 18H30l-7-10 4 10z"/></svg><span>ACM 训练日志<small>记录 · 思考 · 成长</small></span></a>
 <nav class="desktop-nav" aria-label="主导航"><a href="/">首页</a><a href="/analysis/">训练档案</a><a href="/review/">复习</a><a href="/roadmap/">知识地图</a><a href="/tags/">标签</a></nav>
-<div class="header-actions"><button id="btn-theme" class="icon-btn" type="button" aria-label="切换主题"></button><span id="auth-status" class="auth-status" aria-hidden="true"></span><span id="account-label" class="account-label">公开浏览</span><button id="btn-login" class="btn btn-outline btn-sm" type="button">登录</button><button id="btn-logout" class="btn btn-outline btn-sm" type="button" style="display:none">退出</button><a id="btn-submit" class="btn btn-primary btn-sm" href="/submit/">提交记录</a></div></div></header>
+<form class="global-search" action="/analysis/" method="get"><label class="search-control"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></svg><input name="q" type="search" placeholder="搜索题目 / 标签 / 成员…" aria-label="搜索题目 / 标签 / 成员…"></label></form>
+<a id="btn-submit" class="btn btn-primary" href="/submit/"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 5 5M4 20l5-1L21 7l-5-5L4 14zM3 22h18"/></svg>提交 / 修改记录</a>
+<details class="account-menu"><summary aria-label="账户与设置"><span id="auth-status" class="account-avatar"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3"/></svg></span><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><div class="account-popover"><span id="account-label">公开浏览</span><button type="button" id="btn-login" class="btn btn-outline">使用 GitHub 登录</button><button type="button" id="btn-logout" class="btn btn-outline">退出登录</button><button type="button" id="btn-theme" class="btn btn-outline" aria-label="切换主题">切换主题</button></div></details></div></header>
 <main id="main-content" class="main"><section id="problem-page" class="page-view active"><div class="detail-toolbar"><a id="problem-back-member" href="${escapeHtml(memberHref)}">${escapeHtml(log.member)} / 题目列表</a><a href="/analysis/">训练档案</a><details id="export-bar" class="problem-export-menu"><summary class="btn btn-outline">导出</summary><div class="problem-export-options"><button type="button" id="btn-export-pdf" class="btn btn-outline">${iconSvg}导出 PDF</button><button type="button" id="btn-export-md" class="btn btn-outline">${iconSvg}导出 Markdown</button><button type="button" id="btn-export-latex" class="btn btn-outline">${iconSvg}导出 LaTeX</button></div></details></div><article id="problem-detail" class="problem-detail" data-prerendered-path="${escapeHtml(routePath(problemSegments(log)))}">${article}</article></section></main>
 <footer class="footer"><span>ACM 训练日志 · 记录 · 思考 · 成长</span><a href="https://xialiao.org/" target="_blank" rel="noopener noreferrer">© 2026 Xia Liao</a></footer>
 <script type="module" src="/assets/js/${escapeHtml(browserAssets.problemEntry)}"></script></body></html>`);
@@ -1310,7 +1318,7 @@ async function main() {
   ({ cfTagToChinese } = await import("../lib/cf-tag-map.mjs"));
   ({ assessMastery } = await import("../lib/mastery.mjs"));
   ({ buildVitality } = await import("../lib/vitality-summary.mjs"));
-  ({ expandTrainingInterval, mergeTrainingDates } = await import("../lib/training-interval.mjs"));
+  ({ expandTrainingInterval } = await import("../lib/training-interval.mjs"));
   ({ vitalityRecordKey } = await import("../lib/vitality.mjs"));
   ({ vitalityChartHtml } = await import("../lib/vitality-chart.mjs"));
   ({ memberVitalityDetailsHtml } = await import("../lib/member-vitality.mjs"));
@@ -1380,7 +1388,8 @@ async function main() {
   $shellFingerprint('meta[name="journal-data-version"]').attr("content", "dataset-version");
   buildShellHash = contentHash($shellFingerprint.html());
   problemShellHash = contentHash({
-    template: "standalone-problem-v1",
+    template: "standalone-problem-v2-current-header",
+    header: $shellFingerprint("header.app-header").html(),
     stylesheet: assetVersion("site/style.css"),
     script: browserAssets.problemEntry,
   });

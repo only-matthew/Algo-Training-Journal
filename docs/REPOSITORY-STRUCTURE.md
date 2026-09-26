@@ -41,11 +41,13 @@ workers/ ──┤
 scripts/ ──┤
 test/ ─────┘
 
+scripts/verify-import-live.mjs ──> workers/oauth.mjs  # 仅真实网络全链路验证入口
+
 logs/ + training/ + curriculum/ ──> scripts/generate-data.js ──> site/
 ```
 
 - `src/` 可以导入 `lib/`，但 `lib/` 不应反向导入页面入口。
-- Worker 和构建脚本可以复用 `lib/`，不要从 `src/app.js` 或 `src/index.html` 获取业务规则。
+- Worker 和构建脚本可以复用 `lib/`，不要从 `src/app.js` 或 `src/index.html` 获取业务规则。当前唯一的 `scripts/ → workers/` 例外是 `verify-import-live.mjs`，它有意驱动完整 Worker 鉴权与路由链路；普通解析脚本不得照抄该依赖。
 - `site/`、`build/`、`.build-cache/`、`artifacts/`、测试报告和工具缓存均为忽略项，不直接提交或手工维护。
 - 新增共享规则前先检查 `lib/` 是否已有相同能力，避免浏览器、Worker 与构建脚本各自实现一份。
 - 已完成的一次性迁移不要长期留在 `scripts/`；先确认仓库中已无旧格式数据，再删除脚本并在交接文档记录可恢复的提交。

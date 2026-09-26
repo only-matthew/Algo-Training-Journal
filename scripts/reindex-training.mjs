@@ -6,13 +6,10 @@ import { normalizeMeta } from "../lib/log-schema.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
 import { catalogProblem } from "../lib/recommendations.mjs";
 import { normalizeLearningState } from "../lib/learning-state.mjs";
+import members from "../config/members.json" with { type: "json" };
 
 const ROOT = resolve(import.meta.dirname, "..");
-const MEMBER_IDS = Object.freeze({
-  "廖夏": "only-matthew",
-  "王梓豪": "wzzzzhhhhh",
-  "郭一鸣": "seanist-isx",
-});
+const MEMBER_IDS = Object.freeze(Object.fromEntries(members.map((member) => [member.logDirectory, member.memberId])));
 const CATALOG_PATH = "training/indexes/catalog.json";
 
 function readJson(path) {

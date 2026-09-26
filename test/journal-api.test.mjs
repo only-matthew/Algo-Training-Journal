@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { apiRequest, loadSession, saveDateLog, deleteDateLog, saveDateLogV2, statementUrl, SESSION_TIMEOUT_MS } from "../lib/journal-api.js";
+import { apiRequest, loadSession, saveDateLog, deleteDateLog, patchRecordReview, saveDateLogV2, statementUrl, SESSION_TIMEOUT_MS } from "../lib/journal-api.js";
 import worker, { logRoots, seal } from "../workers/oauth.mjs";
 
 test("anonymous session lookup succeeds without relaxing protected endpoints", async () => {
@@ -118,6 +118,20 @@ test("conditional writes always transmit the expected version", async (context) 
   const del = requests.at(-1);
   assert.equal(del.options.method, "DELETE");
   assert.equal(JSON.parse(del.options.body).expectedVersion, revision);
+});
+
+test("review shortcuts send a record-scoped PATCH instead of replacing the whole day", async (context) => {
+  let captured;
+  context.mock.method(globalThis, "fetch", async (url, options = {}) => {
+    if (String(url).endsWith("/api/session")) return Response.json({ login: "only-matthew", csrfToken: "csrf-test" });
+    captured = { url: String(url), options };
+    return Response.json({ record: { id: "p/1", reviewStatus: "archived" } });
+  });
+  await loadSession();
+  await patchRecordReview("2026-09-26", "p/1", { reviewStatus: "archived" });
+  assert.equal(captured.url, "https://algo-oauth.xialiao.org/api/v2/me/logs/dates/2026-09-26/records/p%2F1");
+  assert.equal(captured.options.method, "PATCH");
+  assert.deepEqual(JSON.parse(captured.options.body), { reviewStatus: "archived" });
 });
 
 test("a version conflict surfaces status and currentRevision to the caller", async (context) => {

@@ -100,6 +100,15 @@ test("字段和总提交大小超限时明确拒绝而不是截断", () => {
   assert.throws(() => validateLogInput(input), /1.5 MB/);
 });
 
+test("服务端日志校验拒绝未来、逆序和超过 120 天的训练区间", () => {
+  const context = { recordDate: "2026-09-26", today: "2026-09-26" };
+  const problem = { id: "interval", name: "区间题" };
+  assert.throws(() => validateLogInput({ startedOn: "2026-09-01", solvedOn: "2026-09-27", problems: [problem] }, context), /不能晚于今天/);
+  assert.throws(() => validateLogInput({ startedOn: "2026-09-20", solvedOn: "2026-09-19", problems: [problem] }, context), /不能晚于结束/);
+  assert.throws(() => validateLogInput({ startedOn: "2026-01-01", solvedOn: "2026-09-26", problems: [problem] }, context), /最多 120 天/);
+  assert.equal(validateLogInput({ startedOn: "2026-05-30", solvedOn: "2026-09-26", problems: [problem] }, context).startedOn, "2026-05-30");
+});
+
 test("标签大小写归一化：Dfs/dFs/DFS 统一为 DFS，dp/bFs/StL 统一为大写", () => {
   assert.deepEqual(validateLogInput({
     problems: [{ id: "p1", name: "A", tags: "Dfs, dFs, DFS" }],

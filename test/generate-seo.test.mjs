@@ -88,6 +88,9 @@ test("generator emits crawlable member and problem pages", () => {
   assert.ok(problemPage.includes('type="application/ld+json"'));
   assert.ok(problemPage.includes('"@type":"Article"'));
   assert.match(problemPage, /assets\/js\/problem-page-[A-Z0-9]+\.js/);
+  assert.ok(problemPage.includes('class="account-menu"'), "standalone problem pages must use the current account-menu header");
+  assert.ok(problemPage.includes('class="global-search"'), "standalone problem pages must preserve the current search layout");
+  assert.equal(problemPage.includes('class="header-actions"'), false, "obsolete header markup must not leak into standalone pages");
   assert.equal(problemPage.includes('id="overview-page"'), false, "problem pages must not copy the full application shell");
   assert.equal(problemPage.includes('id="submission-page"'), false, "problem pages must not embed the submission workspace");
   assert.ok(Buffer.byteLength(problemPage) < 40 * 1024, "a typical problem page should stay lightweight");

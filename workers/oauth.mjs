@@ -1,31 +1,30 @@
-import { isDateString, LOG_LIMITS, metaFromProblems, validateLogInput } from "../lib/log-schema.mjs";
+import { isDateString, LOG_LIMITS, validateLogInput } from "../lib/log-schema.mjs";
 import { toUtc8 } from "../lib/constants.mjs";
 import { handleQqBotWebhook } from "./qq-bot.mjs";
 import { createTrainingService, sha256Hex, trainingPaths } from "./services/training.mjs";
 import { GitTransactionError } from "./storage/git-transaction.mjs";
 import { isUuidV4 } from "../lib/training-schema.mjs";
 import { readCatalog, readTrainingContext, workbenchResponse } from "./services/training-read.mjs";
-import { catalogProblem, recommendV1 } from "../lib/recommendations.mjs";
+import { recommendV1 } from "../lib/recommendations.mjs";
 import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
 import { archiveStatementImages, fetchStatement, parseAtCoderProblemNumber, parseLuoguProblem, readLuoguProblem, statementFromAtCoderHtml, statementFromCodeforcesHtml } from "./services/problem-statement.mjs";
 import { attachAtCoderTags, loadLuoguTagDictionary, resolveAtCoderTagIds } from "./services/atcoder-tags.mjs";
 import { BROWSER_HEADERS } from "./services/http-headers.mjs";
 import { LUOGU_ORIGIN, readLimitedBody, requestLuoguPage } from "./services/luogu-page.mjs";
 import { resolveLuoguTagIds } from "../lib/luogu-tag-map.mjs";
-import { createLogsV2Service, parseLogsV2Request, revisionFromEntries, statementImagePath, statementPath } from "./services/logs-v2.mjs";
-import { normalizeLearningState } from "../lib/learning-state.mjs";
+import { createLogsV2Service, parseLogsV2Request, revisionFromEntries } from "./services/logs-v2.mjs";
+import { buildEvidenceV1, foldTrainingEvents } from "../lib/training-projections.mjs";
 import { MAX_NEW_STATEMENT_IMAGE_BYTES } from "../lib/statement-images.mjs";
+import { memberByGithubId, memberById, memberByLogin } from "./member-config.mjs";
+import { gitBlobSha, logRoots, planLegacyIndexChange, planLogChanges } from "./services/log-planning.mjs";
+
+export { gitBlobSha, logRoots, planLegacyIndexChange, planLogChanges } from "./services/log-planning.mjs";
 
 const REPO = "only-matthew/Algo-Training-Journal";
 const BRANCH = "main";
 const COOKIE = "__Host-journal_session";
 const OAUTH_COOKIE = "__Host-journal_oauth";
 const LEGACY_COOKIE = "journal_session";
-const MEMBERS = { "only-matthew": "廖夏", wzzzzhhhhh: "王梓豪", "seanist-isx": "郭一鸣" };
-// 队员预置的 Codeforces 用户名：登录后导入面板自动预填（可在输入框内修改）
-const CF_HANDLES = { "only-matthew": "onlymatt", wzzzzhhhhh: "hnuwang", "seanist-isx": "ymguo" };
-// 队员预置的 AtCoder 用户名：AtCoder 的 handle 与 CF 不同名，同样在导入面板自动预填。
-const ATCODER_HANDLES = { "only-matthew": "only_matthew" };
 const ORIGINS = new Set(["https://train.xialiao.org", "http://localhost:3000", "http://localhost:4173", "http://localhost:5000"]);
 
 const RATE_LIMITS = { summarize: { max: 5, windowMs: 60000 }, "import:codeforces": { max: 10, windowMs: 60000 }, "import:luogu": { max: 10, windowMs: 60000 }, "import:atcoder": { max: 10, windowMs: 60000 }, "problem-statement": { max: 10, windowMs: 60000 } };
@@ -60,20 +59,6 @@ export async function seal(data, secret) { const iv = crypto.getRandomValues(new
 async function open(value, secret) { try { const all = decode(value); const raw = await crypto.subtle.decrypt({ name: "AES-GCM", iv: all.slice(0, 12) }, await key(secret), all.slice(12)); const data = JSON.parse(new TextDecoder().decode(raw)); return data.exp > Date.now() ? data : null; } catch { return null; } }
 // 计算 Git blob 的 SHA-1（与 GitHub 存储的 blob 哈希一致）：sha1("blob <字节数>\0<内容>")
 // 用于与目录列表中的 blob sha 对比，跳过内容未变化的文件写入。
-export async function gitBlobSha(content) {
-  const encoder = new TextEncoder();
-  // 文本与二进制共用同一实现：PDF 附件必须按原始字节计算 blob SHA，
-  // 不能先经过 TextDecoder/TextEncoder 往返，否则哈希与 GitHub 存储值不符。
-  // 文本分支同样要先编码：直接读 content.length 在字符串上是 undefined，
-  // 会让头部变成 "blob undefined\0"，所有文本文件的 blob SHA 全部算错。
-  const bytes = typeof content === "string" ? encoder.encode(content) : content;
-  const header = encoder.encode(`blob ${bytes.length}\0`);
-  const combined = new Uint8Array(header.length + bytes.length);
-  combined.set(header);
-  combined.set(bytes, header.length);
-  const digest = await crypto.subtle.digest("SHA-1", combined);
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
 function safeReturnTo(value) { try { const url = new URL(value || "https://train.xialiao.org/"); return ORIGINS.has(url.origin) ? url.toString() : "https://train.xialiao.org/"; } catch { return "https://train.xialiao.org/"; } }
 function ghHeaders(token) { return { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "User-Agent": "Algo-Training-Journal-Worker", "X-GitHub-Api-Version": "2022-11-28" }; }
 async function gh(path, token, options = {}) {
@@ -227,7 +212,10 @@ function trainingGit(token) {
       const prefix = `training/members/${memberId}/events/`;
       const paths = (await listFiles(snapshot, prefix)).filter((path) => path.endsWith(".json"));
       const events = await mapConcurrent(paths, 4, async (path) => JSON.parse(await readFile(snapshot.head, path)));
-      return events.filter((event) => event && event.memberId === memberId && (event.subjectKey === subjectKey || event.targetAttemptId));
+      const owned = events.filter((event) => event && event.memberId === memberId);
+      if (!subjectKey) return owned;
+      const attemptIds = new Set(owned.filter((event) => event.type === "attempt.recorded" && event.subjectKey === subjectKey).map((event) => event.id));
+      return owned.filter((event) => event.subjectKey === subjectKey || attemptIds.has(event.targetAttemptId));
     },
     async listDocuments(snapshot, memberId, directory, suffix = ".json") {
       const prefix = `training/members/${memberId}/${directory}/`;
@@ -251,7 +239,7 @@ async function readTrainingDocument(git, memberId, resourceKey, path) {
 async function handleTrainingV2(request, user, url) {
   const suffix = url.pathname.slice("/api/v2".length);
   const git = trainingGit(user.token);
-  const paths = trainingPaths(user.login);
+  const paths = trainingPaths(user.memberId);
   const today = toUtc8(new Date().toISOString()).slice(0, 10);
   const service = createTrainingService({ git,
     loadEvents: ({ snapshot, memberId, subjectKey }) => git.listEvents(snapshot, memberId, subjectKey),
@@ -270,7 +258,7 @@ async function handleTrainingV2(request, user, url) {
   const command = async (method, resource, payload, preconditions) => {
     const operationId = requireIdempotencyKey(request);
     const requestHash = await sha256Hex({ method: request.method, path: suffix, body: payload, preconditions });
-    return method({ memberId: user.login, operationId, requestHash, [resource]: payload, preconditions });
+    return method({ memberId: user.memberId, operationId, requestHash, [resource]: payload, preconditions });
   };
 
   if (request.method === "GET" && (suffix === "/me/reviews" || suffix === "/me/workbench" || suffix === "/me/recommendations")) {
@@ -293,7 +281,7 @@ async function handleTrainingV2(request, user, url) {
   }
 
   if (suffix === "/me/profile") {
-    if (request.method === "GET") return v2Json(request, await readTrainingDocument(git, user.login, "profile", paths.profile));
+    if (request.method === "GET") return v2Json(request, await readTrainingDocument(git, user.memberId, "profile", paths.profile));
     if (request.method === "PUT") {
       const profile = requireObject(await readJsonBody(request));
       const result = await command(service.saveProfile, "profile", profile, { profile: parseConditionalRevision(request) });
@@ -306,7 +294,7 @@ async function handleTrainingV2(request, user, url) {
     const date = planMatch[1];
     if (!isDateString(date)) throw Object.assign(new Error("Invalid plan date"), { code: "MALFORMED_REQUEST", status: 400 });
     const key = `plan:${date}`;
-    if (request.method === "GET") return v2Json(request, await readTrainingDocument(git, user.login, key, paths.plan(date)));
+    if (request.method === "GET") return v2Json(request, await readTrainingDocument(git, user.memberId, key, paths.plan(date)));
     if (request.method === "PUT") {
       const incoming = requireObject(await readJsonBody(request));
       if (Object.hasOwn(incoming, "date") && incoming.date !== date) throw Object.assign(new Error("Plan date does not match URL"), { code: "MALFORMED_REQUEST", status: 400 });
@@ -321,6 +309,61 @@ async function handleTrainingV2(request, user, url) {
     const result = await command(service.recordAttempt, "attempt", attempt, preconditions);
     return v2Json(request, result, { status: 201, revision: Object.values(result.resourceVersions)[0] });
   }
+  if (suffix === "/me/attempts" && request.method === "GET") {
+    const subjectKey = url.searchParams.get("subjectKey") || null;
+    if (subjectKey && subjectKey.length > 500) throw Object.assign(new Error("subjectKey is too long"), { code: "MALFORMED_REQUEST", status: 400 });
+    const limit = Number(url.searchParams.get("limit") || 50);
+    const offset = Number(url.searchParams.get("cursor") || 0);
+    if (!Number.isInteger(limit) || limit < 1 || limit > 100 || !Number.isInteger(offset) || offset < 0) throw Object.assign(new Error("Invalid attempts pagination"), { code: "MALFORMED_REQUEST", status: 400 });
+    const head = await git.getHead();
+    const snapshot = { head, readFile: (path) => git.readFile(head, path) };
+    const events = (await git.listDocuments(snapshot, user.memberId, "events")).map(({ data }) => data).filter((event) => event?.memberId === user.memberId);
+    const attempts = foldTrainingEvents(events).filter((attempt) => !subjectKey || attempt.subjectKey === subjectKey);
+    const data = attempts.slice(offset, offset + limit);
+    return v2Json(request, { data, nextCursor: offset + data.length < attempts.length ? String(offset + data.length) : null, snapshotCommitSha: head });
+  }
+
+  const attemptMutation = /^\/me\/attempts\/([^/]+)\/(corrections|void)$/.exec(suffix);
+  if (attemptMutation && request.method === "POST") {
+    const targetAttemptId = decodeURIComponent(attemptMutation[1]);
+    if (!isUuidV4(targetAttemptId)) throw Object.assign(new Error("Invalid attempt id"), { code: "MALFORMED_REQUEST", status: 400 });
+    const incoming = requireObject(await readJsonBody(request));
+    const head = await git.getHead();
+    const snapshot = { head, readFile: (path) => git.readFile(head, path) };
+    const events = await git.listEvents(snapshot, user.memberId);
+    const target = events.find((event) => event?.type === "attempt.recorded" && event.id === targetAttemptId);
+    if (!target) throw Object.assign(new Error("Attempt not found"), { code: "NOT_FOUND", status: 404 });
+    const subjectHash = await sha256Hex(target.subjectKey);
+    const preconditions = { [`review:${subjectHash}`]: parseConditionalRevision(request) };
+    if (attemptMutation[2] === "corrections") {
+      const correction = { targetAttemptId, patch: requireObject(incoming.patch, "patch") };
+      const result = await command(service.correctAttempt, "correction", correction, preconditions);
+      return v2Json(request, result, { status: 201, revision: result.resourceVersions[`review:${subjectHash}`] });
+    }
+    const voidCommand = { targetAttemptId, reason: incoming.reason };
+    const result = await command(service.voidAttempt, "voidCommand", voidCommand, preconditions);
+    return v2Json(request, result, { status: 201, revision: result.resourceVersions[`review:${subjectHash}`] });
+  }
+
+  const evidenceMatch = /^\/me\/evidence\/([^/]+)$/.exec(suffix);
+  if (evidenceMatch && request.method === "GET") {
+    const nodeId = decodeURIComponent(evidenceMatch[1]);
+    const offset = Number(url.searchParams.get("cursor") || 0);
+    if (!Number.isInteger(offset) || offset < 0) throw Object.assign(new Error("Invalid evidence cursor"), { code: "MALFORMED_REQUEST", status: 400 });
+    const head = await git.getHead();
+    const snapshot = { head, readFile: (path) => git.readFile(head, path) };
+    const context = await readTrainingContext({ git, snapshot, user, date: today, today });
+    const node = context.nodes.find((entry) => entry.id === nodeId);
+    if (!node) throw Object.assign(new Error("Learning node not found"), { code: "NOT_FOUND", status: 404 });
+    const subjectKeys = new Set(node.problems.map((problem) => subjectKeyForProblem(problem)).filter(Boolean));
+    const attempts = context.attempts.filter((attempt) => subjectKeys.has(attempt.subjectKey));
+    const data = attempts.slice(offset, offset + 50);
+    return v2Json(request, {
+      node: { id: node.id, title: node.title },
+      evidence: buildEvidenceV1({ attempts: context.attempts, legacyRecords: context.legacyRecords, reviews: context.reviews, selfAssessment: context.assessments.find((item) => item.nodeId === nodeId) || null, subjectKeys, today }),
+      attempts: data, nextCursor: offset + data.length < attempts.length ? String(offset + data.length) : null, snapshotCommitSha: head,
+    });
+  }
   if (suffix === "/me/review-actions" && request.method === "POST") {
     const { body: action, preconditions } = withoutPreconditions(await readJsonBody(request));
     const result = await command(service.applyReviewAction, "action", action, preconditions);
@@ -331,7 +374,7 @@ async function handleTrainingV2(request, user, url) {
   if (assessmentMatch) {
     const nodeId = decodeURIComponent(assessmentMatch[1]);
     const key = `assessment:${nodeId}`;
-    if (request.method === "GET") return v2Json(request, await readTrainingDocument(git, user.login, key, paths.assessment(nodeId)));
+    if (request.method === "GET") return v2Json(request, await readTrainingDocument(git, user.memberId, key, paths.assessment(nodeId)));
     if (request.method === "PUT") {
       const incoming = requireObject(await readJsonBody(request));
       if (Object.hasOwn(incoming, "nodeId") && incoming.nodeId !== nodeId) throw Object.assign(new Error("Assessment nodeId does not match URL"), { code: "MALFORMED_REQUEST", status: 400 });
@@ -345,7 +388,7 @@ async function handleTrainingV2(request, user, url) {
   if (operationMatch && request.method === "GET") {
     const operationId = decodeURIComponent(operationMatch[1]);
     if (!isUuidV4(operationId)) throw Object.assign(new Error("Invalid operation id"), { code: "MALFORMED_REQUEST", status: 400 });
-    const document = await readTrainingDocument(git, user.login, `operation:${operationId}`, `training/members/${user.login}/operations/${operationId}.json`);
+    const document = await readTrainingDocument(git, user.memberId, `operation:${operationId}`, `training/members/${user.memberId}/operations/${operationId}.json`);
     return v2Json(request, document.exists ? { exists: true, operation: { id: operationId, state: "saved" }, result: document.data.result, snapshotCommitSha: document.snapshotCommitSha } : { exists: false, operation: { id: operationId, state: "unknown" }, snapshotCommitSha: document.snapshotCommitSha });
   }
 
@@ -356,17 +399,48 @@ async function handleTrainingV2(request, user, url) {
 // 负责把 HTTP 语义（幂等键、条件版本、multipart、Content-Disposition）接到纯业务服务上。
 async function handleLogsV2(request, user, url) {
   const suffix = url.pathname.slice("/api/v2".length);
+  const recordMatch = /^\/me\/logs\/dates\/(\d{4}-\d{2}-\d{2})\/records\/([^/]+)$/.exec(suffix);
   const dateMatch = /^\/logs\/dates\/(\d{4}-\d{2}-\d{2})$/.exec(suffix);
   const statementMatch = /^\/logs\/dates\/(\d{4}-\d{2}-\d{2})\/problems\/([^/]+)\/statement$/.exec(suffix);
   const imageMatch = /^\/logs\/dates\/(\d{4}-\d{2}-\d{2})\/problems\/([^/]+)\/images\/([^/]+)$/.exec(suffix);
-  if (!dateMatch && !statementMatch && !imageMatch) return null;
-  const date = (dateMatch || statementMatch || imageMatch)[1];
+  if (!recordMatch && !dateMatch && !statementMatch && !imageMatch) return null;
+  const date = (recordMatch || dateMatch || statementMatch || imageMatch)[1];
+
+  if (recordMatch) {
+    if (request.method !== "PATCH") return null;
+    const recordId = decodeURIComponent(recordMatch[2]);
+    const patch = requireObject(await readJsonBody(request, 32 * 1024));
+    const allowed = new Set(["reviewStatus", "reviewDue"]);
+    if (Object.keys(patch).some((key) => !allowed.has(key))) {
+      throw Object.assign(new Error("单题复习命令只能修改复习状态和日期"), { code: "MALFORMED_REQUEST", status: 400 });
+    }
+    if (!['todo', 'archived'].includes(patch.reviewStatus)) {
+      throw Object.assign(new Error("复习状态无效"), { code: "VALIDATION_FAILED", status: 422 });
+    }
+    if (patch.reviewDue !== undefined && patch.reviewDue !== null && !isDateString(patch.reviewDue)) {
+      throw Object.assign(new Error("复习日期无效"), { code: "VALIDATION_FAILED", status: 422 });
+    }
+    const current = await readLog(user, date);
+    const index = current.problems.findIndex((problem) => problem.id === recordId);
+    if (index < 0) throw Object.assign(new Error("未找到这条题目记录"), { code: "NOT_FOUND", status: 404 });
+    const problems = current.problems.map((problem, problemIndex) => problemIndex === index ? {
+      ...problem,
+      reviewStatus: patch.reviewStatus,
+      ...(patch.reviewStatus === "archived" || patch.reviewDue == null ? { reviewDue: undefined } : { reviewDue: patch.reviewDue }),
+    } : problem);
+    const result = await saveLog(user, date, {
+      problems,
+      ...(current.startedOn ? { startedOn: current.startedOn } : {}),
+      ...(current.solvedOn ? { solvedOn: current.solvedOn } : {}),
+    }, current.revision);
+    return v2Json(request, { record: result.problems[index], revision: result.revision }, { revision: result.revision });
+  }
   const git = trainingGit(user.token);
-  const legacyIndexPath = trainingPaths(user.login).legacyIndex;
+  const legacyIndexPath = trainingPaths(user.memberId).legacyIndex;
   // 附件、正文与个人训练索引必须落在同一个 commit；索引缺失时按既有语义报 INDEX_STALE。
   const auxiliaryChanges = async ({ snapshot, date: logDate, problems }) => {
     const raw = await git.readFile(snapshot.head, legacyIndexPath);
-    const change = planLegacyIndexChange({ login: user.login, member: user.member }, logDate, problems, raw);
+    const change = planLegacyIndexChange({ memberId: user.memberId, member: user.member }, logDate, problems, raw);
     return change ? [change] : [];
   };
   const service = createLogsV2Service({ git, planAuxiliaryChanges: auxiliaryChanges });
@@ -429,7 +503,7 @@ async function handleLogsV2(request, user, url) {
       const payload = requireObject(await readJsonBody(request, 64 * 1024));
       expectedVersion = payload.expectedVersion;
     }
-    const base = { memberId: user.login, member: user.member, date, operationId, expectedVersion };
+    const base = { memberId: user.memberId, member: user.member, date, operationId, expectedVersion };
 
     if (request.method === "PUT") {
       const result = await service.save({ ...base, log: requestBody, attachmentChanges, attachments, images });
@@ -533,17 +607,20 @@ async function commit(changes, message, token, retry = 0, recheck = null) {
   }
   return { commitSha: newCommit.sha };
 }
-export function logRoots(member, date) {
-  const [year, month, day] = date.split("-");
-  return [`logs/${member}/${year}/${month}/${day}`, `logs/${member}/${date}`];
-}
 async function session(request, env) {
   const requestCookies = cookies(request);
   const values = [requestCookies[COOKIE], requestCookies[LEGACY_COOKIE]].filter(Boolean);
   for (const value of values) {
     const data = await open(value, env.SESSION_SECRET);
-    if (data && MEMBERS[data.login] === data.member) {
-      return { ...data, cfHandle: CF_HANDLES[data.login], atcoderHandle: ATCODER_HANDLES[data.login] };
+    const member = data && (memberByGithubId(data.githubUserId) || memberById(data.memberId) || memberByLogin(data.login));
+    if (member && member.logDirectory === data.member) {
+      return {
+        ...data,
+        memberId: member.memberId,
+        githubUserId: member.githubUserId,
+        cfHandle: member.cfHandle,
+        atcoderHandle: member.atcoderHandle,
+      };
     }
   }
   return null;
@@ -571,45 +648,6 @@ async function resolveLogRoot(user, date, ref = BRANCH) {
   const old = await listDir(oldRoot, user.token, ref);
   if (old !== null) return { root: oldRoot, files: old };
   return { root: currentRoot, files: null };
-}
-// 规划一次保存所需的文件变更：删除不再需要的旧文件，仅对内容有变化的文件创建 blob。
-// existingFiles 来自目录列表（path -> blob sha），通过本地 SHA-1 对比跳过未变更文件，
-// 无需逐文件读取旧内容。
-export async function planLogChanges(problems, existingFiles, root, updatedAt, interval = {}) {
-  const existing = new Map((existingFiles || []).map((file) => [file.path, file.sha]));
-  const desired = new Map();
-  const used = new Set(problems.filter((p) => Number.isInteger(p.fileIndex) && p.fileIndex >= 0).map((p) => p.fileIndex));
-  let next = 0;
-  for (const p of problems) {
-    if (!Number.isInteger(p.fileIndex) || p.fileIndex < 0) {
-      while (used.has(next)) next += 1;
-      p.fileIndex = next;
-      used.add(next);
-      next += 1;
-    }
-  }
-  desired.set(`${root}/meta.json`, JSON.stringify(metaFromProblems(problems, updatedAt, interval), null, 2));
-  // 题面 PDF 与题面图片的字节由 v2 附件接口写入，这里只能「保留引用到的、清理不再引用的」。
-  // 若把它们当作普通文件比较内容，我们手里只有路径没有字节，会把它们误判为需要删除。
-  const keep = new Set();
-  problems.forEach((p) => {
-    const prefix = `${root}/${p.fileIndex}-`;
-    desired.set(`${prefix}takeaway.md`, p.takeaway || "未填写");
-    if (p.description) desired.set(`${prefix}desc.md`, p.description);
-    if (p.code) desired.set(`${prefix}solution.cpp`, p.code);
-    if (p.statementAttachment?.sha256) keep.add(statementPath(root, p));
-    for (const image of p.statementImages || []) keep.add(statementImagePath(root, image));
-  });
-
-  const changes = [];
-  for (const path of existing.keys()) {
-    if (!desired.has(path) && !keep.has(path)) changes.push({ path, delete: true });
-  }
-  for (const [path, content] of desired) {
-    if (existing.get(path) === await gitBlobSha(content)) continue;
-    changes.push({ path, content });
-  }
-  return changes;
 }
 /**
  * The legacy JSON endpoint cannot upload attachment bytes, so it must never be
@@ -643,8 +681,11 @@ async function readLegacyEnrichment(root, files, token) {
 }
 
 export async function saveLog(user, date, input, expectedVersion) {
-  const { problems, startedOn, solvedOn } = validateLogInput(input);
-  const legacyPath = trainingPaths(user.login).legacyIndex;
+  const { problems, startedOn, solvedOn } = validateLogInput(input, {
+    recordDate: date,
+    today: toUtc8(new Date()).slice(0, 10),
+  });
+  const legacyPath = trainingPaths(user.memberId || user.login).legacyIndex;
   const { root, files } = await resolveLogRoot(user, date);
   const previous = await readLegacyEnrichment(root, files, user.token);
   for (const problem of problems) {
@@ -712,7 +753,7 @@ export async function readLog(user, date) {
   };
 }
 export async function deleteLog(user, date, expectedVersion) {
-  const legacyPath = trainingPaths(user.login).legacyIndex;
+  const legacyPath = trainingPaths(user.memberId || user.login).legacyIndex;
   const { root, files } = await resolveLogRoot(user, date);
   if (!files || !files.length) return { deleted: false };
   const changes = files.map((file) => ({ path: file.path, delete: true }));
@@ -720,34 +761,6 @@ export async function deleteLog(user, date, expectedVersion) {
   await assertLogVersionPlan({ expectedVersion, files, changes, root, allowedOutside: [legacyPath] });
   await commit(changes, `delete(${user.member}): training log for ${date}`, user.token, 0, (head) => assertFreshDateVersion(user, date, expectedVersion, legacyPath, head));
   return { deleted: true };
-}
-
-export function planLegacyIndexChange(user, date, problems, raw) {
-  let index;
-  try { index = raw == null ? null : JSON.parse(raw); } catch { index = null; }
-  if (index?.schemaVersion !== 1 || index.memberId !== user.login || index.member !== user.member || !Array.isArray(index.records)) {
-    throw Object.assign(new Error("个人训练索引暂不可用"), { code: "INDEX_STALE", status: 503 });
-  }
-  const records = index.records.filter((record) => record?.date !== date);
-  for (const problem of problems) {
-    const recordRef = { memberId: user.login, date, recordId: problem.id };
-    records.push({
-      subjectKey: subjectKeyForProblem({ ...recordRef, ...problem }),
-      date,
-      recordRef,
-      problem: catalogProblem(problem),
-      ...normalizeLearningState(problem),
-      ...(problem.reviewDue ? { reviewDue: problem.reviewDue } : {}),
-      href: `/problem/${[user.member, date, problem.id].map(encodeURIComponent).join("/")}/`,
-    });
-  }
-  // Keep each day's records in the same order as its source meta.json. Array#sort
-  // is stable, so sorting only by date preserves both untouched groups and the
-  // order of the replacement problems appended above.
-  records.sort((a, b) => a.date.localeCompare(b.date));
-  const content = `${JSON.stringify({ ...index, records }, null, 2)}\n`;
-  if (raw?.replace(/\r\n/g, "\n") === content) return null;
-  return { path: trainingPaths(user.login).legacyIndex, content };
 }
 
 export async function summarizeDescription(ai, description) {
@@ -804,11 +817,20 @@ async function handleAuth(request, env) {
     const token = (await tokenResponse.json()).access_token;
     if (!token) return new Response("OAuth failed", { status: 400 });
     const githubUser = await gh("https://api.github.com/user", token);
-    const member = MEMBERS[githubUser.login];
-    if (!member) return new Response("该用户不在队伍白名单中", { status: 403 });
+    const memberConfig = memberByGithubId(githubUser.id);
+    if (!memberConfig) return new Response("该用户不在队伍白名单中", { status: 403 });
     const csrfToken = crypto.randomUUID();
     // Session cookie ~600-800 bytes (well under 4KB browser limit)
-    const value = await seal({ token, login: githubUser.login, member, avatar_url: githubUser.avatar_url, csrfToken, exp: Date.now() + 28800000 }, env.SESSION_SECRET);
+    const value = await seal({
+      token,
+      login: githubUser.login,
+      member: memberConfig.logDirectory,
+      memberId: memberConfig.memberId,
+      githubUserId: memberConfig.githubUserId,
+      avatar_url: githubUser.avatar_url,
+      csrfToken,
+      exp: Date.now() + 28800000,
+    }, env.SESSION_SECRET);
     return new Response(null, { status: 302, headers: { Location: safeReturnTo(state.returnTo), "Set-Cookie": cookie(COOKIE, value) } });
   }
   return null;
@@ -1210,7 +1232,7 @@ export default {
       // Reading the current session is public; an anonymous visitor is a normal state.
       if (url.pathname === "/api/session" && request.method === "GET") {
         const body = user
-          ? { login: user.login, member: user.member, avatar_url: user.avatar_url, csrfToken: user.csrfToken, ...(user.cfHandle ? { cfHandle: user.cfHandle } : {}), ...(user.atcoderHandle ? { atcoderHandle: user.atcoderHandle } : {}) }
+          ? { login: user.login, member: user.member, memberId: user.memberId, avatar_url: user.avatar_url, csrfToken: user.csrfToken, ...(user.cfHandle ? { cfHandle: user.cfHandle } : {}), ...(user.atcoderHandle ? { atcoderHandle: user.atcoderHandle } : {}) }
           : null;
         return json(request, body, 200, { "Cache-Control": "no-store" });
       }

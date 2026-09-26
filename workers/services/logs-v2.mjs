@@ -1,4 +1,5 @@
 import { LOG_LIMITS, LOG_SCHEMA_VERSION, metaFromProblems, validateLogInput, isDateString } from "../../lib/log-schema.mjs";
+import { toUtc8 } from "../../lib/constants.mjs";
 import {
   MAX_NEW_STATEMENT_IMAGE_BYTES,
   MAX_STATEMENT_IMAGE_BYTES,
@@ -306,7 +307,10 @@ export function createLogsV2Service({ git, now = () => new Date().toISOString(),
       const entry = validationLog.problems?.find((problem) => problem?.id === change.recordId);
       if (upload && entry) entry.statementAttachment = { sha256: upload.sha256, fileName: upload.fileName, bytes: upload.bytes.byteLength, mimeType: upload.mimeType, ...(entry.statementAttachment?.pageRange ? { pageRange: entry.statementAttachment.pageRange } : {}) };
     }
-      const parsed = validateLogInput(validationLog);
+      const parsed = validateLogInput(validationLog, {
+        recordDate: date,
+        today: toUtc8(now()).slice(0, 10),
+      });
     // Assign stable per-day file slots before constructing text and PDF paths.
     const occupied = new Set(parsed.problems.filter((problem) => Number.isInteger(problem.fileIndex)).map((problem) => problem.fileIndex));
     let nextFileIndex = 0;

@@ -7,7 +7,7 @@ import {
   validateSelfAssessment,
 } from "../../lib/training-schema.mjs";
 import { subjectKeyForProblem } from "../../lib/problem-identity.mjs";
-import { projectReviewSchedule } from "../../lib/training-projections.mjs";
+import { foldTrainingEvents, projectReviewSchedule } from "../../lib/training-projections.mjs";
 import { runGitTransaction } from "../storage/git-transaction.mjs";
 import { toUtc8 } from "../../lib/constants.mjs";
 import { isDateString } from "../../lib/log-schema.mjs";
@@ -174,6 +174,16 @@ function eventsFrom(loader, snapshot, memberId, subjectKey) {
   });
 }
 
+async function targetAttempt(loader, snapshot, memberId, targetAttemptId) {
+  const events = await eventsFrom(loader, snapshot, memberId);
+  const recorded = events.find((event) => event?.type === "attempt.recorded" && event.id === targetAttemptId);
+  if (!recorded) throw new TrainingServiceError("NOT_FOUND", "尝试记录不存在", 404);
+  if (!foldTrainingEvents(events).some((attempt) => attempt.id === targetAttemptId)) {
+    throw new TrainingServiceError("VERSION_CONFLICT", "尝试记录已作废", 409);
+  }
+  return { recorded, events };
+}
+
 function actionType(action) {
   return ({ schedule: "review.scheduled", defer: "review.deferred", pause: "review.paused", archive: "review.archived" })[action] || null;
 }
@@ -316,6 +326,60 @@ export function createTrainingService({ git, now = () => new Date().toISOString(
         return {
           changes: [fileChange(eventPath, event), fileChange(paths.sequence, { next: event.sequence + 1 }), fileChange(reviewPath, review)],
           result: { data: event, review, resourceVersions: { [`review:${subjectHash}`]: reviewRevision } },
+        };
+      },
+    }),
+
+    correctAttempt: ({ memberId, operationId, requestHash, correction, preconditions }) => execute({
+      memberId, operationId, requestHash, message: "correct training attempt",
+      validate: async (snapshot) => {
+        const input = asObject(correction, "attempt correction");
+        noUnknown(input, ["targetAttemptId", "patch"], "attempt correction");
+        const { recorded } = await targetAttempt(loadEvents, snapshot, memberId, input.targetAttemptId);
+        const subjectHash = await sha256(recorded.subjectKey);
+        await assertPrecondition(snapshot, preconditions, `review:${subjectHash}`, [trainingPaths(memberId).review(subjectHash)]);
+      },
+      plan: async (snapshot) => {
+        const paths = trainingPaths(memberId);
+        const { recorded, events } = await targetAttempt(loadEvents, snapshot, memberId, correction.targetAttemptId);
+        const sequence = await nextSequence(snapshot, paths);
+        const event = validateAttemptEvent({
+          schemaVersion: TRAINING_SCHEMA_VERSION, id: operationId, type: "attempt.corrected", memberId,
+          recordedAt: now(), sequence, targetAttemptId: correction.targetAttemptId, patch: correction.patch,
+        });
+        const subjectHash = await sha256(recorded.subjectKey);
+        const review = persistedReview(projectReviewSchedule({ memberId, subjectKey: recorded.subjectKey, events: [...events, event], dateMath }));
+        const revision = `sha256:${await sha256(canonicalJson({ resourceKey: `review:${subjectHash}`, document: review }))}`;
+        return {
+          changes: [fileChange(paths.event(event.recordedAt, event.id), event), fileChange(paths.sequence, { next: sequence + 1 }), fileChange(paths.review(subjectHash), review)],
+          result: { data: event, review, resourceVersions: { [`review:${subjectHash}`]: revision } },
+        };
+      },
+    }),
+
+    voidAttempt: ({ memberId, operationId, requestHash, voidCommand, preconditions }) => execute({
+      memberId, operationId, requestHash, message: "void training attempt",
+      validate: async (snapshot) => {
+        const input = asObject(voidCommand, "attempt void");
+        noUnknown(input, ["targetAttemptId", "reason"], "attempt void");
+        const { recorded } = await targetAttempt(loadEvents, snapshot, memberId, input.targetAttemptId);
+        const subjectHash = await sha256(recorded.subjectKey);
+        await assertPrecondition(snapshot, preconditions, `review:${subjectHash}`, [trainingPaths(memberId).review(subjectHash)]);
+      },
+      plan: async (snapshot) => {
+        const paths = trainingPaths(memberId);
+        const { recorded, events } = await targetAttempt(loadEvents, snapshot, memberId, voidCommand.targetAttemptId);
+        const sequence = await nextSequence(snapshot, paths);
+        const event = validateAttemptEvent({
+          schemaVersion: TRAINING_SCHEMA_VERSION, id: operationId, type: "attempt.voided", memberId,
+          recordedAt: now(), sequence, targetAttemptId: voidCommand.targetAttemptId, reason: voidCommand.reason,
+        });
+        const subjectHash = await sha256(recorded.subjectKey);
+        const review = persistedReview(projectReviewSchedule({ memberId, subjectKey: recorded.subjectKey, events: [...events, event], dateMath }));
+        const revision = `sha256:${await sha256(canonicalJson({ resourceKey: `review:${subjectHash}`, document: review }))}`;
+        return {
+          changes: [fileChange(paths.event(event.recordedAt, event.id), event), fileChange(paths.sequence, { next: sequence + 1 }), fileChange(paths.review(subjectHash), review)],
+          result: { data: event, review, resourceVersions: { [`review:${subjectHash}`]: revision } },
         };
       },
     }),

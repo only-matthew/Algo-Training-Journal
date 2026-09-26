@@ -1,5 +1,7 @@
 # 交接文档：Algo Training Journal
 
+> 本文件是按时间追加的历史记录，不再作为“当前实现”的单一权威。当前产品状态以 README、PRODUCT、SPECIFICATION 的 2026-09-26 状态标记为准；易变的测试数量与部署版本只代表各段落注明日期的快照。
+
 ## 最新交接（2026-09-25）：无用文件清理
 
 - 删除已完成使命且当前数据不再需要的 `migrate-logs.js`、`migrate-date-layout.js`、`backfill-updated-at.js` 和旧版 `backfill-difficulty.mjs`；清理前确认不存在旧日志目录/单文件格式，154 份日志均已有 `updatedAt`。

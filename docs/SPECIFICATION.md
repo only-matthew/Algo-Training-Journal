@@ -6,7 +6,7 @@ AtCoder 导入结果新增 `submissionUrl`（`https://atcoder.jp/contests/<比�
 
 ## 2026-09-21 专项规格：AtCoder 题面抓取
 
-`POST /api/problem-statement` 的 `platform` 从只有 `Codeforces` 扩为 `Codeforces` 与 `AtCoder`：AtCoder 按题号（任务 ID，如 `abc381_a`）先试官方题目页 `atcoder.jp/contests/<比赛>/tasks/<任务>?lang=en`（只取 `span.lang-en` 题面，`<var>` 的裸 TeX 转 `$...$`，图片按 `Referer: https://atcoder.jp/` 归档），实测该站对机房出口整体返回 403，因此失败后退回洛谷的 `AT_<任务 ID>` 镜像页（`parserVersion="luogu-atcoder-mirror-v1"`，带 `mirror-source` 警告）；洛谷也没收录的题目（Typical90 等）可由浏览器小书签在 AtCoder 题目页复制整页源码，回到表单粘贴后经请求体的可选 `html` 字段交给 `statementFromAtCoderHtml()` 解析——这条路径不请求上游、用同一个解析器、以 `og:url` 校验题目身份，并带 `client-html` 警告。`statementSource.kind` 新增 `atcoder-html`，洛谷 `AT_` 镜像复用 `luogu-mirror`，来源地址按 kind 与平台形态校验。共享解析器同时补齐 `<code>`、`<var>`、`<thead>/<tbody>` 表格、`<blockquote>`，以及纯 Markdown 正文与 `[in, out]` 数组样例（洛谷 AT_ 页形态），因此 CF / 洛谷解析版本升级为 `cf-html-v4` / `luogu-mirror-v3`。导入面板同时预置队员的 AtCoder 用户名（`workers/oauth.mjs` 的 `ATCODER_HANDLES`，廖夏 `only_matthew`）。接口与取舍见 [题面归档规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) §5.1/§5.3 与 [最新交接](HANDOFF.md)。
+`POST /api/problem-statement` 的 `platform` 从只有 `Codeforces` 扩为 `Codeforces` 与 `AtCoder`：AtCoder 按题号（任务 ID，如 `abc381_a`）先试官方题目页 `atcoder.jp/contests/<比赛>/tasks/<任务>?lang=en`（只取 `span.lang-en` 题面，`<var>` 的裸 TeX 转 `$...$`，图片按 `Referer: https://atcoder.jp/` 归档），实测该站对机房出口整体返回 403，因此失败后退回洛谷的 `AT_<任务 ID>` 镜像页（`parserVersion="luogu-atcoder-mirror-v1"`，带 `mirror-source` 警告）；洛谷也没收录的题目（Typical90 等）可由浏览器小书签在 AtCoder 题目页复制整页源码，回到表单粘贴后经请求体的可选 `html` 字段交给 `statementFromAtCoderHtml()` 解析——这条路径不请求上游、用同一个解析器、以 `og:url` 校验题目身份，并带 `client-html` 警告。`statementSource.kind` 新增 `atcoder-html`，洛谷 `AT_` 镜像复用 `luogu-mirror`，来源地址按 kind 与平台形态校验。共享解析器同时补齐 `<code>`、`<var>`、`<thead>/<tbody>` 表格、`<blockquote>`，以及纯 Markdown 正文与 `[in, out]` 数组样例（洛谷 AT_ 页形态），因此 CF / 洛谷解析版本升级为 `cf-html-v4` / `luogu-mirror-v3`。导入面板从 `config/members.json` 读取队员的 AtCoder 用户名（廖夏 `only_matthew`）。接口与取舍见 [题面归档规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) §5.1/§5.3 与 [最新交接](HANDOFF.md)。
 
 ## 2026-09-18 专项规格：题面图片归档
 
@@ -68,14 +68,16 @@ AtCoder 导入结果新增 `submissionUrl`（`https://atcoder.jp/contests/<比�
 
 | 源文件 | 当前行为 | 本轮要求 |
 | --- | --- | --- |
-| `lib/log-schema.mjs` | schemaVersion=3，最多 15 题/日，1,500,000 字节/次 | v4 向后读 v3；保留现有限制和字段 |
+| `lib/log-schema.mjs` | 当前写入 schemaVersion=6，最多 15 题/日，1,500,000 字节/次；兼容无版本及 v1–v5 | 未知未来版本拒绝；缺失版本按 legacy 读取，不回写时不强制迁移 |
 | `workers/oauth.mjs` | 白名单、加密会话、CSRF；按日期整份读写 | 加入 v2 路由、快照读取、条件写入、幂等 |
 | `lib/journal-api.js` | 简单 GET/PUT/DELETE，无版本参数 | 保留文件入口，新增 v2 客户端；支持结构化错误 |
 | `lib/form.mjs` | 日期草稿放在 `journal-drafts-v1` | 按成员隔离；冲突时保留本地输入 |
-| `lib/renderer.mjs` | 复习按钮后台整日 PUT | 改用单题复习命令；拆出新页面模块 |
+| `lib/renderer.mjs` | 复习按钮调用单题 PATCH 命令 | 不向客户端暴露整日替换；保留条件写入保护 |
 | `lib/mastery.mjs` | 以记录数/掌握标记/日期判定熟练 | 替换为第 8 节证据规则，不伪造独立完成 |
 | `scripts/generate-data.js` | 静态页面、数据、Service Worker 生成 | 增加事件投影与发布回执索引；不得手改 site/ |
 | `.github/workflows/deploy.yml` | Pages 构建发布；新提交取消进行中的旧构建 | 保留构建发布；产物必须声明输入提交 SHA |
+
+日志版本兼容表：缺失版本视作最早期 legacy 格式，只读时兼容；首次重新保存会写成当前版本。v1–v3 是早期日志字段演进，v4 加入题面附件、来源与 AI 元数据，v5 加入 `outcome/masterySelfAssessment/reviewStatus/isMistake`，v6 加入 `statementImages`。任何高于 v6 的未知版本都拒绝读取或回写，避免静默丢字段。
 
 保留 `/`、`/analysis/`、`/report/`、`/review/`、`/roadmap/**`、`/tags/**`、`/member/**`、`/problem/**`。中文成员目录和现有 problemId 不迁移、不重新生成。日志排序变化不能改变详情链接。
 
@@ -101,10 +103,13 @@ AtCoder 导入结果新增 `submissionUrl`（`https://atcoder.jp/contests/<比�
 
 ### 3.3 权威文件
 
+下列布局分为“当前已有”和“目标布局”。当前仓库已落地 `profile.json`、`operations/` 与 `indexes/legacy.json`；其他路径只有在对应 v2 功能重新启用后才创建。`indexes/legacy.json` 是现有日志保存时同 commit 更新的个人记录索引。
+
 ```text
 config/members.json
-logs/<原成员目录>/YYYY/MM/DD/meta.json       # v4，正文分文件保留
+logs/<原成员目录>/YYYY/MM/DD/meta.json       # 当前写入 v6，正文分文件保留
 training/members/<memberId>/profile.json
+training/members/<memberId>/indexes/legacy.json       # 当前已使用
 training/members/<memberId>/plans/YYYY-MM-DD.json
 training/members/<memberId>/events/YYYY-MM/<eventId>.json
 training/members/<memberId>/reviews/<subjectHash>.json
@@ -114,6 +119,8 @@ training/members/<memberId>/sequence.json
 training/members/<memberId>/indexes/summary.json
 training/members/<memberId>/indexes/attempts/YYYY-MM.json
 ```
+
+当前产品决策（2026-09-26）：`/training/` 前端已下线，`/api/v2/me/*` 为冻结的试验接口，不承诺完整路由集。恢复工作台前不得宣称这些接口已有用户入口。现有日志里的 `outcome` 是当前计分来源；未来完成事件迁移后，事件投影优先，日志字段降为兼容快照。
 
 `subjectHash=SHA256(UTF8(subjectKey))` 的 64 位小写十六进制。保存的 JSON 仍带原始 subjectKey，读取须校验一致。所有路径由服务端映射生成，用户不能传入路径、Git ref 或仓库名。节点 ID 必须存在于 curriculum 白名单。
 
@@ -241,6 +248,8 @@ GET 无 operation；列表返回 data.items、data.nextCursor。cursor 是编码
 ### 5.2 v1.0 路由
 
 表中所有 PUT/PATCH/POST/DELETE 默认遵循5.1；P 表示跨资源 preconditions。
+
+实现状态（2026-09-26）：已实现 profile、workbench/reviews/recommendations、plans、plan-actions、attempt 新增/分页列表/不可变纠错/作废、专题 evidence 分页、review-actions、assessments、operations，以及 `/api/v2/logs/dates/:date` 整日读写和附件；新增的单题 PATCH 当前仅支持 `reviewStatus`/`reviewDue` 快捷命令。records 通用增删改与 plan-links 仍未实现。下表是目标契约，不代表每一行均已上线。
 
 | 方法与路径 | 请求/返回 | 约束 |
 | --- | --- | --- |

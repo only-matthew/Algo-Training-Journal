@@ -24,7 +24,7 @@ export async function readOwnedDocument(snapshot, memberId, resourceKey, path) {
 }
 
 export async function readTrainingContext({ git, snapshot, user, date, today, includeCatalog = true }) {
-  const memberId = user.login;
+  const memberId = user.memberId || user.login;
   const paths = trainingPaths(memberId);
   const [profile, plan, eventFiles, reviewFiles, assessmentFiles, legacyIndex, nodes] = await Promise.all([
     readOwnedDocument(snapshot, memberId, "profile", paths.profile),
