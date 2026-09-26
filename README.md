@@ -508,7 +508,11 @@ npx serve site
 │   └── …                         # 其余 Worker、导入、渲染与训练服务测试由 npm test 自动发现
 ├── workers/
 │   ├── oauth.mjs                 # OAuth、加密会话、受限日志 API、AI 概括与题目导入
+│   ├── member-config.mjs         # 按 githubUserId / login / memberId 解析成员
+│   ├── services/                 # 日志读写、题面抓取、训练工作台等领域服务
 │   └── wrangler.toml             # Worker 配置
+├── config/
+│   └── members.json              # 成员身份与 OJ 账号（OAuth 按数字用户 ID 匹配）
 ├── vendor/                        # 前端与共享渲染模块使用的第三方库
 ├── .editorconfig                  # 跨编辑器的统一格式规则
 ├── jsconfig.json                  # VS Code/TypeScript 服务的 JS 模块解析配置

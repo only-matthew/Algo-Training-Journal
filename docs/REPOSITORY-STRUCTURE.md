@@ -7,6 +7,7 @@
 | 路径 | 内容 | 维护规则 |
 | --- | --- | --- |
 | `src/` | 浏览器入口、HTML、样式及随站点发布的资源 | 仅放浏览器直接使用或构建时复制的文件 |
+| `config/` | 成员身份与平台账号配置（`members.json`） | 部署期事实来源；OAuth 按 `githubUserId` 匹配，`memberId` 与 `logDirectory` 不随 GitHub 改名变化 |
 | `lib/` | 前端、Worker、构建脚本和测试共享的业务模块 | 不依赖具体页面 DOM 的能力优先放这里 |
 | `vendor/` | Marked、KaTeX、Prism 等固定版本的第三方浏览器库 | 与自有源码分离，由构建脚本复制或打包 |
 | `workers/` | Cloudflare Worker、服务层和 Wrangler 配置 | API、鉴权、抓取和仓库写入逻辑集中维护 |

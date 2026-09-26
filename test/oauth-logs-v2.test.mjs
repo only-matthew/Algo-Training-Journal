@@ -483,3 +483,118 @@ test("a date version from the legacy endpoint is accepted by the v2 attachment s
   });
   assert.equal(again.status, 200, await again.clone().text());
 });
+
+// ── 单题复习命令：PATCH /api/v2/me/logs/dates/:date/records/:id ──
+//
+// 这条路由取代了「读整天 → 改一题 → 写整天」。服务端在同一请求内自己读取当前
+// 版本再写回，所以客户端不提供 revision，版本冲突由服务端检测而不是由客户端猜。
+
+const RECORD_ROOT = `logs/${MEMBER}/2026/09/15`;
+
+function twoProblems() {
+  return [
+    { id: "p1", name: "Loop", platform: "Codeforces", problemNumber: "123A", tags: [], takeaway: "第一次提交。" },
+    { id: "p2", name: "Watermelon", platform: "Codeforces", problemNumber: "4A", tags: [], takeaway: "第二题。" },
+  ];
+}
+
+function seedDay(github, { problems, startedOn, solvedOn }) {
+  return call(github, `/api/logs/date?date=${DATE}`, {
+    method: "PUT",
+    headers: { "X-CSRF-Token": CSRF, "Content-Type": "application/json" },
+    body: JSON.stringify({ expectedVersion: null, ...(startedOn ? { startedOn } : {}), ...(solvedOn ? { solvedOn } : {}), problems }),
+  });
+}
+
+function patchCall(github, recordId, patch) {
+  return call(github, `/api/v2/me/logs/dates/${DATE}/records/${encodeURIComponent(recordId)}`, {
+    method: "PATCH",
+    headers: { "X-CSRF-Token": CSRF, "Content-Type": "application/json" },
+    body: JSON.stringify(patch),
+  });
+}
+
+function storedMeta(github) {
+  return JSON.parse(new TextDecoder().decode(github.files.get(`${RECORD_ROOT}/meta.json`)));
+}
+
+test("单题复习 PATCH 只改目标记录，保留同日其他题与当天区间", async (context) => {
+  const github = githubMock();
+  seedLegacyIndex(github);
+  context.mock.method(globalThis, "fetch", github.fetch);
+  const seeded = await seedDay(github, { problems: twoProblems(), startedOn: "2026-09-13", solvedOn: "2026-09-15" });
+  assert.equal(seeded.status, 200, await seeded.clone().text());
+
+  const response = await patchCall(github, "p1", { reviewStatus: "archived" });
+  assert.equal(response.status, 200, await response.clone().text());
+  const body = await response.json();
+  assert.equal(body.record.id, "p1");
+  assert.equal(body.record.reviewStatus, "archived");
+  assert.match(body.revision, /^sha256:[a-f0-9]{64}$/);
+
+  const meta = storedMeta(github);
+  const first = meta.problems.find((problem) => problem.id === "p1");
+  const second = meta.problems.find((problem) => problem.id === "p2");
+  assert.equal(first.reviewStatus, "archived");
+  assert.equal(first.reviewDue, undefined, "结束复习安排必须清掉到期日");
+  assert.equal(second.reviewStatus, "none", "同一天的另一题不能被改动");
+  assert.equal(second.masteryStatus, "unknown");
+  assert.equal(meta.startedOn, "2026-09-13", "整天保存会带上当前区间，单题命令不得丢掉它");
+  assert.equal(meta.solvedOn, "2026-09-15");
+  assert.equal(meta.problems.length, 2);
+  // 文件槽位必须稳定：正文不能被重排或删除。
+  assert.ok(github.files.has(`${RECORD_ROOT}/0-takeaway.md`));
+  assert.ok(github.files.has(`${RECORD_ROOT}/1-takeaway.md`));
+});
+
+test("单题复习 PATCH 的顺延命令写入新的到期日", async (context) => {
+  const github = githubMock();
+  seedLegacyIndex(github);
+  context.mock.method(globalThis, "fetch", github.fetch);
+  await seedDay(github, { problems: twoProblems() });
+
+  const response = await patchCall(github, "p2", { reviewStatus: "todo", reviewDue: "2026-09-18" });
+  assert.equal(response.status, 200, await response.clone().text());
+  const meta = storedMeta(github);
+  assert.equal(meta.problems.find((problem) => problem.id === "p2").reviewStatus, "todo");
+  assert.equal(meta.problems.find((problem) => problem.id === "p2").reviewDue, "2026-09-18");
+  assert.equal(meta.problems.find((problem) => problem.id === "p1").reviewStatus, "none");
+});
+
+test("单题复习 PATCH 拒绝白名单外的字段、非法状态与非法日期", async (context) => {
+  const github = githubMock();
+  seedLegacyIndex(github);
+  context.mock.method(globalThis, "fetch", github.fetch);
+  await seedDay(github, { problems: twoProblems() });
+  const before = await call(github, `/api/v2/logs/dates/${DATE}`, { method: "GET" });
+
+  // 只允许复习字段：不能让这条命令变成「顺手改题目或正文」的后门。
+  const extra = await patchCall(github, "p1", { reviewStatus: "archived", name: "Renamed" });
+  assert.equal(extra.status, 400);
+  assert.equal((await extra.json()).error.code, "MALFORMED_REQUEST");
+
+  const invalidState = await patchCall(github, "p1", { reviewStatus: "mastered" });
+  assert.equal(invalidState.status, 422);
+  assert.equal((await invalidState.json()).error.code, "VALIDATION_FAILED");
+
+  const invalidDate = await patchCall(github, "p1", { reviewStatus: "todo", reviewDue: "2026/09/18" });
+  assert.equal(invalidDate.status, 422);
+  assert.equal((await invalidDate.json()).error.code, "VALIDATION_FAILED");
+
+  // 被拒绝的请求不能改动仓库内容。
+  const after = await call(github, `/api/v2/logs/dates/${DATE}`, { method: "GET" });
+  assert.equal((await after.json()).revision, (await before.json()).revision);
+});
+
+test("单题复习 PATCH 对不存在的记录返回 404 且不改动仓库", async (context) => {
+  const github = githubMock();
+  seedLegacyIndex(github);
+  context.mock.method(globalThis, "fetch", github.fetch);
+  await seedDay(github, { problems: twoProblems() });
+  const commitsBefore = github.commits;
+
+  const missing = await patchCall(github, "nope", { reviewStatus: "archived" });
+  assert.equal(missing.status, 404);
+  assert.equal((await missing.json()).error.code, "NOT_FOUND");
+  assert.equal(github.commits, commitsBefore, "找不到记录时不得产生提交");
+});

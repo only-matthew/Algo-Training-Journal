@@ -248,7 +248,29 @@ function textChanges(root, previous, next, interval, timestamp) {
   return changes;
 }
 
-async function decodeLog(snapshot, root, files) {
+/**
+ * 历史记录可能带着不符合当前约束的区间（区间校验上线之前写入的数据）。读取与
+ * 统计都不允许被这种数据中断：先降级为「只算记录当天」再校验一次，原值仍然读回
+ * 以避免后续保存把历史区间静默抹掉。降级后仍失败说明数据本身损坏，转成结构化
+ * 错误，而不是让 TypeError/RangeError 冒泡成 500。
+ */
+function validateStoredLog(meta, raw, date, today) {
+  try {
+    return validateLogInput(raw, { recordDate: date, today });
+  } catch {
+    let parsed;
+    try {
+      parsed = validateLogInput({ ...raw, startedOn: undefined, solvedOn: undefined }, { recordDate: date, today });
+    } catch {
+      throw new LogsV2Error("STORAGE_UNAVAILABLE", "Stored log does not satisfy the current schema", 502);
+    }
+    const startedOn = typeof meta.startedOn === "string" && meta.startedOn ? meta.startedOn : undefined;
+    const solvedOn = typeof meta.solvedOn === "string" && meta.solvedOn ? meta.solvedOn : undefined;
+    return { ...parsed, ...(startedOn ? { startedOn } : {}), ...(solvedOn ? { solvedOn } : {}) };
+  }
+}
+
+async function decodeLog(snapshot, root, files, date, today) {
   const metaPath = `${root}/meta.json`;
   if (!files.some((file) => file.path === metaPath)) return { exists: false, root, files, log: { schemaVersion: LOG_SCHEMA_VERSION, problems: [] }, interval: {} };
   let meta;
@@ -260,11 +282,11 @@ async function decodeLog(snapshot, root, files) {
     return { ...problem, fileIndex, description: paths.has(`${root}/${fileIndex}-desc.md`) ? await snapshot.readFile(`${root}/${fileIndex}-desc.md`) : "", takeaway: paths.has(`${root}/${fileIndex}-takeaway.md`) ? await snapshot.readFile(`${root}/${fileIndex}-takeaway.md`) : "", code: paths.has(`${root}/${fileIndex}-solution.cpp`) ? await snapshot.readFile(`${root}/${fileIndex}-solution.cpp`) : "" };
   })) };
   // validateLogInput also normalizes v3 records into the v4 compatible shape.
-  const parsed = validateLogInput(raw);
+  const parsed = validateStoredLog(meta, raw, date, today);
   return { exists: true, root, files, log: parsed, interval: { startedOn: parsed.startedOn, solvedOn: parsed.solvedOn } };
 }
 
-async function snapshotDate(git, head, member, date) {
+async function snapshotDate(git, head, member, date, today = toUtc8(new Date()).slice(0, 10)) {
   const snapshot = { head, readFile: (path) => git.readFile(head, path), readBytes: (path) => git.readBytes(head, path) };
   // The date version is a fingerprint of { path, blob sha }, so the adapter must
   // list entries with their Git blob SHA. `listFiles` only returns paths and
@@ -277,10 +299,10 @@ async function snapshotDate(git, head, member, date) {
   };
   for (const root of roots(member, date)) {
     const files = await listEntries(`${root}/`);
-    if (files.length) return { snapshot, ...(await decodeLog(snapshot, root, files)) };
+    if (files.length) return { snapshot, ...(await decodeLog(snapshot, root, files, date, today)) };
   }
   const root = roots(member, date)[0];
-  return { snapshot, ...(await decodeLog(snapshot, root, [])) };
+  return { snapshot, ...(await decodeLog(snapshot, root, [], date, today)) };
 }
 
 function receiptResult(receipt, hash) {

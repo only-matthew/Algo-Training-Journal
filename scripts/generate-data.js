@@ -1,5 +1,6 @@
 let trainingCardHtml;
-let expandTrainingInterval;
+let mergeTrainingDates;
+let trainingDatesOf;
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
@@ -224,15 +225,13 @@ function buildHeatmapCounts(logs, today = toUtc8(new Date()).slice(0, 10)) {
   const valueByMember = {};
 
   for (const log of logs) {
-    let dates;
-    try {
-      dates = expandTrainingInterval({ ...log, today }, log.date);
-    } catch (error) {
-      // Historical data must never take the whole site offline. Keep the
-      // record visible on its canonical date and identify the bad source.
-      dates = [log.date];
-      console.warn(`[training-interval] ${log.member}/${log.date}/${log.problemId || log.problemIndex}: ${error.message}; using record date only`);
-    }
+    // 越界区间不能中断构建：降级为只算记录当天，并指出是哪条数据。
+    const dates = trainingDatesOf(log, {
+      today,
+      onDegrade: (error) => {
+        console.warn(`[training-interval] ${log.member}/${log.date}/${log.problemId || log.problemIndex}: ${error.message}; using record date only`);
+      },
+    });
     for (const day of dates) {
       all[day] = (all[day] || 0) + 1;
       byMember[log.member] ??= {};
@@ -269,7 +268,9 @@ function buildRecentStats(logs, members) {
   }
 
   function summarize(items) {
-    const activeDays = new Set(items.map((item) => item.date)).size;
+    // 训练日 = 记录当天与确认区间的并集，重叠天数不重复计。区间可能越出统计窗口，
+    // 因此按窗口裁剪；口径与热力图（buildHeatmapCounts）保持一致。
+    const activeDays = mergeTrainingDates(items).filter((date) => date >= start && date <= end).length;
     const byPlatform = {};
     const byDifficulty = {};
     for (const item of items) {
@@ -557,7 +558,7 @@ function writeMemberPages(html, members, logs, vitality) {
     const stateKey = `member:${member}`;
     const stateHash = contentHash({ shell: buildShellHash, logs: memberLogs.map(logSummary), vitality: vitality.byMember[member] });
     if (reuseGenerated(stateKey, stateHash, outputPath)) continue;
-    const activeDays = new Set(memberLogs.map((log) => log.date)).size;
+    const activeDays = mergeTrainingDates(memberLogs).length;
     const recentCount = memberLogs.filter((log) => log.date >= daysAgo(29)).length;
     const firstDate = memberLogs.at(-1)?.date;
     const lastDate = memberLogs[0]?.date;
@@ -1318,7 +1319,7 @@ async function main() {
   ({ cfTagToChinese } = await import("../lib/cf-tag-map.mjs"));
   ({ assessMastery } = await import("../lib/mastery.mjs"));
   ({ buildVitality } = await import("../lib/vitality-summary.mjs"));
-  ({ expandTrainingInterval } = await import("../lib/training-interval.mjs"));
+  ({ mergeTrainingDates, trainingDatesOf } = await import("../lib/training-interval.mjs"));
   ({ vitalityRecordKey } = await import("../lib/vitality.mjs"));
   ({ vitalityChartHtml } = await import("../lib/vitality-chart.mjs"));
   ({ memberVitalityDetailsHtml } = await import("../lib/member-vitality.mjs"));

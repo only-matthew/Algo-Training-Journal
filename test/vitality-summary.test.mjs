@@ -87,3 +87,25 @@ test('platform, day, record and member totals agree, with safe explanatory HTML'
   assert.match(memberVitalityDetailsHtml(scope), /1 条历史记录缺少完成质量/);
   assert.match(memberVitalityDetailsHtml(undefined), /记录带有 Rating/);
 });
+
+// 区间记录的活力必须和热力图用同一口径：按覆盖天数等额分摊到每日曲线，
+// 并且各日之和精确等于该题额度（否则日曲线累计会与 total 漂移）。
+test('区间记录的单题活力按覆盖天数分摊到每日曲线且总额守恒', () => {
+  const result = buildVitality([
+    record({ date: '2026-09-03', problemId: 'a', startedOn: '2026-09-01', solvedOn: '2026-09-03' }),
+    record({ date: '2026-09-05', problemId: 'b', problemNumber: 'P1001' }),
+  ]);
+  const scope = result.byMember.甲;
+  assert.deepEqual(scope.daily.map(day => day.date), ['2026-09-01', '2026-09-02', '2026-09-03', '2026-09-05']);
+
+  const intervalValue = result.byRecord.get('甲|2026-09-03|a').vitality;
+  const spread = scope.daily.filter(day => day.date <= '2026-09-03');
+  assert.equal(spread.length, 3);
+  assert.equal(Number(spread.reduce((sum, day) => sum + day.value, 0).toFixed(3)), Number(intervalValue.toFixed(3)));
+  assert.ok(Math.max(...spread.map(day => day.value)) - Math.min(...spread.map(day => day.value)) <= 0.001, '分摊应尽量均匀');
+
+  // 单日记录仍只占自己那一天，分摊不得改动总额。
+  assert.equal(scope.daily.at(-1).date, '2026-09-05');
+  assert.equal(scope.daily.at(-1).cumulative, scope.total);
+  assert.equal(result.allDaily.at(-1).cumulative, result.total);
+});

@@ -10,6 +10,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const siteDir = path.join(root, "site");
 const require = createRequire(import.meta.url);
 const { replaceProblemArticle, resolveStatsEnd } = require("../scripts/generate-data.js");
+const { mergeTrainingDates } = await import("../lib/training-interval.mjs");
 
 function routePath(segments) {
   return `/${segments.map((segment) => encodeURIComponent(String(segment))).join("/")}/`;
@@ -126,7 +127,12 @@ test("generator emits crawlable member and problem pages", () => {
   for (const member of journal.members) {
     const scope = journal.vitality[member];
     const memberLogs = journal.logs.filter(item => item.member === member);
-    assert.equal(scope.daily.length, new Set(memberLogs.map(item => item.date)).size);
+    // 训练日 = 记录当天与确认区间的并集。活力日曲线与成员页文案必须用同一口径，
+    // 否则会出现「训练日历 25 天 / 训练日 21 天」这种同站自相矛盾的数字。
+    const trainingDays = mergeTrainingDates(memberLogs);
+    assert.equal(scope.daily.length, trainingDays.length, `${member} 的活力日曲线天数必须是区间并集`);
+    const memberDays = fs.readFileSync(path.join(siteDir, "member", member, "index.html"), "utf8").match(/id="member-days"[^>]*>(\d+)</);
+    assert.equal(Number(memberDays[1]), trainingDays.length, `${member} 的成员页训练日必须是区间并集`);
     assert.equal(Number(memberLogs.reduce((sum, item) => sum + item.vitality, 0).toFixed(3)), scope.total);
     assert.equal(scope.byPlatform.reduce((sum, item) => sum + item.records, 0), memberLogs.length);
   }
