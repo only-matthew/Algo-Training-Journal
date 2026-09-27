@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-27T20:50:02.647+08:00",
+  "problems": [
+    {
+      "id": "93b3dd08-500a-44c2-bbe5-4315240a2fdf",
+      "name": "Bit Flipping",
+      "platform": "Codeforces",
+      "problemNumber": "1659B",
+      "difficulty": "★ 1300",
+      "difficultyRating": 1300,
+      "tags": [
+        "状态压缩",
+        "构造",
+        "贪心",
+        "字符串"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/1659/B?locale=en",
+        "fetchedAt": "2026-09-27T12:47:41.829Z",
+        "parserVersion": "cf-html-v4"
+      }
+    }
+  ]
+}
