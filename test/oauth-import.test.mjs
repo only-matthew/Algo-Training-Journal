@@ -56,13 +56,13 @@ test("fetchCodeforcesAccepted backfills ratings absent from the submission snaps
   assert.deepEqual(problem.tags, ["implementation"]);
 });
 
-test("Gym AC 导入保留题号并链接到 Gym 提交", async () => {
+test("公开 Gym AC 导入保留题号并链接到 Gym 提交", async () => {
   const fetchImpl = async (url) => new Response(JSON.stringify(String(url).includes("problemset.problems")
     ? { status: "OK", result: { problems: [] } }
-    : { status: "OK", result: [{ id: 12345, creationTimeSeconds: now - 60, verdict: "OK", problem: { contestId: 718163, index: "I", name: "Gym problem", tags: [] } }] }));
+    : { status: "OK", result: [{ id: 391919097, creationTimeSeconds: now - 60, verdict: "OK", problem: { contestId: 102006, index: "F", name: "Pretests", tags: [] } }] }));
   const [problem] = await fetchCodeforcesAccepted("student", { fetchImpl });
-  assert.equal(problem.problemNumber, "718163I");
-  assert.equal(problem.submissionUrl, "https://codeforces.com/gym/718163/submission/12345");
+  assert.equal(problem.problemNumber, "102006F");
+  assert.equal(problem.submissionUrl, "https://codeforces.com/gym/102006/submission/391919097");
 });
 
 test("fetchCodeforcesAccepted pages forward until the 3-day window is covered", async () => {
