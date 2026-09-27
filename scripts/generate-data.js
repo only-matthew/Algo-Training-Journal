@@ -1245,7 +1245,7 @@ async function generateRoadmapPages(html, roadmapData, nodeDataById) {
 }
 
 // 预渲染 /tags/ 索引页与每个标签页（真实静态页面，SEO 待遇与题目页同等）。
-// 磁盘目录用原始中文标签名（与 /member/<中文>/ 一致），href/canonical/sitemap 走 routePath/absoluteUrl 编码。
+// 常规标签使用原名目录；特殊字符标签使用与浏览器端一致的安全代号。
 async function generateTagPages(html, tagIndex, roadmapData) {
   if (!tagPageHtml || !tagIndexHtml) {
     try {
@@ -1282,8 +1282,7 @@ async function generateTagPages(html, tagIndex, roadmapData) {
   // 每个标签页（标签全集均生成，含 0 记录的知识树标签）
   for (const entry of tagIndex.tags) {
     const tag = entry.tag;
-    // 页面目录同样必须用 tagStorageKey(tag)：`A*` / `IDA*` 这类标签在 Windows 上
-    // 是通配符（实测 ENOENT），`/` 与空格也不安全；站内链接与 canonical 走的都是同一套编码。
+    // 页面目录与数据分片使用同一安全代号。
     const outputPath = path.join("tags", tagStorageKey(tag), "index.html");
     const stateKey = `tag-page:${tag}`;
     const stateHash = tagDependencyHash(entry, buildShellHash);
@@ -1295,12 +1294,12 @@ async function generateTagPages(html, tagIndex, roadmapData) {
     page = replaceHeadMetadata(page, {
       title: `${tag} · 标签 · ${SITE_NAME}`,
       description,
-      canonical: absoluteUrl(["tags", tag]),
+      canonical: absoluteUrl(["tags", tagStorageKey(tag)]),
       jsonLd: {
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         name: `${tag} · 标签`,
-        url: absoluteUrl(["tags", tag]),
+        url: absoluteUrl(["tags", tagStorageKey(tag)]),
         description,
       },
     });
@@ -1418,7 +1417,7 @@ async function main() {
       ...phase.nodes.map((node) => ({ segments: ["roadmap", phase.id, node.id], lastmod: roadmapData.generatedAt.slice(0, 10) })),
     ]),
     { segments: ["tags"], lastmod: roadmapData.generatedAt.slice(0, 10) },
-    ...tagIndex.tags.map((entry) => ({ segments: ["tags", entry.tag], lastmod: roadmapData.generatedAt.slice(0, 10) })),
+    ...tagIndex.tags.map((entry) => ({ segments: ["tags", tagStorageKey(entry.tag)], lastmod: roadmapData.generatedAt.slice(0, 10) })),
   ] : []);
   if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
   fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");

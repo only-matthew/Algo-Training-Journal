@@ -178,7 +178,7 @@ test("generator emits crawlable member and problem pages", () => {
     assert.equal("records" in first, false, "tag index summaries must not embed record lists");
     const tagDetail = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "tags", `${tagStorageKey(first.tag)}.json`), "utf8"));
     assert.ok(Array.isArray(tagDetail.records));
-    const tagRoute = routePath(["tags", first.tag]);
+    const tagRoute = routePath(["tags", tagStorageKey(first.tag)]);
     const tagPage = fs.readFileSync(path.join(siteDir, "tags", tagStorageKey(first.tag), "index.html"), "utf8");
     assert.ok(
       tagPage.includes(`<link rel="canonical" href="https://train.xialiao.org${tagRoute}" />`),

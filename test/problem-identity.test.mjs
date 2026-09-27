@@ -36,6 +36,8 @@ test("残缺题号不生成 key，避免不同场次被误判为同一道题", (
   assert.equal(canonicalProblemKey("Codeforces", "C1"), null);
   assert.equal(canonicalProblemKey("Codeforces", "1113B"), "Codeforces|1113B");
   assert.equal(canonicalProblemKey("Codeforces", "2254C1"), "Codeforces|2254C1");
+  assert.equal(canonicalProblemKey("Codeforces", "718163I"), "Codeforces|718163I");
+  assert.equal(canonicalProblemKey("Codeforces", "Gym718163I"), "Codeforces|718163I");
   // 洛谷题号必须有试卷编号；纯中文题名或 CF 式题号都不算完整
   assert.equal(canonicalProblemKey("洛谷", "乒乓球"), null);
   assert.equal(canonicalProblemKey("洛谷", "2254A"), null);

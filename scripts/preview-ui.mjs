@@ -16,17 +16,12 @@ function acceptsGzip(header = '') {
 const server = http.createServer((req,res)=>{
   try {
     const urlPath = new URL(req.url,'http://localhost').pathname;
-    // 标签目录是按 tagStorageKey 落盘的（`A*` → `A%2A`），所以解码后的路径可能不存在：
-    // 先按解码路径找，找不到再按原样（未解码）路径找，模拟静态托管对百分号编码目录的处理。
-    const candidates = [...new Set([decodeURIComponent(urlPath), urlPath])]
-      .map((value) => path.resolve(root, '.' + value));
-    let file = null;
-    for (const candidate of candidates) {
-      if (!fs.existsSync(candidate)) continue;
-      const resolved = fs.statSync(candidate).isDirectory() ? path.join(candidate, 'index.html') : candidate;
-      if (fs.existsSync(resolved)) { file = resolved; break; }
-    }
-    if (!file) { res.writeHead(404).end(); return; }
+    // 与线上静态托管一致：先解码 URL，再匹配磁盘上的文件名。
+    const candidate = path.resolve(root, '.' + decodeURIComponent(urlPath));
+    const file = fs.existsSync(candidate)
+      ? (fs.statSync(candidate).isDirectory() ? path.join(candidate, 'index.html') : candidate)
+      : null;
+    if (!file || !fs.existsSync(file)) { res.writeHead(404).end(); return; }
     if (!file.startsWith(root + path.sep) && file !== root) { res.writeHead(403).end(); return; }
     const ext = path.extname(file);
     // 预览服务不做内容哈希，浏览器会用启发式缓存留住旧的 style.css：重建后仍然按旧样式

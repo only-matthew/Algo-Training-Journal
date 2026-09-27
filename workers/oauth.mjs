@@ -6,7 +6,7 @@ import { GitTransactionError } from "./storage/git-transaction.mjs";
 import { isUuidV4 } from "../lib/training-schema.mjs";
 import { readCatalog, readTrainingContext, workbenchResponse } from "./services/training-read.mjs";
 import { recommendV1 } from "../lib/recommendations.mjs";
-import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
+import { isCodeforcesGymContest, subjectKeyForProblem } from "../lib/problem-identity.mjs";
 import { archiveStatementImages, fetchStatement, parseAtCoderProblemNumber, parseLuoguProblem, readLuoguProblem, statementFromAtCoderHtml, statementFromCodeforcesHtml } from "./services/problem-statement.mjs";
 import { attachAtCoderTags, loadLuoguTagDictionary, resolveAtCoderTagIds } from "./services/atcoder-tags.mjs";
 import { BROWSER_HEADERS } from "./services/http-headers.mjs";
@@ -997,7 +997,7 @@ export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, days 
         name: p.name,
         platform: "Codeforces",
         problemNumber: number,
-        submissionUrl: submission.id && p.contestId ? `https://codeforces.com/contest/${p.contestId}/submission/${submission.id}` : "",
+        submissionUrl: submission.id && p.contestId ? `https://codeforces.com/${isCodeforcesGymContest(p.contestId) ? "gym" : "contest"}/${p.contestId}/submission/${submission.id}` : "",
         ...(p.rating ? { rating: p.rating } : {}),
         tags: Array.isArray(p.tags) ? p.tags : [],
       });

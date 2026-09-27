@@ -10,6 +10,22 @@ test("public journal renders while the session service is still pending", async 
   await expect(page.locator("#metric-total")).not.toHaveText("—");
 });
 
+test("标签可直接访问，也可从独立索引进入", async ({ page }) => {
+  await page.route(`${WORKER}/api/session`, (route) => route.fulfill({ json: null }));
+  await page.goto("/tags/%E9%98%9F%E5%88%97/");
+  await expect(page.locator("#tag-page-title")).toHaveText("队列");
+  await expect(page.locator("#tag-content")).toContainText("训练记录");
+
+  await page.locator('.desktop-nav [data-route="/tags/"]').click();
+  await expect(page.locator("#tag-content .tag-index-card").first()).toBeVisible();
+  await page.locator('#tag-content .tag-index-card[data-tag-name="队列"]').click();
+  await expect(page.locator("#tag-page-title")).toHaveText("队列");
+  await expect(page.locator("#tag-content")).not.toContainText("加载失败");
+
+  await page.goto("/tags/~412a/");
+  await expect(page.locator("#tag-page-title")).toHaveText("A*");
+});
+
 test("problem detail prominently shows its per-record vitality", async ({ page }) => {
   await page.goto("/problem/%E5%BB%96%E5%A4%8F/2026-09-24/6267d57d-3af1-42e2-8ea3-db860b9d491b/");
   await expect(page.locator(".problem-vitality")).toBeVisible();
@@ -231,6 +247,31 @@ test("adding a Codeforces AC import automatically fetches its statement", async 
   await expect(page.locator(".problem-description")).toHaveValue("给定广场边长和石板边长，计算铺满广场所需的最少石板数量。");
   await expect(page.locator("#submit-msg")).toContainText("自动抓取 1 道 Codeforces 题面");
   expect(statementRequests).toBe(1);
+});
+
+test("Gym 题号在表单抓题面时归一为比赛号加题目字母", async ({ page }) => {
+  let requestedNumber = "";
+  await page.route(`${WORKER}/**`, async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    const json = (body) => route.fulfill({ contentType: "application/json", body: JSON.stringify(body) });
+    if (url.pathname === "/api/session") return json({ login: "only-matthew", member: "廖夏", csrfToken: "test-csrf", avatar_url: "" });
+    if (url.pathname === "/api/logs/date") return json({ revision: null, problems: [] });
+    if (url.pathname === "/api/problem-statement") {
+      requestedNumber = JSON.parse(request.postData()).problemNumber;
+      return json({ status: "ok", description: "# I. Gym problem", images: [], warnings: [] });
+    }
+    return json({ error: "unexpected test request" });
+  });
+
+  await page.goto(`/submit/?date=${TODAY}`);
+  await page.locator("#btn-add-problem").click();
+  const row = page.locator("#problem-list .problem-block").first();
+  await row.locator(".problem-platform").selectOption("Codeforces");
+  await row.locator(".problem-number").fill("Gym718163I");
+  await row.locator(".btn-fetch-statement").click();
+  await expect(row.locator(".problem-description")).toHaveValue("# I. Gym problem");
+  expect(requestedNumber).toBe("718163I");
 });
 
 test("code editor shows one heading and keeps an accessible label", async ({ page }) => {

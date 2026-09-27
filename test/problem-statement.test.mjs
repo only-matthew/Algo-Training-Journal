@@ -43,6 +43,8 @@ const MIRROR_OK = [new RegExp(`^${LUOGU_URL}$`), () => new Response(luoguPage(LU
 
 test("CF 地址限制域名和题号", () => {
   assert.equal(validateCodeforcesUrl("", "4A").hostname, "codeforces.com");
+  assert.equal(validateCodeforcesUrl("", "718163I").toString(), "https://codeforces.com/gym/718163/problem/I?locale=en");
+  assert.equal(validateCodeforcesUrl("", "Gym718163I").toString(), "https://codeforces.com/gym/718163/problem/I?locale=en");
   assert.throws(() => validateCodeforcesUrl("https://evil.example/4/A", "4A"));
   assert.throws(() => validateCodeforcesUrl("https://codeforces.com/contest/5/problem/A", "4A"));
 });
@@ -80,6 +82,17 @@ test("CF 请求带浏览器请求头，不再只发 Accept", async () => {
   await fetchCodeforcesStatement({ problemNumber: "4A" }, { fetchImpl });
   assert.match(fetchImpl.calls[0].headers["User-Agent"], /Mozilla\/5\.0/);
   assert.match(fetchImpl.calls[0].headers["Accept-Language"], /en-US/);
+});
+
+test("Gym 题面抓取与源码回传都使用 Gym 地址", async () => {
+  const fetchImpl = routedFetch([[/^https:\/\/codeforces\.com\/gym\/718163\/problem\/I/, () => new Response(HTML.replace("A. Test", "I. Test"))]]);
+  const fetched = await fetchCodeforcesStatement({ problemNumber: "718163I" }, { fetchImpl });
+  assert.equal(fetched.status, "ok");
+  assert.equal(fetched.source.url, "https://codeforces.com/gym/718163/problem/I?locale=en");
+  const pasted = await statementFromCodeforcesHtml({ problemNumber: "Gym718163I", html: HTML.replace("A. Test", "I. Test") }, { fetchImpl });
+  assert.equal(pasted.status, "ok");
+  assert.equal(pasted.problemNumber, "718163I");
+  assert.equal(pasted.source.url, fetched.source.url);
 });
 
 test("浏览器回传的 CF 官方页源码直接解析，不再请求被拦截的正文页", async () => {

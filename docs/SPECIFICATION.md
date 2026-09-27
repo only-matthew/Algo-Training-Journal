@@ -34,7 +34,7 @@
 
 ### 3. 标签文件路径必须用 `tagStorageKey`
 
-标签分片与标签页目录的路径**不得直接用标签原名或 `encodeURIComponent(tag)`**：`encodeURIComponent` 按 RFC 3986 保留 `! ~ * ' ( )`，而 `*` 在 Windows 上是通配符（`data/tags/A*.json` 实测 ENOENT，构建直接失败），`/`、空格等字符跨平台也不安全。[lib/tag-index.mjs](lib/tag-index.mjs) 的 `tagStorageKey(tag)` 只保留字母/数字/连字符/下划线/点，其余按 UTF-8 字节百分号编码；构建端（分片写入、标签页目录、路由 index 与 sitemap）与浏览器端（取分片、`tagHref()` 生成链接）必须共用同一份实现。链接生成也必须走 `tagHref()`：`encodeURIComponent("A*")` 仍是 `A*`，浏览器访问 `/tags/A*/` 时路径会被规范化成字面星号，与按 `%2A` 落盘的目录对不上。
+标签分片与标签页目录统一通过 [lib/tag-index.mjs](lib/tag-index.mjs) 的 `tagStorageKey(tag)` 命名。常规中英文标签直接以原名落盘，网址中的中文由 `tagHref()` 百分号编码，静态托管解码后才能命中相同文件名。含 `*`、`/`、空格等不适合文件名的标签使用 `~` 加 UTF-8 十六进制代号，例如 `A*` 对应 `~412a`。构建端（分片、页面、canonical 与 sitemap）和浏览器端（取分片、链接及路由）必须共用这一规则；不能把百分号编码后的名字直接用作磁盘文件名，否则线上静态托管解码 URL 后会返回 404。
 
 ## 2026-09-21 专项规格补充：AtCoder 算法标签与提交页链接
 

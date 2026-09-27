@@ -5,6 +5,8 @@ import { originalProblemUrl, resolveCodeforcesProblemNumber } from "../lib/probl
 test("完整题号直接生成原题链接", () => {
   assert.equal(originalProblemUrl("Codeforces", "1113B"), "https://codeforces.com/problemset/problem/1113/B");
   assert.equal(originalProblemUrl("Codeforces", "2254c1"), "https://codeforces.com/problemset/problem/2254/C1");
+  assert.equal(originalProblemUrl("Codeforces", "718163I"), "https://codeforces.com/gym/718163/problem/I");
+  assert.equal(originalProblemUrl("Codeforces", "Gym718163I"), "https://codeforces.com/gym/718163/problem/I");
   assert.equal(originalProblemUrl("洛谷", "P1618"), "https://www.luogu.com.cn/problem/P1618");
   assert.equal(originalProblemUrl("AtCoder", "abc381_a"), "https://atcoder.jp/contests/abc381/tasks/abc381_a");
   assert.equal(originalProblemUrl("SPOJ", "ABC-123_x"), "https://vjudge.net/problem/SPOJ-ABC-123_x");

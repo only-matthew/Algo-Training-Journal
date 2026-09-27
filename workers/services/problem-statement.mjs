@@ -1,4 +1,4 @@
-import { normalizeProblemNumber } from "../../lib/problem-identity.mjs";
+import { codeforcesProblemUrl, normalizeCodeforcesProblemNumber, normalizeProblemNumber } from "../../lib/problem-identity.mjs";
 import {
   MAX_NEW_STATEMENT_IMAGE_BYTES,
   MAX_STATEMENT_IMAGES,
@@ -290,10 +290,10 @@ function settledWarnings(warnings, archived) {
   return archived.failed ? warnings : warnings.filter((warning) => warning !== EXTERNAL_IMAGES_WARNING);
 }
 
-export function parseCodeforcesProblemNumber(problemNumber) { const normalized = normalizeProblemNumber(problemNumber); const match = /^(\d+)([A-Z][A-Z0-9]*)$/.exec(normalized || ""); return match ? { contestId: match[1], index: match[2], problemNumber: normalized } : null; }
+export function parseCodeforcesProblemNumber(problemNumber) { const normalized = normalizeCodeforcesProblemNumber(problemNumber); const match = /^(\d+)([A-Z][A-Z0-9]*)$/.exec(normalized || ""); return match ? { contestId: match[1], index: match[2], problemNumber: normalized } : null; }
 export function validateCodeforcesUrl(value, problemNumber) {
   const expected = parseCodeforcesProblemNumber(problemNumber); if (!expected) throw Object.assign(new TypeError("Codeforces 题号必须形如 123A"), { status: 400, code: "INVALID_REQUEST" });
-  const url = new URL(value || `https://codeforces.com/problemset/problem/${expected.contestId}/${expected.index}?locale=en`);
+  const url = new URL(value || `${codeforcesProblemUrl(expected.problemNumber)}?locale=en`);
   if (url.protocol !== "https:" || url.hostname !== "codeforces.com" || url.username || url.password || url.port) throw Object.assign(new TypeError("题面地址必须是 codeforces.com HTTPS 地址"), { status: 400, code: "INVALID_REQUEST" });
   const match = /^\/(problemset\/problem|contest|gym)\/(\d+)(?:\/problem)?\/([A-Za-z][A-Za-z0-9]*)\/?$/.exec(url.pathname);
   if (!match || match[2] !== expected.contestId || match[3].toUpperCase() !== expected.index) throw Object.assign(new TypeError("题面地址与题号不一致"), { status: 400, code: "INVALID_REQUEST" });

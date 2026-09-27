@@ -32,6 +32,9 @@ test("题号会清洗并保存在元数据中", () => {
   assert.equal(result.problems[0].problemNumber, "4A");
   assert.equal(metaFromProblems(result.problems).problems[0].problemNumber, "4A");
   assert.equal(normalizeMeta({ problems: [{ name: "A", problemNumber: " P1000 " }] }).problems[0].problemNumber, "P1000");
+  const gym = validateLogInput({ problems: [{ id: "gym-i", name: "I", platform: "Codeforces", problemNumber: "Gym718163I" }] });
+  assert.equal(gym.problems[0].problemNumber, "718163I");
+  assert.equal(metaFromProblems(gym.problems).problems[0].problemNumber, "718163I");
 });
 
 test("metaFromProblems 可写入 updatedAt，normalizeMeta 会保留它且旧记录为空", () => {
