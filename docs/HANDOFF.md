@@ -2,9 +2,45 @@
 
 > 本文件是按时间追加的历史记录，不再作为“当前实现”的单一权威。当前产品状态以 README、PRODUCT、SPECIFICATION 的 2026-09-26 状态标记为准；易变的测试数量与部署版本只代表各段落注明日期的快照。
 
+## 最新交接（2026-09-27 第二轮）：CF Gym 题号与标签页落盘路径
+
+用户要求「部署最新的更改（前端 + Worker）」。本轮把工作区里未提交的两个修复整理、验证并全部上线。
+
+### 1. 标签页路径：上一版的字节百分号编码在线上会 404
+
+上一轮为绕开 Windows 通配符，把 `tagStorageKey()` 改成「除 `[A-Za-z0-9._-]` 外一律按 UTF-8 字节百分号编码」，于是磁盘上落的是 `site/tags/%E9%98%9F%E5%88%97/` 与 `data/tags/%E9%98%9F%E5%88%97.json`。**静态托管会先把 URL 解码再取文件**：浏览器请求 `/tags/%E9%98%9F%E5%88%97/` 解码成 `/tags/队列/`，与磁盘上的百分号名字对不上，中文标签页与分片全部 404。
+
+处置：`tagStorageKey()` 改为「常规中英文标签（`\p{L}\p{N}._-`，且不以点/空格结尾、不是 Windows 保留名）原名落盘，其余用 `~` 加 UTF-8 十六进制代号」（`A*` → `~412a`、`IDA*` → `~4944412a`）；`tagHref()` 仍对网址做 `encodeURIComponent`。构建端（分片、标签页目录、canonical、sitemap）与浏览器端（取分片、链接、路由）共用同一份实现；`scripts/preview-ui.mjs` 同步改成「只解码、不回退未解码路径」，与线上静态托管一致。
+
+### 2. Codeforces Gym 题号
+
+- 新增 `normalizeCodeforcesProblemNumber()`（剥掉 `GYM` 前缀）、`isCodeforcesGymContest()`、`codeforcesProblemUrl()`（Gym 走 `/gym/<contestId>/problem/<index>`，普通题走 `/problemset/problem/...`）；`isCompleteProblemNumber()` / `canonicalProblemKey()` 与表单抓题面统一走这套归一。
+- CF 快速导入的「📄 提交」链接按 Gym / 普通场次分流；服务端题面地址同样按 Gym 分流。
+- `COMPLETE_NUMBER_PATTERNS.Codeforces` 由 `^\d+[A-Z]\d*$` 放宽为 `^\d+[A-Z][A-Z0-9]*$`（Gym 的题目代号可以是 `A1`、`I` 这类形态）。
+
+### 3. 部署记录（2026-09-27）
+
+| 项目 | 结果 |
+| --- | --- |
+| 本地验证 | 语法检查 90 个源文件；单元测试 462 + Worker 77 = **539 全绿**；构建 194 条日志 |
+| Cloudflare Worker | `algo-oauth` 版本 `ce9e29e1-9e99-49a6-a3a5-5688d90160bb`（上一版 `69481135-17f9-4499-963e-1fb97f3a648c` 可回滚），上传 336.26 KiB / gzip 84.37 KiB |
+| 前端 | `ab9a85e` 推 `main`，Actions run `36322552656` 三个 job 全过（build / browser-check / deploy），线上入口 `assets/js/app-RJY5HEPO.js` 与本地构建一致 |
+| 线上核验 | `/tags/队列/`、`/tags/~412a/` 与 `data/tags/队列.json`、`data/tags/~412a.json` 全部 200；sitemap 收录百分号编码后的中文标签与 `~412a`；Worker 匿名 `/api/session`、`/api/problem-statement`、`/api/import` 均返回结构化 401 |
+
+**部署顺序**：按既有约定先 Worker 后前端。本轮 Worker 改动向后兼容（新增 Gym 链接与题号归一），没有旧前端会踩的硬约束。
+
+**环境备注**：① 本机 wrangler 的 OAuth token 已过期且无法自动刷新，本轮重新 `npx wrangler login` 授权；② 本机直连 `api.cloudflare.com` 时 SSL 建连失败（FlClash 代理可用），`NODE_USE_ENV_PROXY=1` + `HTTPS_PROXY=http://127.0.0.1:7890` 可让 wrangler 正常走代理；③ 推送期间远端已有队员当天的自动打卡提交，需先变基再推。
+
+### 4. 仍差真人
+
+- 在界面里对一道 **Gym 题目**点一次「抓取题面」，确认服务端按 `/gym/<contestId>/problem/<index>` 取到题面（路由与归一由单元测试覆盖，真实网络这一层没有真人记录）。
+- 中文标签页只做了 HTTP 200 与标题核验，没有在浏览器里逐页点击。
+
 ## 最新交接（2026-09-27，v2.1）：知识地图配色修复与洛谷书系题单
 
 用户提出两条已知问题：知识地图「黑底黑字」、增加洛谷三个书系题单。两条都已落地并验证，**尚未部署**（前端与 Worker 都不需要改 Worker，纯前端 + 数据）。
+
+> 补记（2026-09-27 第二轮）：本节的两条已在 `f8275b9` / `fceaf0c` 推上 `main` 并由 GitHub Actions 发布，不再是「尚未部署」。下一节记录了紧随其后的标签页路径返工。
 
 ### 1. 黑底黑字：同一套色阶被写了两遍，后一处把前一处抹掉
 
@@ -67,7 +103,7 @@
 
 ### 5. 尚未做
 
-- 未部署：本轮没有推送，也没有 `wrangler deploy`（本次没改 Worker）。
+- 未部署：本轮没有推送，也没有 `wrangler deploy`（本次没改 Worker）。**（补记：`f8275b9` / `fceaf0c` 已发布，本节状态已失效。）**
 - 未覆盖：按标签算出的 1322 条书系记录里有 **184 条**因落在超过 120 题上限的节点末尾被截断（实际写入 1138 条），涉及 `algo-search-basics` / `dp-intro` / `dp-tree-graph` 三个节点（都恰好卡在 120）。
 - 数据刷新是手动的：洛谷新增题单后需要重新跑抓取脚本并提交 `curriculum/luogu-training-problems.json`。
 
