@@ -33,6 +33,31 @@ test("problem detail prominently shows its per-record vitality", async ({ page }
   await expect(page.locator(".problem-vitality")).toContainText("本题活力");
 });
 
+test("problem review actions match the schedule and send a record-scoped update", async ({ page }) => {
+  let patchBody;
+  await page.route(`${WORKER}/**`, (route) => {
+    if (new URL(route.request().url()).pathname === "/api/session") {
+      return route.fulfill({ json: { login: "only-matthew", member: "廖夏", csrfToken: "test-csrf" } });
+    }
+    if (route.request().method() === "PATCH") {
+      patchBody = route.request().postDataJSON();
+      return route.fulfill({ json: { record: { reviewStatus: "archived" } } });
+    }
+    return route.continue();
+  });
+  await page.goto("/problem/%E5%BB%96%E5%A4%8F/2026-09-28/9df1da8b-6091-4741-8f48-c0efe0938468/");
+  await expect(page.locator("[data-problem-edit]")).toBeVisible();
+  await expect(page.locator("[data-problem-review]")).toBeHidden();
+
+  await page.goto("/problem/%E5%BB%96%E5%A4%8F/2026-09-25/9e3a2136-27ab-4e4e-b9c1-338068bbff1b/");
+  const actions = page.locator("[data-problem-review]");
+  await expect(actions.getByRole("button", { name: "结束复习" })).toBeVisible();
+  await actions.getByRole("button", { name: "结束复习" }).click();
+  await expect.poll(() => patchBody).toEqual({ reviewStatus: "archived" });
+  await expect(actions.getByRole("button", { name: "结束复习" })).toHaveCount(0);
+  await expect(actions.getByRole("button", { name: "重新安排 +3" })).toBeVisible();
+});
+
 test("SPA member navigation reloads the requested member shard", async ({ page }) => {
   await page.route(`${WORKER}/api/session`, (route) => route.fulfill({ json: null }));
   await page.goto("/member/%E5%BB%96%E5%A4%8F/");

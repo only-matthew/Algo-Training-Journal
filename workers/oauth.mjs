@@ -38,7 +38,7 @@ function rateExceeded(key, limit) {
 
 function cors(request) {
   const origin = request.headers.get("Origin");
-  return origin && ORIGINS.has(origin) ? { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token, Idempotency-Key, If-Match, If-None-Match", "Access-Control-Allow-Methods": "GET,PUT,POST,DELETE,OPTIONS", "Access-Control-Expose-Headers": "ETag, Retry-After", Vary: "Origin" } : {};
+  return origin && ORIGINS.has(origin) ? { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token, Idempotency-Key, If-Match, If-None-Match", "Access-Control-Allow-Methods": "GET,PUT,PATCH,POST,DELETE,OPTIONS", "Access-Control-Expose-Headers": "ETag, Retry-After", Vary: "Origin" } : {};
 }
 function json(request, body, status = 200, headers = {}) { return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8", ...cors(request), ...headers } }); }
 function cookies(request) { return Object.fromEntries((request.headers.get("Cookie") || "").split(/;\s*/).filter(Boolean).map((part) => { const i = part.indexOf("="); return [part.slice(0, i), part.slice(i + 1)]; })); }

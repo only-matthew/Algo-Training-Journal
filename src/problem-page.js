@@ -3,6 +3,7 @@ import { currentUser, initSession, login, logout } from "../lib/auth.mjs";
 import { initDetailInteractions } from "../lib/detail-interactions.mjs";
 import { loadProblemDetail } from "../lib/data.mjs";
 import { icon } from "../lib/icons.mjs";
+import { isReviewPlanned, isReviewTodo } from "../lib/learning-state.mjs";
 import {
   exportToLatex,
   exportToMD,
@@ -71,11 +72,9 @@ function actionButton(symbol, label, handler, title) {
     link.title = "打开该日期的提交表单并定位到本题";
     edit.append(link);
   }
-  if (review) {
+  if (review && isReviewPlanned(log)) {
     review.hidden = false;
-    review.append(
-      actionButton("check", "结束复习", (button) => quickReviewAction(log, "archive", button), "结束本题复习安排"),
-      actionButton("clock", "顺延 +3", (button) => quickReviewAction(log, "snooze", button), "复习日期顺延 3 天"),
-    );
+    if (isReviewTodo(log)) review.append(actionButton("check", "结束复习", (button) => quickReviewAction(log, "archive", button), "结束本题复习安排"));
+    review.append(actionButton("clock", isReviewTodo(log) ? (log.reviewDue ? "顺延 +3" : "安排 +3") : "重新安排 +3", (button) => quickReviewAction(log, "snooze", button), "将复习日期设为三天后"));
   }
 })().catch((error) => console.error("题目详情初始化失败", error));
