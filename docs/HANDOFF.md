@@ -2,6 +2,12 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-09-28，发布验收与文档纠偏）
+
+Cloudflare Workers Builds 已绑定 `only-matthew/Algo-Training-Journal` 的 `main`，并随推送自动部署现有 `algo-oauth`。`794cf9f` 的匿名 `/api/capabilities` 返回 HTTP 200，`buildCommit` 与该提交一致；`/api/session` 返回 HTTP 200；GitHub Pages 的同提交门禁、浏览器回归和发布均通过。线上首页页脚为 `v2.0.1 · 2026-09-28 20:39 UTC+8 · 794cf9f`。下方“待发布／401／会阻断”的段落只记录更早的部署前状态，已由本段核验取代。
+
+现行实现摘要已从误置的归档移至 [CURRENT-STATE.md](CURRENT-STATE.md)，产品审计外部复核提出的 R1–R3 已在现行文档中更正。今后从 [文档入口](README.md) 读取当前状态，旧交接段落只作历史证据。
+
 ## 最新交接（2026-09-28，Cloudflare 仓库绑定）
 
 发布自动化与版本显示已作为提交 `b270a61` 推送至 `main`。Cloudflare 控制台现已将现有 `algo-oauth` Worker 绑定至 `only-matthew/Algo-Training-Journal` 的 `main` 分支，根目录为 `/`，构建命令留空，部署命令为 `npm run deploy:worker`，预览构建关闭。控制台为 Workers Builds 创建了专用构建令牌；运行时密钥仍保存在 Cloudflare。

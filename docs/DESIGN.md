@@ -48,4 +48,4 @@ flowchart LR
 
 ## 发布与回退
 
-Worker 与 Pages 是分开发布的。新日志格式或写入协议要先发布兼容 Worker，再发布静态页面；发布前通过本地验证与浏览器回归，Pages 工作流还会检查线上 Worker 的 schema 能力。本地新增的 `/api/capabilities` 在 2026-09-28 尚未上线，线上读取为 401，故当前工作区的 Pages 门禁若直接运行会阻断发布。先发布 Worker、核对匿名能力与会话接口，再触发 Pages。更完整的操作见 [SPECIFICATION.md](SPECIFICATION.md)。
+Worker 与 Pages 分别由 Cloudflare Workers Builds 和 GitHub Actions 监听 `main` 推送自动发布。Pages 上传前等待线上 Worker 的 `/api/capabilities` 返回与本次提交相同的 `buildCommit`，并检查日志 schema 范围与匿名 `/api/session`；最长等待 15 分钟。2026-09-28 的 `794cf9f` 已完成两侧生产发布，能力接口返回 HTTP 200 和该提交号。新日志格式或写入协议仍需先保证 Worker 向后兼容，并运行本地验证与浏览器回归；门禁仅覆盖上述检查，不代替写入协议测试。更完整的操作见 [SPECIFICATION.md](SPECIFICATION.md)。
