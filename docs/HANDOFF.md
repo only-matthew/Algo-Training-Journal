@@ -2,6 +2,12 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-09-28，Cloudflare 仓库绑定）
+
+发布自动化与版本显示已作为提交 `b270a61` 推送至 `main`。Cloudflare 控制台现已将现有 `algo-oauth` Worker 绑定至 `only-matthew/Algo-Training-Journal` 的 `main` 分支，根目录为 `/`，构建命令留空，部署命令为 `npm run deploy:worker`，预览构建关闭。控制台为 Workers Builds 创建了专用构建令牌；运行时密钥仍保存在 Cloudflare。
+
+Cloudflare 提示首次构建由后续推送触发。本段交接更新的提交用于触发首次构建；生产核验以该提交的 Worker `/api/capabilities` 返回的 `buildCommit`、GitHub Pages 发布结果和首页底部版本号为准。
+
 ## 最新交接（2026-09-28，发布自动化与版本显示）
 
 先将文档整理和上一轮工程修复作为提交 `aa92513` 推送到 `main`，本地 `npm run verify` 通过。该提交沿用旧发布链路：Worker 尚未自动发布，Pages 的新能力检查可能阻断本次部署。随后增加 Cloudflare Workers Builds 连接方案、同提交发布门禁和页面底部版本号。
