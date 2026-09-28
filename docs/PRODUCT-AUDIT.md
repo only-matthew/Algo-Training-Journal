@@ -110,7 +110,7 @@
 
 - **R4 · 被跟踪的生成文件**：`workers/build-commit.mjs` 由 `scripts/stamp-worker-commit.mjs` 就地改写，且 `.gitignore` 未覆盖。Cloudflare 构建环境是临时的故无影响，但本地执行 `npm run deploy:worker` 会让工作区变脏；若被顺手提交，仓库里会留下一个过期 SHA。当前提交值为 `null`，尚属安全。
 - **R5 · README 的 Worker 目录说明已过期**：仍写 `oauth.mjs # …AI 概括与题目导入`，而这两项已迁至 `services/summary.mjs` 与 `services/problem-import.mjs`。
-- **R6 · 门禁的可用性代价（知情取舍）**：Cloudflare Builds 未触发或构建失败时，Pages 等待 15 分钟后失败并保留旧站。维护者已在 HANDOFF 中声明，此处仅登记：站点可用性从此与 Worker 构建绑定。
+- **R6 · 门禁的可用性代价（已被后续修订消除）**：原设计下 Cloudflare Builds 未触发或构建失败时，Pages 等待 15 分钟后失败并保留旧站——站点可用性与 Worker 构建绑定。这条不是不可避免的取舍，而是把兼容性问题误做成同一性问题的后果；2026-09-28 已改为两级门禁（见文末《门禁设计修订》），Worker 未变时不再校验提交号、不再等待。
 - **R7 · ESLint 覆盖面**：不检查 `test/`、`e2e/`；`globals` 同时注入 browser + node + serviceworker，会削弱 `no-undef` 的判别力（浏览器模块误用 `process` 不会报错）。
 - **R8 · 版本页脚的时间戳**：`scripts/generate-data.js:346` 用 `Date.now()` 生成构建时间，`index.html` 与 `sw.js` 每次构建必变（页脚时间会随部署更新，符合预期）；重型产物仍确定——连续两次构建 `570 reused, 0 rebuilt`。
 
@@ -224,3 +224,53 @@ Select-String -Path lib,workers,scripts -Include *.mjs,*.js -Pattern '\|\| "未�
 修复后链接全量复核：相对链接 192 条，朴素链接检查报出 44 条，其中 **34 条是归档内既有的真实失效链接，其余全部是 `` ![](url) ``／`` [...](...) `` 语法示例造成的误报**（该误报数随引用此写法的文档增加而增加，故不固定）。**归档外不存在真实失效链接**（`docs/HANDOFF.md` 的 `![](url)` 亦属示例误报）。
 
 至此二次复核提出的 C1–C3 全部关闭，**本次签收无未决项**。代码未改动，因此未重跑 `npm run verify`；如需与代码变更一起发布，仍按 `CURRENT-STATE.md` 的发布顺序执行。
+
+---
+
+# 门禁设计修订（2026-09-28，外部复核执行）
+
+## 我先前的判断是错的
+
+我在首次签收里把"同提交门禁"评价为**"强于原建议"**（见上方《签收意见》）。这个评价不成立，特此更正，原文保留不改。
+
+同提交门禁把一个**兼容性**问题实现成了**同一性**问题。真正的不变量只有一条：*线上 Worker 必须接受本站当前发送的日志格式*。而"线上 Worker 是不是本次提交构建的"是另一个问题，只在**本次推送确实改了 Worker 代码**时才有意义。把它设成无条件要求，代价是：
+
+- **每次推送都逼着 Worker 重建**——包括队员的 `save(...)` 打卡提交和纯文档提交，而 Worker 理想状态下根本不需要变；`aa92513` 那次 `failure`、`b270a61` 那次 `cancelled` 就是这么来的。
+- **每次推送都要空等**：即使 Worker 一秒就构建完，Pages 也必须等到它上线；构建慢或没触发时白等 15 分钟。
+- **站点可用性与 Worker 构建耦合**：Cloudflare 侧任何一次失败都会让静态站点发不出去，而这本可以完全避免。
+
+我在 R6 里只把它记成"知情取舍"，没有指出**这个取舍本身是设计造成的、可以消除**。这是判断上的错误，不是记录不足。
+
+## 修订内容
+
+门禁改为两级（`scripts/check-worker-compatibility.mjs` + `.github/workflows/deploy.yml`）：
+
+| 本次推送 | 兼容性检查（schema 范围 + 匿名 `/api/session`） | 提交号校验 | 等待 |
+| --- | --- | --- | --- |
+| 未改动 Worker 输入（日志、文档、纯前端） | **执行**，不满足立即拒绝 | 跳过 | **0** |
+| 改动了 Worker 输入（`workers/`、`lib/`、`package.json`、`package-lock.json`） | 执行 | 要求等于本次提交 | 最多 15 分钟 |
+
+实现要点：
+
+- `checkWorkerCompatibility({ requireCommit })`：提交号校验改为**显式开启**，默认不校验；返回值增加 `commitChecked`，日志会写明本次是否校验了提交号。
+- 工作流新增 `Detect Worker input changes` 步骤，用 `git diff "$before" "$sha" -- $WORKER_PATHS` 判断；非 push 事件、`before` 全零、`before` 不在克隆里（历史被改写）三种情况一律降级为**只做兼容性检查**，避免为不确定的情况白等。
+- 检出改为 `fetch-depth: 0`：既让上述 diff 可靠，也修正了构建脚本用 `git log` 回溯旧记录 `updatedAt` 时在浅克隆下失效的问题。
+- `WORKER_PATHS` 必须与 Cloudflare Workers Builds 的 **build watch paths** 一致（建议设为同一组路径）。否则会出现"门禁在等一个永远不会到来的 Worker 构建"。这条已写入 SPECIFICATION §1.4 与 README。
+
+## 验证
+
+- **单元测试 7/7 通过**（`test/worker-compatibility.test.mjs`），新增覆盖：Worker 提交号落后但 schema 兼容时**放行**；`requireCommit` 开启时提交号不符/未打戳**拒绝**；不确定身份时跳过校验。
+- **检测逻辑在真实提交上验证**（`git diff --quiet <before> <sha> -- workers lib package.json package-lock.json`）：
+
+  | 提交 | 内容 | 判定 |
+  | --- | --- | --- |
+  | `c6255c7` | 纯文档 | 不等待 ✓ |
+  | `9f579e7` | 文档修订 | 不等待 ✓ |
+  | `304edfa` | `save(廖夏)` 仅日志 | 不等待 ✓ |
+  | `794cf9f` | 页脚 + `package.json` | 等待同提交 Worker ✓ |
+
+- 全量 `npm run verify`（语法 + ESLint + 索引 + 单测 + 构建）在本修订后通过。
+
+## 这条修订没有放开的边界
+
+兼容性检查仍是**强制**的：本站 `LOG_SCHEMA_VERSION` 不在线上 Worker 公布的范围内时，Pages 立即拒绝发布。也就是说，"前端需要更新的 Worker"这一真实风险仍被拦住，放开的只是"Worker 没变也要等它重建一遍"。门禁依然不覆盖其他写入协议的变更——这一点与修订前一致，仍需单独回归。

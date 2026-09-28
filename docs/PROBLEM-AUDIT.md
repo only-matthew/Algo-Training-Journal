@@ -27,12 +27,12 @@
 | Worker/Pages 兼容门禁 | `workers/oauth.mjs` 的 `/api/capabilities`、`scripts/check-worker-compatibility.mjs`、`.github/workflows/deploy.yml` | 已上线：`794cf9f` 的能力接口 HTTP 200，`buildCommit` 与该提交一致，Pages 门禁与发布通过。 |
 | 静态检查 | `eslint.config.mjs`、`package.json` 的 `check:lint` / `verify` | 本地 `npm run verify` 与主分支 CI 已通过。 |
 | Worker 分层 | `workers/routes/`、`workers/services/`、`workers/storage/`、`lib/qq-*.mjs` | 本地测试与 Worker dry-run 通过，已随 `794cf9f` 自动部署。 |
-| 发布工作流 | `.github/workflows/deploy.yml` 复用一次构建并检查线上 Worker | 首次主分支自动发布已完成，后续推送按同提交门禁运行。 |
+| 发布工作流 | `.github/workflows/deploy.yml` 复用一次构建并检查线上 Worker | 首次主分支自动发布已完成。**2026-09-28 修订**：门禁不再对每次推送都要求同提交 Worker——只有本推送改动 `workers/`、`lib/`、`package.json`、`package-lock.json` 时才校验提交号并等待；其余推送只做兼容性检查且不等待，Worker 不需要重建。 |
 | 文档治理 | `docs/archive/2026-09-28-pre-rewrite/` 保留旧稿与图片，现行七份文件统一入口 | `CURRENT-STATE.md` 已归位，现行入口已更新；历史事实仍按原文日期理解。 |
 
 ## 验收与遗留
 
-2026-09-28 的 `794cf9f` 已完成 `npm run verify`、13 个浏览器回归、Worker dry-run 和生产发布核验。后续推送由 Cloudflare Workers Builds 与 GitHub Actions 分别触发；Pages 在上传产物前等待同提交 Worker，发布后仍应核对匿名 `/api/capabilities`、`/api/session` 与页面版本。
+2026-09-28 的 `794cf9f` 已完成 `npm run verify`、13 个浏览器回归、Worker dry-run 和生产发布核验。后续推送由 Cloudflare Workers Builds 与 GitHub Actions 分别触发；Pages 在上传产物前做兼容性检查（Worker 输入有变化时追加同提交校验），发布后仍应核对匿名 `/api/capabilities`、`/api/session` 与页面版本。
 
 **静态检查已知盲区**：当前 ESLint 的 `no-unused-vars` 不识别“导出但生产代码无人调用”的函数；`lib/roadmap.mjs` 的 `roadmapTreeHtml` 等仍需按真实引用和构建产物复核。测试中的引用不能单独证明功能已上线。
 

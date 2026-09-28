@@ -35,8 +35,8 @@ GitHub OAuth 只允许配置成员写自己的日志。写接口校验 Origin、
 
 - `npm run verify`：语法、ESLint 未定义/未使用检查、训练索引一致性、Node 测试和站点构建。
 - `npm run test:e2e:ci`：在已构建站点上运行浏览器回归；本地需先安装 Chromium。PR 与主分支工作流均跑浏览器回归。
-- Cloudflare Workers Builds 已连接本仓库 `main` 分支，每次推送运行 `npm run deploy:worker`，把 `WORKERS_CI_COMMIT_SHA` 编入 Worker，再通过仓库内 `workers/wrangler.toml` 部署现有服务。2026-09-28 已完成首次自动构建与生产核验。
-- 主分支 Pages 工作流只构建一次，并在上传页面产物前运行 `scripts/check-worker-compatibility.mjs`。门禁最多等待 15 分钟，要求线上 Worker 的提交号等于本次 `github.sha`，schema 兼容且匿名会话读接口可用；失败时阻断 Pages 发布。它不能代替其他写入协议的回归测试。
+- Cloudflare Workers Builds 已连接本仓库 `main` 分支，推送后运行 `npm run deploy:worker`，把 `WORKERS_CI_COMMIT_SHA` 编入 Worker，再通过仓库内 `workers/wrangler.toml` 部署现有服务。**建议把控制台的 build watch paths 设为与门禁相同的输入集**（`workers/`、`lib/`、`package.json`、`package-lock.json`），使 Worker 不再随日志与文档推送重建；两侧路径必须保持一致，否则门禁会等一个不会到来的构建。
+- 主分支 Pages 工作流只构建一次，并在上传页面产物前运行 `scripts/check-worker-compatibility.mjs`。门禁分两级：**始终**要求线上 Worker 能接受本站的 `LOG_SCHEMA_VERSION` 且匿名会话读接口可用，不满足立即拒绝；**仅当本次推送改动 Worker 输入**（同上四个路径）时才额外要求线上 Worker 的提交号等于本次 `github.sha`，并最多等待 15 分钟。Worker 没变就不校验提交号、不等待——否则每次日志或文档推送都要白等一轮 Worker 构建。它不能代替其他写入协议的回归测试。
 - 首页与独立题目页底部显示 `package.json` 版本、构建时间（UTC+8）和提交短号。2026-09-28 的 `794cf9f` 已通过 Cloudflare Builds 与 Pages 的同提交发布核验，线上首页显示 `v2.0.1 · 2026-09-28 20:39 UTC+8 · 794cf9f`。
 
 ## 2. 下一阶段变更契约（待实现）

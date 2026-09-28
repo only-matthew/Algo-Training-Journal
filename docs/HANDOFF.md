@@ -2,6 +2,22 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-09-28，发布门禁改为按需校验）
+
+用户指出：**Worker 在理想状态下根本不需要更改，不该每次推送都等它**。这个判断是对的，原设计确实错了——它把"线上 Worker 能否接受本站日志格式"（兼容性）实现成了"线上 Worker 是否等于本次提交"（同一性）。后者只在本次推送真的改了 Worker 时才成立，无条件要求它意味着每次队员打卡、每次改文档都要重新构建并等待 Worker。
+
+改为两级门禁（`scripts/check-worker-compatibility.mjs` + `.github/workflows/deploy.yml`）：
+
+- **始终**：检查线上 `/api/capabilities` 的 schema 范围是否包含本站 `LOG_SCHEMA_VERSION`，并冒烟 `/api/session`；不满足立即拒绝发布。
+- **仅当本推送改动 `workers/`、`lib/`、`package.json`、`package-lock.json` 时**：才要求 `buildCommit` 等于本次提交，并最多等待 15 分钟。
+- 其余情况不校验提交号、**等待为 0**，Worker 保持原地。
+
+配套改动：检出改为 `fetch-depth: 0`（既要 diff 本次推送范围，也让构建脚本用 `git log` 回溯旧记录 `updatedAt` 不再受浅克隆影响）；非 push 事件、`before` 全零、`before` 不在克隆里三种情况降级为只做兼容性检查。
+
+**验证**：门禁单测 7/7（新增"Worker 提交号落后但 schema 兼容 → 放行"与"要求同提交时拒绝"两侧）；把 workflow 的 shell 块抽出用 Git Bash 真实执行了六种情形（纯文档提交、页脚+package 提交、成员打卡、`workflow_dispatch`、`before` 全零、`before` 缺失），判定与预期一致；全量 `npm run verify` 通过（469 + 77 = 546 单测）。所以**这次推送本身走的就是"不等待"路径**，可以作为首个生产样本。
+
+**待人工完成**：Cloudflare 控制台把 Workers Builds 的 **build watch paths** 设为 `workers/`、`lib/`、`package.json`、`package-lock.json`，与门禁的输入集保持一致。不设也可以正常工作（门禁不再依赖 Worker 重建），但 Worker 仍会随每次推送重建；两侧路径不一致则会让门禁空等一个不会到来的构建，这一点已写进 SPECIFICATION §1.4 与 README。
+
 ## 最新交接（2026-09-28，发布验收与文档纠偏）
 
 Cloudflare Workers Builds 已绑定 `only-matthew/Algo-Training-Journal` 的 `main`，并随推送自动部署现有 `algo-oauth`。`794cf9f` 的匿名 `/api/capabilities` 返回 HTTP 200，`buildCommit` 与该提交一致；`/api/session` 返回 HTTP 200；GitHub Pages 的同提交门禁、浏览器回归和发布均通过。线上首页页脚为 `v2.0.1 · 2026-09-28 20:39 UTC+8 · 794cf9f`。下方“待发布／401／会阻断”的段落只记录更早的部署前状态，已由本段核验取代。

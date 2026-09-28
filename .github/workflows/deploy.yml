@@ -21,6 +21,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          # 需要历史：构建用 git log 回溯旧记录的 updatedAt，门禁还要 diff 本次推送范围。
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -51,10 +54,41 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      # Worker 只在自身输入变化时才需要重建。没变时线上 Worker 应保持原样，
+      # 因此不做提交号校验、不等待；兼容性检查照常执行且立即失败。
+      # WORKER_PATHS 必须与 Cloudflare Workers Builds 的 build watch paths 保持一致。
+      - name: Detect Worker input changes
+        id: worker
+        env:
+          WORKER_PATHS: workers lib package.json package-lock.json
+        run: |
+          before="${{ github.event.before }}"
+          if [ "${{ github.event_name }}" != "push" ] || [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
+            echo "Not a normal push (${{ github.event_name }}); checking compatibility only."
+            echo "expected_commit=" >> "$GITHUB_OUTPUT"
+            echo "wait_ms=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if ! git cat-file -e "${before}^{commit}" 2>/dev/null; then
+            echo "Previous commit ${before:0:7} is not in this clone (history rewritten?); checking compatibility only."
+            echo "expected_commit=" >> "$GITHUB_OUTPUT"
+            echo "wait_ms=0" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if git diff --quiet "$before" "${{ github.sha }}" -- $WORKER_PATHS; then
+            echo "Worker inputs unchanged in ${before:0:7}..${{ github.sha }}; checking compatibility only."
+            echo "expected_commit=" >> "$GITHUB_OUTPUT"
+            echo "wait_ms=0" >> "$GITHUB_OUTPUT"
+          else
+            echo "Worker inputs changed in ${before:0:7}..${{ github.sha }}; will wait for a Worker build from this commit."
+            echo "expected_commit=${{ github.sha }}" >> "$GITHUB_OUTPUT"
+            echo "wait_ms=900000" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Check live Worker compatibility
         env:
-          WORKER_EXPECTED_COMMIT: ${{ github.sha }}
-          WORKER_WAIT_MS: '900000'
+          WORKER_EXPECTED_COMMIT: ${{ steps.worker.outputs.expected_commit }}
+          WORKER_WAIT_MS: ${{ steps.worker.outputs.wait_ms }}
         run: node scripts/check-worker-compatibility.mjs
 
       - name: Configure Pages
