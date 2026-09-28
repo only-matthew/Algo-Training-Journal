@@ -2,6 +2,26 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-09-29，复习操作修复与发布流程精简）
+
+### 1. 复习快捷操作已修复并上线
+
+提交 `66f25b4` 修复了复习操作的状态与权限判断：未安排复习的题目不显示复习按钮；待复习可结束或顺延；已结束只显示重新安排；复习页只给本人记录显示写入操作。首页队列额外核对 `reviewStatus === "todo"`。快捷写入成功后，本标签页用会话级暂存覆盖尚未重新生成的静态 JSON，避免页面刷新后立刻又显示旧状态。
+
+首页和题目页此前点击“结束复习”出现 `Failed to fetch`，根因是 Worker 的 CORS 预检允许方法遗漏 `PATCH`。`66f25b4` 已通过 Cloudflare Workers Builds 发布；线上 `OPTIONS` 现返回 `Access-Control-Allow-Methods: GET,PUT,PATCH,POST,DELETE,OPTIONS`，`GET /api/capabilities` 的 `buildCommit` 为完整提交 `66f25b42f2a2e8f9e1eb081823abb3b9c99f4470`。具体专项记录见 [PROBLEM-AUDIT.md](PROBLEM-AUDIT.md) §9。
+
+### 2. 两次 Pages 失败的原因
+
+随后队员的 `ff1d40d`、`9c7b2cf`、`64123d6` 只更新训练数据，没有触发新的 Worker 部署；线上 Worker 仍保持 `66f25b4`，说明 build watch paths 已按预期生效。
+
+其中两次 GitHub Pages Action 失败发生在浏览器回归：新增用例直接引用一条真实“待复习”记录，队员结束复习后数据发生变化，测试仍期待“结束复习”按钮，因此失败。语法、Lint、索引、Node 测试与站点构建均已通过，失败与生产代码或 Worker 构建无关。用例现通过路由夹具固定 `todo` / `none` 两种状态，不再依赖实时训练数据；本机完整浏览器回归 **14/14 通过**。
+
+### 3. 日常 Action 已精简
+
+提交 `70042ea` 从 `.github/workflows/deploy.yml` 和 `.github/workflows/checks.yml` 移除了 Chromium 安装、浏览器回归和失败报告上传。主分支发布与 PR 检查继续执行 `npm run check` / `npm run verify`，覆盖语法、ESLint、训练索引、Node 测试和站点构建；浏览器回归保留为本地按需命令 `npm run test:e2e`，或在已有构建上运行 `npm run test:e2e:ci`。
+
+`70042ea` 的 `Deploy Training Journal` 已 **completed / success**。该提交只改工作流、测试和文档，Cloudflare 未重建 Worker，线上 `buildCommit` 仍是 `66f25b4`。Pages 门禁仍始终检查 Worker schema 与匿名会话；只有六类 Worker 输入变化时才等待同提交 Worker。
+
 ## 最新交接（2026-09-28，Worker 构建监听路径已配置）
 
 Cloudflare 控制台中现有 `algo-oauth` 的 Workers Builds 已将默认包含路径 `*` 改为 `workers/*`、`lib/*`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`，排除路径留空；保存并刷新页面后六条规则均仍在。`config/members.json` 是 Worker 直接导入的成员配置，`scripts/stamp-worker-commit.mjs` 是部署命令执行的构建脚本，二者也属于 Worker 输入。

@@ -1,6 +1,6 @@
 # 设计：从一次训练走到下一次尝试
 
-版本：2026-09-28。产品优先级见 [PRODUCT.md](PRODUCT.md)；本文描述用户流程与系统分工。标有“目标”的交互仍待实现。
+版本：2026-09-29。产品优先级见 [PRODUCT.md](PRODUCT.md)；本文描述用户流程与系统分工。标有“目标”的交互仍待实现。
 
 ## 用户流程
 
@@ -48,4 +48,4 @@ flowchart LR
 
 ## 发布与回退
 
-Worker 与 Pages 分别由 Cloudflare Workers Builds 和 GitHub Actions 监听 `main` 推送自动发布。**Worker 在没有改动的推送里不重建**：Pages 上传前始终检查线上 Worker 能否接受本站日志 schema 与匿名 `/api/session`，不兼容立即拒绝；只有本次推送动到 Worker 输入时，才额外要求 `/api/capabilities` 的 `buildCommit` 等于本次提交并最多等待 15 分钟。2026-09-28 的 `794cf9f` 已完成两侧生产发布（能力接口 HTTP 200 且提交号一致）。新日志格式或写入协议仍需先保证 Worker 向后兼容，并运行本地验证与浏览器回归；门禁仅覆盖上述检查，不代替写入协议测试。更完整的操作见 [SPECIFICATION.md](SPECIFICATION.md)。
+Worker 与 Pages 分别由 Cloudflare Workers Builds 和 GitHub Actions 监听 `main` 推送自动发布。**Worker 在没有改动的推送里不重建**：Pages 上传前始终检查线上 Worker 能否接受本站日志 schema 与匿名 `/api/session`，不兼容立即拒绝；只有本次推送动到 Worker 输入时，才额外要求 `/api/capabilities` 的 `buildCommit` 等于本次提交并最多等待 15 分钟。2026-09-28 的 `66f25b4` 已完成 Worker 与 Pages 发布，线上预检允许 `PATCH`；2026-09-29 的 `70042ea` 只改 CI 与测试，Pages 发布成功且没有触发 Worker 重建。新日志格式或写入协议仍需先保证 Worker 向后兼容，并按需运行本地浏览器回归；日常 Action 只运行快速验证与构建。门禁仅覆盖上述检查，不代替写入协议测试。更完整的操作见 [SPECIFICATION.md](SPECIFICATION.md)。
