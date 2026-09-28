@@ -2,21 +2,45 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
-## 最新交接（2026-09-28，发布门禁改为按需校验）
+## 最新交接（2026-09-28，发布门禁改为按需校验，已发布）
 
-用户指出：**Worker 在理想状态下根本不需要更改，不该每次推送都等它**。这个判断是对的，原设计确实错了——它把"线上 Worker 能否接受本站日志格式"（兼容性）实现成了"线上 Worker 是否等于本次提交"（同一性）。后者只在本次推送真的改了 Worker 时才成立，无条件要求它意味着每次队员打卡、每次改文档都要重新构建并等待 Worker。
+用户指出：**Worker 在理想状态下根本不需要更改，不该每次推送都等它**。这个判断是对的，原设计确实错了——它把"线上 Worker 能否接受本站日志格式"（兼容性）实现成了"线上 Worker 是否等于本次提交"（同一性）。后者只在本次推送真的改了 Worker 时才成立，无条件要求它意味着每次队员打卡、每次改文档都要重建并等待 Worker。
 
-改为两级门禁（`scripts/check-worker-compatibility.mjs` + `.github/workflows/deploy.yml`）：
+### 1. 两级门禁
 
-- **始终**：检查线上 `/api/capabilities` 的 schema 范围是否包含本站 `LOG_SCHEMA_VERSION`，并冒烟 `/api/session`；不满足立即拒绝发布。
-- **仅当本推送改动 `workers/`、`lib/`、`package.json`、`package-lock.json` 时**：才要求 `buildCommit` 等于本次提交，并最多等待 15 分钟。
-- 其余情况不校验提交号、**等待为 0**，Worker 保持原地。
+`scripts/check-worker-compatibility.mjs` 与 `.github/workflows/deploy.yml`：
 
-配套改动：检出改为 `fetch-depth: 0`（既要 diff 本次推送范围，也让构建脚本用 `git log` 回溯旧记录 `updatedAt` 不再受浅克隆影响）；非 push 事件、`before` 全零、`before` 不在克隆里三种情况降级为只做兼容性检查。
+- **始终**：线上 `/api/capabilities` 的 schema 范围必须包含本站 `LOG_SCHEMA_VERSION`，且匿名 `/api/session` 可用；不满足立即拒绝发布。
+- **仅当本次推送改动 `workers/`、`lib/`、`package.json`、`package-lock.json` 时**（`lib/` 与 `package.json` 也是 Worker 输入：Worker 打包 `lib/`、由 `package.json` 构建）：才要求 `buildCommit` 等于本次提交，并最多等待 15 分钟。
+- 其余情况不校验提交号、**等待为 0**，线上 Worker 保持原地。
 
-**验证**：门禁单测 7/7（新增"Worker 提交号落后但 schema 兼容 → 放行"与"要求同提交时拒绝"两侧）；把 workflow 的 shell 块抽出用 Git Bash 真实执行了六种情形（纯文档提交、页脚+package 提交、成员打卡、`workflow_dispatch`、`before` 全零、`before` 缺失），判定与预期一致；全量 `npm run verify` 通过（469 + 77 = 546 单测）。所以**这次推送本身走的就是"不等待"路径**，可以作为首个生产样本。
+`checkWorkerCompatibility({ requireCommit })` 改为显式开启，返回值增加 `commitChecked`；工作流新增 `Detect Worker input changes` 步骤，用 `git diff <before> <sha> -- $WORKER_PATHS` 判定。非 push 事件、`before` 全零、`before` 不在克隆里三种情况一律降级为只做兼容性检查，避免为不确定的范围空等。检出改为 `fetch-depth: 0`：既让该 diff 可靠，也修好了浅克隆下构建脚本用 `git log` 回溯旧记录 `updatedAt` 的问题。
 
-**待人工完成**：Cloudflare 控制台把 Workers Builds 的 **build watch paths** 设为 `workers/`、`lib/`、`package.json`、`package-lock.json`，与门禁的输入集保持一致。不设也可以正常工作（门禁不再依赖 Worker 重建），但 Worker 仍会随每次推送重建；两侧路径不一致则会让门禁空等一个不会到来的构建，这一点已写进 SPECIFICATION §1.4 与 README。
+### 2. 验证
+
+| 项目 | 结果 |
+| --- | --- |
+| 门禁单测 | **7/7**；新增"Worker 提交号落后但 schema 兼容 → 放行"与"要求同提交时提交号不符/未打戳 → 拒绝"两侧 |
+| 全量门禁 | `npm run verify` 通过：语法 + ESLint + 索引校验 + **469 + 77 = 546 单测** + 构建 |
+| workflow shell 块实测 | 抽出该步骤用 Git Bash 真实执行六种情形（纯文档、页脚+`package.json`、成员打卡、`workflow_dispatch`、`before` 全零、`before` 缺失），判定与预期一致 |
+| 变更检测实测 | 纯文档 `c6255c7`／`9f579e7`、成员打卡 `304edfa` → 不等待；含 `package.json` 的 `794cf9f` → 等同提交 |
+
+### 3. 部署记录（2026-09-28，提交 `63c55ea`）
+
+| 项目 | 结果 |
+| --- | --- |
+| 本地验证 | `npm run verify` 通过（546 单测）；门禁单测 7/7 |
+| 前端 | `63c55ea` 推 `main`，`Deploy Training Journal` **completed / success**，整轮 85 s |
+| Pages 门禁 | 本次推送未碰 Worker 输入 → 走**不等待**路径（`expected_commit` 为空、`wait_ms=0`），门禁步骤耗时 0 s；线上页脚 `v2.0.1 · 2026-09-28 21:25 UTC+8 · 63c55ea` |
+| Worker | 仍被重建（`/api/capabilities` 的 `buildCommit` 变为 `63c55ea`）——**build watch paths 尚未设置**，见下节 |
+
+### 4. 待人工完成：Cloudflare build watch paths
+
+请在 Cloudflare 控制台把 Workers Builds 的 **build watch paths** 设为 `workers/`、`lib/`、`package.json`、`package-lock.json`，与门禁输入集保持一致。不设也能正常工作（门禁已不依赖 Worker 重建），只是 Worker 仍随每次推送重建；**两侧路径必须一致**，若 Cloudflare 只监听 `workers/`，则改 `lib/` 时门禁会等一个不会到来的构建。若 Cloudflare 把跳过的构建显示为失败的检查，那只是界面噪音，不影响 Pages；以控制台实测为准。同口径已写入 [SPECIFICATION.md](SPECIFICATION.md) §1.4 与 [README](../README.md) 的发布说明。
+
+### 5. 这条修订没有放开的边界
+
+兼容性检查仍是强制的：本站 schema 不在线上 Worker 公布范围内时，Pages 立即拒绝发布。也就是说"前端需要更新的 Worker"这一真实风险仍被拦住，放开的只是"Worker 没变也要等它重建一遍"。门禁依旧不覆盖其他写入协议的变更，仍需单独回归。
 
 ## 最新交接（2026-09-28，发布验收与文档纠偏）
 
