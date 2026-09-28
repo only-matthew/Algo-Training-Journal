@@ -321,7 +321,7 @@ https://algo-oauth.xialiao.org/auth/callback
 4. 检查线上 Worker：`GET /api/capabilities` 的日志格式范围必须包含本站 schema，且 `GET /api/session` 可用，不满足立即失败；**仅当本次推送改动了 Worker 输入**（`workers/`、`lib/`、`package.json`、`package-lock.json`）时，才额外要求 `buildCommit` 是**同一 Git 提交**，并最多等待 15 分钟。失败时保留上一版网站。
 5. 上传 GitHub Pages artifact，再使用 `actions/deploy-pages` 发布网站。
 
-Worker 使用 Cloudflare Workers Builds 连接本仓库的 `main` 分支，推送后自动构建并部署现有 `algo-oauth`。Build command 留空，Root directory 为 `/`，Deploy command 设为 `npm run deploy:worker`；不启用预览分支的生产部署。该命令把 Cloudflare 提供的 `WORKERS_CI_COMMIT_SHA` 写入 Worker 构建版本，再从 `workers/wrangler.toml` 部署。Worker 的既有运行时 secret 继续保存在 Cloudflare，不写入仓库。**Worker 在没有改动的推送里不需要重建**：建议把 Cloudflare 的 build watch paths 设为 `workers/`、`lib/`、`package.json`、`package-lock.json`，与上面门禁的输入集保持一致；这样日志、文档和纯前端推送不会再触发 Worker 构建，Pages 也不会空等。手动恢复时可在根目录运行 `npm run deploy:worker`。
+Worker 使用 Cloudflare Workers Builds 连接本仓库的 `main` 分支，按构建监听路径自动部署现有 `algo-oauth`。Build command 留空，Root directory 为 `/`，Deploy command 设为 `npm run deploy:worker`；不启用预览分支的生产部署。该命令把 Cloudflare 提供的 `WORKERS_CI_COMMIT_SHA` 写入 Worker 构建版本，再从 `workers/wrangler.toml` 部署。Worker 的既有运行时 secret 继续保存在 Cloudflare，不写入仓库。Cloudflare 的 build watch paths 已设为 `workers/*`、`lib/*`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`，与 Pages 门禁的 Worker 输入集一致；日志、文档和纯前端推送不触发 Worker 构建，Pages 只检查兼容性而不等待同提交 Worker。手动恢复时可在根目录运行 `npm run deploy:worker`。
 
 首页底部展示 `package.json` 的版本号、构建时间（UTC+8）和构建提交短号；完整提交号用于 Worker 与 Pages 的发布核对。门禁不能替代其他写入协议变化的回归测试。
 

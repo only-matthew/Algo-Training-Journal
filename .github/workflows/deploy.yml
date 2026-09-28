@@ -60,7 +60,7 @@ jobs:
       - name: Detect Worker input changes
         id: worker
         env:
-          WORKER_PATHS: workers lib package.json package-lock.json
+          WORKER_PATHS: workers lib config/members.json scripts/stamp-worker-commit.mjs package.json package-lock.json
         run: |
           before="${{ github.event.before }}"
           if [ "${{ github.event_name }}" != "push" ] || [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then

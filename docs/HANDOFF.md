@@ -2,6 +2,12 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-09-28，Worker 构建监听路径已配置）
+
+Cloudflare 控制台中现有 `algo-oauth` 的 Workers Builds 已将默认包含路径 `*` 改为 `workers/*`、`lib/*`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`，排除路径留空；保存并刷新页面后六条规则均仍在。`config/members.json` 是 Worker 直接导入的成员配置，`scripts/stamp-worker-commit.mjs` 是部署命令执行的构建脚本，二者也属于 Worker 输入。
+
+Pages 工作流的 `WORKER_PATHS` 同步包含这六类输入。纯日志、文档、前端推送只检查线上 Worker 与站点 schema 的兼容性，不再触发 Worker 构建或等待同提交版本；Worker 输入变更才等待该提交的 Worker 上线。下方“待人工完成 build watch paths”段落记录的是配置前状态。
+
 ## 最新交接（2026-09-28，发布门禁改为按需校验，已发布）
 
 用户指出：**Worker 在理想状态下根本不需要更改，不该每次推送都等它**。这个判断是对的，原设计确实错了——它把"线上 Worker 能否接受本站日志格式"（兼容性）实现成了"线上 Worker 是否等于本次提交"（同一性）。后者只在本次推送真的改了 Worker 时才成立，无条件要求它意味着每次队员打卡、每次改文档都要重建并等待 Worker。
