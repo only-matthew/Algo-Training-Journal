@@ -162,3 +162,65 @@ Select-String -Path lib,workers,scripts -Include *.mjs,*.js -Pattern '\|\| "未�
 3. **R3 关闭**：[仓库 README](../README.md) 删除未渲染的“📎 相关训练记录”和热度徽标描述，只保留已交付的标签与知识点关联；[PROBLEM-AUDIT.md](PROBLEM-AUDIT.md) 登记 ESLint 无法识别“导出但生产代码无人调用”的盲区。
 
 本次处理仅修正文档与文件位置，不把 P0–P3 的产品待办标为完成。R5 的 Worker 目录说明也已随 README 更新；R4、R6–R8 保持备查。
+
+---
+
+# 二次复核（2026-09-28，外部复核）
+
+复核对象：`HEAD = 9f579e7`（`Close product audit documentation findings`），`main` 领先 `origin/main` 1 个提交（**尚未推送**，故线上仍为 `794cf9f`）。方式不变：只核对文档、代码、产物与线上响应。
+
+## R1–R3 关闭确认（独立复验）
+
+| 项 | 复验方式 | 结论 |
+| --- | --- | --- |
+| R1 发布状态 | 逐文件搜 `返回 401｜尚未上线｜待发布`，并读改后段落 | **关闭**。[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)、[PROBLEM-AUDIT.md](PROBLEM-AUDIT.md)、本文件上方 T1–T4 表、[CURRENT-STATE.md](CURRENT-STATE.md) 均已改为已上线口径并附 `794cf9f` 证据；[HANDOFF.md](HANDOFF.md) 顶部新增"发布验收与文档纠偏"段，明确旧"待发布／401"段是历史快照。现行文档已无生效中的陈旧断言 |
+| R2 状态文档归位 | `git mv` 结果 + 入口清单计数 | **关闭**。`CURRENT-STATE.md` 已在 `docs/` 根（3.2 KB，低于 10 KB 上限），列入 `docs/README.md` 与 README 的 docs 树；三处均写"七份"，与实际一致 |
+| R3 未渲染功能描述 | 重新核对替代措辞是否属实 | **关闭**。README 已删除「📎 相关训练记录」「📎 相关记录 N」与"知识树行"。替代措辞**逐条复验为真**：标签页确有 42 条 `/roadmap/` 节点链接与"覆盖"文案；节点页 `roadmap-problem-done` 实际渲染「队内记录 · 廖夏」；`#member-select` + `data-members` + `lib/application.mjs:114` 构成本人/全队切换。`PROBLEM-AUDIT.md` 已登记 ESLint 的导出死代码盲区 |
+| R5 Worker 目录说明 | 读 README 结构树 | 已随本轮更新（`oauth.mjs` 改为"鉴权与 API 路由入口"，`services/` 补"AI 概括与题目导入"） |
+
+## 残留问题
+
+### C1 · 本轮新增 2 条断链（断链总数 37 → 39）
+
+`CURRENT-STATE.md` 移出归档时，归档内两条**指向现行文档**的链接随之失效，恰好是最容易被点击的两条：
+
+- `docs/archive/2026-09-28-pre-rewrite/PRODUCT.md:3` → `[CURRENT-STATE.md](CURRENT-STATE.md)`
+- `docs/archive/2026-09-28-pre-rewrite/SPECIFICATION.md:3` → 同上
+
+改为 `../../CURRENT-STATE.md` 即可。
+
+### C2 · 归档内 37 条既有断链没有免责说明
+
+这些断链**不是本轮引入**（`794cf9f` 时同样是 37 条），全部位于 `docs/archive/2026-09-28-pre-rewrite/`，目标是按当时仓库结构书写的路径（`lib/…`、`scripts/…`、`docs/…`），移入归档后无法解析。而 `HANDOFF.md` 写着"旧交接段落中的相对链接已改指归档"——只做到了一部分，且归档目录没有 README 说明链接口径。
+
+**建议**：新增 `docs/archive/README.md`，声明"归档内的相对链接按当时仓库结构理解，不保证可点击"；然后只修 C1 的两条。**不要**批量改写那 37 条——归档的价值是证据保真，改写反而会掩盖当时的目录结构。
+
+### C3 · `HANDOFF.md:31` 仍有与新横幅相反的操作指令
+
+该段结尾写着"……不要直接触发带新门禁的 Pages 发布"，而文件顶部的新段已声明它被取代。按 `HANDOFF.md` 自述的"按时间续写、旧段落是历史快照"规则，这不算错误；但同一文件内存在**方向相反的直接指令**，读到中部的人可能照做。建议在该句后加一行括注「（已由上方 2026-09-28 发布验收段取代）」——一处一行即可。
+
+## 状态与规模观察
+
+- **未推送**：`9f579e7` 仍在本机（`ahead 1`）。文档中所有"已上线"表述都指向 `794cf9f`，与实际相符，无误导。**提醒**：推送后 Pages 门禁会要求 Cloudflare 为 `9f579e7`（纯文档提交）产出同提交 Worker；若 Cloudflare Builds 对文档类提交做了路径忽略，站点会等满 15 分钟后失败并保留旧站（即 R6 已登记的取舍）。
+- **体量分布**：现行文档合计 138.4 KB，其中 `HANDOFF.md` 占 95.7 KB（**69%**）。`CURRENT-STATE.md` 3.2 KB 已达成"单一状态权威"的目标；但 HANDOFF 同时是"体量最大"与"唯一含有被取代的相反指令"的文件。建议后续交接段落只写"本轮结论 + 指向 CURRENT-STATE / SPECIFICATION"，细节留在对应文档，避免该文件继续线性增长。
+- **备查项状态**：R4 未变（`workers/build-commit.mjs` 仍被跟踪、无 `.gitignore`、提交值为 `null`）；R7 已文档化但配置未改（ESLint 仍不检查 `test/`、`e2e/`，`globals` 仍混合注入 browser+node+serviceworker）；R8 未变（页脚时间戳使 `index.html`/`sw.js` 每次构建必变，重产物仍确定）。
+
+## 二次复核意见
+
+**接受。** 上一轮的三个必办项均已按实测证据更正，且改后措辞经逐条复验为真（含我特意反查的三条 roadmap 声明），没有出现"为了消掉问题而写得更含糊"的情况。剩余 C1–C3 都属于**收尾性**问题：C1 是移文件时漏掉的两条链接，C2 缺一份归档链接口径说明，C3 少一行括注。三项合计改动不超过十行，不影响本轮的签收结论。
+
+复核基线：`git status` 干净、`npm run verify` 通过（467 + 77 = 544 单测全绿）、线上 `/api/capabilities` 返回 200 且 `buildCommit = 794cf9f3…`（与 `origin/main` 一致）、相对链接检查 173 条中 39 条断链（37 条为归档既有）。
+
+## C1–C3 修复记录（2026-09-28，外部复核执行）
+
+三项均由复核方直接修复，只改 Markdown，未触碰任何代码：
+
+| 项 | 处置 | 验证 |
+| --- | --- | --- |
+| C1 | `archive/2026-09-28-pre-rewrite/PRODUCT.md:3`、`SPECIFICATION.md:3` 的链接改为 `../../CURRENT-STATE.md` | 断链数 **39 → 37**，两条目标均已解析 |
+| C2 | 新增 [archive/README.md](archive/README.md)：说明归档用途、快照清单与链接口径，登记 34 条失效链接的分布，并标出 `![](url)`／`[...](...)` 属正文语法示例、朴素链接检查会误报 | 归档内链接无需逐条改写，读者与后续自动检查都有据可依 |
+| C3 | `HANDOFF.md` 原第 31 段后追加"本段已被取代"括注，指明该段是部署前快照、当前状态见顶部「发布验收与文档纠偏」段与 CURRENT-STATE | 同文件内不再存在无标注的相反指令；更早的描述性段落（如"可能阻断本次部署"）由顶部横幅统一覆盖 |
+
+修复后链接全量复核：相对链接 192 条，朴素链接检查报出 44 条，其中 **34 条是归档内既有的真实失效链接，其余全部是 `` ![](url) ``／`` [...](...) `` 语法示例造成的误报**（该误报数随引用此写法的文档增加而增加，故不固定）。**归档外不存在真实失效链接**（`docs/HANDOFF.md` 的 `![](url)` 亦属示例误报）。
+
+至此二次复核提出的 C1–C3 全部关闭，**本次签收无未决项**。代码未改动，因此未重跑 `npm run verify`；如需与代码变更一起发布，仍按 `CURRENT-STATE.md` 的发布顺序执行。
