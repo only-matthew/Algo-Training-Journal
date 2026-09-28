@@ -1267,6 +1267,26 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-26/7ccb57fc-a7af-40a0-b296-881ccab1913c/"
+    },
+    {
+      "subjectKey": "record:wzzzzhhhhh:2026-09-28:7a068845-fc44-48b2-a5de-9ae7dacf9e0f",
+      "date": "2026-09-28",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-09-28",
+        "recordId": "7a068845-fc44-48b2-a5de-9ae7dacf9e0f"
+      },
+      "problem": {
+        "name": "Integer Triple（CCPC网络赛）",
+        "platform": "其他",
+        "problemNumber": "",
+        "difficulty": "★ 1400"
+      },
+      "outcome": "editorial",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-28/7a068845-fc44-48b2-a5de-9ae7dacf9e0f/"
     }
   ]
 }

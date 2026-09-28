@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-28T22:33:42.331+08:00",
+  "problems": [
+    {
+      "id": "7a068845-fc44-48b2-a5de-9ae7dacf9e0f",
+      "name": "Integer Triple（CCPC网络赛）",
+      "platform": "其他",
+      "problemNumber": "",
+      "difficulty": "★ 1400",
+      "difficultyRating": 1400,
+      "tags": [],
+      "outcome": "editorial",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
