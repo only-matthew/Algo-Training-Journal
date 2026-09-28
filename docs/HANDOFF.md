@@ -17,7 +17,7 @@ Pages 工作流的 `WORKER_PATHS` 同步包含这六类输入。纯日志、文�
 `scripts/check-worker-compatibility.mjs` 与 `.github/workflows/deploy.yml`：
 
 - **始终**：线上 `/api/capabilities` 的 schema 范围必须包含本站 `LOG_SCHEMA_VERSION`，且匿名 `/api/session` 可用；不满足立即拒绝发布。
-- **仅当本次推送改动 `workers/`、`lib/`、`package.json`、`package-lock.json` 时**（`lib/` 与 `package.json` 也是 Worker 输入：Worker 打包 `lib/`、由 `package.json` 构建）：才要求 `buildCommit` 等于本次提交，并最多等待 15 分钟。
+- **仅当本次推送改动 Worker 输入时**（最终为六类：`workers/`、`lib/`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`；前三类由 Worker 的传递依赖决定——Worker 打包 `workers/` 与 `lib/`、导入 `config/members.json`，后两类是部署命令脚本与依赖清单）：才要求 `buildCommit` 等于本次提交，并最多等待 15 分钟。本节初稿列的是四类，`config/members.json` 与 `scripts/stamp-worker-commit.mjs` 由后续提交 `03f452d` 补齐。
 - 其余情况不校验提交号、**等待为 0**，线上 Worker 保持原地。
 
 `checkWorkerCompatibility({ requireCommit })` 改为显式开启，返回值增加 `commitChecked`；工作流新增 `Detect Worker input changes` 步骤，用 `git diff <before> <sha> -- $WORKER_PATHS` 判定。非 push 事件、`before` 全零、`before` 不在克隆里三种情况一律降级为只做兼容性检查，避免为不确定的范围空等。检出改为 `fetch-depth: 0`：既让该 diff 可靠，也修好了浅克隆下构建脚本用 `git log` 回溯旧记录 `updatedAt` 的问题。
@@ -42,7 +42,7 @@ Pages 工作流的 `WORKER_PATHS` 同步包含这六类输入。纯日志、文�
 
 ### 4. 待人工完成：Cloudflare build watch paths
 
-请在 Cloudflare 控制台把 Workers Builds 的 **build watch paths** 设为 `workers/`、`lib/`、`package.json`、`package-lock.json`，与门禁输入集保持一致。不设也能正常工作（门禁已不依赖 Worker 重建），只是 Worker 仍随每次推送重建；**两侧路径必须一致**，若 Cloudflare 只监听 `workers/`，则改 `lib/` 时门禁会等一个不会到来的构建。若 Cloudflare 把跳过的构建显示为失败的检查，那只是界面噪音，不影响 Pages；以控制台实测为准。同口径已写入 [SPECIFICATION.md](SPECIFICATION.md) §1.4 与 [README](../README.md) 的发布说明。
+请在 Cloudflare 控制台把 Workers Builds 的 **build watch paths** 设为 Worker 输入集，与门禁保持一致。**实际配置为六类**（`workers/*`、`lib/*`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`，见文首“Worker 构建监听路径已配置”段）；本节初稿列的四类漏了前两类之外的 `config/members.json` 与部署脚本，已由后续提交补齐。不设也能正常工作（门禁已不依赖 Worker 重建），只是 Worker 仍随每次推送重建；**两侧路径必须一致**，若 Cloudflare 只监听 `workers/`，则改 `lib/` 时门禁会等一个不会到来的构建。同口径已写入 [SPECIFICATION.md](SPECIFICATION.md) §1.4 与 [README](../README.md) 的发布说明。
 
 ### 5. 这条修订没有放开的边界
 

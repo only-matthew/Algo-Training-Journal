@@ -250,6 +250,8 @@ Select-String -Path lib,workers,scripts -Include *.mjs,*.js -Pattern '\|\| "未�
 | 未改动 Worker 输入（日志、文档、纯前端） | **执行**，不满足立即拒绝 | 跳过 | **0** |
 | 改动了 Worker 输入（`workers/`、`lib/`、`package.json`、`package-lock.json`） | 执行 | 要求等于本次提交 | 最多 15 分钟 |
 
+> **追记（2026-09-28，提交 `03f452d`）**：输入集后来补齐为**六类**，另含 `config/members.json`（Worker 直接导入的成员配置）与 `scripts/stamp-worker-commit.mjs`（部署命令执行的构建脚本）；Cloudflare 的 build watch paths 也已设为同一组路径，并实测生效（纯文档提交 `03f452d` 未触发 Worker 重建，`/api/capabilities` 的 `buildCommit` 保持在上一次 Worker 部署 `7ed3045`）。遍历 Worker 的 38 个传递依赖，六类路径全部覆盖、无遗漏。当前口径见 [SPECIFICATION.md](SPECIFICATION.md) §1.4 与 [CURRENT-STATE.md](CURRENT-STATE.md)。
+
 实现要点：
 
 - `checkWorkerCompatibility({ requireCommit })`：提交号校验改为**显式开启**，默认不校验；返回值增加 `commitChecked`，日志会写明本次是否校验了提交号。
