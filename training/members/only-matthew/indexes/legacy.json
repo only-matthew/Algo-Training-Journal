@@ -1521,6 +1521,26 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-27/93b3dd08-500a-44c2-bbe5-4315240a2fdf/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1036",
+      "date": "2026-09-28",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-28",
+        "recordId": "9df1da8b-6091-4741-8f48-c0efe0938468"
+      },
+      "problem": {
+        "name": "[NOIP 2002 普及组] 选数",
+        "platform": "洛谷",
+        "problemNumber": "P1036",
+        "difficulty": "★ 1000"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-28/9df1da8b-6091-4741-8f48-c0efe0938468/"
     }
   ]
 }

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-28T22:35:23.973+08:00",
+  "problems": [
+    {
+      "id": "9df1da8b-6091-4741-8f48-c0efe0938468",
+      "name": "[NOIP 2002 普及组] 选数",
+      "platform": "洛谷",
+      "problemNumber": "P1036",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [
+        "搜索",
+        "DFS",
+        "剪枝",
+        "素数判断"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
