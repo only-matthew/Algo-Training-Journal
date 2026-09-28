@@ -2,7 +2,9 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
 
-import { gitBlobSha, planLogChanges, saveLog, readLog, deleteLog, assertLogVersionPlan } from "../workers/oauth.mjs";
+import { gitBlobSha, planLogChanges } from "../workers/services/log-planning.mjs";
+import { saveLog, readLog, deleteLog } from "../workers/services/legacy-logs.mjs";
+import { assertLogVersionPlan } from "../workers/services/log-version.mjs";
 import { metaFromProblems } from "../lib/log-schema.mjs";
 
 const gitSha = (content) => {

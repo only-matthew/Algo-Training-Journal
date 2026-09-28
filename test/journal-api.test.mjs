@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { apiRequest, loadSession, saveDateLog, deleteDateLog, patchRecordReview, saveDateLogV2, statementUrl, SESSION_TIMEOUT_MS } from "../lib/journal-api.js";
-import worker, { logRoots, seal } from "../workers/oauth.mjs";
+import worker, { seal } from "../workers/oauth.mjs";
+import { logRoots } from "../workers/services/log-planning.mjs";
 
 test("anonymous session lookup succeeds without relaxing protected endpoints", async () => {
   const env = { SESSION_SECRET: "test-session-secret" };

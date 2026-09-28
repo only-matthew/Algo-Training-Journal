@@ -451,7 +451,6 @@ function parseOiTree() {
   const text = fs.readFileSync(OI_TREE_FILE, "utf8");
   const stack = []; // 每级当前标题
   const topicDetails = new Map(); // 主题标题 -> 子细节列表
-  const detailStack = []; // 用于收集 #####/###### 细节
   let lastTopic = null;
 
   for (const raw of text.split(/\r?\n/)) {

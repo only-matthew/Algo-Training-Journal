@@ -4,6 +4,8 @@
 
 线上地址：[https://train.xialiao.org](https://train.xialiao.org)
 
+当前产品方向、设计、实现与验收入口见 [docs/ 文档入口](docs/README.md)。
+
 ## 项目总览
 
 ### 项目背景
@@ -235,7 +237,7 @@ node scripts/backfill-rating.mjs --write    # 应用
 
 首页、个人统计、个人活力折线图、热力图和平台计入明细使用同一构建结果。个人页可切换每日/累计，并核对各平台的有难度记录、计分记录与活力贡献。公式是可调整的工程指标，不能当作实测能力分或排名依据。
 
-实现：[算法](lib/vitality.mjs)、[统一聚合](lib/vitality-summary.mjs)、[个人展示](lib/member-vitality.mjs)。参数与此次真实数据核对见 [v2 说明](docs/VITALITY-V2.md)；下一步设计见 [待实现功能](docs/PENDING-FEATURES.md)。
+实现：[算法](lib/vitality.mjs)、[统一聚合](lib/vitality-summary.mjs)、[个人展示](lib/member-vitality.mjs)。参数与历史数据核对见[归档的 v2 说明](docs/archive/2026-09-28-pre-rewrite/VITALITY-V2.md)；当前优先级见 [产品文档](docs/PRODUCT.md)。
 
 ### 题号完整性与同题判定
 
@@ -318,10 +320,12 @@ https://algo-oauth.xialiao.org/auth/callback
 发布工作流位于 [.github/workflows/deploy.yml](.github/workflows/deploy.yml)。当 `main` 或 `master` 分支收到 push 后，Actions 会：
 
 1. 使用 Node.js 24 检出仓库。
-2. 执行 `npm run check`（语法检查 + 单元测试 + 生成 site）。
-3. 生成 `site` 部署目录。
-4. 并行执行 Chromium 浏览器回归测试。
-5. 上传 GitHub Pages artifact；构建与浏览器测试都通过后，使用 `actions/deploy-pages` 发布网站。
+2. 执行 `npm run check`（语法、未定义引用与未使用变量检查、索引校验、单元测试、生成 `site/`）。
+3. 对同一份构建产物运行 Chromium 浏览器回归测试。
+4. 读取线上 Worker 的 `GET /api/capabilities` 与 `GET /api/session`，确认它接受当前前端发送的日志格式且会话接口正常。
+5. 上传 GitHub Pages artifact，再使用 `actions/deploy-pages` 发布网站。
+
+Worker 仍需手动发布。首次启用本门禁，以及今后升级日志格式时，应先发布兼容的 Worker，再触发 Pages 发布；若线上 Worker 不支持当前格式，Pages 作业会失败并保留上一版站点。门禁不能替代其他写入协议变化的回归测试。
 
 发布 Action 不执行 `git commit` 或 `git push`。独立的 [.github/workflows/difficulty.yml](.github/workflows/difficulty.yml) 每天补全缺失难度；只有查到新结果时才提交难度字段与训练索引，并通过 `workflow_dispatch` 触发重新发布。
 
@@ -444,7 +448,7 @@ git clone https://github.com/only-matthew/Algo-Training-Journal.git
 cd Algo-Training-Journal
 npm install
 
-# 完整校验（语法检查、单元测试、生成 site/）
+# 完整校验（语法、静态检查、训练索引、单元测试、生成 site/）
 npm run verify
 
 # 本地预览
@@ -458,7 +462,7 @@ npx serve site
 | `npm test` | 运行 Node.js 单元测试。 |
 | `npm run check:syntax` | 递归检查应用、构建脚本、Worker 和机器人源码的 JavaScript 语法。 |
 | `npm run build` / `npm run generate` | 从 `logs/` 生成完整 `site/`。 |
-| `npm run verify` / `npm run check` | 语法检查、单元测试并生成站点；`check` 为兼容旧 CI 的别名。 |
+| `npm run verify` / `npm run check` | 语法检查、ESLint、训练索引校验、单元测试并生成站点；`check` 是同一流程的别名。 |
 | `node scripts/verify-import-live.mjs` | 本地真实网络集成测试「自动导入」：直接驱动 Worker 全链路（鉴权/CSRF/Origin + 真实请求 Codeforces 与洛谷），无需 GitHub 登录或云端密钥。 |
 | `npm run smoke:statement` | 题面导入的浏览器冒烟（先 `npm run build` 并另开终端跑 `node scripts/preview-ui.mjs`）：描述为空直接填入、已有内容时给「用这份题面替换描述」按钮且点了真的替换、误粘整页源码时直接替换、重复解析不重复写入。 |
 | `npm run smoke:submission` | 独立提交页浏览器冒烟（同样需先构建并启动预览）：验证 1440/1024/800/390px 无横向溢出、复习设置字段按四列/双列/单列响应式排列，并输出截图到 `artifacts/`。 |
@@ -467,7 +471,7 @@ npx serve site
 
 ## 项目结构
 
-浏览器入口、页面骨架、样式和随站点发布的静态资源统一放在 `src/`；`lib/` 保留为前端、Worker、构建脚本和测试共同使用的模块目录。完整的目录职责、依赖边界和新增文件放置规则见 [docs/REPOSITORY-STRUCTURE.md](docs/REPOSITORY-STRUCTURE.md)。
+浏览器入口、页面骨架、样式和随站点发布的静态资源统一放在 `src/`；`lib/` 保留为前端、Worker、构建脚本和测试共同使用的模块目录。当前职责与数据流见 [docs/DESIGN.md](docs/DESIGN.md)，历史目录细则见[归档的目录契约](docs/archive/2026-09-28-pre-rewrite/REPOSITORY-STRUCTURE.md)。
 
 ```text
 .
@@ -498,6 +502,11 @@ npx serve site
 ├── curriculum/                  # 学习路线数据（roadmap.json + nodes/*.json + cf-supplement.json + luogu-problem-meta.json + luogu-training-problems.json）
 ├── know-tree/                   # 学习路线源资料（洛谷/罗勇军/刘汝佳/NOI大纲/蓝桥杯/OI知识树）
 ├── logs/                          # 按成员和日期组织的训练源数据
+├── training/                      # 冻结的 v2 训练方案数据
+├── oi-wiki/                       # 本地同步参考资料（Git 忽略）
+├── e2e/                           # Playwright 浏览器回归测试
+├── build/                         # 本地测试与导出临时产物（Git 忽略）
+├── artifacts/                     # 本地冒烟截图（Git 忽略）
 ├── scripts/
 │   ├── apply-luogu-meta.mjs       # 把洛谷官方题名/难度批量应用到 curriculum/nodes/
 │   ├── convert-curriculum.js      # 从 know-tree/ 源资料生成 curriculum/（含 OI 树合并、CF 补充合并、洛谷 meta 富化、书系题单按标签并入）
@@ -515,21 +524,25 @@ npx serve site
 ├── workers/
 │   ├── oauth.mjs                 # OAuth、加密会话、受限日志 API、AI 概括与题目导入
 │   ├── member-config.mjs         # 按 githubUserId / login / memberId 解析成员
+│   ├── routes/                   # v2 HTTP 路由适配
 │   ├── services/                 # 日志读写、题面抓取、训练工作台等领域服务
+│   ├── storage/                  # GitHub API 与仓库读写适配
 │   └── wrangler.toml             # Worker 配置
+├── bot/                           # QQ 本地监听和提醒入口；共用模块在 lib/
 ├── config/
 │   └── members.json              # 成员身份与 OJ 账号（OAuth 按数字用户 ID 匹配）
 ├── vendor/                        # 前端与共享渲染模块使用的第三方库
 ├── .editorconfig                  # 跨编辑器的统一格式规则
 ├── jsconfig.json                  # VS Code/TypeScript 服务的 JS 模块解析配置
-├── docs/                          # 产品、交接与优化文档
-│   ├── REPOSITORY-STRUCTURE.md     # 目录职责、依赖边界和文件放置规则
-│   ├── PRODUCT.md                 # 一站式 ICPC 训练中心产品规划
-│   ├── SPECIFICATION.md           # 技术规格与验收矩阵
-│   ├── VITALITY-DESIGN.md         # 活力指数与难度体系的设计记录
-│   ├── PENDING-FEATURES.md        # 区间基础已实现；事件投影与同日多次记录待完成
-│   ├── HANDOFF.md                 # 当前技术交接与后续重构建议
-│   └── OPTIMIZATION.md            # 优化清单与完成状态
+├── docs/                          # 现行文档和历史归档
+│   ├── README.md                  # 文档入口与状态用语
+│   ├── PRODUCT.md                 # 个人训练闭环产品方向
+│   ├── DESIGN.md                  # 用户流程、页面与系统边界
+│   ├── SPECIFICATION.md           # 当前契约与下一阶段验收
+│   ├── HANDOFF.md                 # 按日期续写的交接
+│   ├── PRODUCT-AUDIT.md           # 产品问题签收版
+│   ├── PROBLEM-AUDIT.md           # 技术问题签收版
+│   └── archive/2026-09-28-pre-rewrite/ # 改写前的全部文档和图片
 ├── package.json                   # 构建、测试与迁移命令
 ├── CNAME                          # GitHub Pages 自定义域名
 └── site/                           # 构建产物，已被 .gitignore 忽略

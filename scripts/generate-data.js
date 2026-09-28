@@ -32,14 +32,11 @@ const MONTH_PATTERN = /^(0[1-9]|1[0-2])$/;
 const DAY_PATTERN = /^(0[1-9]|[12]\d|3[01])$/;
 let normalizeMeta;
 let escapeHtml;
-let renderMarkdown;
 let toDateString;
 let toUtc8;
 let problemStableKey;
 let problemDetailHtml;
 let originalProblemUrl;
-let updatedLabel;
-let relatedSectionHtml;
 let roadmapOverviewHtml;
 let roadmapPhaseHtml;
 let roadmapNodeHtml;
@@ -839,7 +836,9 @@ function writeProblemDetails(logs, generatedAt, problemIndex) {
     // 题面图片：与 PDF 同样校验哈希后发布；正文里的相对文件名改写成站点地址。
     // 描述在仓库里保持相对路径（GitHub 能直接渲染），站内靠这一步变成绝对地址。
     const description = publishStatementImages(log);
-    const { statementPath, statementImagePaths, ...detailLog } = log;
+    const detailLog = { ...log };
+    delete detailLog.statementPath;
+    delete detailLog.statementImagePaths;
     writeJson(detailOutput, {
       schemaVersion: 3,
       generatedAt,
@@ -937,6 +936,8 @@ async function generateRoadmapData(logs) {
     return null;
   }
   let curriculum;
+  let readCurriculum;
+  let validateCurriculum;
   let problemKey;
   let buildMatchIndex;
   let buildNodeTrainingEvidence;
@@ -1073,7 +1074,8 @@ async function generateRoadmapData(logs) {
         const data = nodeDataById.get(id);
         if (!data) return null;
         // 节点摘要带紧凑的 trainingEvidence，不带可追溯记录正文（避免 roadmap.json 膨胀）
-        const { relatedRecords, ...nodeSummary } = data.node;
+        const nodeSummary = { ...data.node };
+        delete nodeSummary.relatedRecords;
         return { ...nodeSummary, stats: data.stats };
       })
       .filter(Boolean);
@@ -1319,8 +1321,8 @@ async function main() {
   ({ normalizeMeta, problemStableKey } = await import("../lib/log-schema.mjs"));
   ({ normalizeLearningState } = await import("../lib/learning-state.mjs"));
   ({ escapeHtml } = await import("../lib/render-safety.mjs"));
-  ({ toDateString, toUtc8, SITE_ORIGIN: siteOrigin, SITE_NAME: siteName } = await import("../lib/constants.mjs"));
-  ({ problemDetailHtml, originalProblemUrl, updatedLabel, relatedSectionHtml } = await import("../lib/problem-detail.mjs"));
+  ({ toDateString, toUtc8, SITE_ORIGIN, SITE_NAME } = await import("../lib/constants.mjs"));
+  ({ problemDetailHtml, originalProblemUrl } = await import("../lib/problem-detail.mjs"));
   ({ cfTagToChinese } = await import("../lib/cf-tag-map.mjs"));
   ({ assessMastery } = await import("../lib/mastery.mjs"));
   ({ buildVitality } = await import("../lib/vitality-summary.mjs"));
@@ -1328,8 +1330,6 @@ async function main() {
   ({ vitalityRecordKey } = await import("../lib/vitality.mjs"));
   ({ vitalityChartHtml } = await import("../lib/vitality-chart.mjs"));
   ({ memberVitalityDetailsHtml } = await import("../lib/member-vitality.mjs"));
-  SITE_ORIGIN = siteOrigin;
-  SITE_NAME = siteName;
   const { members, logs } = readLogs();
   // 活力指数按「题目 Rating + 当时水平」折算；结果写回每条记录，供卡片与统计使用
   const vitality = buildVitality(logs);

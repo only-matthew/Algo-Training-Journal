@@ -22,8 +22,8 @@
 // 首次运行：把机器人拉进目标群后，在群里 @机器人 发任意消息，
 // 控制台会打印该群的 group_openid（后续配置定时/其他用途需要）。
 
-import { fetchAccessToken, getGatewayUrl, sendGroupMessage, chatCompletion } from "./qq-bot.mjs";
-import { buildReply } from "./qq-message.mjs";
+import { fetchAccessToken, getGatewayUrl, sendGroupMessage, chatCompletion } from "../lib/qq-bot.mjs";
+import { buildReply } from "../lib/qq-message.mjs";
 
 const APP_ID = process.env.QQ_APP_ID;
 const CLIENT_SECRET = process.env.QQ_CLIENT_SECRET;

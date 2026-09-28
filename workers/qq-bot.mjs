@@ -22,8 +22,8 @@ import { sha512 } from "@noble/hashes/sha2.js";
 import * as ed from "@noble/ed25519";
 ed.hashes.sha512 = sha512;
 
-import { fetchAccessToken, sendGroupMessage, chatCompletion } from "../bot/qq-bot.mjs";
-import { buildReply } from "../bot/qq-message.mjs";
+import { fetchAccessToken, sendGroupMessage, chatCompletion } from "../lib/qq-bot.mjs";
+import { buildReply } from "../lib/qq-message.mjs";
 
 const JSON_HEADERS = { "Content-Type": "application/json; charset=utf-8" };
 

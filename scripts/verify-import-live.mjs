@@ -2,7 +2,8 @@
 // 用法：node scripts/test-import-live.mjs
 // 覆盖：会话鉴权（构造加密会话）、CSRF、Origin 校验、Codeforces 真实 API、
 //       洛谷真实页面抓取、AtCoder 真实 API、限流不误伤。不依赖 wrangler / GitHub OAuth / 云端 secrets。
-import worker, { seal, fetchAtCoderAccepted } from "../workers/oauth.mjs";
+import worker, { seal } from "../workers/oauth.mjs";
+import { fetchAtCoderAccepted } from "../workers/services/problem-import.mjs";
 import { fetchLuoguAtCoderStatement } from "../workers/services/problem-statement.mjs";
 import { attachAtCoderTags, fetchLuoguContestTagIds, loadLuoguTagDictionary, resolveAtCoderTagIds } from "../workers/services/atcoder-tags.mjs";
 

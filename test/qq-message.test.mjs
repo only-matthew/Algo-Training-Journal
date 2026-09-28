@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { extractCommand, buildReply, buildTreeProgressMessage } from "../bot/qq-message.mjs";
+import { extractCommand, buildReply, buildTreeProgressMessage } from "../lib/qq-message.mjs";
 
 test("extractCommand 识别各种 @提及 前缀下的指令", () => {
   assert.equal(extractCommand("今日复习"), "今日复习");

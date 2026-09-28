@@ -191,7 +191,8 @@ function actionType(action) {
 function persistedReview(projection) {
   // `source` is useful to readers of the pure projection, but it is deliberately
   // not part of the persisted Review schema.
-  const { source, ...review } = projection;
+  const review = { ...projection };
+  delete review.source;
   // A brand-new member's first event has sequence zero.  The projection uses -1
   // as its in-memory "no applied event" sentinel; persisted reviews use the
   // schema's non-negative representation.
@@ -281,7 +282,9 @@ export function createTrainingService({ git, now = () => new Date().toISOString(
         if (action.action === "defer") {
           const target = await readOwned(snapshot, paths.plan(action.targetDate), validatePlan, memberId) || { schemaVersion: 1, memberId, date: action.targetDate, items: [], updatedAt: now() };
           if (!target.items.some((entry) => entry.subjectKey === item.subjectKey && ["queued", "started", "completed"].includes(entry.status))) {
-            const { linkedAttemptId, deferredTo, ...copy } = item;
+            const copy = { ...item };
+            delete copy.linkedAttemptId;
+            delete copy.deferredTo;
             target.items.push({ ...copy, id: crypto.randomUUID(), status: "queued" });
           }
           item.status = "deferred";

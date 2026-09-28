@@ -15,6 +15,7 @@
     "test:e2e": "npm run build && playwright test",
     "test:e2e:ci": "playwright test",
     "check:syntax": "node scripts/check-syntax.mjs",
+    "check:lint": "eslint src/*.js lib scripts workers bot",
     "preview": "node scripts/preview-ui.mjs",
     "smoke:attachment": "node scripts/smoke-attachment.mjs",
     "smoke:details": "node scripts/smoke-details.mjs",
@@ -22,12 +23,14 @@
     "smoke:submission": "node scripts/smoke-submission-page.mjs",
     "smoke:scale": "node scripts/smoke-scale.mjs",
     "probe:workerd": "node scripts/probe-workerd-multipart.mjs",
-    "verify": "npm run check:syntax && npm run training:reindex -- --check && npm test && npm run build",
+    "verify": "npm run check:syntax && npm run check:lint && npm run training:reindex -- --check && npm test && npm run build",
     "check": "npm run verify"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",
     "esbuild": "0.28.1",
+    "eslint": "^10.11.0",
+    "globals": "^16.5.0",
     "wrangler": "^4.114.0"
   },
   "dependencies": {

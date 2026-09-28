@@ -1,16 +1,6 @@
 # 交接文档：Algo Training Journal
 
-> 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
-
-## 最新交接（2026-09-28）：文档归档与个人训练闭环方向
-
-本轮按用户选择，将现行产品方向定为**个人训练闭环**：选题、记录、复习、重做。原 `docs/` 文档和 `assets/project-history/` 图片原样移到 `docs/archive/2026-09-28-pre-rewrite/`；旧版 `HANDOFF.md` 也留有快照。`HANDOFF.md` 在原位续写。新 [文档入口](README.md) 串起产品、设计、规格与两份审计签收版。旧交接段落中的相对链接已改指归档，段落内容仍按当时语境阅读。
-
-新产品文档明确分开“目前能做”和“下一步要做”。原产品审计 P1-3 的路线选择已签收为回归个人闭环；空心得、自动复习建议、个人小清单、重做历史和周期使用报告仍是待办。技术审计第 7 项的 v2 通用路由保持冻结，第 19 项的巨型历史文档已转入归档。详细状态见 [PRODUCT-AUDIT.md](PRODUCT-AUDIT.md) 和 [PROBLEM-AUDIT.md](PROBLEM-AUDIT.md)。
-
-本地上一轮完成的工程改动包括 Worker 能力接口与 Pages 兼容门禁、ESLint 检查、Worker 入口拆分、QQ 共享模块迁移、单次构建工作流。上一轮 `npm run verify`、13 个浏览器回归和 Worker dry-run 已通过；本轮主要改文档，完成后还需检查链接及文件保全。**这些新工程改动尚未发布**：2026-09-28 线上 `GET /api/capabilities` 返回 401。正式发布按 Worker → 匿名能力/会话冒烟 → Pages CI 顺序进行；不要直接触发带新门禁的 Pages 发布。
-
-接手时先读现行三份文档，再按两份签收版选问题；归档用于查历史依据。新增功能落地后，更新现行规格、对应审计状态和本交接，不在归档稿上继续改写。
+> 本文件是按时间追加的历史记录，不再作为“当前实现”的单一权威。当前产品状态以 README、PRODUCT、SPECIFICATION 的 2026-09-26 状态标记为准；易变的测试数量与部署版本只代表各段落注明日期的快照。
 
 ## 最新交接（2026-09-27 第二轮）：CF Gym 题号与标签页落盘路径
 
@@ -130,7 +120,7 @@
 - 浏览器端入口和自有静态资源已统一移入 `src/`：`src/app.js`、`src/problem-page.js`、`src/index.html`、`src/style.css`、`src/assets/`。共享渲染模块也会导入的第三方库保留在根级 `vendor/`。
 - `lib/` 继续作为浏览器、Worker、构建脚本和测试共享的模块目录，没有塞进 `src/`，避免服务端反向依赖前端目录。
 - 构建、语法检查和源码型回归测试均已改用新路径；生成站点的 URL 仍为 `/style.css`、`/assets/...`、`/vendor/...`，部署结构不变。
-- 新的目录职责与文件放置规则见 [REPOSITORY-STRUCTURE.md](archive/2026-09-28-pre-rewrite/REPOSITORY-STRUCTURE.md)。历史交接段落中的旧路径仅描述当时提交；当前开发以该文档和 README 的结构为准。
+- 新的目录职责与文件放置规则见 [REPOSITORY-STRUCTURE.md](REPOSITORY-STRUCTURE.md)。历史交接段落中的旧路径仅描述当时提交；当前开发以该文档和 README 的结构为准。
 
 ## 最新交接（2026-09-25）：提交页布局与洛谷中文题面
 
@@ -138,7 +128,7 @@
 - `scripts/smoke-submission-page.mjs` 现在主动展开复习设置，并在 1440、1024、800、390px 检查无横向溢出及字段行对齐。
 - 洛谷 `lentille-context` 的 `data.problem` 可能同时含原文 `content` 与中文本地化 `contenu`。`parseLuoguProblem()` 优先选择具有非空正文的 `contenu`，缺失或为空时回退 `content`；P2895 已用真实页面和 fixture 验证返回中文题面。
 - 回归覆盖 `test/problem-statement.test.mjs` 与 `test/oauth-import.test.mjs`；本次验证包含语法检查、构建、提交页浏览器冒烟、真实网络 P2895 抓取以及完整 `npm test`（426 + 70 项通过）。
-- 详细契约见 [题面专项规格](archive/2026-09-28-pre-rewrite/PROBLEM-ENRICHMENT-SPECIFICATION.md) 与 [提交页规格](archive/2026-09-28-pre-rewrite/SUBMISSION-PAGE-SPECIFICATION.md)。
+- 详细契约见 [题面专项规格](PROBLEM-ENRICHMENT-SPECIFICATION.md) 与 [提交页规格](SUBMISSION-PAGE-SPECIFICATION.md)。
 
 ## 最新交接（2026-09-21）：一万条记录容量升级
 
@@ -146,7 +136,7 @@
 - 成员、分析和错题列表每批只创建 40 个条目；首页到期复习最多携带 100 条，同时保留真实总数。
 - `tag-index.json` 仅含摘要，记录列表拆到 `data/tags/<标签>.json`，标签详情按需加载。
 - `.build-cache/site-state.json` 保存题目页、详情 JSON、成员页和标签页的依赖指纹。构建仍全量扫描轻量摘要以重算同题与标签反向索引，随后只生成失效的重型产物；删除记录会清理题目目录、详情 JSON和失效分片。不要把它改成“仅看当前日志文件 hash”，否则会破坏同题和标签双向链接。
-- 新增 `test/data-shards.test.mjs` 和 `npm run smoke:scale`；后者用真实浏览器确认三类页面不请求 `all.json`、只走对应分片且首批 DOM 不超过 40 条。完整设计与验收边界见 `docs/archive/2026-09-28-pre-rewrite/SCALE-10000.md`。
+- 新增 `test/data-shards.test.mjs` 和 `npm run smoke:scale`；后者用真实浏览器确认三类页面不请求 `all.json`、只走对应分片且首批 DOM 不超过 40 条。完整设计与验收边界见 `docs/SCALE-10000.md`。
 
 ## 最新交接（2026-09-21 补记）：AtCoder 算法标签与提交页链接
 
@@ -312,7 +302,7 @@
 
 ### 2. 处置
 
-命名与限额集中在 [lib/statement-images.mjs](../lib/statement-images.mjs)：文件名 `statement-<sha256>.<ext>`（内容寻址、同名必然同内容、跨题自然去重），只收位图 `png/jpeg/gif/webp`（**不收 SVG**：同源 SVG 能执行脚本，等于给了自己一个 XSS 入口）；单张 1 MiB、每题最多 10 张、一次保存新增合计 2 MiB。正文里的引用写成 `./statement-<sha256>.<ext>`：`lib/render-safety.mjs` 的 `isSafeUrl` 只放行 `http(s)://`、`/`、`./`、`../`、`#` 开头，**裸文件名会被它丢掉**（实测过），显式 `./` 则在 GitHub 与站内渲染器里都能解析。
+命名与限额集中在 [lib/statement-images.mjs](lib/statement-images.mjs)：文件名 `statement-<sha256>.<ext>`（内容寻址、同名必然同内容、跨题自然去重），只收位图 `png/jpeg/gif/webp`（**不收 SVG**：同源 SVG 能执行脚本，等于给了自己一个 XSS 入口）；单张 1 MiB、每题最多 10 张、一次保存新增合计 2 MiB。正文里的引用写成 `./statement-<sha256>.<ext>`：`lib/render-safety.mjs` 的 `isSafeUrl` 只放行 `http(s)://`、`/`、`./`、`../`、`#` 开头，**裸文件名会被它丢掉**（实测过），显式 `./` 则在 GitHub 与站内渲染器里都能解析。
 
 1. **解析层**（`workers/services/problem-statement.mjs`）：图片不再直接写成外链，而是记进 `context.images` 并在正文里留下占位符。洛谷正文是 HTML 与 Markdown 混排，裸的 `![](url)` 语法藏在文本节点里，此前会被当成普通文字原样写进描述——现在和 `<img src>` 走同一条登记路径。未开启归档时（直接调用解析函数、单元测试）保持原来的外链写法，`external-images` 警告语义不变。
 2. **抓取层**：`archiveStatementImages()` 下载图片（4 并发、总预算 6 秒、流式截断到 1 MiB），按**魔数**判断类型（洛谷新图床的响应头不可信），按来源站补 `Referer`，算出 sha256 后把占位符替换成 `./statement-<sha256>.<ext>`。单张失败只影响它自己：正文保留原外链并保留 `external-images` 警告，题面照常返回。单张/总量/张数超限的图片同样退回外链——超过单张上限的图片会被保存接口拒绝，不能让整次保存因此失败。
@@ -425,8 +415,8 @@ PDF 有独立的「替换 / 移除」按钮，因为它是一次性的原件归�
 
 本轮正在本地实现与验证，尚未提交或部署。用户已确认掌握自评独立；保留未完成题 15% 的活力权重，只消除复习、错题与完成结果的混淆。
 
-- [设计方案](archive/2026-09-28-pre-rewrite/LEARNING-STATE-DESIGN.md)：复习题不等于错题，首次记录可自评已掌握，四项各自表达事实或安排。
-- [专项规格](archive/2026-09-28-pre-rewrite/LEARNING-STATE-SPECIFICATION.md)：v5 字段、旧 mastered 兼容、活力不变量、表单与全链路验收。
+- [设计方案](LEARNING-STATE-DESIGN.md)：复习题不等于错题，首次记录可自评已掌握，四项各自表达事实或安排。
+- [专项规格](LEARNING-STATE-SPECIFICATION.md)：v5 字段、旧 mastered 兼容、活力不变量、表单与全链路验收。
 - 本轮接续用户通过 DeepSeek 完成的题面与附件功能；保留相关链路。
 - 根据界面反馈再次调整：日期/连续训练区间压缩为紧凑网格，快速导入按钮横向排列并可换行；题面与 AI 辅助改为常驻区域，不再折叠。
 - 历史章节中的「非错题 / 待复习 / 已掌握」三态由本专项替代；历史部署记录不代表本轮已上线。
@@ -435,8 +425,8 @@ PDF 有独立的「替换 / 移除」按钮，因为它是一次性的原件归�
 
 **本轮已进入实现，未部署。** 先完成设计与 specification，随后由 Terra 子代理实现了部分业务链路；仍需在合并前完成一次人工 UI 冒烟和部署环境验证。
 
-- [设计方案](archive/2026-09-28-pre-rewrite/PROBLEM-ENRICHMENT-DESIGN.md)：PDF 题面归档、复制提示词并打开 DeepSeek、粘贴 JSON 预览回填、Codeforces 题面补全，以及界面状态与实施顺序。
-- [专项技术规格](archive/2026-09-28-pre-rewrite/PROBLEM-ENRICHMENT-SPECIFICATION.md)：v4 扩展字段、AI JSON 协议、附件保存/读取与条件事务、CF 解析规则、兼容和验收矩阵。
+- [设计方案](PROBLEM-ENRICHMENT-DESIGN.md)：PDF 题面归档、复制提示词并打开 DeepSeek、粘贴 JSON 预览回填、Codeforces 题面补全，以及界面状态与实施顺序。
+- [专项技术规格](PROBLEM-ENRICHMENT-SPECIFICATION.md)：v4 扩展字段、AI JSON 协议、附件保存/读取与条件事务、CF 解析规则、兼容和验收矩阵。
 - 核查结论：`fetchCodeforcesAccepted` 只读提交 API，未抓题面；`planLogChanges` 会删除目标清单以外的文件，附件必须纳入完整保存链路，不能只加上传控件。
 - 固定方向：不新增模型 API；用户自行在网页版上传 PDF/截图并粘贴回答。原题与 AI 分析分离；官方评分优先；已应用估计值保留来源。首期 PDF 沿用 Git，一题一份、单份 5 MiB、单次新增总量 10 MiB。
 - 已实现：AI 分析绑定/严格 JSON 校验、v4 来源字段、CF 单题抓取与降级、PDF v2 保存服务/幂等版本检查、表单提示词预览与字段回填、静态详情/导出附件投影。仍需重点复核旧写入口兼容、浏览器 IndexedDB 附件选择和部署 Worker 的 multipart 实测；不得把未验证的外部网络能力当成已验收。
@@ -701,10 +691,10 @@ npx serve site --listen 4173
 
 ## 本轮改动（2026-09-13）：活力 v2、个人统计与区间契约
 
-- 活力算法更新为 v2，所有带 Rating 的平台走同一条计分路径；个人页新增活力折线、平台计入明细和守恒校验。算法与局限见 [VITALITY-V2.md](archive/2026-09-28-pre-rewrite/VITALITY-V2.md)。
+- 活力算法更新为 v2，所有带 Rating 的平台走同一条计分路径；个人页新增活力折线、平台计入明细和守恒校验。算法与局限见 [VITALITY-V2.md](VITALITY-V2.md)。
 - 新增 `lib/vitality-summary.mjs`、`lib/member-vitality.mjs`、`lib/vitality-chart.mjs`；`site/data/all.json` 和个人静态页由构建自动生成，不能手改 `site/`。
 - 新增 `lib/training-interval.mjs`：提供 `validateTrainingInterval`、`expandTrainingInterval`、`mergeTrainingDates`，已接入表单、Worker Schema 和热力图日期展开；结果字段 `outcome` 已接入表单、Schema、Worker 和构建，事件级同题结算仍未接入。
-- [PENDING-FEATURES.md](archive/2026-09-28-pre-rewrite/PENDING-FEATURES.md) 已重写为评审版：`fileIndex` 与区间字段基础链路已完成，下一步接入事件级结果投影和同题结算。
+- [PENDING-FEATURES.md](PENDING-FEATURES.md) 已重写为评审版：`fileIndex` 与区间字段基础链路已完成，下一步接入事件级结果投影和同题结算。
 - 当前验证：构建成功（165 条记录）；`npm test` 全部通过；专项活力、图表和区间测试全部通过；语法检查覆盖 72 个源码文件。
 
 ---
@@ -713,7 +703,7 @@ npx serve site --listen 4173
 
 > 以下内容为 2026-09-11 那轮实现，与上文 2026-08-28 的架构整理相互独立。
 
-本轮围绕三条队员反馈做了实现：**难度是「题 × 人 × 时间」的属性**、**同题判定错误**、**难度口径不直观**。完整的算法推导与依据见 [VITALITY-DESIGN.md](archive/2026-09-28-pre-rewrite/VITALITY-DESIGN.md)，尚未实施的区间打卡见 [PENDING-FEATURES.md](archive/2026-09-28-pre-rewrite/PENDING-FEATURES.md)。
+本轮围绕三条队员反馈做了实现：**难度是「题 × 人 × 时间」的属性**、**同题判定错误**、**难度口径不直观**。完整的算法推导与依据见 [VITALITY-DESIGN.md](VITALITY-DESIGN.md)，尚未实施的区间打卡见 [PENDING-FEATURES.md](PENDING-FEATURES.md)。
 
 ### 0. 一句话摘要
 
@@ -789,7 +779,7 @@ npx serve site --listen 4173
 
 ### 7. 本轮遗留与后续接手点
 
-1. **完成质量未接入**：公式已有 `credit`（没做出来 = 0.3），但记录里暂无 `outcome` 字段，当前一律按「做出来了」处理。见 [PENDING-FEATURES.md](archive/2026-09-28-pre-rewrite/PENDING-FEATURES.md)。
+1. **完成质量未接入**：公式已有 `credit`（没做出来 = 0.3），但记录里暂无 `outcome` 字段，当前一律按「做出来了」处理。见 [PENDING-FEATURES.md](PENDING-FEATURES.md)。
 2. **曲线开头活力为 0**：`θ₀ = 0.5`（零基础）面对 ★1000 的题匹配度≈0，导致入门期曲线平坦。可选调整：提高能力起点，或减少多标签均摊（当前多标签题的增益按标签数均摊，会让能力被低估）。**待队员反馈后再定。**
 3. **目标难度带未可视化**：目前只用数据点颜色表达「是否达标」，若要更醒目的横带需另加。
 4. **表单仍会丢新字段**：`metaFromProblems` 已透传 `difficultyRating`，但 `difficultyLegacy` / `difficultyRatingSource` 等审计字段不在 Schema 白名单里，**队员通过网页编辑某天记录后这些字段会消失**。功能不受影响（`difficultyRating` 在），但审计信息会丢。
@@ -797,5 +787,5 @@ npx serve site --listen 4173
 
 6. **文件槽位已稳定化**：日志 `meta.json` 可选保存 `fileIndex`。表单加载和 Worker 读写都会优先使用该槽位，题目重排不会再让描述、题解串位；旧记录仍按数组序号兼容读取，新题目保存时自动分配未使用槽位。对应测试在 `test/log-schema.test.mjs` 与 `test/oauth-plan.test.mjs`。
 
-**接手建议顺序**：先读 [VITALITY-DESIGN.md](archive/2026-09-28-pre-rewrite/VITALITY-DESIGN.md) 第 3–4 节搞清公式与参数，再看 `lib/vitality.mjs` 的实现，最后按 [PENDING-FEATURES.md](archive/2026-09-28-pre-rewrite/PENDING-FEATURES.md) 的 A–E 阶段做区间打卡。
+**接手建议顺序**：先读 [VITALITY-DESIGN.md](VITALITY-DESIGN.md) 第 3–4 节搞清公式与参数，再看 `lib/vitality.mjs` 的实现，最后按 [PENDING-FEATURES.md](PENDING-FEATURES.md) 的 A–E 阶段做区间打卡。
 

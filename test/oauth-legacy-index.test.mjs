@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { planLegacyIndexChange } from "../workers/oauth.mjs";
+import { planLegacyIndexChange } from "../workers/services/log-planning.mjs";
 
 const user = { login: "only-matthew", member: "廖夏" };
 

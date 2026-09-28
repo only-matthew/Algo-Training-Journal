@@ -2,7 +2,8 @@ import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
 import test from "node:test";
 
-import worker, { fetchCodeforcesAccepted, fetchLuoguProblems, fetchAtCoderAccepted, seal } from "../workers/oauth.mjs";
+import worker, { seal } from "../workers/oauth.mjs";
+import { fetchCodeforcesAccepted, fetchLuoguProblems, fetchAtCoderAccepted } from "../workers/services/problem-import.mjs";
 
 const now = Math.floor(Date.now() / 1000);
 const DAY = 86400;

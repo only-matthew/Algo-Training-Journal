@@ -14,8 +14,8 @@
 //   QQ_APP_ID / QQ_CLIENT_SECRET / QQ_GROUP_OPENID（群 openid，来自 listen 输出或群消息事件）
 //   QQ_DATA_URL 可选，默认 https://train.xialiao.org
 
-import { fetchAccessToken, sendGroupMessage } from "./qq-bot.mjs";
-import { buildReviewMessage, buildStatsMessage } from "./qq-message.mjs";
+import { fetchAccessToken, sendGroupMessage } from "../lib/qq-bot.mjs";
+import { buildReviewMessage, buildStatsMessage } from "../lib/qq-message.mjs";
 
 const APP_ID = process.env.QQ_APP_ID;
 const CLIENT_SECRET = process.env.QQ_CLIENT_SECRET;

@@ -10,14 +10,15 @@
 | `config/` | 成员身份与平台账号配置（`members.json`） | 部署期事实来源；OAuth 按 `githubUserId` 匹配，`memberId` 与 `logDirectory` 不随 GitHub 改名变化 |
 | `lib/` | 前端、Worker、构建脚本和测试共享的业务模块 | 不依赖具体页面 DOM 的能力优先放这里 |
 | `vendor/` | Marked、KaTeX、Prism 等固定版本的第三方浏览器库 | 与自有源码分离，由构建脚本复制或打包 |
-| `workers/` | Cloudflare Worker、服务层和 Wrangler 配置 | API、鉴权、抓取和仓库写入逻辑集中维护 |
-| `bot/` | QQ 机器人监听、提醒及消息处理 | 不与 Worker 共用的机器人运行入口放这里 |
+| `workers/` | Cloudflare Worker、路由、服务层、存储适配和 Wrangler 配置 | `oauth.mjs` 负责入口与鉴权；`routes/` 负责 v2 HTTP 适配；`services/` 放业务能力；`storage/` 访问 GitHub |
+| `bot/` | QQ 机器人本地监听与提醒入口 | 与 Worker 共用的 QQ API 和消息构建模块放 `lib/` |
 | `scripts/` | 构建、迁移、校验、抓取和冒烟脚本 | 脚本应从仓库根目录执行，不写死本机绝对路径 |
 | `test/` | Node.js 单元与回归测试 | 文件名使用 `*.test.mjs` |
 | `e2e/` | Playwright 端到端测试 | 面向构建后的 `site/` 验证完整交互 |
 | `logs/` | 训练日志源数据 | 唯一业务事实来源，不从 `site/` 反向修改 |
 | `training/`、`curriculum/` | 训练方案与课程结构化数据 | 由对应维护或转换脚本校验 |
 | `know-tree/` | 课程与知识树源资料 | 与生成后的课程数据分开存放 |
+| `oi-wiki/` | 外部同步的 OI Wiki 资料 | 本地参考资料，已忽略，不参与构建和提交 |
 | `docs/` | 产品、规格、设计、交接和运维文档 | 路径引用以当前仓库结构为准 |
 | `docs/assets/` | 文档引用的图片（`docs/assets/<主题>/`） | 只放被文档实际引用的资源，避免未被引用的死图 |
 
@@ -40,6 +41,7 @@ src/
 src/ ──────┐
            ├──> lib/
 workers/ ──┤
+bot/ ──────┤
 scripts/ ──┤
 test/ ─────┘
 
@@ -49,7 +51,7 @@ logs/ + training/ + curriculum/ ──> scripts/generate-data.js ──> site/
 ```
 
 - `src/` 可以导入 `lib/`，但 `lib/` 不应反向导入页面入口。
-- Worker 和构建脚本可以复用 `lib/`，不要从 `src/app.js` 或 `src/index.html` 获取业务规则。当前唯一的 `scripts/ → workers/` 例外是 `verify-import-live.mjs`，它有意驱动完整 Worker 鉴权与路由链路；普通解析脚本不得照抄该依赖。
+- Worker、机器人入口和构建脚本可以复用 `lib/`，不要从 `src/app.js` 或 `src/index.html` 获取业务规则。平台导入逻辑位于 `workers/services/problem-import.mjs`，v2 路由适配位于 `workers/routes/`。`scripts/check-worker-compatibility.mjs` 读取线上 Worker 能力，`verify-import-live.mjs` 有意驱动完整 Worker 链路；普通解析脚本不得照抄这类依赖。
 - `site/`、`build/`、`.build-cache/`、`artifacts/`、测试报告和工具缓存均为忽略项，不直接提交或手工维护。
 - 新增共享规则前先检查 `lib/` 是否已有相同能力，避免浏览器、Worker 与构建脚本各自实现一份。
 - 已完成的一次性迁移不要长期留在 `scripts/`；先确认仓库中已无旧格式数据，再删除脚本并在交接文档记录可恢复的提交。

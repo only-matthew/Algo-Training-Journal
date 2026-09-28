@@ -8,7 +8,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import worker, { gitBlobSha, seal } from "../workers/oauth.mjs";
+import worker, { seal } from "../workers/oauth.mjs";
+import { gitBlobSha } from "../workers/services/log-planning.mjs";
 
 const API = "https://api.github.com/repos/only-matthew/Algo-Training-Journal";
 const SECRET = "test-session-secret";

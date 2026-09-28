@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import path from "node:path";
 import assert from "node:assert/strict";
 import { chromium } from "@playwright/test";
 const browser = await chromium.launch({headless:true});
@@ -8,6 +9,14 @@ page.on("pageerror", error => errors.push(error.message));
 await page.route("https://algo-oauth.xialiao.org/**", route => route.fulfill({status:401,contentType:"application/json",body:'{"error":"Unauthorized"}'}));
 const output = process.env.UI_OUTPUT || "artifacts/details";
 fs.mkdirSync(output,{recursive:true});
+if (!process.env.UI_OUTPUT) {
+  // Only prune screenshots owned by this script in its default output directory.
+  for (const name of fs.readdirSync(output)) {
+    if (/^(?:home|home-bottom|knowledge|node|tag|problem)-\d+\.png$/.test(name)) {
+      fs.rmSync(path.join(output, name));
+    }
+  }
+}
 const manifest = JSON.parse(fs.readFileSync("site/data/manifest.json","utf8"));
 const logs = manifest.months.flatMap(entry => JSON.parse(fs.readFileSync(`site/${entry.url}`,"utf8")).logs);
 const log = logs.find(log => log.problemNumber === "P2678") || logs[0];

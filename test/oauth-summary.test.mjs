@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { summarizeDescription } from "../workers/oauth.mjs";
+import { summarizeDescription } from "../workers/services/summary.mjs";
 
 test("summarizeDescription requests a non-thinking short answer", async () => {
   let invocation;
