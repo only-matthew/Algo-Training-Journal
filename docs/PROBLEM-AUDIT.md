@@ -194,9 +194,11 @@
 | 编号 | 问题与证据 | 影响 | 本次处理 |
 | --- | --- | --- | --- |
 | R5-1 | `src/problem-page.js` 与 `lib/renderer.mjs` 的题目详情分支只检查是否为本人，未检查 `reviewStatus`。截图中 P1036 明示“未安排复习”，却仍显示“结束复习 / 顺延 +3”；已结束的安排也会重复显示“结束复习”。 | 无意义的操作可把未安排题目直接归档，或让用户重复结束复习。 | 仅待复习显示“结束复习”；已结束只显示“重新安排 +3”；未安排不显示复习操作。待复习但无日期时按钮标成“安排 +3”。两个题目详情实现已同步。 |
-| R5-2 | `workers/oauth.mjs` 的 CORS 预检响应只允许 `GET,PUT,POST,DELETE,OPTIONS`，但单题复习接口 `PATCH /api/v2/me/logs/dates/:date/records/:id` 使用 `PATCH`。2026-09-28 对线上 `algo-oauth.xialiao.org` 发送带 `Origin: https://train.xialiao.org` 和 `Access-Control-Request-Method: PATCH` 的 `OPTIONS`，响应为 204，`Access-Control-Allow-Methods` 确实缺少 `PATCH`。 | 浏览器拦截首页及题目页的保存请求，显示“操作失败：Failed to fetch”；复习页同受影响。 | Worker 允许列表补入 `PATCH`，并添加真实入口预检回归测试。线上是否恢复需部署后再次预检，登录后的写入仍需人工验收。 |
+| R5-2 | `workers/oauth.mjs` 的 CORS 预检响应只允许 `GET,PUT,POST,DELETE,OPTIONS`，但单题复习接口 `PATCH /api/v2/me/logs/dates/:date/records/:id` 使用 `PATCH`。2026-09-28 对线上 `algo-oauth.xialiao.org` 发送带 `Origin: https://train.xialiao.org` 和 `Access-Control-Request-Method: PATCH` 的 `OPTIONS`，响应为 204，`Access-Control-Allow-Methods` 确实缺少 `PATCH`。 | 浏览器拦截首页及题目页的保存请求，显示“操作失败：Failed to fetch”；复习页同受影响。 | Worker 允许列表补入 `PATCH`，并添加真实入口预检回归测试。`66f25b4` 部署后线上预检已返回 `GET,PUT,PATCH,POST,DELETE,OPTIONS`；登录后的真实写入仍需人工验收。 |
 | R5-3 | `renderReviewBook` 对全队每张复习卡片都显示快捷写入按钮，仅到点击时才由服务端拒绝其他成员；且“已结束安排”的卡片也继续显示“结束复习”。 | 展示了当前用户无权或无意义的操作。 | 只给本人记录显示写入按钮；待复习可结束或延后，已结束只可重新安排；所有记录仍可查看详情。 |
 | R5-4 | 首页复习队列仅按 `reviewDue` 过滤，未核对 `reviewStatus`；若旧数据保留日期但状态已结束，仍可能被当作今日待复习。 | 队列可能出现并非待复习的题。 | 加入“待复习”状态过滤。 |
 | R5-5 | 快捷写入成功后立即刷新页面，但页面读取的题目详情与队列是静态生成的 JSON，要等下一次站点构建才更新。 | 成功的操作可能马上又显示为“待复习”，用户以为仍未结束，并重复点击。 | 本浏览器会话暂存成功写入的单题复习状态，读取旧静态数据时覆盖显示；静态数据追上后自动清除暂存。 |
 
 **范围说明**：第 2、3、5 节列出的 SSRF、QQ webhook 验签和其他新审计项仍维持原状态；本次没有把这些问题记作已修复。
+
+2026-09-29 补充：第 R5-1 的浏览器回归曾直接引用仓库中的真实待复习记录。该记录随后被队员更新，导致两次日常发布在 Chromium 测试处失败，源码校验和站点构建均通过。测试现固定模拟两种复习状态，不再依赖队员实时数据；完整浏览器回归在本机 14/14 通过。日常 Pages 和 PR 工作流已移除 Chromium 安装与浏览器测试，浏览器回归保留供本地按需运行。

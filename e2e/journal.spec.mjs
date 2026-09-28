@@ -35,6 +35,16 @@ test("problem detail prominently shows its per-record vitality", async ({ page }
 
 test("problem review actions match the schedule and send a record-scoped update", async ({ page }) => {
   let patchBody;
+  await page.route("**/data/problems/**", async (route) => {
+    const response = await route.fetch();
+    const record = await response.json();
+    const planned = route.request().url().includes("/2026-09-25/");
+    await route.fulfill({ response, json: {
+      ...record,
+      reviewStatus: planned ? "todo" : "none",
+      reviewDue: planned ? "2026-09-28" : undefined,
+    } });
+  });
   await page.route(`${WORKER}/**`, (route) => {
     if (new URL(route.request().url()).pathname === "/api/session") {
       return route.fulfill({ json: { login: "only-matthew", member: "廖夏", csrfToken: "test-csrf" } });

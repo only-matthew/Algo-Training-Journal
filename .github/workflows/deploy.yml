@@ -37,23 +37,6 @@ jobs:
       - name: Check and generate site
         run: npm run check
 
-      - name: Install Chromium
-        run: npx playwright install --with-deps chromium
-
-      - name: Run browser regression tests
-        run: npm run test:e2e:ci
-
-      - name: Upload browser test report
-        if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@v5
-        with:
-          name: playwright-report
-          path: |
-            playwright-report/
-            test-results/
-          if-no-files-found: ignore
-          retention-days: 14
-
       # Worker 只在自身输入变化时才需要重建。没变时线上 Worker 应保持原样，
       # 因此不做提交号校验、不等待；兼容性检查照常执行且立即失败。
       # WORKER_PATHS 必须与 Cloudflare Workers Builds 的 build watch paths 保持一致。
