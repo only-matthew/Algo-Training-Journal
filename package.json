@@ -1,6 +1,6 @@
 {
   "name": "algo-training-journal",
-  "version": "1.0.0",
+  "version": "2.0.1",
   "private": true,
   "description": "队伍训练日志 - 热力图",
   "engines": {

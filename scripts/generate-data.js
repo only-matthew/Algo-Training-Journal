@@ -343,6 +343,8 @@ function appVersion() {
   return browserAssets.version;
 }
 
+const SITE_BUILD_TIME = `${new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 16).replace("T", " ")} UTC+8`;
+
 function siteVersion() {
   const version = require("../package.json").version;
   let sha = process.env.GITHUB_SHA || "";
@@ -350,7 +352,7 @@ function siteVersion() {
     try { sha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: ROOT, encoding: "utf8" }).trim(); }
     catch { sha = ""; }
   }
-  return `v${version}${sha ? ` · ${sha.slice(0, 7)}` : ""}`;
+  return `v${version} · ${SITE_BUILD_TIME}${sha ? ` · ${sha.slice(0, 7)}` : ""}`;
 }
 
 function writeVersionedIndex(dataVersion) {

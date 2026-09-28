@@ -326,7 +326,7 @@ https://algo-oauth.xialiao.org/auth/callback
 
 Worker 使用 Cloudflare Workers Builds 连接本仓库的 `main` 分支，推送后自动构建并部署现有 `algo-oauth`。Build command 留空，Root directory 为 `/`，Deploy command 设为 `npm run deploy:worker`；不启用预览分支的生产部署。该命令把 Cloudflare 提供的 `WORKERS_CI_COMMIT_SHA` 写入 Worker 构建版本，再从 `workers/wrangler.toml` 部署。Worker 的既有运行时 secret 继续保存在 Cloudflare，不写入仓库。Pages 以提交号门禁等待 Worker，避免两个平台的推送触发器先后不确定。手动恢复时可在根目录运行 `npm run deploy:worker`。
 
-首页底部展示 `package.json` 的版本号和构建提交短号；完整提交号用于 Worker 与 Pages 的发布核对。门禁不能替代其他写入协议变化的回归测试。
+首页底部展示 `package.json` 的版本号、构建时间（UTC+8）和构建提交短号；完整提交号用于 Worker 与 Pages 的发布核对。门禁不能替代其他写入协议变化的回归测试。
 
 发布 Action 不执行 `git commit` 或 `git push`。独立的 [.github/workflows/difficulty.yml](.github/workflows/difficulty.yml) 每天补全缺失难度；只有查到新结果时才提交难度字段与训练索引，并通过 `workflow_dispatch` 触发重新发布。
 
