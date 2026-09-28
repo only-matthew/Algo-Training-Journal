@@ -299,14 +299,13 @@ Worker 收到前端的受限日志请求后会：
 
 单题题面抓取走 `POST /api/problem-statement`（`platform` 为 `Codeforces` 或 `AtCoder`），与导入接口共用登录会话、CSRF 与同一套限流。响应携带 `source.kind`（`codeforces-html` / `luogu-mirror` / `atcoder-html`）与 `parserVersion`，两个平台都是「官方页优先、洛谷镜像兜底」；保存时由 `lib/problem-enrichment-schema.mjs` 按 kind 校验来源地址（AtCoder 官方页只认 `atcoder.jp/contests/<比赛>/tasks/<任务>`，镜像只认 `www.luogu.com.cn/problem/AT_<任务 ID>`），图片字节随响应回传后由表单交给 v2 保存链路。
 
-Worker 部署前需要配置三个 secret：
+Worker 首次部署前需要配置三个运行时 secret：
 
 ```bash
 cd workers
 npx wrangler secret put GITHUB_CLIENT_ID
 npx wrangler secret put GITHUB_CLIENT_SECRET
 npx wrangler secret put SESSION_SECRET
-npx wrangler deploy
 ```
 
 `SESSION_SECRET` 建议使用至少 32 字节随机值。GitHub OAuth App 的 callback URL 应设为：
@@ -322,10 +321,12 @@ https://algo-oauth.xialiao.org/auth/callback
 1. 使用 Node.js 24 检出仓库。
 2. 执行 `npm run check`（语法、未定义引用与未使用变量检查、索引校验、单元测试、生成 `site/`）。
 3. 对同一份构建产物运行 Chromium 浏览器回归测试。
-4. 读取线上 Worker 的 `GET /api/capabilities` 与 `GET /api/session`，确认它接受当前前端发送的日志格式且会话接口正常。
+4. 等待线上 Worker 的 `GET /api/capabilities` 返回**同一 Git 提交**及兼容的日志格式，再检查 `GET /api/session`；最多等待 15 分钟，失败时保留上一版网站。
 5. 上传 GitHub Pages artifact，再使用 `actions/deploy-pages` 发布网站。
 
-Worker 仍需手动发布。首次启用本门禁，以及今后升级日志格式时，应先发布兼容的 Worker，再触发 Pages 发布；若线上 Worker 不支持当前格式，Pages 作业会失败并保留上一版站点。门禁不能替代其他写入协议变化的回归测试。
+Worker 使用 Cloudflare Workers Builds 连接本仓库的 `main` 分支，推送后自动构建并部署现有 `algo-oauth`。Build command 留空，Root directory 为 `/`，Deploy command 设为 `npm run deploy:worker`；不启用预览分支的生产部署。该命令把 Cloudflare 提供的 `WORKERS_CI_COMMIT_SHA` 写入 Worker 构建版本，再从 `workers/wrangler.toml` 部署。Worker 的既有运行时 secret 继续保存在 Cloudflare，不写入仓库。Pages 以提交号门禁等待 Worker，避免两个平台的推送触发器先后不确定。手动恢复时可在根目录运行 `npm run deploy:worker`。
+
+首页底部展示 `package.json` 的版本号和构建提交短号；完整提交号用于 Worker 与 Pages 的发布核对。门禁不能替代其他写入协议变化的回归测试。
 
 发布 Action 不执行 `git commit` 或 `git push`。独立的 [.github/workflows/difficulty.yml](.github/workflows/difficulty.yml) 每天补全缺失难度；只有查到新结果时才提交难度字段与训练索引，并通过 `workflow_dispatch` 触发重新发布。
 
@@ -358,6 +359,8 @@ Worker 仍需手动发布。首次启用本门禁，以及今后升级日志格�
 - `GITHUB_CLIENT_ID`
 - `GITHUB_CLIENT_SECRET`
 - `SESSION_SECRET`
+
+日常推送由 Cloudflare Workers Builds 自动部署 Worker；连接配置见上方“发布工作流”。
 
 AI 概括不需要把模型密钥写入前端或仓库；`workers/wrangler.toml` 中的 `[ai]` 配置会把 Workers AI 暴露为 `env.AI`。如后续改用第三方模型，应通过 Worker Secret 或 AI Gateway BYOK 配置密钥，不得写入 `src/app.js` 或 Wrangler 配置文件。
 

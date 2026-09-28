@@ -23,7 +23,7 @@
 | 接口 | 当前用途 | 状态 |
 | --- | --- | --- |
 | `GET /api/session` | 匿名读取会话状态，已登录时下发会话与 CSRF 所需信息 | 已上线；仍需发布后冒烟 |
-| `GET /api/capabilities` | 公布 Worker 接受的日志 schema 范围 | 本地完成，2026-09-28 线上返回 401 |
+| `GET /api/capabilities` | 公布 Worker 接受的日志 schema 范围与构建提交号 | 当前工作区已实现；生产需按发布状态核验 |
 | `GET/PUT/DELETE /api/logs/date?date=...` | 按日期读取、写入与删除现行日志 | 已有接口 |
 | `PATCH /api/v2/me/logs/dates/:date/records/:id` | 只修改单题复习状态与到期日 | 已有接口，字段白名单 |
 | `PUT /api/v2/logs/dates/:date` | 新格式日期日志和附件保存 | 已有接口，条件版本与幂等要求以实现为准 |
@@ -35,8 +35,9 @@ GitHub OAuth 只允许配置成员写自己的日志。写接口校验 Origin、
 
 - `npm run verify`：语法、ESLint 未定义/未使用检查、训练索引一致性、Node 测试和站点构建。
 - `npm run test:e2e:ci`：在已构建站点上运行浏览器回归；本地需先安装 Chromium。PR 与主分支工作流均跑浏览器回归。
-- 主分支 Pages 工作流只构建一次，并在上传页面产物前运行 `scripts/check-worker-compatibility.mjs`，检查线上 Worker 的日志 schema 能力和匿名会话读接口。检查失败时阻断 Pages 发布。该门禁只覆盖这些协议，不代表全部写入路径都兼容。
-- Worker 由维护者单独发布。2026-09-28 的新能力仅在本地工作区，线上 `/api/capabilities` 返回 401。发布顺序为：本地验证 → Worker 发布 → 匿名 `/api/capabilities` 与 `/api/session` 核验 → Pages 工作流。不得把“本地验证通过”写成“已上线”。
+- Cloudflare Workers Builds 连接本仓库 `main` 分支后，每次推送运行 `npm run deploy:worker`，把 `WORKERS_CI_COMMIT_SHA` 编入 Worker，再通过仓库内 `workers/wrangler.toml` 部署现有服务。连接状态和首次构建仍需在 Cloudflare 控制台核验。
+- 主分支 Pages 工作流只构建一次，并在上传页面产物前运行 `scripts/check-worker-compatibility.mjs`。门禁最多等待 15 分钟，要求线上 Worker 的提交号等于本次 `github.sha`，schema 兼容且匿名会话读接口可用；失败时阻断 Pages 发布。它不能代替其他写入协议的回归测试。
+- 首页与独立题目页底部显示 `package.json` 版本和构建提交短号。2026-09-28 已推送的 `aa92513` 仍使用旧发布流程；新的 Git 连接和首页版本显示以随后提交、Cloudflare 构建与 Pages 验收为准。
 
 ## 2. 下一阶段变更契约（待实现）
 

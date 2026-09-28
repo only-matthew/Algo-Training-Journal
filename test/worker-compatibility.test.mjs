@@ -3,11 +3,12 @@ import test from "node:test";
 import { checkWorkerCompatibility } from "../scripts/check-worker-compatibility.mjs";
 import { LOG_SCHEMA_VERSION, validateLogInput } from "../lib/log-schema.mjs";
 import worker from "../workers/oauth.mjs";
+import { BUILD_COMMIT } from "../workers/build-commit.mjs";
 
 test("Worker publishes the supported log schema before authentication", async () => {
   const response = await worker.fetch(new Request("https://algo-oauth.xialiao.org/api/capabilities"), {}, {});
   assert.equal(response.status, 200);
-  assert.deepEqual(await response.json(), { logSchema: { min: 1, max: LOG_SCHEMA_VERSION } });
+  assert.deepEqual(await response.json(), { logSchema: { min: 1, max: LOG_SCHEMA_VERSION }, buildCommit: BUILD_COMMIT });
 });
 
 test("current Worker accepts current and previous site payloads", () => {
@@ -35,4 +36,16 @@ test("Pages gate blocks an older or unidentified Worker", async () => {
       : Response.json({ logSchema: { min: 1, max: LOG_SCHEMA_VERSION - 1 } });
     await assert.rejects(checkWorkerCompatibility({ fetchImpl }), /capabilities returned|Deploy the compatible Worker first/);
   }
+});
+
+test("Pages waits for the Worker built from the same Git commit", async () => {
+  const expectedCommit = "a".repeat(40);
+  const fetchImpl = async (url) => Response.json(url.pathname === "/api/capabilities"
+    ? { logSchema: { min: 1, max: LOG_SCHEMA_VERSION }, buildCommit: "b".repeat(40) }
+    : null);
+  await assert.rejects(checkWorkerCompatibility({ fetchImpl, expectedCommit }), /waiting for/);
+  const currentFetch = async (url) => Response.json(url.pathname === "/api/capabilities"
+    ? { logSchema: { min: 1, max: LOG_SCHEMA_VERSION }, buildCommit: expectedCommit }
+    : null);
+  assert.equal((await checkWorkerCompatibility({ fetchImpl: currentFetch, expectedCommit })).buildCommit, expectedCommit);
 });

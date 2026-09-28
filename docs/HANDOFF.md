@@ -2,6 +2,14 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-09-28，发布自动化与版本显示）
+
+先将文档整理和上一轮工程修复作为提交 `aa92513` 推送到 `main`，本地 `npm run verify` 通过。该提交沿用旧发布链路：Worker 尚未自动发布，Pages 的新能力检查可能阻断本次部署。随后增加 Cloudflare Workers Builds 连接方案、同提交发布门禁和页面底部版本号。
+
+Cloudflare 构建配置应指向现有 `algo-oauth` Worker、本仓库 `main`、仓库根目录 `/`，Build command 留空，Deploy command 为 `npm run deploy:worker`。该脚本用 `WORKERS_CI_COMMIT_SHA` 给 Worker 打版本戳；Pages 在发布前等待 `/api/capabilities` 的 `buildCommit` 与本次 `github.sha` 完全一致，并检查 schema 与 `/api/session`。首页底部展示 `v<package.json 版本> · <提交短号>`。现有 Worker secret 保持在 Cloudflare 控制台。
+
+**外部连接与实际发布以 Cloudflare 和 GitHub Actions 的构建结果为准**；提交代码本身不代表控制台已绑定仓库。若 Worker 构建失败，Pages 最多等待 15 分钟后失败，保留旧站。当前工作区完成连接、推送和生产核验后再更新本节状态。
+
 ## 最新交接（2026-09-28）：文档归档与个人训练闭环方向
 
 本轮按用户选择，将现行产品方向定为**个人训练闭环**：选题、记录、复习、重做。原 `docs/` 文档和 `assets/project-history/` 图片原样移到 `docs/archive/2026-09-28-pre-rewrite/`；旧版 `HANDOFF.md` 也留有快照。`HANDOFF.md` 在原位续写。新 [文档入口](README.md) 串起产品、设计、规格与两份审计签收版。旧交接段落中的相对链接已改指归档，段落内容仍按当时语境阅读。

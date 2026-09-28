@@ -17,7 +17,7 @@ concurrency:
 jobs:
   verify-and-build:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -52,6 +52,9 @@ jobs:
           retention-days: 14
 
       - name: Check live Worker compatibility
+        env:
+          WORKER_EXPECTED_COMMIT: ${{ github.sha }}
+          WORKER_WAIT_MS: '900000'
         run: node scripts/check-worker-compatibility.mjs
 
       - name: Configure Pages

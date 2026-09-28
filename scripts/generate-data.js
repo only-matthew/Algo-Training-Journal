@@ -343,10 +343,21 @@ function appVersion() {
   return browserAssets.version;
 }
 
+function siteVersion() {
+  const version = require("../package.json").version;
+  let sha = process.env.GITHUB_SHA || "";
+  if (!/^[a-f0-9]{40}$/i.test(sha)) {
+    try { sha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: ROOT, encoding: "utf8" }).trim(); }
+    catch { sha = ""; }
+  }
+  return `v${version}${sha ? ` · ${sha.slice(0, 7)}` : ""}`;
+}
+
 function writeVersionedIndex(dataVersion) {
   const raw = fs.readFileSync(path.join(FRONTEND_DIR, "index.html"), "utf8");
   const $ = cheerio.load(raw);
   $('meta[name="journal-data-version"]').attr("content", dataVersion);
+  $("#site-version").text(siteVersion());
   const styleVersion = crypto.createHash("sha256")
     .update(fs.readFileSync(path.join(OUTPUT_DIR, "style.css"))).digest("hex").slice(0, 12);
   $('link[rel="stylesheet"][href^="style.css"]').attr("href", `style.css?v=${styleVersion}`);
@@ -630,7 +641,7 @@ function problemPageHtml(html, log, related) {
 <a id="btn-submit" class="btn btn-primary" href="/submit/"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m14 5 5 5M4 20l5-1L21 7l-5-5L4 14zM3 22h18"/></svg>提交 / 修改记录</a>
 <details class="account-menu"><summary aria-label="账户与设置"><span id="auth-status" class="account-avatar"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3"/></svg></span><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><div class="account-popover"><span id="account-label">公开浏览</span><button type="button" id="btn-login" class="btn btn-outline">使用 GitHub 登录</button><button type="button" id="btn-logout" class="btn btn-outline">退出登录</button><button type="button" id="btn-theme" class="btn btn-outline" aria-label="切换主题">切换主题</button></div></details></div></header>
 <main id="main-content" class="main"><section id="problem-page" class="page-view active"><div class="detail-toolbar"><a id="problem-back-member" href="${escapeHtml(memberHref)}">${escapeHtml(log.member)} / 题目列表</a><a href="/analysis/">训练档案</a><details id="export-bar" class="problem-export-menu"><summary class="btn btn-outline">导出</summary><div class="problem-export-options"><button type="button" id="btn-export-pdf" class="btn btn-outline">${iconSvg}导出 PDF</button><button type="button" id="btn-export-md" class="btn btn-outline">${iconSvg}导出 Markdown</button><button type="button" id="btn-export-latex" class="btn btn-outline">${iconSvg}导出 LaTeX</button></div></details></div><article id="problem-detail" class="problem-detail" data-prerendered-path="${escapeHtml(routePath(problemSegments(log)))}">${article}</article></section></main>
-<footer class="footer"><span>ACM 训练日志 · 记录 · 思考 · 成长</span><a href="https://xialiao.org/" target="_blank" rel="noopener noreferrer">© 2026 Xia Liao</a></footer>
+<footer class="footer"><span>ACM 训练日志 · 记录 · 思考 · 成长</span><small class="footer-version">${escapeHtml(siteVersion())}</small><a href="https://xialiao.org/" target="_blank" rel="noopener noreferrer">© 2026 Xia Liao</a></footer>
 <script type="module" src="/assets/js/${escapeHtml(browserAssets.problemEntry)}"></script></body></html>`);
 }
 
@@ -1396,6 +1407,7 @@ async function main() {
   problemShellHash = contentHash({
     template: "standalone-problem-v2-current-header",
     header: $shellFingerprint("header.app-header").html(),
+    footer: $shellFingerprint("footer.footer").html(),
     stylesheet: assetVersion("site/style.css"),
     script: browserAssets.problemEntry,
   });

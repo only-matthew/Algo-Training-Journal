@@ -8,6 +8,7 @@ test("public journal renders while the session service is still pending", async 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator("#records .record").first()).toBeVisible({ timeout: 2500 });
   await expect(page.locator("#metric-total")).not.toHaveText("—");
+  await expect(page.locator("#site-version")).toHaveText(/^v\d+\.\d+\.\d+ · [a-f0-9]{7}$/);
 });
 
 test("标签可直接访问，也可从独立索引进入", async ({ page }) => {

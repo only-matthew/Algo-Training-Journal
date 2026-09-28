@@ -727,6 +727,12 @@ select {
   margin: 4px 0;
 }
 
+.footer-version {
+  font-size: 11px;
+  opacity: 0.75;
+  white-space: nowrap;
+}
+
 .footer a {
   color: inherit;
   text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);

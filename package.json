@@ -9,6 +9,7 @@
   "scripts": {
     "generate": "node scripts/generate-data.js",
     "build": "npm run generate",
+    "deploy:worker": "node scripts/stamp-worker-commit.mjs && wrangler deploy --config workers/wrangler.toml",
     "sync:difficulty": "node scripts/sync-missing-difficulty.mjs --write",
     "training:reindex": "node scripts/reindex-training.mjs",
     "test": "node scripts/run-tests.mjs",

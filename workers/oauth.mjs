@@ -12,6 +12,7 @@ import { handleTrainingV2 } from "./routes/training-v2.mjs";
 import { handleLogsV2 } from "./routes/logs-v2.mjs";
 import { memberByGithubId, memberById, memberByLogin } from "./member-config.mjs";
 import { gh } from "./storage/github-api.mjs";
+import { BUILD_COMMIT } from "./build-commit.mjs";
 
 const COOKIE = "__Host-journal_session";
 const OAUTH_COOKIE = "__Host-journal_oauth";
@@ -275,7 +276,7 @@ export default {
 
       // Pages 发布前读取线上 Worker 的写入契约，不依赖登录态或部署记录。
       if (url.pathname === "/api/capabilities" && request.method === "GET") {
-        return json(request, { logSchema: { min: 1, max: LOG_SCHEMA_VERSION } }, 200, { "Cache-Control": "no-store" });
+        return json(request, { logSchema: { min: 1, max: LOG_SCHEMA_VERSION }, buildCommit: BUILD_COMMIT }, 200, { "Cache-Control": "no-store" });
       }
 
       if (url.pathname === "/api/logout" && request.method === "DELETE") {
