@@ -1,6 +1,6 @@
 {
   "schemaVersion": 6,
-  "updatedAt": "2026-09-28T22:35:23.973+08:00",
+  "updatedAt": "2026-09-29T08:16:55.316+08:00",
   "problems": [
     {
       "id": "9df1da8b-6091-4741-8f48-c0efe0938468",
@@ -16,7 +16,7 @@
         "素数判断"
       ],
       "outcome": "independent",
-      "masteryStatus": "unknown",
+      "masteryStatus": "mastered",
       "isMistake": false,
       "reviewStatus": "none",
       "fileIndex": 0
