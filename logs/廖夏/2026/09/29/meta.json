@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 6,
+  "updatedAt": "2026-09-29T23:12:13.343+08:00",
+  "problems": [
+    {
+      "id": "9c62c7e9-aab6-4799-b821-3bba21d5fc89",
+      "name": "[ECUSTPC 2026 Fall] 时间谜题 2",
+      "platform": "洛谷",
+      "problemNumber": "P17522",
+      "difficulty": "★ 800",
+      "difficultyRating": 800,
+      "tags": [
+        "模拟"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
