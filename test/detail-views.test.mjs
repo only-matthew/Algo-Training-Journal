@@ -18,6 +18,23 @@ test("problem detail preserves thoughts and code safely, including missing field
   assert.match(empty("#problem-thoughts").text(),/尚未填写个人思考/);
 });
 
+test("problem detail offers a new redo attempt and orders matching attempts by date", () => {
+  const html = problemDetailHtml({ member: "甲", date: "2026-09-08", problem: "题目", platform: "Codeforces", problemNumber: "123A", difficulty: "★ 800", tags: ["DP"], outcome: "hinted", blocker: "边界条件处理错误", takeaway: "补上空数组判断", related: [
+    { member: "甲", date: "2026-09-10", problemId: "p3", problem: "题目", outcome: "unfinished", blocker: "状态转移仍不清楚", takeaway: "未填写" },
+    { member: "甲", date: "2026-09-09", problemId: "p2", problem: "题目", outcome: "independent", blocker: "<script>bad</script>", takeaway: "找到不变量" },
+  ] });
+  const $ = load(html);
+  const query = new URLSearchParams(new URL($(".problem-redo-link").attr("href"), "https://train.xialiao.org").search);
+  assert.deepEqual(JSON.parse(query.get("redo")), { name: "题目", platform: "Codeforces", problemNumber: "123A", difficulty: "★ 800", difficultyRating: 0, tags: ["DP"] });
+  assert.deepEqual($("#problem-related .related-list li").map((_, node) => $(node).find(".related-meta").text().split(" · ")[1]).get(), ["2026-09-08", "2026-09-09", "2026-09-10"]);
+  assert.match($("#problem-related").text(), /本次记录/);
+  assert.match($("#problem-related").text(), /提示后完成/);
+  assert.match($("#problem-related").text(), /边界条件处理错误/);
+  assert.match($("#problem-related").text(), /补上空数组判断/);
+  assert.doesNotMatch($("#problem-related").html(), /<script>/);
+  assert.doesNotMatch($("#problem-related").text(), /未填写/);
+});
+
 test("problem detail shows the same per-record vitality and explains zero scores", () => {
   const base = { member: "甲", date: "2026-09-08", problem: "题目", platform: "洛谷" };
   const scored = load(problemDetailHtml({ ...base, vitality: 0.68, vitalityStatus: "counted" }));
@@ -28,6 +45,13 @@ test("problem detail shows the same per-record vitality and explains zero scores
   assert.match(duplicate(".problem-vitality").text(), /同题已计/);
   const unrated = load(problemDetailHtml({ ...base, vitality: 0, vitalityStatus: "missing_rating" }));
   assert.match(unrated(".problem-vitality").text(), /补充难度后才能估算/);
+});
+
+test("problem detail identifies mastery mapped from legacy review status", () => {
+  const legacy = load(problemDetailHtml({ member: "甲", date: "2026-09-08", problem: "旧题", platform: "洛谷", problemNumber: "P1", reviewStatus: "mastered" }));
+  assert.match(legacy(".problem-facts").text(), /由历史复习状态映射，非本人新自评/);
+  const explicit = load(problemDetailHtml({ member: "甲", date: "2026-09-08", problem: "新题", platform: "洛谷", problemNumber: "P2", masteryStatus: "mastered", reviewStatus: "todo" }));
+  assert.doesNotMatch(explicit(".problem-facts").text(), /由历史复习状态映射/);
 });
 
 test("knowledge categories classify subjects, retain all topics, and escape search metadata", () => {

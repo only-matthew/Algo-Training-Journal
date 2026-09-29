@@ -37,6 +37,15 @@ test("题号会清洗并保存在元数据中", () => {
   assert.equal(metaFromProblems(gym.problems).problems[0].problemNumber, "718163I");
 });
 
+test("可选卡点随权威 meta.json 路径读写，旧记录缺省为空", () => {
+  const saved = validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "blocker1", name: "A", blocker: "边界条件处理错误" }] });
+  assert.equal(saved.problems[0].blocker, "边界条件处理错误");
+  assert.equal(metaFromProblems(saved.problems).problems[0].blocker, "边界条件处理错误");
+  const old = normalizeMeta({ problems: [{ name: "旧题" }] });
+  assert.equal("blocker" in old.problems[0], false);
+  assert.throws(() => validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "long", name: "A", blocker: "x".repeat(LOG_LIMITS.blocker + 1) }] }), /卡点不能超过/);
+});
+
 test("metaFromProblems 可写入 updatedAt，normalizeMeta 会保留它且旧记录为空", () => {
   const result = validateLogInput({ problems: [{ id: "p1", name: "A" }] });
   const meta = metaFromProblems(result.problems, "2026-08-10T05:30:00.000Z");

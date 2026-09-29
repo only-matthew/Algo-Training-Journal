@@ -194,6 +194,19 @@ test("路由接受浏览器回传的 AtCoder 官方页源码，且不请求上�
   assert.equal(fetchImpl.calls.length, 0, "客户端路径不应访问任何上游");
 });
 
+test("浏览器回传题面含白名单外 img 时归档不向该地址发请求", async (context) => {
+  const fetchImpl = routedFetch([]);
+  context.mock.method(globalThis, "fetch", fetchImpl);
+  const html = ATCODER_HTML.replace("</section>", '<img src="https://untrusted.example/internal.png" alt="x"></section>');
+  const response = await call({ platform: "AtCoder", problemNumber: "abc381_a", html }, SECOND_ACTOR);
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.status, "ok");
+  assert.deepEqual(body.warnings, ["client-html", "external-images"]);
+  assert.match(body.description, /https:\/\/untrusted\.example\/internal\.png/);
+  assert.equal(fetchImpl.calls.length, 0);
+});
+
 test("路由也接受浏览器回传的 Codeforces 官方页源码", async (context) => {
   const fetchImpl = routedFetch([]);
   context.mock.method(globalThis, "fetch", fetchImpl);

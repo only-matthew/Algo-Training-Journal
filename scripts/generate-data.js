@@ -9,6 +9,8 @@ const { transformSync } = require("esbuild");
 const { buildBrowser } = require("./build-browser.js");
 const { execFileSync } = require("child_process");
 const { tagStorageKey } = require("../lib/tag-index.mjs");
+const { discoverDateDirs: discoverLogDateDirs } = require("./log-layout.js");
+const { readLogs } = require("./log-reader.js");
 
 function addSelfClosingVoids(html) {
   return html.replace(/<(area|base|br|col|embed|hr|img|input|link|meta|param|source|track|wbr)\b([^>]*?)>/gi, "<$1$2 />");
@@ -26,10 +28,6 @@ let buildShellHash = "";
 let problemShellHash = "";
 let incrementalHits = 0;
 let incrementalMisses = 0;
-const LEGACY_LOG_DIR_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
-const YEAR_PATTERN = /^\d{4}$/;
-const MONTH_PATTERN = /^(0[1-9]|1[0-2])$/;
-const DAY_PATTERN = /^(0[1-9]|[12]\d|3[01])$/;
 let normalizeMeta;
 let escapeHtml;
 let toDateString;
@@ -58,155 +56,6 @@ function learningState(record) {
     isMistake: record?.isMistake === true,
     reviewStatus: ["none", "todo", "archived"].includes(record?.reviewStatus) ? record.reviewStatus : "none",
   };
-}
-
-// 批量获取多个文件各自的最后一次提交时间（一次 git log，替代每文件 spawn 一次进程）
-function lastCommitDates(relPaths) {
-  const map = new Map();
-  if (!relPaths.length) return map;
-  try {
-    const out = execFileSync("git", ["log", "--format=%cI%x1f", "--name-only", "--", ...relPaths], {
-      cwd: ROOT,
-      encoding: "utf8",
-      maxBuffer: 16 * 1024 * 1024,
-    });
-    let date = null;
-    for (const line of out.split("\n")) {
-      if (line.endsWith("\x1f")) {
-        date = line.slice(0, -1);
-        continue;
-      }
-      if (line && !map.has(line)) map.set(line, date);
-    }
-  } catch {
-    // git 不可用时保持空表，调用方回退到 mtime
-  }
-  return map;
-}
-
-function readMeta(dateDir, member, date, commitDates) {
-  const metaPath = path.join(dateDir, "meta.json");
-  if (!fs.existsSync(metaPath)) return null;
-  const normalized = normalizeMeta(JSON.parse(fs.readFileSync(metaPath, "utf8")), {
-    legacyIdPrefix: `${member}-${date}`,
-  });
-  // 旧记录没有 updatedAt 时，优先使用 git 最后一次提交时间
-  // （文件 mtime 会被 clone/pull 重置为拉取时刻，不可靠），并统一转为 UTC+8
-  if (!normalized.updatedAt) {
-    const relPath = path.relative(ROOT, metaPath).split(path.sep).join("/");
-    const commitDate = commitDates.get(relPath);
-    normalized.updatedAt = toUtc8(commitDate || new Date(fs.statSync(metaPath).mtime));
-  }
-  return normalized;
-}
-
-function readProblemFile(dir, filename) {
-  const p = path.join(dir, filename);
-  if (!fs.existsSync(p)) return "";
-  return fs.readFileSync(p, "utf8").trim();
-}
-
-function appendDateLogs(logs, member, date, dateDir, commitDates) {
-  const meta = readMeta(dateDir, member, date, commitDates);
-  if (!meta || !meta.problems || !meta.problems.length) return;
-
-  for (let i = 0; i < meta.problems.length; i++) {
-    const p = meta.problems[i];
-    const slot = Number.isInteger(p.fileIndex) && p.fileIndex >= 0 ? p.fileIndex : i;
-    logs.push({
-      member,
-      date,
-      startedOn: meta.startedOn,
-      solvedOn: meta.solvedOn,
-      updatedAt: meta.updatedAt,
-      problemIndex: i,
-      problemId: p.id,
-      problem: p.name || "未填写",
-      platform: p.platform || "未填写",
-      problemNumber: p.problemNumber || "",
-      description: readProblemFile(dateDir, `${slot}-desc.md`),
-      takeaway: readProblemFile(dateDir, `${slot}-takeaway.md`) || "未填写",
-      difficulty: p.difficulty || "未标注",
-      difficultyRating: Number.isFinite(Number(p.difficultyRating)) ? Number(p.difficultyRating) : 0,
-      tags: p.tags || [],
-      ...learningState(p),
-      ...(p.reviewDue ? { reviewDue: p.reviewDue } : {}),
-      code: readProblemFile(dateDir, `${slot}-solution.cpp`),
-      ...(p.statementAttachment ? { statementAttachment: p.statementAttachment, statementPath: path.join(dateDir, `${slot}-statement-${p.statementAttachment.sha256}.pdf`) } : {}),
-      ...(Array.isArray(p.statementImages) && p.statementImages.length ? { statementImages: p.statementImages, statementImagePaths: new Map(p.statementImages.map((image) => [image.fileName, path.join(dateDir, image.fileName)])) } : {}),
-      ...(p.statementSource ? { statementSource: p.statementSource } : {}),
-      ...(p.metadataSources ? { metadataSources: p.metadataSources } : {}),
-      ...(p.aiAnalysis ? { aiAnalysis: p.aiAnalysis } : {}),
-    });
-  }
-}
-
-function listMembers() {
-  if (!fs.existsSync(LOGS_DIR)) return [];
-  return fs
-    .readdirSync(LOGS_DIR, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .sort((a, b) => a.localeCompare(b, "zh-CN"));
-}
-
-function readLogs() {
-  const members = listMembers();
-  const dateDirs = [];
-
-  for (const member of members) {
-    const memberDir = path.join(LOGS_DIR, member);
-    const entries = fs.readdirSync(memberDir, { withFileTypes: true });
-
-    for (const entry of entries) {
-      if (!entry.isDirectory()) continue;
-
-      if (LEGACY_LOG_DIR_PATTERN.test(entry.name)) {
-        dateDirs.push({ member, date: entry.name, dir: path.join(memberDir, entry.name) });
-        continue;
-      }
-
-      if (!YEAR_PATTERN.test(entry.name)) continue;
-      const yearDir = path.join(memberDir, entry.name);
-      for (const monthEntry of fs.readdirSync(yearDir, { withFileTypes: true })) {
-        if (!monthEntry.isDirectory() || !MONTH_PATTERN.test(monthEntry.name)) continue;
-        const monthDir = path.join(yearDir, monthEntry.name);
-        for (const dayEntry of fs.readdirSync(monthDir, { withFileTypes: true })) {
-          if (!dayEntry.isDirectory() || !DAY_PATTERN.test(dayEntry.name)) continue;
-          const date = `${entry.name}-${monthEntry.name}-${dayEntry.name}`;
-          dateDirs.push({ member, date, dir: path.join(monthDir, dayEntry.name) });
-        }
-      }
-    }
-  }
-
-  // 一次 git log 批量取得所有 meta.json 的最后提交时间
-  const commitDates = lastCommitDates(
-    dateDirs.map(({ dir }) => path.relative(ROOT, path.join(dir, "meta.json")).split(path.sep).join("/")),
-  );
-
-  const logs = [];
-  for (const { member, date, dir } of dateDirs) appendDateLogs(logs, member, date, dir, commitDates);
-
-  const seen = new Set();
-  const deduped = logs.filter((log) => {
-    const key = `${log.member}|${log.date}|${log.problemIndex}`;
-    if (seen.has(key)) return false;
-    seen.add(key);
-    return true;
-  });
-
-  logs.length = 0;
-  logs.push(...deduped);
-
-  logs.sort(
-    (a, b) =>
-      b.date.localeCompare(a.date) ||
-      a.member.localeCompare(b.member, "zh-CN") ||
-      a.problem.localeCompare(b.problem, "zh-CN"),
-  );
-
-  return { members, logs };
 }
 
 // Note: buildHeatmapCounts and buildRecentStats each iterate the full logs array.
@@ -311,6 +160,14 @@ function writeStylesheet() {
 }
 
 function copyDirRecursive(src, dest) {
+  const destination = path.resolve(dest);
+  const relativeToOutput = path.relative(path.resolve(OUTPUT_DIR), destination);
+  if (!relativeToOutput || relativeToOutput === ".." || relativeToOutput.startsWith(`..${path.sep}`) || path.isAbsolute(relativeToOutput)) {
+    throw new Error(`Refusing to replace unexpected generated directory: ${destination}`);
+  }
+  // The destination is a generated mirror (vendor/ or assets/). Remove stale
+  // files before copying so deleted source assets cannot linger in site/.
+  fs.rmSync(destination, { recursive: true, force: true });
   fs.mkdirSync(dest, { recursive: true });
   for (const entry of fs.readdirSync(path.join(ROOT, src), { withFileTypes: true })) {
     const srcPath = path.join(ROOT, src, entry.name);
@@ -608,7 +465,7 @@ function replaceProblemArticle(html, article) {
 
 function problemPageHtml(html, log, related) {
   const canonical = absoluteUrl(problemSegments(log));
-  const description = truncate(log.takeaway !== "未填写" ? log.takeaway : log.description)
+  const description = truncate(log.takeaway || log.description)
     || `${log.member} 在 ${log.date} 记录的 ${log.problem} 训练题目、题解与代码。`;
   const article = problemDetailHtml({ ...log, related }, { memberHref: routePath(memberSegments(log.member)) });
   const $source = cheerio.load(html);
@@ -911,6 +768,8 @@ async function buildProblemIndex(logs) {
       problemId: String(log.problemId || log.problemIndex || 0),
       problem: log.problem,
       ...learningState(log),
+      blocker: truncate(log.blocker || "", 240),
+      takeaway: truncate(log.takeaway || "", 240),
       difficulty: log.difficulty || "",
       difficultyRating: Number(log.difficultyRating) || 0,
     });
@@ -1343,7 +1202,7 @@ async function main() {
   ({ vitalityRecordKey } = await import("../lib/vitality.mjs"));
   ({ vitalityChartHtml } = await import("../lib/vitality-chart.mjs"));
   ({ memberVitalityDetailsHtml } = await import("../lib/member-vitality.mjs"));
-  const { members, logs } = readLogs();
+  const { members, logs } = readLogs({ root: ROOT, logsDir: LOGS_DIR, normalizeMeta, normalizeLearningState, toUtc8 });
   // 活力指数按「题目 Rating + 当时水平」折算；结果写回每条记录，供卡片与统计使用
   const vitality = buildVitality(logs);
   for (const log of logs) Object.assign(log, vitality.byRecord.get(vitalityRecordKey(log)));
@@ -1371,7 +1230,16 @@ async function main() {
     vitalityAllDaily,
     totalVitality,
     vitalityVersion: vitality.algorithmVersion,
-  };  const problemIndex = await buildProblemIndex(logs);
+  };
+  const problemIndex = await buildProblemIndex(logs);
+  for (let i = 0; i < logs.length; i++) {
+    const key = problemStableKey(logs[i].platform, logs[i].problemNumber);
+    const count = key ? (problemIndex.get(key) || []).filter((item) => item.member !== logs[i].member).length : 0;
+    if (count) {
+      logs[i].teamSameProblemCount = count;
+      summaryLogs[i].teamSameProblemCount = count;
+    }
+  }
   const roadmapResult = await generateRoadmapData(logs);
   const roadmapData = roadmapResult?.roadmapData || null;
   const roadmapNodeData = roadmapResult?.nodeDataById || new Map();
@@ -1431,7 +1299,7 @@ async function main() {
       ...phase.nodes.map((node) => ({ segments: ["roadmap", phase.id, node.id], lastmod: roadmapData.generatedAt.slice(0, 10) })),
     ]),
     { segments: ["tags"], lastmod: roadmapData.generatedAt.slice(0, 10) },
-    ...tagIndex.tags.map((entry) => ({ segments: ["tags", tagStorageKey(entry.tag)], lastmod: roadmapData.generatedAt.slice(0, 10) })),
+    ...tagIndex.tags.filter((entry) => entry.recordCount > 0).map((entry) => ({ segments: ["tags", tagStorageKey(entry.tag)], lastmod: roadmapData.generatedAt.slice(0, 10) })),
   ] : []);
   if (fs.existsSync(path.join(ROOT, "CNAME"))) copyFile("CNAME");
   fs.writeFileSync(path.join(OUTPUT_DIR, ".nojekyll"), "", "utf8");
@@ -1451,4 +1319,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { replaceProblemArticle, resolveStatsEnd, buildProblemIndex, buildReviewQueue, publishStatementImages, writeJournalShards, problemDependencyHash, tagDependencyHash };
+module.exports = { replaceProblemArticle, resolveStatsEnd, buildProblemIndex, buildReviewQueue, publishStatementImages, writeJournalShards, problemDependencyHash, tagDependencyHash, discoverDateDirs: (logsDir = LOGS_DIR) => discoverLogDateDirs(logsDir) };

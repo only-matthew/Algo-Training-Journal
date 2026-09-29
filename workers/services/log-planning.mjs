@@ -40,7 +40,7 @@ export async function planLogChanges(problems, existingFiles, root, updatedAt, i
   const keep = new Set();
   for (const problem of problems) {
     const prefix = `${root}/${problem.fileIndex}-`;
-    desired.set(`${prefix}takeaway.md`, problem.takeaway || "未填写");
+    desired.set(`${prefix}takeaway.md`, problem.takeaway || "");
     if (problem.description) desired.set(`${prefix}desc.md`, problem.description);
     if (problem.code) desired.set(`${prefix}solution.cpp`, problem.code);
     if (problem.statementAttachment?.sha256) keep.add(statementPath(root, problem));

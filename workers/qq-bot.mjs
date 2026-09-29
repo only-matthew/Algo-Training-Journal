@@ -154,11 +154,8 @@ export async function handleQqBotWebhook(request, env, ctx) {
   // 签名校验（回调验证与事件推送均带签名头）
   const sigHex = request.headers.get("X-Signature-Ed25519");
   const timestamp = request.headers.get("X-Signature-Timestamp");
-  if (sigHex || timestamp) {
-    const ok = await qqVerifySignature(secret, sigHex, timestamp, bodyBytes);
-    if (!ok) {
-      return new Response(JSON.stringify({ error: "签名校验失败" }), { status: 403, headers: JSON_HEADERS });
-    }
+  if (!sigHex || !timestamp || !(await qqVerifySignature(secret, sigHex, timestamp, bodyBytes))) {
+    return new Response(JSON.stringify({ error: "签名校验失败" }), { status: 403, headers: JSON_HEADERS });
   }
 
   // 回调地址验证：返回 plain_token + 签名

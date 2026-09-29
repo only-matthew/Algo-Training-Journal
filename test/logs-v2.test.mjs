@@ -44,6 +44,16 @@ test("v4 logs save PDF bytes, preserve keep references, and require current date
   await assert.rejects(() => service.save({ memberId: MEMBER, member: DISPLAY, date: "2026-09-15", operationId: "5fd06885-a6ed-43b4-9ba6-ec8875638cdf", expectedVersion: null, log: read.log }), /reload/);
 });
 
+test("logs/v2 stores optional blocker and empty takeaway in the authoritative meta path", async () => {
+  const git = gitMock(); const service = createLogsV2Service({ git, now: () => "2026-09-15T00:00:00.000Z" });
+  await service.save({ memberId: MEMBER, member: DISPLAY, date: "2026-09-15", operationId: "8fd06885-a6ed-43b4-9ba6-ec8875638cdf", expectedVersion: null,
+    log: { schemaVersion: 6, problems: [{ id: "p1", name: "A", blocker: "边界条件处理错误", takeaway: "" }] },
+  });
+  assert.equal(git.files.get(`logs/${DISPLAY}/2026/09/15/0-takeaway.md`), "");
+  const read = await service.read({ member: DISPLAY, date: "2026-09-15" });
+  assert.equal(read.log.problems[0].blocker, "边界条件处理错误");
+});
+
 test("multipart parser rejects unreferenced PDFs and validates PDF bytes", async () => {
   const form = new FormData();
   form.set("payload", JSON.stringify({ operationId: OP, expectedVersion: null, log: { schemaVersion: 4, problems: [] }, attachmentChanges: [] }));

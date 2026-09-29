@@ -8,7 +8,7 @@
 
 - 日志源目录是 `logs/<logDirectory>/YYYY/MM/DD/`，元数据为 `meta.json`，每题正文分文件保存。`config/members.json` 的 `githubUserId` 绑定登录身份，`memberId` 是稳定机器键，`logDirectory` 对应现有中文日志目录。不得从可变 GitHub login 推断成员所有权。
 - 日志写入版本以 `lib/log-schema.mjs` 的 `LOG_SCHEMA_VERSION` 为准，当前为 **6**；同模块负责大小、题数、字段与区间校验。每次写入最多 15 题、请求 JSON 最多 1.5 MB；题目 ID 在当日内不可重复。旧版本可读并归一，未知的更新版本被拒绝。
-- `outcome` 是做题结果，`masteryStatus` 是掌握自评，`isMistake` 是失误事实，`reviewStatus`/`reviewDue` 是复习安排。缺失结果保持未知。旧 `reviewStatus=mastered` 的兼容映射仍存在，其来源无法与本人自评完全区分。
+- `outcome` 是做题结果，`masteryStatus` 是掌握自评，`isMistake` 是失误事实，`reviewStatus`/`reviewDue` 是复习安排。缺失结果保持未知。旧 `reviewStatus=mastered` 的兼容映射保留，并以 `masteryStatusSource` 标记其历史来源；详情页提示该状态不是可核实的本人新自评。
 - 训练区间影响热力图、训练日和活力日分摊，日期按 UTC+8 约束；统计按记录日与有效区间的日期并集计算，不重复累计重叠天数。无效历史区间在读侧降级处理以保证记录仍可访问。
 - `training/` v2 数据、`/api/v2/me/*` 后端保留且**冻结**，没有生产前端消费者；其中记录通用增删改与 `plan-links` 等旧目标契约并未全部实现。不要把归档规格中的目标路由表理解为当前可用清单。
 
@@ -16,7 +16,7 @@
 
 构建器 `scripts/generate-data.js` 从 `logs/` 和 `curriculum/` 生成 `site/`。当前页面包括首页、训练档案、复习、知识地图、标签、题目详情和独立提交页 `/submit/`。页面读取 `site/data/` 的概览、按月/成员/标签/题目分片；`site/` 不直接编辑。静态页面可能滞后于刚保存到 GitHub 的新记录，UI 应把保存回执与公开页面刷新分开表述。
 
-`curriculum/` 是选题参考源，不能拿全部条目的覆盖率代表个人训练目标。标签页和课程页仍随站点构建。构建目前不保证清走 `site/` 内所有历史资源；本地体积与索引须以全新构建核对。
+`curriculum/` 是选题参考源，不能拿全部条目的覆盖率代表个人训练目标。标签页和课程页仍随站点构建。构建时清理站点资源镜像中的旧文件，并从 sitemap 排除零记录标签页；其他生成资源仍应在发布前核对。
 
 ### 1.3 Worker 接口与写入保护
 
@@ -25,6 +25,7 @@
 | `GET /api/session` | 匿名读取会话状态，已登录时下发会话与 CSRF 所需信息 | 已上线；仍需发布后冒烟 |
 | `GET /api/capabilities` | 公布 Worker 接受的日志 schema 范围与构建提交号 | 已上线；2026-09-28 的 `66f25b4` 已核验 HTTP 200 与提交号一致 |
 | `GET/PUT/DELETE /api/logs/date?date=...` | 按日期读取、写入与删除现行日志 | 已有接口 |
+| `GET/PUT /api/my-list` | 读取、条件保存当前成员的个人清单，最多 30 题 | 当前工作区已实现，待发布 |
 | `PATCH /api/v2/me/logs/dates/:date/records/:id` | 只修改单题复习状态与到期日 | 已有接口，字段白名单 |
 | `PUT /api/v2/logs/dates/:date` | 新格式日期日志和附件保存 | 已有接口，条件版本与幂等要求以实现为准 |
 | `POST /api/import`、`POST /api/problem-statement`、`POST /api/summarize` | 已授权的导入、抓题面与概括 | 已有接口，非核心闭环 |
@@ -39,9 +40,9 @@ GitHub OAuth 只允许配置成员写自己的日志。写接口校验 Origin、
 - 主分支 Pages 工作流只构建一次，并在上传页面产物前运行 `scripts/check-worker-compatibility.mjs`。门禁分两级：**始终**要求线上 Worker 能接受本站的 `LOG_SCHEMA_VERSION` 且匿名会话读接口可用，不满足立即拒绝；**仅当本次推送改动 Worker 输入**（同上六类路径）时才额外要求线上 Worker 的提交号等于本次 `github.sha`，并最多等待 15 分钟。Worker 没变就不校验提交号、不等待——否则每次日志或文档推送都要白等一轮 Worker 构建。它不能代替其他写入协议的回归测试。
 - 首页与独立题目页底部显示 `package.json` 版本、构建时间（UTC+8）和提交短号。2026-09-28 的 `66f25b4` 已完成 Worker 与 Pages 发布；线上 CORS 预检允许 `PATCH`。2026-09-29 的 `70042ea` 只精简 Action，Pages 发布成功且没有触发 Worker 重建。
 
-## 2. 下一阶段变更契约（待实现）
+## 2. 本轮产品闭环交付与验收
 
-下面是目标验收，不表示已交付。落实时应按顺序把设计细化为小变更，并同步测试与本文状态。
+以下功能已在当前工作区实现并通过本地测试，尚未据此认定线上可用。验收条款保留为发布后复核依据。
 
 ### A. 空心得与历史占位
 

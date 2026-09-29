@@ -11,6 +11,39 @@ test("public journal renders while the session service is still pending", async 
   await expect(page.locator("#site-version")).toHaveText(/^v2\.0\.1 · \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC\+8 · [a-f0-9]{7}$/);
 });
 
+test("personal list adds and removes a goal with published progress", async ({ page }) => {
+  let items = [];
+  let revision = null;
+  await page.route(`${WORKER}/**`, (route) => {
+    const { pathname } = new URL(route.request().url());
+    if (pathname === "/api/session") return route.fulfill({ json: { login: "only-matthew", member: "廖夏", csrfToken: "test-csrf" } });
+    if (pathname === "/api/my-list") {
+      if (route.request().method() === "PUT") {
+        const body = route.request().postDataJSON();
+        if (route.request().headers()["x-csrf-token"] !== "test-csrf" || body.expectedRevision !== revision) {
+          return route.fulfill({ status: 409, json: { error: "CONFLICT" } });
+        }
+        items = body.items;
+        revision = String(Number(revision || 0) + 1);
+      }
+      return route.fulfill({ json: { items, revision } });
+    }
+    return route.continue();
+  });
+  await page.goto("/analysis/");
+  const panel = page.locator("#my-list-panel");
+  await expect(panel).toBeVisible();
+  await expect(panel.locator("#my-list-progress")).toHaveText("0 / 0");
+  await panel.locator("#my-list-platform").selectOption({ label: "Codeforces" });
+  await panel.locator("#my-list-number").fill("123A");
+  await panel.getByRole("button", { name: "加入清单" }).click();
+  await expect(panel.locator("#my-list-items li")).toHaveCount(1);
+  await expect(panel.locator("#my-list-progress")).toHaveText("0 / 1");
+  await panel.getByRole("button", { name: "移除" }).click();
+  await expect(panel.locator("#my-list-items li")).toHaveCount(0);
+  await expect(panel.locator("#my-list-progress")).toHaveText("0 / 0");
+});
+
 test("标签可直接访问，也可从独立索引进入", async ({ page }) => {
   await page.route(`${WORKER}/api/session`, (route) => route.fulfill({ json: null }));
   await page.goto("/tags/%E9%98%9F%E5%88%97/");

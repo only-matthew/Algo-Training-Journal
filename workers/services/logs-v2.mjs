@@ -239,7 +239,7 @@ function knownTextPaths(root, problems) {
 function textChanges(root, previous, next, interval, timestamp) {
   const changes = [{ path: `${root}/meta.json`, content: `${JSON.stringify(metaFromProblems(next, timestamp, interval), null, 2)}\n` }];
   for (const problem of next) {
-    changes.push({ path: `${root}/${problem.fileIndex}-takeaway.md`, content: problem.takeaway || "未填写" });
+    changes.push({ path: `${root}/${problem.fileIndex}-takeaway.md`, content: problem.takeaway || "" });
     if (problem.description) changes.push({ path: `${root}/${problem.fileIndex}-desc.md`, content: problem.description });
     if (problem.code) changes.push({ path: `${root}/${problem.fileIndex}-solution.cpp`, content: problem.code });
   }

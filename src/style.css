@@ -2888,6 +2888,7 @@ a.tag-chip, span.tag-chip,
 .journal-editor .learning-state-heading h3, .journal-editor .journal-tools-heading h3 { font-size:15px; margin:0; font-weight:700; }
 .journal-editor .learning-state-heading p, .journal-editor .journal-tools-heading p { margin:0; color:var(--muted); font-size:12px; }
 .journal-editor .learning-state-grid { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; align-items:end; }
+.journal-editor .learning-blocker-group { grid-column:1 / -1; }
 .journal-editor .mistake-toggle { display:flex; align-items:center; gap:8px; min-height:40px; padding:8px 10px; border:1px solid var(--line2); border-radius:6px; cursor:pointer; }
 .journal-editor .mistake-toggle input { width:16px; height:16px; accent-color:var(--green); flex:none; }
 .journal-editor .review-due-group { grid-column:3; }
@@ -2991,3 +2992,12 @@ a.tag-chip, span.tag-chip,
 @media (max-width:520px) {
   .submission-page.journal-editor .review-settings .learning-state-grid { grid-template-columns:1fr; }
 }
+.my-list-panel { margin: 24px 0; }
+.my-list-panel .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.my-list-form { display: grid; grid-template-columns: minmax(130px, 1fr) minmax(150px, 1fr) minmax(180px, 2fr) auto; gap: 12px; align-items: end; margin: 18px 0; }
+.my-list-form label { display: grid; gap: 6px; font-size: 13px; }
+.my-list-items { list-style: decimal; padding-left: 24px; }
+.my-list-items li { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--line); }
+.my-list-items li > span { flex: 1; }
+@media (max-width: 780px) { .my-list-form { grid-template-columns: 1fr 1fr; } .my-list-form label:nth-child(3) { grid-column: 1 / -1; } }
+@media (max-width: 480px) { .my-list-form { grid-template-columns: 1fr; } .my-list-form label:nth-child(3) { grid-column: auto; } }

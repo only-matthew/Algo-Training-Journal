@@ -7,14 +7,23 @@ import { computeVitalityTimeline } from "../lib/vitality.mjs";
 test("legacy mastered is only a self-assessment and does not invent review or outcome", () => {
   assert.deepEqual(normalizeLearningState({ reviewStatus: "mastered" }), {
     masteryStatus: "mastered", isMistake: false, reviewStatus: "none",
+    masteryStatusSource: "legacy_review_status",
   });
 });
 
 test("mistake, outcome, mastery, and review remain independent", () => {
   const state = normalizeLearningState({ outcome: "independent", isMistake: true, masteryStatus: "mastered", reviewStatus: "todo" });
-  assert.deepEqual(state, { outcome: "independent", isMistake: true, masteryStatus: "mastered", reviewStatus: "todo" });
+  assert.deepEqual(state, { outcome: "independent", isMistake: true, masteryStatus: "mastered", masteryStatusSource: "explicit_self_assessment", reviewStatus: "todo" });
   assert.equal(normalizeLearningState({ outcome: "unfinished", isMistake: false }).reviewStatus, "none");
   assert.equal(normalizeLearningState({ isMistake: true }).outcome, undefined);
+});
+
+test("legacy mastery migration provenance survives normalization and storage", () => {
+  const normalized = normalizeMeta({ problems: [{ id: "legacy-1", name: "A", reviewStatus: "mastered" }] });
+  assert.equal(normalized.problems[0].masteryStatusSource, "legacy_review_status");
+  const stored = metaFromProblems(normalized.problems);
+  assert.equal(normalizeMeta(stored).problems[0].masteryStatusSource, "legacy_review_status");
+  assert.equal(normalizeLearningState({ masteryStatus: "mastered" }).masteryStatusSource, "explicit_self_assessment");
 });
 
 test("the current schema round-trips independent learning fields", () => {

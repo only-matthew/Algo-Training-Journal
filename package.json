@@ -8,6 +8,7 @@
   },
   "scripts": {
     "generate": "node scripts/generate-data.js",
+    "report:period": "node scripts/period-report.mjs",
     "build": "npm run generate",
     "deploy:worker": "node scripts/stamp-worker-commit.mjs && wrangler deploy --config workers/wrangler.toml",
     "sync:difficulty": "node scripts/sync-missing-difficulty.mjs --write",

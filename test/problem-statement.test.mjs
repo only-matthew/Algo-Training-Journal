@@ -262,16 +262,16 @@ test("内联 data: 图片直接解码归档，不再占用正文体积", async (
 
 test("不支持归档的图片（如 SVG）保持外链", async () => {
   const svg = new TextEncoder().encode('<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>');
-  const result = await archiveStatementImages("![图]({{statement-image:0}})", [{ url: "https://cdn.example/x.svg" }], { fetchImpl: async () => new Response(svg, { headers: { "Content-Type": "image/svg+xml" } }) });
+  const result = await archiveStatementImages("![图]({{statement-image:0}})", [{ url: "https://codeforces.com/x.svg" }], { fetchImpl: async () => new Response(svg, { headers: { "Content-Type": "image/svg+xml" } }) });
   assert.equal(result.failed, true);
   assert.deepEqual(result.images, []);
-  assert.equal(result.description, "![图](https://cdn.example/x.svg)");
+  assert.equal(result.description, "![图](https://codeforces.com/x.svg)");
 });
 
 test("同一张图重复出现只下载一次", async () => {
   let downloads = 0;
   const fetchImpl = async () => { downloads += 1; return new Response(PNG); };
-  const result = await archiveStatementImages("![a]({{statement-image:0}}) ![b]({{statement-image:0}})", [{ url: "https://cdn.example/a.png" }], { fetchImpl });
+  const result = await archiveStatementImages("![a]({{statement-image:0}}) ![b]({{statement-image:0}})", [{ url: "https://codeforces.com/a.png" }], { fetchImpl });
   assert.equal(downloads, 1);
   assert.equal(result.description, `![a](./statement-${sha(PNG)}.png) ![b](./statement-${sha(PNG)}.png)`);
   assert.equal(result.images.length, 1);
@@ -280,25 +280,40 @@ test("同一张图重复出现只下载一次", async () => {
 test("超过单张或总量上限的图片退回外链，不进入归档清单", async () => {
   const fetchImpl = async () => new Response(PNG);
   // 单张上限：图片会被保存接口拒绝，所以这里必须拦住，而不是让保存整次失败。
-  const single = await archiveStatementImages("![a]({{statement-image:0}})", [{ url: "https://cdn.example/a.png" }], { fetchImpl, maxImageBytes: PNG.byteLength - 1 });
+  const single = await archiveStatementImages("![a]({{statement-image:0}})", [{ url: "https://codeforces.com/a.png" }], { fetchImpl, maxImageBytes: PNG.byteLength - 1 });
   assert.deepEqual(single.images, []);
   assert.equal(single.failed, true);
-  assert.equal(single.description, "![a](https://cdn.example/a.png)");
+  assert.equal(single.description, "![a](https://codeforces.com/a.png)");
 
   // 总量上限：先到先得，后面的图片退回外链（用不同字节，避免被当成同一张图去重）。
   const fetchImplMixed = async (url) => new Response(String(url).endsWith("b.png") ? GIF : PNG);
-  const total = await archiveStatementImages("![a]({{statement-image:0}}) ![b]({{statement-image:1}})", [{ url: "https://cdn.example/a.png" }, { url: "https://cdn.example/b.png" }], { fetchImpl: fetchImplMixed, maxTotalBytes: PNG.byteLength });
+  const total = await archiveStatementImages("![a]({{statement-image:0}}) ![b]({{statement-image:1}})", [{ url: "https://codeforces.com/a.png" }, { url: "https://codeforces.com/b.png" }], { fetchImpl: fetchImplMixed, maxTotalBytes: PNG.byteLength });
   assert.equal(total.images.length, 1);
   assert.equal(total.failed, true);
-  assert.equal(total.description, `![a](./statement-${sha(PNG)}.png) ![b](https://cdn.example/b.png)`);
+  assert.equal(total.description, `![a](./statement-${sha(PNG)}.png) ![b](https://codeforces.com/b.png)`);
 });
 
 test("图片数量超过上限时多余的图片保持外链", async () => {
   const fetchImpl = async () => new Response(PNG);
-  const result = await archiveStatementImages("![a]({{statement-image:0}}) ![b]({{statement-image:1}})", [{ url: "https://cdn.example/a.png" }, { url: "https://cdn.example/b.png" }], { fetchImpl, maxImages: 1 });
+  const result = await archiveStatementImages("![a]({{statement-image:0}}) ![b]({{statement-image:1}})", [{ url: "https://codeforces.com/a.png" }, { url: "https://codeforces.com/b.png" }], { fetchImpl, maxImages: 1 });
   assert.equal(result.images.length, 1);
   assert.equal(result.failed, true);
-  assert.match(result.description, /!\[b\]\(https:\/\/cdn\.example\/b\.png\)/);
+  assert.match(result.description, /!\[b\]\(https:\/\/codeforces\.com\/b\.png\)/);
+});
+
+test("题面图片拒绝白名单外首跳，并阻止白名单地址重定向到外部主机", async () => {
+  const calls = [];
+  const fetchImpl = async (url, options) => {
+    calls.push({ url: String(url), redirect: options.redirect });
+    return new Response(null, { status: 302, headers: { Location: "https://untrusted.example/internal" } });
+  };
+  const result = await archiveStatementImages("![a]({{statement-image:0}}) ![b]({{statement-image:1}})", [
+    { url: "https://untrusted.example/a.png" }, { url: "https://codeforces.com/a.png" },
+  ], { fetchImpl });
+  assert.deepEqual(calls, [{ url: "https://codeforces.com/a.png", redirect: "manual" }]);
+  assert.equal(result.failed, true);
+  assert.match(result.description, /!\[a\]\(https:\/\/untrusted\.example\/a\.png\)/);
+  assert.match(result.description, /!\[b\]\(https:\/\/codeforces\.com\/a\.png\)/);
 });
 
 test("CF 被反爬拦下时回退洛谷镜像", async () => {

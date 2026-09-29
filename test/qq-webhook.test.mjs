@@ -59,9 +59,11 @@ test("qqVerifySignature 自签自验通过、篡改与缺头失败", async () =>
 test("Webhook op 13 回调地址验证返回签名", async () => {
   const env = { QQ_BOT_SECRET: "DG5g3B4j9X2KOErG", QQ_APP_ID: "11111111" };
   const body = JSON.stringify({ op: 13, d: { plain_token: "Arq0D5A61EgUu4OxUvOp", event_ts: "1725442341" } });
+  const timestamp = "1725442341";
+  const sigHex = await signRequestBody(env.QQ_BOT_SECRET, timestamp, body);
   const request = new Request("https://example.com/api/qq-bot", {
     method: "POST",
-    headers: { "Content-Type": "application/json", "X-Bot-Appid": "11111111" },
+    headers: { "Content-Type": "application/json", "X-Bot-Appid": "11111111", "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": timestamp },
     body,
   });
   const response = await handleQqBotWebhook(request, env, { waitUntil() {} });
@@ -72,6 +74,17 @@ test("Webhook op 13 回调地址验证返回签名", async () => {
     data.signature,
     "87befc99c42c651b3aac0278e71ada338433ae26fcb24307bdc5ad38c1adc2d01bcfcadc0842edac85e85205028a1132afe09280305f13aa6909ffc2d652c706",
   );
+});
+
+test("Webhook op 0 缺少两个签名头或其中一个时拒绝且不调度处理", async () => {
+  const env = { QQ_BOT_SECRET: "naOC0ocQE3shWLAfffVLB1rhYPG7" };
+  const body = JSON.stringify({ op: 0, id: "unsigned", t: "GROUP_AT_MESSAGE_CREATE", d: {} });
+  for (const headers of [{}, { "X-Signature-Timestamp": "1725442341" }, { "X-Signature-Ed25519": "00".repeat(64) }]) {
+    let scheduled = false;
+    const response = await handleQqBotWebhook(new Request("https://example.com/api/qq-bot", { method: "POST", headers, body }), env, { waitUntil() { scheduled = true; } });
+    assert.equal(response.status, 403);
+    assert.equal(scheduled, false);
+  }
 });
 
 test("Webhook op 13 AppID 不匹配被拒绝", async () => {

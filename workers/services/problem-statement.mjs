@@ -18,6 +18,7 @@ export const ATCODER_STATEMENT_PARSER_VERSION = "atcoder-html-v1";
 const MAX_MARKDOWN = 100_000;
 const CF_ORIGIN = "https://codeforces.com/";
 const ATCODER_ORIGIN = "https://atcoder.jp";
+const STATEMENT_IMAGE_HOSTS = ["codeforces.com", "luogu.com.cn", "atcoder.jp"];
 // 题面图片的下载预算：与正文抓取分开计时，图片取不到不影响题面本身。
 const IMAGE_TIMEOUT_MS = 6000;
 const IMAGE_CONCURRENCY = 4;
@@ -68,6 +69,14 @@ function safeImageUrl(value, base) {
   if (DATA_IMAGE.test(raw)) return raw.replace(/\s+/g, "");
   if (/^data:/i.test(raw)) return "";
   return safeUrl(raw, true, base);
+}
+
+function isAllowedStatementImageUrl(value) {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && !url.username && !url.password
+      && STATEMENT_IMAGE_HOSTS.some((host) => url.hostname === host || url.hostname.endsWith(`.${host}`));
+  } catch { return false; }
 }
 
 function imageAlt(value) { return tidy(value || "image").replace(/[\[\]]/g, "\\$"); }
@@ -219,7 +228,8 @@ export async function archiveStatementImages(description, images, { fetchImpl = 
   async function worker() {
     while (next < requests.length) {
       const index = next++;
-      const { url } = requests[index];
+      const { url: originalUrl } = requests[index];
+      let url = originalUrl;
       if (/^data:/i.test(url)) {
         const bytes = decodeDataImage(url);
         if (bytes) results[index] = bytes;
@@ -230,8 +240,18 @@ export async function archiveStatementImages(description, images, { fetchImpl = 
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), budget);
       try {
-        const response = await fetchImpl(url, { redirect: "follow", signal: controller.signal, headers: { ...BROWSER_HEADERS, Accept: "image/*,*/*;q=0.8", ...(imageReferer(url) ? { Referer: imageReferer(url) } : {}) } });
-        if (response.ok) results[index] = await readImageBody(response, maxImageBytes, controller.signal);
+        for (let redirects = 0; redirects <= 2; redirects += 1) {
+          if (!isAllowedStatementImageUrl(url)) break;
+          const response = await fetchImpl(url, { redirect: "manual", signal: controller.signal, headers: { ...BROWSER_HEADERS, Accept: "image/*,*/*;q=0.8", ...(imageReferer(url) ? { Referer: imageReferer(url) } : {}) } });
+          if ([301, 302, 303, 307, 308].includes(response.status)) {
+            const location = response.headers.get("Location");
+            if (!location || redirects === 2) break;
+            try { url = new URL(location, url).toString(); } catch { break; }
+            continue;
+          }
+          if (response.ok) results[index] = await readImageBody(response, maxImageBytes, controller.signal);
+          break;
+        }
       } catch { /* 单张图片失败按未归档处理 */ } finally { clearTimeout(timer); }
     }
   }

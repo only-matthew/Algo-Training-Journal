@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const formSource = fs.readFileSync(path.join(testDirectory, "..", "lib", "form.mjs"), "utf8");
+const analysisSource = fs.readFileSync(path.join(testDirectory, "..", "lib", "form-analysis.mjs"), "utf8");
 
 test("form wires drafts through the account-scoped v2 store without reading legacy v1 data", () => {
   assert.match(formSource, /import \{ createDraftStore \} from "\.\/draft-store\.mjs"/);
@@ -80,9 +81,10 @@ test("抓取题面与「浏览器回传源码」两条入口共用同一套落�
 });
 
 test("AI JSON 可直接应用，修改原文后会丢弃旧验证结果", () => {
-  assert.match(formSource, /function validateAnalysisForBlock\(div\)/);
-  assert.match(formSource, /cachedAnalysisResult\(div\) \|\| validateAnalysisForBlock\(div\)/);
-  assert.match(formSource, /analysisInput\.addEventListener\("input", \(\) => \{\s*delete div\.dataset\.analysisResult/s);
+  assert.match(formSource, /bindProblemAnalysis\(div,/);
+  assert.match(analysisSource, /function validateAnalysisForBlock\(div,/);
+  assert.match(analysisSource, /cachedAnalysisResult\(div\) \|\| validateAnalysisForBlock\(div,/);
+  assert.match(analysisSource, /analysisInput\.addEventListener\("input", \(\) => \{\s*delete div\.dataset\.analysisResult/s);
 });
 
 test("描述里已有内容时，抓到的题面必须有一步到位的替换入口", () => {

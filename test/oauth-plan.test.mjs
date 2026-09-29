@@ -46,7 +46,7 @@ const PROBLEMS = [
 function existingFor(problems, updatedAt) {
   const files = [{ path: `${ROOT}/meta.json`, sha: gitSha(JSON.stringify(metaFromProblems(problems, updatedAt), null, 2)) }];
   problems.forEach((p, i) => {
-    files.push({ path: `${ROOT}/${i}-takeaway.md`, sha: gitSha(p.takeaway || "未填写") });
+    files.push({ path: `${ROOT}/${i}-takeaway.md`, sha: gitSha(p.takeaway || "") });
     if (p.description) files.push({ path: `${ROOT}/${i}-desc.md`, sha: gitSha(p.description) });
     if (p.code) files.push({ path: `${ROOT}/${i}-solution.cpp`, sha: gitSha(p.code) });
   });
@@ -93,6 +93,12 @@ test("planLogChanges creates all files for a brand-new day", async () => {
   assert.equal(changes.length, 1 + 3 * PROBLEMS.length);
   assert.ok(changes.every((change) => !change.delete));
   assert.ok(changes.some((change) => change.path === `${ROOT}/0-solution.cpp`));
+});
+
+test("planLogChanges writes an empty file for a new record with no takeaway", async () => {
+  const changes = await planLogChanges([{ ...PROBLEMS[0], takeaway: "" }], null, ROOT, UPDATED_AT);
+  const takeaway = changes.find((item) => item.path.endsWith("-takeaway.md"));
+  assert.equal(takeaway.content, "");
 });
 
 test("planLogChanges skips every unchanged file when nothing changed", async () => {

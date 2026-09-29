@@ -1,6 +1,8 @@
 import globals from "globals";
 
 export default [{
+  ignores: ["**/.build-cache/**", "site/**", "build/**"],
+}, {
   files: ["src/*.js", "lib/**/*.{js,mjs}", "scripts/**/*.{js,mjs}", "workers/**/*.{js,mjs}", "bot/**/*.{js,mjs}"],
   languageOptions: {
     sourceType: "module",

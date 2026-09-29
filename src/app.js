@@ -4,6 +4,7 @@ import { initSession, login, logout, currentUser } from "../lib/auth.mjs";
 import { apiRequest } from "../lib/journal-api.js";
 import { initDetailInteractions } from "../lib/detail-interactions.mjs";
 import { initOverviewPage, initJournalPage, initRoadmapRenderer, initTagRenderer, initShellRenderer, doRefresh } from "../lib/application.mjs";
+import { renderMyList } from "../lib/my-list-ui.mjs";
 
 // 表单模块（~50KB，含 tag-catalog）按需动态导入：日志页与知识地图页都不加载，
 // 仅在用户首次打开提交表单/导入面板时才拉取。
@@ -44,7 +45,7 @@ function withForm() {
   document.getElementById("btn-theme").addEventListener("click", toggleTheme);
   document.getElementById("btn-login").addEventListener("click", login);
   document.getElementById("btn-submit-login").addEventListener("click", login);
-  document.getElementById("btn-logout").addEventListener("click", logout);
+  document.getElementById("btn-logout").addEventListener("click", async () => { await logout(); await renderMyList(); });
   document.getElementById("btn-submit").addEventListener("click", async () => {
     await sessionPromise;
     if (currentUser) navigateTo("/submit/");
@@ -116,6 +117,7 @@ function withForm() {
     window.history.pushState(null, "", value ? `/analysis/?q=${encodeURIComponent(value)}` : "/analysis/");
     window.dispatchEvent(new PopStateEvent("popstate"));
   });
+  window.addEventListener("popstate", () => { if (currentRoute() === "analysis") void renderMyList(); });
   document.querySelectorAll("[data-review-status]").forEach((button) => button.addEventListener("click", () => {
     document.querySelectorAll("[data-review-status]").forEach((item) => item.classList.toggle("active", item === button));
     const select = document.getElementById("review-status");
@@ -167,6 +169,7 @@ function withForm() {
   // 会话回来后刷新一次含本人操作的公开视图；数据层已有缓存，不会重复下载分片。
   void sessionPromise.then(async () => {
     const current = currentRoute();
+    if (current === "analysis") await renderMyList();
     if (currentUser) {
       if (current.startsWith("problem/")) await window.journalRouteRenderer?.();
       else if (current === "analysis" || current === "report" || current === "review" || current.startsWith("member/")) await initJournalPage();

@@ -1,6 +1,8 @@
 # 当前实现与验收口径
 
-更新日期：2026-09-28。这里记录当前可核对的实现；线上是否生效以部署结果为准。[PRODUCT.md](PRODUCT.md) 是产品方向，[SPECIFICATION.md](SPECIFICATION.md) 是实现契约与下一阶段验收，[HANDOFF.md](HANDOFF.md) 是按日期保存的交接记录。带日期的审计数字以 [PRODUCT-AUDIT.md](PRODUCT-AUDIT.md) 为快照，不代表实时使用量。
+更新日期：2026-09-29。这里记录当前可核对的实现；线上是否生效以部署结果为准。[PRODUCT.md](PRODUCT.md) 是产品方向，[SPECIFICATION.md](SPECIFICATION.md) 是实现契约与验收，[HANDOFF.md](HANDOFF.md) 是按日期保存的交接记录。带日期的审计数字以 [PRODUCT-AUDIT.md](PRODUCT-AUDIT.md) 为快照，不代表实时使用量。
+
+当前工作区已完成两份审计中的代码修复：安全入口、构建正确性、默认复习建议、同题重做、个人清单、空心得清理、场次展示、周期报告、同题提示和旧状态来源标记。`npm run verify` 与 15 项 Chromium 回归通过；这些改动尚未提交或发布。详见 [技术审计当前进展](PROBLEM-AUDIT.md)与[产品审计当前进展](PRODUCT-AUDIT.md)。
 
 ## 现在是什么
 

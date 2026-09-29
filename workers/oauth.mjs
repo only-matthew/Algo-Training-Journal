@@ -12,6 +12,7 @@ import { handleTrainingV2 } from "./routes/training-v2.mjs";
 import { handleLogsV2 } from "./routes/logs-v2.mjs";
 import { memberByGithubId, memberById, memberByLogin } from "./member-config.mjs";
 import { gh } from "./storage/github-api.mjs";
+import { readPersonalList, savePersonalList } from "./services/personal-list.mjs";
 import { BUILD_COMMIT } from "./build-commit.mjs";
 
 const COOKIE = "__Host-journal_session";
@@ -298,6 +299,15 @@ export default {
       if (request.method !== "GET" && (request.headers.get("X-CSRF-Token") || "") !== user.csrfToken) {
         if (url.pathname.startsWith("/api/v2/")) return v2Error(request, "CSRF_FAILED", "CSRF 校验失败", 403);
         return json(request, { error: "CSRF 校验失败" }, 403);
+      }
+
+      if (url.pathname === "/api/my-list") {
+        if (request.method === "GET") return json(request, await readPersonalList(user), 200, { "Cache-Control": "no-store" });
+        if (request.method === "PUT") {
+          const body = await readJsonBody(request, 30_000);
+          return json(request, await savePersonalList(user, body.items, body.expectedRevision), 200, { "Cache-Control": "no-store" });
+        }
+        return json(request, { error: "不支持的请求方法" }, 405);
       }
 
       if (url.pathname.startsWith("/api/v2/")) {

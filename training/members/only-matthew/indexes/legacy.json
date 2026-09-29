@@ -227,6 +227,7 @@
         "difficulty": "普及-"
       },
       "masteryStatus": "mastered",
+      "masteryStatusSource": "legacy_review_status",
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-07-31/e4fbc169-9cda-41f5-ba93-579604477497/"
@@ -1257,6 +1258,7 @@
       },
       "outcome": "independent",
       "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-16/292a2912-58d8-4605-a5ec-5d4156b2d1a1/"
@@ -1436,6 +1438,7 @@
       },
       "outcome": "hinted",
       "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
       "isMistake": false,
       "reviewStatus": "archived",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-25/9e3a2136-27ab-4e4e-b9c1-338068bbff1b/"
@@ -1536,6 +1539,7 @@
       },
       "outcome": "independent",
       "masteryStatus": "mastered",
+      "masteryStatusSource": "explicit_self_assessment",
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-28/9df1da8b-6091-4741-8f48-c0efe0938468/"

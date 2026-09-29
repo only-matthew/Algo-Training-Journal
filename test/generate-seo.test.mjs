@@ -35,11 +35,15 @@ test("recent stats include the newest log when the UTC build date is still yeste
 });
 
 test("generator emits crawlable member and problem pages", () => {
+  const staleAsset = path.join(siteDir, "assets", "obsolete-from-previous-build.txt");
+  fs.mkdirSync(path.dirname(staleAsset), { recursive: true });
+  fs.writeFileSync(staleAsset, "stale", "utf8");
   const result = spawnSync(process.execPath, ["scripts/generate-data.js"], {
     cwd: root,
     encoding: "utf8",
   });
   assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.existsSync(staleAsset), false, "asset mirrors must remove files deleted from their source");
 
   assert.equal(fs.existsSync(path.join(siteDir, "training")), false, "removed training workbench must not be generated");
 
@@ -164,12 +168,18 @@ test("generator emits crawlable member and problem pages", () => {
   let tagIndex = null;
   try {
     tagIndex = JSON.parse(fs.readFileSync(path.join(siteDir, "data", "tag-index.json"), "utf8"));
-    tagEntryCount = 1 + tagIndex.tags.length;
+    tagEntryCount = 1 + tagIndex.tags.filter((entry) => entry.recordCount > 0).length;
   } catch {
     // curriculum/ 缺失时不生成标签索引，跳过其 sitemap 计数
   }
   assert.equal(urlCount, 1 + journal.members.length + journal.logs.length + roadmapEntryCount + tagEntryCount);
   assert.ok(sitemap.includes(`https://train.xialiao.org${problemRoute}`));
+  if (tagIndex) {
+    for (const tag of tagIndex.tags) {
+      const tagUrl = `https://train.xialiao.org/tags/${encodeURIComponent(tagStorageKey(tag.tag))}/`;
+      assert.equal(sitemap.includes(`<loc>${tagUrl}</loc>`), tag.recordCount > 0, `only tags with records belong in sitemap: ${tag.tag}`);
+    }
+  }
   assert.match(robots, /Sitemap: https:\/\/train\.xialiao\.org\/sitemap\.xml/);
 
   // 标签页与题目页同等可爬取：预渲染静态页 + canonical + JSON-LD（有 curriculum 时校验）
