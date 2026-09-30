@@ -33,6 +33,14 @@ test("the current schema round-trips independent learning fields", () => {
   assert.deepEqual(normalizeLearningState(restored.problems[0]), normalizeLearningState(input.problems[0]));
 });
 
+test("超纲待做只接受未完成结果，且不允许复习日期", () => {
+  const deferred = validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "p1", name: "A", outcome: "unfinished", reviewStatus: "deferred", blocker: "需要先学网络流" }] });
+  assert.equal(deferred.problems[0].reviewStatus, "deferred");
+  assert.equal(metaFromProblems(deferred.problems).problems[0].reviewStatus, "deferred");
+  assert.throws(() => validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "p2", name: "B", outcome: "hinted", reviewStatus: "deferred" }] }), /只有未完成/);
+  assert.throws(() => validateLogInput({ schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "p3", name: "C", outcome: "unfinished", reviewStatus: "deferred", reviewDue: "2026-10-10" }] }), /不能设置复习日期/);
+});
+
 test("the current schema rejects invalid mastery, mistake, and review fields", () => {
   const base = { schemaVersion: LOG_SCHEMA_VERSION, problems: [{ id: "p1", name: "A" }] };
   assert.throws(() => validateLogInput({ ...base, problems: [{ ...base.problems[0], masteryStatus: "maybe" }] }), /掌握自评/);
@@ -50,7 +58,7 @@ test("timeline vitality and same-subject completion delta ignore mastery, mistak
   const baseline = projection({ masteryStatus: "unknown", isMistake: false, reviewStatus: "none" });
   assert.equal(baseline[0].outcome, "unknown");
   assert.equal(baseline[1].vitalityStatus, "completed_delta");
-  for (const masteryStatus of ["unknown", "learning", "mastered"]) for (const isMistake of [false, true]) for (const reviewStatus of ["none", "todo", "archived"]) {
+  for (const masteryStatus of ["unknown", "learning", "mastered"]) for (const isMistake of [false, true]) for (const reviewStatus of ["none", "todo", "deferred", "archived"]) {
     assert.deepEqual(projection({ masteryStatus, isMistake, reviewStatus }), baseline);
   }
 });

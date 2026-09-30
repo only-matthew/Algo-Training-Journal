@@ -7,7 +7,7 @@
 ## 现在是什么
 
 - 站点是从 `logs/` 和 `curriculum/` 构建的静态 GitHub Pages 页面；`site/` 是可重建产物。Cloudflare Worker 处理 GitHub OAuth、登录后日志写入、题目导入和题面抓取。
-- 日志写入格式的当前版本由 `lib/log-schema.mjs` 的 `LOG_SCHEMA_VERSION` 定义，当前为 **6**。Worker 的匿名只读 `GET /api/capabilities` 公布可接受范围和构建提交号，`GET /api/session` 可做发布后只读冒烟。Pages 部署**始终**核对线上 Worker 能否接受本站 schema（不兼容即拒绝发布）；**只有本次推送改动了 Worker 输入**（六类：`workers/`、`lib/`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`）时才额外要求线上 Worker 的提交号等于本次提交并最多等待 15 分钟。Worker 没变就不重建、不等待。
+- 日志写入格式的当前版本由 `lib/log-schema.mjs` 的 `LOG_SCHEMA_VERSION` 定义，当前工作区为 **7**。v7 增加 `reviewStatus=deferred`（超纲待做）；它只允许搭配“未完成”，且不能设置近期复习日期。Worker 的匿名只读 `GET /api/capabilities` 公布可接受范围和构建提交号，`GET /api/session` 可做发布后只读冒烟。Pages 部署**始终**核对线上 Worker 能否接受本站 schema（不兼容即拒绝发布）；**只有本次推送改动了 Worker 输入**（六类：`workers/`、`lib/`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`）时才额外要求线上 Worker 的提交号等于本次提交并最多等待 15 分钟。Worker 没变就不重建、不等待。
 - 当前用户入口为首页、训练档案、复习、知识地图、标签、独立提交页 `/submit/`。`/training/` 已下线。日志按 `logs/<姓名>/YYYY/MM/DD/` 保存；题目详情与导出由构建数据生成。
 - `npm run verify` 依次运行语法检查、ESLint 的未定义引用与未使用变量检查、训练索引校验、单测和站点构建。PR 与主分支发布运行这套快速门禁；Chromium 浏览器回归保留为本地按需验收，不在日常 Action 中安装运行。主分支发布只构建一次。
 

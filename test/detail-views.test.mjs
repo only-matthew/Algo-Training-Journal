@@ -35,6 +35,13 @@ test("problem detail offers a new redo attempt and orders matching attempts by d
   assert.doesNotMatch($("#problem-related").text(), /未填写/);
 });
 
+test("problem detail labels a deferred unfinished attempt as 超纲待做", () => {
+  const html = problemDetailHtml({ member: "甲", date: "2026-09-30", problem: "难题", platform: "Codeforces", problemNumber: "2000F", outcome: "unfinished", reviewStatus: "deferred", blocker: "需要先学网络流" });
+  const $ = load(html);
+  assert.match($(".record-badges").text(), /超纲待做/);
+  assert.match($(".problem-facts").text(), /超纲待做/);
+});
+
 test("problem detail shows the same per-record vitality and explains zero scores", () => {
   const base = { member: "甲", date: "2026-09-08", problem: "题目", platform: "洛谷" };
   const scored = load(problemDetailHtml({ ...base, vitality: 0.68, vitalityStatus: "counted" }));

@@ -343,6 +343,41 @@ test("Gym 题号在表单抓题面时归一为比赛号加题目字母", async (
   expect(requestedNumber).toBe("718163I");
 });
 
+test("unfinished work directly schedules +3 days and can switch to 超纲待做", async ({ page }) => {
+  await page.route(`${WORKER}/**`, async (route) => {
+    const request = route.request();
+    const url = new URL(request.url());
+    const json = (body) => route.fulfill({ contentType: "application/json", body: JSON.stringify(body) });
+    if (url.pathname === "/api/session") return json({ login: "only-matthew", member: "廖夏", csrfToken: "test-csrf", avatar_url: "" });
+    if (url.pathname === "/api/logs/date" && request.method() === "GET") return json({ revision: null, problems: [] });
+    return json({ error: "unexpected test request" });
+  });
+
+  await page.goto(`/submit/?date=${TODAY}`);
+  await page.locator("#btn-add-problem").click();
+  const row = page.locator("#problem-list .problem-block").first();
+  const review = row.locator(".problem-review-status");
+  const due = row.locator(".problem-review-due");
+  const expectedDue = new Date(`${TODAY}T00:00:00Z`);
+  expectedDue.setUTCDate(expectedDue.getUTCDate() + 3);
+
+  await expect(review).toHaveValue("none");
+  await row.locator('.problem-outcome[value="unfinished"]').check();
+  await expect(review).toHaveValue("todo");
+  await expect(due).toHaveValue(expectedDue.toISOString().slice(0, 10));
+  await expect(review.locator('option[value="deferred"]')).toBeEnabled();
+
+  await row.locator(".review-settings > summary").click();
+  await review.selectOption("deferred");
+  await expect(review).toHaveValue("deferred");
+  await expect(row.locator(".review-due-group")).toBeHidden();
+  await expect(due).toHaveValue("");
+
+  await row.locator('.problem-outcome[value="independent"]').check();
+  await expect(review).toHaveValue("none");
+  await expect(review.locator('option[value="deferred"]')).toBeDisabled();
+});
+
 test("code editor shows one heading and keeps an accessible label", async ({ page }) => {
   await page.route(`${WORKER}/**`, async (route) => {
     const request = route.request();

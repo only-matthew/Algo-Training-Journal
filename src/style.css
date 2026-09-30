@@ -1296,6 +1296,12 @@ textarea.form-input {
   border: 1px solid rgba(16, 185, 129, 0.3);
 }
 
+.review-chip.deferred {
+  color: #2f5fa8;
+  background: #e6eefb;
+  border: 1px solid #c6d7f2;
+}
+
 /* ========================================
    Problem Block (in form)
    ======================================== */
@@ -1546,6 +1552,12 @@ textarea.form-input {
   color: var(--brand);
   background: rgba(86, 211, 100, 0.14);
   border-color: rgba(86, 211, 100, 0.4);
+}
+
+[data-theme="dark"] .review-chip.deferred {
+  color: #a8c4ef;
+  background: #1f2c44;
+  border-color: #3b5682;
 }
 
 [data-theme="dark"] .tag-filter-chip.active {
@@ -2644,6 +2656,7 @@ a.tag-chip, span.tag-chip,
 /* 难度统一按 CF Rating 展示，配色按 Rating 档位分五级：entry/basic/easy/medium/hard/expert */
 .difficulty-badge.entry { color:#2b6a7a; background:#e2f1f5; }
 .difficulty-badge.basic { color:#2f5fa8; background:#e6eefb; }
+.difficulty-badge.deferred, .review-chip.deferred { color:#2f5fa8; background:#e6eefb; }
 .difficulty-badge.easy, .review-chip.mastered { color:#26734d; background:#e6f4ec; }
 .difficulty-badge.medium { color:#925800; background:#fff3d9; }
 /* 待复习芯片是 12px 小字，原 #b94845 在 #fde8e7 上只有 4.39:1；
@@ -2652,6 +2665,7 @@ a.tag-chip, span.tag-chip,
 .difficulty-badge.expert { color:#6d4c8d; background:#efe9f7; }
 [data-theme="dark"] .difficulty-badge.entry { color:#9fd0dd; background:#1e343a; }
 [data-theme="dark"] .difficulty-badge.basic { color:#a8c4ef; background:#1f2c44; }
+[data-theme="dark"] .difficulty-badge.deferred, [data-theme="dark"] .review-chip.deferred { color:#a8c4ef; background:#1f2c44; }
 [data-theme="dark"] .difficulty-badge.easy, [data-theme="dark"] .review-chip.mastered { color:#9ed4b4; background:#203c2c; }
 [data-theme="dark"] .difficulty-badge.medium { color:#e7c280; background:#3c321f; }
 [data-theme="dark"] .difficulty-badge.hard, [data-theme="dark"] .review-chip.todo { color:#f0aba7; background:#422924; }

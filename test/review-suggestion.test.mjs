@@ -17,6 +17,11 @@ test("无触发信号不安排；显式选择优先，日期按记录日跨月�
   assert.deepEqual(resolveReviewPlan({ outcome: "independent", reviewStatus: "auto" }, "2026-09-29"), { reviewStatus: "none" });
   assert.deepEqual(resolveReviewPlan({ outcome: "hinted", reviewStatus: "none" }, "2026-09-29"), { reviewStatus: "none" });
   assert.deepEqual(resolveReviewPlan({ outcome: "hinted", reviewStatus: "archived" }, "2026-09-29"), { reviewStatus: "archived" });
+  assert.deepEqual(resolveReviewPlan({ outcome: "unfinished", reviewStatus: "deferred", reviewDue: "2026-10-05" }, "2026-09-29"), { reviewStatus: "deferred" });
   assert.deepEqual(resolveReviewPlan({ outcome: "hinted", reviewStatus: "todo", reviewDue: "2026-10-05" }, "2026-09-29"), { reviewStatus: "todo", reviewDue: "2026-10-05" });
   assert.deepEqual(resolveReviewPlan({ outcome: "hinted", reviewStatus: "auto", reviewDue: "2026-10-02", reviewDueGenerated: true }, "2026-12-30"), { reviewStatus: "todo", reviewDue: "2027-01-02" });
+});
+
+test("旧草稿的 auto 仍可解析，但新表单不再展示该选项", () => {
+  assert.deepEqual(resolveReviewPlan({ outcome: "unfinished", reviewStatus: "auto" }, "2026-09-29"), { reviewStatus: "todo", reviewDue: "2026-10-02" });
 });

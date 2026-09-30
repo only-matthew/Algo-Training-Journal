@@ -7,7 +7,7 @@
 ### 1.1 数据、身份与时间
 
 - 日志源目录是 `logs/<logDirectory>/YYYY/MM/DD/`，元数据为 `meta.json`，每题正文分文件保存。`config/members.json` 的 `githubUserId` 绑定登录身份，`memberId` 是稳定机器键，`logDirectory` 对应现有中文日志目录。不得从可变 GitHub login 推断成员所有权。
-- 日志写入版本以 `lib/log-schema.mjs` 的 `LOG_SCHEMA_VERSION` 为准，当前为 **6**；同模块负责大小、题数、字段与区间校验。每次写入最多 15 题、请求 JSON 最多 1.5 MB；题目 ID 在当日内不可重复。旧版本可读并归一，未知的更新版本被拒绝。
+- 日志写入版本以 `lib/log-schema.mjs` 的 `LOG_SCHEMA_VERSION` 为准，当前工作区为 **7**；同模块负责大小、题数、字段与区间校验。每次写入最多 15 题、请求 JSON 最多 1.5 MB；题目 ID 在当日内不可重复。v7 增加 `reviewStatus=deferred`（超纲待做），只允许搭配 `outcome=unfinished`，且不接受 `reviewDue`。旧版本可读并归一，未知的更新版本被拒绝。
 - `outcome` 是做题结果，`masteryStatus` 是掌握自评，`isMistake` 是失误事实，`reviewStatus`/`reviewDue` 是复习安排。缺失结果保持未知。旧 `reviewStatus=mastered` 的兼容映射保留，并以 `masteryStatusSource` 标记其历史来源；详情页提示该状态不是可核实的本人新自评。
 - 训练区间影响热力图、训练日和活力日分摊，日期按 UTC+8 约束；统计按记录日与有效区间的日期并集计算，不重复累计重叠天数。无效历史区间在读侧降级处理以保证记录仍可访问。
 - `training/` v2 数据、`/api/v2/me/*` 后端保留且**冻结**，没有生产前端消费者；其中记录通用增删改与 `plan-links` 等旧目标契约并未全部实现。不要把归档规格中的目标路由表理解为当前可用清单。
@@ -50,7 +50,7 @@ GitHub OAuth 只允许配置成员写自己的日志。写接口校验 Origin、
 
 ### B. 默认复习建议
 
-仅对新记录：当 `isMistake=true` 或 `outcome` 为 `hinted`、`editorial`、`unfinished` 且用户未显式设置复习状态时，建议 `reviewStatus=todo` 与记录日后三天；用户的 `none`、`archived` 或自选日期优先。明确“未显式设置”和“显式选择 none”的区分，不能靠一个默认值混淆。旧记录不批量改写。验收：四种触发信号、无信号、手动覆盖、跨月/跨年日期、单题 PATCH 和并发写入均有测试；保存后的队列可见且可撤销。
+仅对新记录：当 `isMistake=true` 或 `outcome` 为 `hinted`、`editorial`、`unfinished` 且用户尚未手动选择时，表单直接切换为 `reviewStatus=todo` 并填入记录日后三天；界面不再暴露中间态“按结果建议”。用户的 `none`、`deferred`、`archived` 或自选日期优先。`deferred` 表示未完成题目的超纲待做，不进入近期复习队列；旧记录不批量改写。验收：四种触发信号、无信号、手动覆盖、跨月/跨年日期、超纲约束、单题 PATCH 和并发写入均有测试；保存后的队列可见且可撤销。
 
 ### C. 个人清单与重做
 

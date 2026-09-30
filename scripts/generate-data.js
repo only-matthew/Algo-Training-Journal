@@ -54,7 +54,7 @@ function learningState(record) {
     outcome: record?.outcome,
     masteryStatus: record?.masteryStatus || (record?.reviewStatus === "mastered" ? "mastered" : "unknown"),
     isMistake: record?.isMistake === true,
-    reviewStatus: ["none", "todo", "archived"].includes(record?.reviewStatus) ? record.reviewStatus : "none",
+    reviewStatus: ["none", "todo", "deferred", "archived"].includes(record?.reviewStatus) ? record.reviewStatus : "none",
   };
 }
 
