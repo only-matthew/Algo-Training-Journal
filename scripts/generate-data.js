@@ -21,6 +21,13 @@ const FRONTEND_DIR = path.join(ROOT, "src");
 const LOGS_DIR = path.join(ROOT, "logs");
 const OUTPUT_DIR = path.join(ROOT, "site");
 const BUILD_STATE_PATH = path.join(ROOT, ".build-cache", "site-state.json");
+// 单一构建时钟：产物里所有「现在 / 今天 / 基准日」都从这里取，任何地方都不再自己
+// new Date()。SOURCE_DATE_EPOCH（秒，reproducible-builds 约定）可把时钟钉死，
+// 用于复现构建与「同一输入必须产出同一字节」的验收。
+const BUILD_CLOCK = process.env.SOURCE_DATE_EPOCH
+  ? new Date(Number(process.env.SOURCE_DATE_EPOCH) * 1000)
+  : new Date();
+if (Number.isNaN(BUILD_CLOCK.valueOf())) throw new Error(`SOURCE_DATE_EPOCH 不是合法时间戳：${process.env.SOURCE_DATE_EPOCH}`);
 let browserAssets;
 let previousBuildState = { entries: {} };
 let nextBuildState = { schemaVersion: 1, entries: {} };
@@ -30,8 +37,9 @@ let incrementalHits = 0;
 let incrementalMisses = 0;
 let normalizeMeta;
 let escapeHtml;
-let toDateString;
 let toUtc8;
+let todayUtc8;
+let addDaysToDate;
 let problemStableKey;
 let problemDetailHtml;
 let originalProblemUrl;
@@ -65,7 +73,7 @@ function learningState(record) {
 // 热力图两套口径：
 //   count —— 当天做了几道题（保留原口径，供“题数”展示对照）
 //   value —— 当天的活力指数合计（做 1 道提高题 = 深色，做 3 道入门题 = 浅色）
-function buildHeatmapCounts(logs, today = toUtc8(new Date()).slice(0, 10)) {
+function buildHeatmapCounts(logs, today = todayUtc8(BUILD_CLOCK)) {
   const all = {};
   const byMember = {};
   const valueAll = {};
@@ -93,17 +101,17 @@ function buildHeatmapCounts(logs, today = toUtc8(new Date()).slice(0, 10)) {
   return { all, byMember, valueAll, valueByMember };
 }
 
-function resolveStatsEnd(logs, now = new Date(), formatDate = toDateString) {
+// 统计窗口的右端：取「最新一条记录」与「构建当天」的较晚者，两者都按 UTC+8 日历日。
+// now/formatDate 保留为注入点（test/generate-seo.test.mjs 会显式传入）。
+function resolveStatsEnd(logs, now = BUILD_CLOCK, formatDate = todayUtc8) {
   const today = formatDate(now);
   return logs.reduce((latest, log) => log.date > latest ? log.date : latest, today);
 }
 
 function buildRecentStats(logs, members) {
   const end = resolveStatsEnd(logs);
-  const endDate = new Date(`${end}T12:00:00`);
-  const startDate = new Date(endDate);
-  startDate.setDate(endDate.getDate() - 29);
-  const start = toDateString(startDate);
+  // 纯字符串日期减法：不再构造本地 Date（本地 noon ± 29 天在极端时区/夏令时下有风险）。
+  const start = addDaysToDate(end, -29);
 
   const withinRange = [];
   const grouped = new Map();
@@ -190,17 +198,17 @@ function logSummary({ description, takeaway, code, statementPath, statementImage
   return { ...summary, summary: truncate(description || takeaway || "", 96) };
 }
 
+// 近 N 天的起点（含今天）：以构建时钟的 UTC+8 日历日为基准，纯字符串减法。
 function daysAgo(days) {
-  const date = new Date();
-  date.setDate(date.getDate() - days);
-  return toDateString(date);
+  return addDaysToDate(todayUtc8(BUILD_CLOCK), -days);
 }
 
 function appVersion() {
   return browserAssets.version;
 }
 
-const SITE_BUILD_TIME = `${new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString().slice(0, 16).replace("T", " ")} UTC+8`;
+// 构建时间戳同样来自单一构建时钟（固定为 UTC+8 展示，与用户所在时区无关）。
+const SITE_BUILD_TIME = `${new Date(BUILD_CLOCK.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 16).replace("T", " ")} UTC+8`;
 
 function siteVersion() {
   const version = require("../package.json").version;
@@ -233,7 +241,7 @@ function writeVersionedIndex(dataVersion) {
 // 生成 Service Worker：缓存版本由代码哈希 + 数据哈希 + 构建时间共同决定，
 // 任何部署都会产生新版本 → 旧缓存自动清理，避免发布后命中陈旧资源。
 function writeServiceWorker(dataVersion) {
-  const version = `${appVersion()}-${dataVersion}-${Date.now().toString(36)}`;
+  const version = `${appVersion()}-${dataVersion}-${BUILD_CLOCK.getTime().toString(36)}`;
   const sw = `// Algo Training Journal Service Worker（构建时生成，勿手改）
 const VERSION = ${JSON.stringify(version)};
 const CACHE = "atj-" + VERSION;
@@ -484,13 +492,16 @@ function problemPageHtml(html, log, related) {
   }).replace(/</g, "\\u003c");
   const memberHref = routePath(memberSegments(log.member));
   const iconSvg = '<svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m-5-5 5 5 5-5M4 15v6h16v-6"/></svg>';
+  // CSP 在这里只能加 meta 支持的三条：object-src 'none'、base-uri 'self'、form-action 'self'。
+  // frame-ancestors（点击劫持防护）在 meta 里会被浏览器忽略，只能由未来部署层的
+  // HTTP 响应头下发——所以不写进 meta，避免制造「以为已经防住」的假象。
   return addSelfClosingVoids(`<!doctype html><html lang="zh-CN"><head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="journal-data-version" content="${escapeHtml(dataVersion)}"><meta name="description" content="${escapeHtml(description)}">
   <meta name="robots" content="index,follow"><meta property="og:type" content="article"><meta property="og:site_name" content="${escapeHtml(SITE_NAME)}">
   <meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}">
   <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(title)}"><meta name="twitter:description" content="${escapeHtml(description)}">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://algo-oauth.xialiao.org; img-src 'self' https://avatars.githubusercontent.com data:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://algo-oauth.xialiao.org; img-src 'self' https://avatars.githubusercontent.com data:; object-src 'none'; base-uri 'self'; form-action 'self';">
   <base href="/"><title>${escapeHtml(title)}</title><link rel="canonical" href="${escapeHtml(canonical)}"><link rel="sitemap" type="application/xml" href="${SITE_ORIGIN}/sitemap.xml">
   <link rel="stylesheet" href="/${escapeHtml(stylesheet.replace(/^\/+/, ""))}"><script type="application/ld+json">${jsonLd}</script>
 </head><body class="problem-standalone"><a class="skip-link" href="#main-content">跳到内容</a>
@@ -520,7 +531,7 @@ function writeProblemPages(html, logs, problemIndex) {
 
 function writeCrawlerFiles(members, logs, extraEntries = []) {
   const entries = [
-    { segments: [], lastmod: logs[0]?.date || new Date().toISOString().slice(0, 10) },
+    { segments: [], lastmod: logs[0]?.date || todayUtc8(BUILD_CLOCK) },
     ...members.map((member) => ({ segments: memberSegments(member), lastmod: logs.find((log) => log.member === member)?.date })),
     ...logs.map((log) => ({ segments: problemSegments(log), lastmod: log.date })),
     ...extraEntries,
@@ -827,7 +838,7 @@ async function generateRoadmapData(logs) {
   const { phases, nodes } = curriculum;
   const matchIndex = buildMatchIndex(logs);
   const members = [...new Set(logs.map((log) => log.member))].sort((a, b) => a.localeCompare(b, "zh-CN"));
-  const generatedAt = logs.map((log) => log.updatedAt).filter(Boolean).sort().at(-1) || new Date().toISOString();
+  const generatedAt = logs.map((log) => log.updatedAt).filter(Boolean).sort().at(-1) || BUILD_CLOCK.toISOString();
   const nodeDataById = new Map();
   const nodeStatsById = new Map();
 
@@ -853,8 +864,8 @@ async function generateRoadmapData(logs) {
     const nodeTagSet = new Set(node.tags || []);
     const tagHits = [...nodeTagSet].reduce((sum, tag) => sum + (logTagCounts.get(tag) || 0), 0);
     const evidence = buildNodeTrainingEvidence(node, logs);
-    // 掌握度：整体 evidence 与 byMember 每项分别评估，referenceDate 用构建当天保证产物稳定
-    const refDate = toDateString(new Date());
+    // 掌握度：整体 evidence 与 byMember 每项分别评估，referenceDate 用构建当天（UTC+8）保证产物稳定
+    const refDate = todayUtc8(BUILD_CLOCK);
     const overallMastery = assessMastery(evidence, refDate);
     const trainingEvidence = {
       state: overallMastery.state,
@@ -1193,7 +1204,8 @@ async function main() {
   ({ normalizeMeta, problemStableKey } = await import("../lib/log-schema.mjs"));
   ({ normalizeLearningState } = await import("../lib/learning-state.mjs"));
   ({ escapeHtml } = await import("../lib/render-safety.mjs"));
-  ({ toDateString, toUtc8, SITE_ORIGIN, SITE_NAME } = await import("../lib/constants.mjs"));
+  ({ toUtc8, todayUtc8, SITE_ORIGIN, SITE_NAME } = await import("../lib/constants.mjs"));
+  ({ addDaysToDate } = await import("../lib/date-string.mjs"));
   ({ problemDetailHtml, originalProblemUrl } = await import("../lib/problem-detail.mjs"));
   ({ cfTagToChinese } = await import("../lib/cf-tag-map.mjs"));
   ({ assessMastery } = await import("../lib/mastery.mjs"));
@@ -1210,10 +1222,11 @@ async function main() {
   const vitalityAllDaily = vitality.allDaily;
   const heatmap = buildHeatmapCounts(logs);
   const recent30 = buildRecentStats(logs, members);
-  const generatedAt = logs.map((log) => log.updatedAt).filter(Boolean).sort().at(-1) || new Date().toISOString();
+  const generatedAt = logs.map((log) => log.updatedAt).filter(Boolean).sort().at(-1) || BUILD_CLOCK.toISOString();
   const summaryLogs = logs.map(logSummary);
   const allReviewQueue = buildReviewQueue(logs);
-  const today = toDateString(new Date());
+  // 「今天」与复习到期过滤：统一 UTC+8 日历日，且来自同一个构建时钟。
+  const today = todayUtc8(BUILD_CLOCK);
   const dueReviewQueue = allReviewQueue.filter((item) => item.reviewDue <= today);
   const heatmapData = { ...heatmap, vitalityByMember: vitality.byMember };
   const overviewData = {

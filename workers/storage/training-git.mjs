@@ -1,11 +1,11 @@
-import { REPO, BRANCH, ghHeaders, gh } from "./github-api.mjs";
+import { REPO, BRANCH, GH_TIMEOUT_MS, ghHeaders, gh } from "./github-api.mjs";
 import { mapConcurrent } from "../services/map-concurrent.mjs";
 import { gitBlobSha } from "../services/log-planning.mjs";
 
 // 返回原始字节；题面 PDF 附件不能经过文本解码。
 // 题面 PDF 附件必须走这条路径：文本解码会破坏二进制内容。
 async function githubContentBytesAt(token, path, ref) {
-  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token) });
+  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token), signal: AbortSignal.timeout(GH_TIMEOUT_MS) });
   if (response.status === 404) return null;
   if (!response.ok) throw Object.assign(new Error("GitHub content read failed"), { code: "UPSTREAM_UNAVAILABLE", status: 502 });
   const body = await response.json();
@@ -68,7 +68,7 @@ export function trainingGit(token) {
       const commit = await gh("/git/commits", token, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ message, tree: treeResult.sha, parents: [head] }) });
       const current = await gh(`/git/ref/heads/${BRANCH}`, token);
       if (current.object.sha !== head) throw Object.assign(new Error("Git reference changed"), { code: "REF_CONFLICT", status: 409 });
-      const response = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, { method: "PATCH", headers: { ...ghHeaders(token), "Content-Type": "application/json" }, body: JSON.stringify({ sha: commit.sha, force: false }) });
+      const response = await fetch(`https://api.github.com/repos/${REPO}/git/refs/heads/${BRANCH}`, { method: "PATCH", headers: { ...ghHeaders(token), "Content-Type": "application/json" }, body: JSON.stringify({ sha: commit.sha, force: false }), signal: AbortSignal.timeout(GH_TIMEOUT_MS) });
       if (response.status === 422 || response.status === 409) throw Object.assign(new Error("Git reference changed"), { code: "REF_CONFLICT", status: 409 });
       if (!response.ok) throw Object.assign(new Error("GitHub reference update failed"), { code: "UPSTREAM_UNAVAILABLE", status: 502 });
       return { commitSha: commit.sha };

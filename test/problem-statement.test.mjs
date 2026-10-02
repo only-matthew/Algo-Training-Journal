@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { archiveStatementImages, fetchAtCoderStatement, fetchCodeforcesStatement, fetchLuoguAtCoderStatement, fetchLuoguStatement, fetchStatement, parseAtCoderProblemNumber, parseAtCoderStatement, parseCodeforcesStatement, parseLuoguAtCoderStatement, parseLuoguStatement, statementFromAtCoderHtml, statementFromCodeforcesHtml, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
+import { archiveStatementImages, fetchAtCoderStatement, fetchCodeforcesStatement, fetchLuoguAtCoderStatement, fetchLuoguStatement, fetchStatement, parseAtCoderProblemNumber, parseAtCoderStatement, parseCodeforcesStatement, parseLuoguAtCoderStatement, parseLuoguProblem, parseLuoguStatement, statementFromAtCoderHtml, statementFromCodeforcesHtml, validateCodeforcesUrl } from "../workers/services/problem-statement.mjs";
 
 const HTML = `<div class="problem-statement"><div class="header"><div class="title">A. Test</div><div class="time-limit">1 second</div><div class="memory-limit">256 megabytes</div></div><p>Find $$$x$$$.</p><div class="input-specification"><p>Input</p></div><div class="output-specification"><p>Output</p></div><img src="/img.png"></div>`;
 const CHALLENGE = `<!DOCTYPE html><html><head><title>Just a moment...</title></head><body>cloudflare challenge</body></html>`;
@@ -559,4 +559,80 @@ test("回传的源码超过上限时拒绝，不解析", async () => {
   const result = await statementFromAtCoderHtml({ problemNumber: "abc381_a", html: huge }, { fetchImpl: noFetch });
   assert.equal(result.status, "unavailable");
   assert.equal(result.reason, "too-large");
+});
+
+// ── 解析复杂度回归（审计 AUDIT-2026-10-02 §2.1）──────────────────────────────
+// 原来的 HTML 词法正则与 MARKDOWN_IMAGE 正则对「只有半个标签 / 半个图片语法」的输入
+// 会退回逐位置重试，复杂度 O(n²)：实测 39 KB 的 "<a" 重复串 0.55 s、78 KB 2.23 s、
+// 156 KB 11.1 s，而客户端可以回传 2 MiB。解析现在是线性的手写扫描。
+// 计时用公开入口，且必须是「返回失败结果」而不是抛未捕获异常。
+const PARSE_BUDGET_MS = 500;
+const noUpstream = async (url) => { throw new Error(`攻击串不应触发上游请求：${url}`); };
+// 合法题面容器：这样攻击串才会真正走进 markdownFrom → textWithImages（图片扫描）。
+const CONTAINER_HEADER = `<div class="header"><div class="title">A. Test</div><div class="time-limit">1 second</div><div class="memory-limit">256 megabytes</div></div>`;
+
+async function timedStatement(html) {
+  const started = process.hrtime.bigint();
+  const result = await statementFromCodeforcesHtml({ problemNumber: "4A", html }, { fetchImpl: noUpstream });
+  const elapsedMs = Number(process.hrtime.bigint() - started) / 1e6;
+  assert.ok(elapsedMs < PARSE_BUDGET_MS, `解析耗时 ${elapsedMs.toFixed(1)}ms，超出 ${PARSE_BUDGET_MS}ms 预算`);
+  return result;
+}
+
+test("深层开放标签加不匹配关闭标签在时限内拒绝（结束标签扫描攻击）", async () => {
+  const result = await timedStatement("<div>".repeat(40000) + "</bogus>".repeat(40000));
+  assert.equal(result.status, "unavailable");
+  assert.equal(result.reason, "parse-failed");
+});
+
+test("合法题面容器内的异常深度在递归渲染前拒绝", async () => {
+  const result = await timedStatement(`<div class="problem-statement">${CONTAINER_HEADER}${"<span>".repeat(10000)}正文${"</span>".repeat(10000)}</div>`);
+  assert.equal(result.status, "unavailable");
+  assert.equal(result.reason, "parse-failed");
+});
+
+test("有界嵌套下大量不匹配关闭标签仍保留正文并快速返回", async () => {
+  const html = `<div class="problem-statement">${CONTAINER_HEADER}${"<span>".repeat(100)}前文${"</bogus>".repeat(100000)}后文${"</span>".repeat(100)}</div>`;
+  const result = await timedStatement(html);
+  assert.equal(result.status, "ok");
+  assert.match(result.description, /前文后文/);
+});
+
+test("关闭祖先标签仍隐式结束内部节点，不匹配关闭标签不改变层级", () => {
+  const html = `<div class="problem-statement">${CONTAINER_HEADER}<p>前<span>中</bogus>文</p><p>后</p></div>`;
+  const result = parseCodeforcesStatement(html, "4A");
+  assert.match(result.description, /前中文\n\n后/);
+});
+
+test("未闭合的标签串（100k 个 \"<a\"）在时限内返回解析失败，而不是 O(n²)", async () => {
+  // 200 KB 的攻击串：旧实现在这个量级需要几十秒 CPU。
+  const result = await timedStatement("<a".repeat(100000));
+  assert.equal(result.status, "unavailable");
+  assert.equal(result.reason, "parse-failed");
+});
+
+test("未闭合的图片语法串（100k 个 \"![\"）在时限内返回，不再是二次复杂度", async () => {
+  const html = `<div class="problem-statement">${CONTAINER_HEADER}<p>${"![".repeat(100000)}</p></div>`;
+  const result = await timedStatement(html);
+  // 200 KB 的正文超过题面长度上限，处理器按「太大」拒绝——关键是它线性返回。
+  assert.equal(result.status, "unavailable");
+  assert.equal(result.reason, "too-large");
+});
+
+test("\"![](\" 重复串同样在时限内返回（href 扫描不会反复回溯）", async () => {
+  const html = `<div class="problem-statement">${CONTAINER_HEADER}<p>${"![](".repeat(100000)}</p></div>`;
+  const result = await timedStatement(html);
+  assert.equal(result.status, "unavailable");
+  assert.equal(result.reason, "too-large");
+});
+
+test("未闭合的 Markdown 图片语法按普通文本保留，不会吞掉后面的正文", () => {
+  // 候选上限（512 字节内找不到闭合括号即放弃）是抗 DoS 的一部分，行为上必须退回普通文本。
+  const problem = { pid: "CF4A", name: "Watermelon", content: { description: `![图](${"a".repeat(600)}` } };
+  const result = parseLuoguProblem(problem, { expectedProblemNumber: "4A" });
+  assert.match(result.description, /!\[图\]\(a{600}/);
+  assert.deepEqual(result.warnings, []);
+  // 同一段正文里正常长度的图片语法照旧被登记（上限只影响畸形候选）。
+  const mixed = parseLuoguProblem({ pid: "CF4A", name: "Watermelon", content: { description: `![图](${"a".repeat(600)} 后面还有 ![正常](https://codeforces.com/ok.png)` } }, { expectedProblemNumber: "4A", collectImages: true });
+  assert.deepEqual(mixed.images, [{ url: "https://codeforces.com/ok.png" }]);
 });

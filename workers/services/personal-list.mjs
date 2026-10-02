@@ -1,12 +1,12 @@
 import { validatePersonalList } from "../../lib/personal-list.mjs";
-import { BRANCH, REPO, ghHeaders } from "../storage/github-api.mjs";
+import { BRANCH, REPO, GH_TIMEOUT_MS, ghHeaders } from "../storage/github-api.mjs";
 
 function urlFor(user) {
   return `https://api.github.com/repos/${REPO}/contents/${encodeURI(`logs/${user.member}/my-list.json`)}`;
 }
 
 export async function readPersonalList(user) {
-  const response = await fetch(`${urlFor(user)}?ref=${encodeURIComponent(BRANCH)}`, { headers: ghHeaders(user.token) });
+  const response = await fetch(`${urlFor(user)}?ref=${encodeURIComponent(BRANCH)}`, { headers: ghHeaders(user.token), signal: AbortSignal.timeout(GH_TIMEOUT_MS) });
   if (response.status === 404) return { items: [], revision: null };
   if (!response.ok) throw Object.assign(new Error("读取个人清单失败"), { status: 502 });
   const file = await response.json();
@@ -30,6 +30,7 @@ export async function savePersonalList(user, items, expectedRevision) {
     method: "PUT",
     headers: { ...ghHeaders(user.token), "Content-Type": "application/json" },
     body: JSON.stringify({ message: `Update personal training list for ${user.member}`, content, branch: BRANCH, ...(current.revision ? { sha: current.revision } : {}) }),
+    signal: AbortSignal.timeout(GH_TIMEOUT_MS),
   });
   if (response.status === 409 || response.status === 422) throw Object.assign(new Error("清单写入冲突，请刷新后重试"), { status: 409 });
   if (!response.ok) throw Object.assign(new Error("保存个人清单失败"), { status: 502 });

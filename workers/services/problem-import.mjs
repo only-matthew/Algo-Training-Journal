@@ -95,7 +95,9 @@ export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurren
   const results = new Array(list.length);
   // 一次导入最多回传 15 道题，图片是 base64 回传的：给整批设一个总量预算，
   // 超出的题目按「图片未归档」降级（正文保留外链），不会让响应体无限膨胀。
-  let imageBudget = 4 * 1024 * 1024;
+  // 预算就是单题上限本身（审计 §4.1：原来写死 4 MiB，又被下面的 min 压到 2 MiB，
+  // 是永远不会生效的死值）。
+  let imageBudget = MAX_NEW_STATEMENT_IMAGE_BYTES;
   const tagIdsByIndex = new Map();
   let next = 0;
   async function worker() {
@@ -122,7 +124,7 @@ export async function fetchLuoguProblems(numbers, { fetchImpl = fetch, concurren
           try {
             const parsed = parseLuoguProblem(problem, { collectImages: true });
             if (parsed.tagIds.length) tagIdsByIndex.set(index, parsed.tagIds);
-            const budget = Math.max(0, Math.min(MAX_NEW_STATEMENT_IMAGE_BYTES, imageBudget));
+            const budget = Math.max(0, imageBudget);
             const archived = await archiveStatementImages(parsed.description, parsed.images, { fetchImpl, maxTotalBytes: budget });
             imageBudget -= archived.images.reduce((sum, image) => sum + image.bytes, 0);
             // 单条导入的正文上限沿用旧口径（15 题一次导入，响应体不能无限膨胀）；

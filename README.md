@@ -6,7 +6,7 @@
 
 当前产品方向、设计、实现与验收入口见 [docs/ 文档入口](docs/README.md)。
 
-**当前工作区待发布更新（2026-09-29）**：新增个人阶段清单、默认复习建议、同题重做历史、近 30 天训练场次与周期源数据报告；同时修复两份审计中的安全、数据和构建问题。下文原有功能说明主要描述已发布站点；新功能上线状态以 [当前实现与验收](docs/CURRENT-STATE.md) 为准。
+**最近一轮更新（2026-10-02）**：新增个人阶段清单、默认复习建议、同题重做历史、近 30 天训练场次与周期源数据报告；修复两份审计中的安全、数据和构建问题；并按 [全栈审计报告](docs/Audit/AUDIT-2026-10-02.md) 修复解析器 DoS、保存丢审计字段、时区口径、门禁覆盖等问题。当前发布状态与验收口径以 [当前实现与验收](docs/CURRENT-STATE.md) 为准；下文功能说明描述的是已发布站点。
 
 ## 项目总览
 
@@ -171,7 +171,7 @@ Cloudflare Worker ◀──── 受限 API ─────── 浏览器
 ### 写入流程
 
 1. 浏览器跳转到 Worker 发起 GitHub OAuth。
-2. Worker 校验 GitHub 用户是否属于 `MEMBERS` 白名单，并创建 8 小时加密会话。
+2. Worker 校验 GitHub 用户是否属于白名单成员（按不可改名的数字用户 ID 匹配 `config/members.json`，见 `workers/member-config.mjs`），并创建 8 小时加密会话。
 3. 浏览器通过受限 API 提交某一天的题目数据。
 4. Worker 只向当前成员对应的 `logs/<姓名>/YYYY/MM/DD/` 写入文件。
 5. 一次新增、更新或删除通过 Git Data API 合并为一个 commit。
@@ -337,7 +337,7 @@ Worker 使用 Cloudflare Workers Builds 连接本仓库的 `main` 分支，按�
 - token 仅存放在 AES-GCM 加密且带 `HttpOnly`、`Secure` 属性的会话 Cookie 中。
 - OAuth state 使用随机 nonce 和有效期，避免未经校验的回调请求。
 - API 校验请求 Origin，只接受配置的线上域名和本地开发来源。
-- 登录用户必须存在于 `MEMBERS` 白名单中，并只能写入映射到自己的日志目录。
+- 登录用户必须存在于 `config/members.json` 白名单中，并只能写入映射到自己的日志目录。
 - AI 概括接口与日志写入接口使用同一套登录会话和成员白名单，未登录用户不能调用模型。
 - 日志输入在写入前通过共享 Schema 校验和清洗。
 - Markdown 渲染会转义原始 HTML，仅为安全的 HTTP(S)、站内相对路径和锚点生成链接；公式内容也会先转义再交给 KaTeX 渲染。
@@ -372,7 +372,7 @@ AI 概括不需要把模型密钥写入前端或仓库；`workers/wrangler.toml`
 
 如果迁移到其他域名或仓库，还需要同步修改：
 
-- `workers/oauth.mjs` 中的 `REPO`、`BRANCH`、`MEMBERS` 和 `ORIGINS`。
+- 仓库地址与分支：`workers/storage/github-api.mjs` 的 `REPO`、`BRANCH`；成员白名单：`config/members.json`（由 `workers/member-config.mjs` 读取）；允许来源：`workers/oauth.mjs` 的 `ORIGINS`。
 - `lib/journal-api.js` 中的 `JOURNAL_API_URL`。
 - `CNAME`、OAuth Homepage URL 和 callback URL。
 
@@ -545,8 +545,10 @@ npx serve site
 │   ├── SPECIFICATION.md           # 当前契约与下一阶段验收
 │   ├── CURRENT-STATE.md           # 当前实现与生产核验入口
 │   ├── HANDOFF.md                 # 按日期续写的交接
-│   ├── PRODUCT-AUDIT.md           # 产品问题签收版
-│   ├── PROBLEM-AUDIT.md           # 技术问题签收版
+│   ├── Audit/                     # 审计报告与两份审计签收
+│   │   ├── AUDIT-2026-10-02.md    # 全栈审计报告与修复记录
+│   │   ├── PRODUCT-AUDIT.md       # 产品问题签收版
+│   │   └── PROBLEM-AUDIT.md       # 技术问题签收版
 │   └── archive/2026-09-28-pre-rewrite/ # 改写前的全部文档和图片
 ├── package.json                   # 构建、测试与迁移命令
 ├── CNAME                          # GitHub Pages 自定义域名
@@ -565,7 +567,7 @@ npx serve site
 - AI 概括依赖 Cloudflare Workers AI 的可用性和账户配额，生成结果应在提交前由使用者检查。
 - Worker 会在分支引用冲突时自动重试两次；高并发持续冲突时仍可能需要稍后重试。
 - 新增、更新和删除都使用 Git Data API 合并为单个 commit。
-- 成员白名单、仓库地址和允许来源目前直接维护在 Worker 源码中。
+- 成员白名单维护在 `config/members.json`；仓库地址与分支在 `workers/storage/github-api.mjs`；允许来源在 `workers/oauth.mjs` 的 `ORIGINS`。
 - 当前代码字段按 C++ 展示，保存文件扩展名固定为 `.cpp`。
 - Codeforces 提交页受 Cloudflare 反爬保护，源码无法由服务端自动抓取，需在浏览器中打开提交页复制；洛谷导入采用「粘贴题号 → 补全题名/难度/题面」，有中文 `contenu` 时默认使用中文、没有时回退原文 `content`，标签需手动补充（平台未提供公开标签名称接口）。
 - 题面抓取按平台取来源：Codeforces 官方页直取失败时退回洛谷同题镜像（镜像措辞可能与官方英文题面有出入，表单会提示核对）；AtCoder 只认「比赛_任务」形态的题号（如 `abc381_a`），官方页对机房出口整体 403（Cloudflare Workers 实测，换请求头无效），实际来源是洛谷的 `AT_<任务 ID>` 镜像页（多为日文原题）。两个来源都没取到时按 `blocked` 降级，不做重试与绕过。

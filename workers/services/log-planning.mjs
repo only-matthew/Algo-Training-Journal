@@ -1,42 +1,20 @@
 import { metaFromProblems } from "../../lib/log-schema.mjs";
-import { normalizeLearningState } from "../../lib/learning-state.mjs";
-import { subjectKeyForProblem } from "../../lib/problem-identity.mjs";
-import { catalogProblem } from "../../lib/recommendations.mjs";
 import { statementImagePath, statementPath } from "./logs-v2.mjs";
 import { trainingPaths } from "./training.mjs";
+import { assignFileIndexes, gitBlobSha, logRoots } from "./log-paths.mjs";
+import { projectLegacyIndexRecord, serializeTrainingIndex } from "../../lib/training-index-projection.mjs";
 
-/** Compute the Git blob SHA-1 for text or raw bytes. */
-export async function gitBlobSha(content) {
-  const encoder = new TextEncoder();
-  const bytes = typeof content === "string" ? encoder.encode(content) : content;
-  const header = encoder.encode(`blob ${bytes.length}\0`);
-  const combined = new Uint8Array(header.length + bytes.length);
-  combined.set(header);
-  combined.set(bytes, header.length);
-  const digest = await crypto.subtle.digest("SHA-1", combined);
-  return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
-export function logRoots(member, date) {
-  const [year, month, day] = date.split("-");
-  return [`logs/${member}/${year}/${month}/${day}`, `logs/${member}/${date}`];
-}
+// 保留原有导出名，`workers/storage/training-git.mjs` 等调用方无需改动。
+export { gitBlobSha, logRoots };
 
 /** Pure change planner for one legacy log directory. */
 export async function planLogChanges(problems, existingFiles, root, updatedAt, interval = {}) {
   const existing = new Map((existingFiles || []).map((file) => [file.path, file.sha]));
   const desired = new Map();
-  const used = new Set(problems.filter((problem) => Number.isInteger(problem.fileIndex) && problem.fileIndex >= 0).map((problem) => problem.fileIndex));
-  let next = 0;
-  for (const problem of problems) {
-    if (!Number.isInteger(problem.fileIndex) || problem.fileIndex < 0) {
-      while (used.has(next)) next += 1;
-      problem.fileIndex = next;
-      used.add(next);
-      next += 1;
-    }
-  }
-  desired.set(`${root}/meta.json`, JSON.stringify(metaFromProblems(problems, updatedAt, interval), null, 2));
+  assignFileIndexes(problems);
+  // 落盘口径必须与 logs-v2 的 textChanges 完全一致（含尾随换行）：否则在旧接口与 v2
+  // 之间来回保存会不断产生"只差一个换行"的提交，并把客户端 revision 指纹打乱。
+  desired.set(`${root}/meta.json`, `${JSON.stringify(metaFromProblems(problems, updatedAt, interval), null, 2)}\n`);
   const keep = new Set();
   for (const problem of problems) {
     const prefix = `${root}/${problem.fileIndex}-`;
@@ -62,16 +40,10 @@ export function planLegacyIndexChange(user, date, problems, raw) {
   }
   const records = index.records.filter((record) => record?.date !== date);
   for (const problem of problems) {
-    const recordRef = { memberId, date, recordId: problem.id };
-    records.push({
-      subjectKey: subjectKeyForProblem({ ...recordRef, ...problem }), date, recordRef,
-      problem: catalogProblem(problem), ...normalizeLearningState(problem),
-      ...(problem.reviewDue ? { reviewDue: problem.reviewDue } : {}),
-      href: `/problem/${[user.member, date, problem.id].map(encodeURIComponent).join("/")}/`,
-    });
+    records.push(projectLegacyIndexRecord({ member: user.member, memberId, date, problem }));
   }
   records.sort((a, b) => a.date.localeCompare(b.date));
-  const content = `${JSON.stringify({ ...index, records }, null, 2)}\n`;
+  const content = serializeTrainingIndex({ ...index, records });
   if (raw?.replace(/\r\n/g, "\n") === content) return null;
   return { path: trainingPaths(memberId).legacyIndex, content };
 }

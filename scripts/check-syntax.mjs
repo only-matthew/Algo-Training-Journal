@@ -3,7 +3,7 @@ import { resolve, relative } from "node:path";
 import { spawnSync } from "node:child_process";
 
 const root = resolve(import.meta.dirname, "..");
-const sourceRoots = ["src/app.js", "src/problem-page.js", "lib", "scripts", "workers", "bot"];
+const sourceRoots = ["src/app.js", "src/problem-page.js", "lib", "scripts", "workers", "bot", "test", "e2e", "eslint.config.mjs", "playwright.config.mjs"];
 const extensions = new Set([".js", ".mjs"]);
 
 function collectFiles(entry, files = []) {

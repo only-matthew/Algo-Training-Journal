@@ -16,8 +16,10 @@ function seedFromSecret(secret) {
   return new TextEncoder().encode(seed.slice(0, 32));
 }
 
-function hexToBytes(hex) {
-  return new Uint8Array(hex.match(/.{2}/g).map((b) => parseInt(b, 16)));
+// 请求签名带 ±300 s 时效窗口（workers/qq-bot.mjs）：用例必须用当前时间戳签名，
+// 否则会撞上「重放被拒」这条防线。过期的重放场景见文件末尾的专门用例。
+function freshTimestamp() {
+  return String(Math.floor(Date.now() / 1000));
 }
 
 // 用 Bot Secret 派生私钥对 timestamp + body 签名（模拟 QQ 平台）
@@ -59,7 +61,9 @@ test("qqVerifySignature 自签自验通过、篡改与缺头失败", async () =>
 test("Webhook op 13 回调地址验证返回签名", async () => {
   const env = { QQ_BOT_SECRET: "DG5g3B4j9X2KOErG", QQ_APP_ID: "11111111" };
   const body = JSON.stringify({ op: 13, d: { plain_token: "Arq0D5A61EgUu4OxUvOp", event_ts: "1725442341" } });
-  const timestamp = "1725442341";
+  // 签名头用当前时间戳（时效窗口），body 里的 event_ts 仍是官方示例值：
+  // 返回的 signature 由 body 的 event_ts 决定，所以向量断言不受影响。
+  const timestamp = freshTimestamp();
   const sigHex = await signRequestBody(env.QQ_BOT_SECRET, timestamp, body);
   const request = new Request("https://example.com/api/qq-bot", {
     method: "POST",
@@ -123,7 +127,7 @@ test("Webhook 事件推送：验签失败 403、通过则 ACK 并被动回复", 
     },
   };
   const bodyText = JSON.stringify(payload);
-  const timestamp = "1725442341";
+  const timestamp = freshTimestamp();
   const sigHex = await signRequestBody(secret, timestamp, bodyText);
 
   // --- 验签失败场景 ---
@@ -219,13 +223,14 @@ test("Webhook 知识树指令：拉取 roadmap.json 并回复进度", async () =
 
   const payload = { id: "evt2", op: 0, s: 1, t: "GROUP_AT_MESSAGE_CREATE", d: { id: "msg2", group_openid: "G2", author: { member_openid: "u" }, content: "知识树", msg_type: 0 } };
   const bodyText = JSON.stringify(payload);
-  const sigHex = await signRequestBody(secret, "1725442341", bodyText);
+  const timestamp = freshTimestamp();
+  const sigHex = await signRequestBody(secret, timestamp, bodyText);
 
   let bg = null;
   const response = await handleQqBotWebhook(
     new Request("https://example.com/api/qq-bot", {
       method: "POST",
-      headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": "1725442341" },
+      headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": timestamp },
       body: bodyText,
     }),
     env,
@@ -264,13 +269,14 @@ test("Webhook AI 指令：走配置的 OpenAI 兼容端点", async () => {
 
   const payload = { id: "evt3", op: 0, s: 1, t: "GROUP_AT_MESSAGE_CREATE", d: { id: "msg3", group_openid: "G3", author: { member_openid: "u" }, content: "AI 搜索怎么入门", msg_type: 0 } };
   const bodyText = JSON.stringify(payload);
-  const sigHex = await signRequestBody(secret, "1725442341", bodyText);
+  const timestamp = freshTimestamp();
+  const sigHex = await signRequestBody(secret, timestamp, bodyText);
 
   let bg = null;
   const response = await handleQqBotWebhook(
     new Request("https://example.com/api/qq-bot", {
       method: "POST",
-      headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": "1725442341" },
+      headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": timestamp },
       body: bodyText,
     }),
     env,
@@ -288,6 +294,159 @@ test("Webhook AI 指令：走配置的 OpenAI 兼容端点", async () => {
   const sendCall = calls.find((c) => c.url.includes("/v2/groups/G3/messages"));
   assert.ok(sendCall, "应回复 AI 结果");
   assert.ok(JSON.parse(sendCall.body).content.includes("DFS 与 BFS"));
+
+  delete globalThis.fetch;
+});
+
+// ── 重放与重复投递（审计 AUDIT-2026-10-02 §4.2）─────────────────────────────
+// ed25519 签名本身没有时效：截获一份已签名请求就能反复重放（重复回复、重复烧 LLM 额度），
+// 因此验签通过后还要看 X-Signature-Timestamp 是否落在 ±300 s 窗口内。
+test("Webhook 过期时间戳的重放被拒绝，不调度任何业务处理", async () => {
+  const secret = "naOC0ocQE3shWLAfffVLB1rhYPG7";
+  const env = { QQ_BOT_SECRET: secret, QQ_APP_ID: "11111111", QQ_CLIENT_SECRET: "cs", QQ_DATA_URL: "https://example.com" };
+  const payload = { id: "replay-001", op: 0, s: 1, t: "GROUP_AT_MESSAGE_CREATE", d: { id: "msg-replay", group_openid: "G-REPLAY", content: "今日复习" } };
+  const bodyText = JSON.stringify(payload);
+  const now = Math.floor(Date.now() / 1000);
+
+  // ±310 s 已越过窗口；一天前/一天后是典型的截获重放。
+  for (const offset of [-86400, -3600, -310, 310, 3600, 86400]) {
+    const timestamp = String(now + offset);
+    const sigHex = await signRequestBody(secret, timestamp, bodyText);
+    let scheduled = false;
+    const response = await handleQqBotWebhook(new Request("https://example.com/api/qq-bot", {
+      method: "POST",
+      headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": timestamp },
+      body: bodyText,
+    }), env, { waitUntil() { scheduled = true; } });
+    assert.equal(response.status, 403, `偏移 ${offset}s 的时间戳必须被拒绝`);
+    assert.equal(scheduled, false, "被拒绝的请求不能调度业务处理");
+  }
+});
+
+test("Webhook 时间戳窗口内的签名照常处理（±290 s）", async () => {
+  const secret = "naOC0ocQE3shWLAfffVLB1rhYPG7";
+  const env = { QQ_BOT_SECRET: secret, QQ_APP_ID: "11111111", QQ_CLIENT_SECRET: "cs", QQ_BOT_NAME: "", QQ_DATA_URL: "https://example.com" };
+  globalThis.fetch = async (url) => {
+    if (String(url).includes("overview.json")) {
+      return new Response(JSON.stringify({ members: [], reviewQueue: [], heatmap: { byMember: {} }, recent30: { byMember: {} } }), { status: 200 });
+    }
+    if (String(url).includes("getAppAccessToken")) return new Response(JSON.stringify({ access_token: "T", expires_in: "7200" }), { status: 200 });
+    return new Response(JSON.stringify({ id: "send" }), { status: 200 });
+  };
+  const now = Math.floor(Date.now() / 1000);
+  for (const offset of [-290, 0, 290]) {
+    const payload = { id: `window-${offset}`, op: 0, s: 1, t: "GROUP_AT_MESSAGE_CREATE", d: { id: "msg-window", group_openid: `G-WINDOW-${offset}`, content: "今日复习" } };
+    const bodyText = JSON.stringify(payload);
+    const timestamp = String(now + offset);
+    const sigHex = await signRequestBody(secret, timestamp, bodyText);
+    let bg = null;
+    const response = await handleQqBotWebhook(new Request("https://example.com/api/qq-bot", {
+      method: "POST",
+      headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": timestamp },
+      body: bodyText,
+    }), env, { waitUntil(p) { bg = p; } });
+    assert.equal(response.status, 200, `偏移 ${offset}s 应在窗口内放行`);
+    await bg;
+  }
+  delete globalThis.fetch;
+});
+
+test("Webhook AI 指令按群限流：超过配额后不再调用付费 LLM", async () => {
+  const secret = "naOC0ocQE3shWLAfffVLB1rhYPG7";
+  const env = {
+    QQ_BOT_SECRET: secret, QQ_APP_ID: "11111111", QQ_CLIENT_SECRET: "cs", QQ_BOT_NAME: "",
+    QQ_DATA_URL: "https://example.com",
+    QQ_LLM_API_KEY: "sk-test", QQ_LLM_BASE_URL: "https://llm.example.com", QQ_LLM_MODEL: "deepseek-chat",
+  };
+  const llmCalls = [];
+  const sends = [];
+  globalThis.fetch = async (url, options = {}) => {
+    const u = String(url);
+    if (u.includes("overview.json")) return new Response(JSON.stringify({ members: ["廖夏"] }), { status: 200 });
+    if (u.includes("getAppAccessToken")) return new Response(JSON.stringify({ access_token: "T", expires_in: "7200" }), { status: 200 });
+    if (u.includes("chat/completions")) {
+      llmCalls.push(JSON.parse(options.body));
+      return new Response(JSON.stringify({ choices: [{ message: { content: "答" } }] }), { status: 200 });
+    }
+    if (u.includes("/v2/groups/")) { sends.push(JSON.parse(options.body)); return new Response(JSON.stringify({ id: "s" }), { status: 200 }); }
+    return new Response(JSON.stringify({ code: 404 }), { status: 404 });
+  };
+
+  // 群 id 用随机值：频控表是模块级 isolate 内存态，会在同一进程的用例之间共享。
+  const group = `G-AI-${crypto.randomUUID()}`;
+  const timestamp = freshTimestamp();
+  const background = [];
+  for (let index = 0; index < 8; index += 1) {
+    const payload = {
+      id: `ai-rate-${index}-${crypto.randomUUID()}`, op: 0, s: 1, t: "GROUP_AT_MESSAGE_CREATE",
+      d: { id: `msg-ai-${index}`, group_openid: group, author: { member_openid: "u" }, content: `AI 第 ${index} 个问题`, msg_type: 0 },
+    };
+    const bodyText = JSON.stringify(payload);
+    const sigHex = await signRequestBody(secret, timestamp, bodyText);
+    const response = await handleQqBotWebhook(new Request("https://example.com/api/qq-bot", {
+      method: "POST",
+      headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": timestamp },
+      body: bodyText,
+    }), env, { waitUntil(p) { background.push(p); } });
+    assert.equal(response.status, 200);
+  }
+  await Promise.all(background);
+
+  // 每分钟 6 次的配额：前 6 次打 LLM，后 2 次只回提示（群成员无法无限烧额度）。
+  assert.equal(llmCalls.length, 6, "超过配额的请求不得再调用付费 LLM");
+  assert.equal(sends.length, 8, "每次仍然给群一个回复");
+  assert.match(sends.at(-1).content, /过于频繁/);
+
+  delete globalThis.fetch;
+});
+
+test("Webhook 同一 payload.id 重复投递只处理一次，且仍然回 ACK", async () => {
+  const secret = "naOC0ocQE3shWLAfffVLB1rhYPG7";
+  const env = { QQ_BOT_SECRET: secret, QQ_APP_ID: "11111111", QQ_CLIENT_SECRET: "cs", QQ_BOT_NAME: "", QQ_DATA_URL: "https://example.com" };
+  const calls = [];
+  globalThis.fetch = async (url, options = {}) => {
+    calls.push({ url: String(url), body: options.body });
+    if (String(url).includes("overview.json")) {
+      return new Response(JSON.stringify({
+        members: ["廖夏"],
+        reviewQueue: [{ member: "廖夏", problem: "P1001 A+B", problemNumber: "P1001", platform: "洛谷", reviewDue: "2020-01-01" }],
+        heatmap: { byMember: {} },
+        recent30: { byMember: {} },
+      }), { status: 200 });
+    }
+    if (String(url).includes("getAppAccessToken")) return new Response(JSON.stringify({ access_token: "T", expires_in: "7200" }), { status: 200 });
+    if (String(url).includes("/v2/groups/")) return new Response(JSON.stringify({ id: "s" }), { status: 200 });
+    return new Response(JSON.stringify({ code: 404 }), { status: 404 });
+  };
+
+  // 事件 id 用随机值：去重表是模块级 isolate 内存态，会在同一进程的用例之间共享。
+  const payload = { id: `dedup-${crypto.randomUUID()}`, op: 0, s: 1, t: "GROUP_AT_MESSAGE_CREATE", d: { id: "msg-dedup", group_openid: "G-DEDUP", author: { member_openid: "u" }, content: "今日复习", msg_type: 0 } };
+  const bodyText = JSON.stringify(payload);
+  const timestamp = freshTimestamp();
+  const sigHex = await signRequestBody(secret, timestamp, bodyText);
+  const background = [];
+  const deliver = () => handleQqBotWebhook(new Request("https://example.com/api/qq-bot", {
+    method: "POST",
+    headers: { "X-Signature-Ed25519": sigHex, "X-Signature-Timestamp": timestamp },
+    body: bodyText,
+  }), env, { waitUntil(promise) { background.push(promise); } });
+
+  const first = await deliver();
+  const replay = await deliver();
+  const third = await deliver();
+
+  // 重复投递仍要回 op 12 ACK：不回 ACK 的话 QQ 会一直重推。
+  for (const response of [first, replay, third]) {
+    assert.equal(response.status, 200);
+    const ack = await response.json();
+    assert.equal(ack.op, 12);
+    assert.equal(ack.d.id, payload.id);
+  }
+  await Promise.all(background);
+
+  const sends = calls.filter((call) => call.url.includes("/v2/groups/G-DEDUP/messages"));
+  assert.equal(sends.length, 1, "同一个事件只能触发一次被动回复");
+  assert.equal(background.length, 1, "重复投递不应再调度业务处理");
 
   delete globalThis.fetch;
 });

@@ -44,7 +44,10 @@ const PROBLEMS = [
 ];
 
 function existingFor(problems, updatedAt) {
-  const files = [{ path: `${ROOT}/meta.json`, sha: gitSha(JSON.stringify(metaFromProblems(problems, updatedAt), null, 2)) }];
+  // meta.json 的落盘口径是「2 空格缩进 + 尾随换行」（与 logs-v2 的 textChanges 一致，
+  // 见 workers/services/log-planning.mjs）。fixture 必须用同一口径，否则「什么都没改」
+  // 会因为差一个换行而被判成需要重写。
+  const files = [{ path: `${ROOT}/meta.json`, sha: gitSha(`${JSON.stringify(metaFromProblems(problems, updatedAt), null, 2)}\n`) }];
   problems.forEach((p, i) => {
     files.push({ path: `${ROOT}/${i}-takeaway.md`, sha: gitSha(p.takeaway || "") });
     if (p.description) files.push({ path: `${ROOT}/${i}-desc.md`, sha: gitSha(p.description) });
@@ -108,7 +111,7 @@ test("planLogChanges skips every unchanged file when nothing changed", async () 
 
 test("planLogChanges rewrites meta.json when only updatedAt changed", async () => {
   const changes = await planLogChanges(PROBLEMS, existingFor(PROBLEMS, UPDATED_AT), ROOT, "2026-08-12T00:00:00.000+08:00");
-  assert.deepEqual(changes, [{ path: `${ROOT}/meta.json`, content: JSON.stringify(metaFromProblems(PROBLEMS, "2026-08-12T00:00:00.000+08:00"), null, 2) }]);
+  assert.deepEqual(changes, [{ path: `${ROOT}/meta.json`, content: `${JSON.stringify(metaFromProblems(PROBLEMS, "2026-08-12T00:00:00.000+08:00"), null, 2)}\n` }]);
 });
 
 test("planLogChanges only rewrites the file that actually changed", async () => {

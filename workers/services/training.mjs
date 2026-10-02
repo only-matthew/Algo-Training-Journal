@@ -9,7 +9,8 @@ import {
 import { subjectKeyForProblem } from "../../lib/problem-identity.mjs";
 import { foldTrainingEvents, projectReviewSchedule } from "../../lib/training-projections.mjs";
 import { runGitTransaction } from "../storage/git-transaction.mjs";
-import { toUtc8 } from "../../lib/constants.mjs";
+import { todayUtc8 } from "../../lib/constants.mjs";
+import { addDaysToDate } from "../../lib/date-string.mjs";
 import { isDateString } from "../../lib/log-schema.mjs";
 
 export class TrainingServiceError extends Error {
@@ -121,8 +122,9 @@ function fileChange(path, value) {
   return { path, content: `${canonicalJson(value)}\n` };
 }
 
+// 纯 UTC 日历加法，与前端/构建期同一实现（lib/date-string.mjs）。
 function addDays(date, days) {
-  return new Date(Date.parse(`${date}T00:00:00Z`) + days * 86400000).toISOString().slice(0, 10);
+  return addDaysToDate(date, days);
 }
 
 async function readOwned(snapshot, path, validator, memberId) {
@@ -237,7 +239,7 @@ export function createTrainingService({ git, now = () => new Date().toISOString(
         const document = validatePlan({ schemaVersion: TRAINING_SCHEMA_VERSION, memberId, updatedAt: now(), ...input });
         const path = trainingPaths(memberId).plan(document.date);
         const previous = await readOwned(snapshot, path, validatePlan, memberId);
-        const today = toUtc8(now()).slice(0, 10);
+        const today = todayUtc8(now());
         if ((!previous && document.date < today) || document.date > addDays(today, 365)) throw new TrainingServiceError("VALIDATION_FAILED", "新计划日期必须在今天至未来 365 天以内");
         const previousItems = new Map((previous?.items || []).map((item) => [item.id, item]));
         for (const item of document.items) {
@@ -268,7 +270,7 @@ export function createTrainingService({ git, now = () => new Date().toISOString(
         const paths = trainingPaths(memberId);
         await assertPrecondition(snapshot, preconditions, `plan:${action.date}`, [paths.plan(action.date)]);
         if (action.action === "defer") {
-          if (!isDateString(action.targetDate) || action.targetDate <= action.date || action.targetDate > addDays(toUtc8(now()).slice(0, 10), 365)) throw new TrainingServiceError("VALIDATION_FAILED", "延期日期须晚于原日期且不超过未来 365 天");
+          if (!isDateString(action.targetDate) || action.targetDate <= action.date || action.targetDate > addDays(todayUtc8(now()), 365)) throw new TrainingServiceError("VALIDATION_FAILED", "延期日期须晚于原日期且不超过未来 365 天");
           await assertPrecondition(snapshot, preconditions, `plan:${action.targetDate}`, [paths.plan(action.targetDate)]);
         } else if (action.targetDate !== undefined) throw new TrainingServiceError("VALIDATION_FAILED", "只有延期操作可提供目标日期");
       },

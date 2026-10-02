@@ -39,13 +39,12 @@ test("dueDateInDays 按固定基准日期计算", () => {
   assert.equal(dueDateInDays(1, new Date("2026-07-31T23:00:00")), "2026-08-01");
 });
 
-test("dueDateInDays 默认使用当前时间且格式为 YYYY-MM-DD", () => {
+test("dueDateInDays 默认使用当前时间且格式为 YYYY-MM-DD（UTC+8 口径）", () => {
   const result = dueDateInDays(3);
   assert.match(result, /^\d{4}-\d{2}-\d{2}$/);
-  const expected = new Date();
-  expected.setDate(expected.getDate() + 3);
-  const y = expected.getFullYear();
-  const m = String(expected.getMonth() + 1).padStart(2, "0");
-  const d = String(expected.getDate()).padStart(2, "0");
-  assert.equal(result, `${y}-${m}-${d}`);
+  // 期望值按「UTC+8 的今天 + 3 天」独立推算。旧写法用本地 setDate/getDate 重算，
+  // 在非东八区环境会与实现一起偏、在 UTC+8 又只是复述实现（审计 §3.5）。
+  const shifted = new Date(Date.now() + 8 * 3600 * 1000);
+  const expected = new Date(Date.UTC(shifted.getUTCFullYear(), shifted.getUTCMonth(), shifted.getUTCDate() + 3)).toISOString().slice(0, 10);
+  assert.equal(result, expected);
 });

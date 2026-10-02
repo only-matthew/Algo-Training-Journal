@@ -38,6 +38,8 @@ const LLM = {
 
 const INTENTS_GROUP_AND_C2C = 1 << 25; // GROUP_AND_C2C_EVENT：群 @ 消息 / 加群事件等
 const RECONNECT_DELAY_MS = 5000;
+// 站点数据请求的时限：常驻进程里挂住的 fetch 会让心跳停摆（审计 §3.3）。
+const DATA_TIMEOUT_MS = 10000;
 
 if (!APP_ID || !CLIENT_SECRET || !BOT_TOKEN) {
   console.error("缺少环境变量：需要 QQ_APP_ID、QQ_CLIENT_SECRET、QQ_BOT_TOKEN");
@@ -56,13 +58,13 @@ async function ensureToken() {
 }
 
 async function fetchOverview() {
-  const response = await fetch(`${DATA_URL}/data/overview.json`);
+  const response = await fetch(`${DATA_URL}/data/overview.json`, { signal: AbortSignal.timeout(DATA_TIMEOUT_MS) });
   if (!response.ok) throw new Error(`站点数据加载失败（HTTP ${response.status}）`);
   return response.json();
 }
 
 async function fetchRoadmap() {
-  const response = await fetch(`${DATA_URL}/data/roadmap.json`);
+  const response = await fetch(`${DATA_URL}/data/roadmap.json`, { signal: AbortSignal.timeout(DATA_TIMEOUT_MS) });
   if (!response.ok) throw new Error(`知识树数据加载失败（HTTP ${response.status}）`);
   return response.json();
 }

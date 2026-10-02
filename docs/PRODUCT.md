@@ -1,6 +1,6 @@
 # 产品：个人训练闭环
 
-版本：2026-09-29。本文是当前产品方向；当前工作区实现与线上状态的边界见 [SPECIFICATION.md](SPECIFICATION.md)，审计证据见 [PRODUCT-AUDIT.md](PRODUCT-AUDIT.md)。
+版本：2026-09-29。本文是当前产品方向；当前工作区实现与线上状态的边界见 [SPECIFICATION.md](SPECIFICATION.md)，审计证据见 [Audit/PRODUCT-AUDIT.md](Audit/PRODUCT-AUDIT.md)，审计报告与修复记录见 [Audit/AUDIT-2026-10-02.md](Audit/AUDIT-2026-10-02.md)。
 
 ## 服务谁，解决什么
 

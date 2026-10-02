@@ -17,7 +17,7 @@
     "test:e2e": "npm run build && playwright test",
     "test:e2e:ci": "playwright test",
     "check:syntax": "node scripts/check-syntax.mjs",
-    "check:lint": "eslint src/*.js lib scripts workers bot",
+    "check:lint": "eslint src/*.js lib scripts workers bot test e2e eslint.config.mjs playwright.config.mjs",
     "preview": "node scripts/preview-ui.mjs",
     "smoke:attachment": "node scripts/smoke-attachment.mjs",
     "smoke:details": "node scripts/smoke-details.mjs",

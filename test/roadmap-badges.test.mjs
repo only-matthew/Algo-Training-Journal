@@ -7,7 +7,6 @@ import assert from "node:assert/strict";
 import {
   LUOGU_DIFFICULTY_PALETTE,
   NODE_DIFFICULTY_PALETTE,
-  EVIDENCE_STATE_TONES,
   auditBadgeContrast,
   contrastRatio,
   evidenceStateTone,

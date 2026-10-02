@@ -1,8 +1,11 @@
 export const REPO = "only-matthew/Algo-Training-Journal";
 export const BRANCH = "main";
+// Worker 唯一的 GitHub 出口：没有超时的话，上游一次抖动会同时挂死提交、导入与复习操作，
+// 客户端只能等网络层超时而不是拿到结构化 5xx（审计 AUDIT-2026-10-02 §3.3）。
+export const GH_TIMEOUT_MS = 15000;
 export function ghHeaders(token) { return { Authorization: `Bearer ${token}`, Accept: "application/vnd.github+json", "User-Agent": "Algo-Training-Journal-Worker", "X-GitHub-Api-Version": "2022-11-28" }; }
 export async function gh(path, token, options = {}) {
-  const response = await fetch(path.startsWith("http") ? path : `https://api.github.com/repos/${REPO}${path}`, { ...options, headers: { ...ghHeaders(token), ...(options.headers || {}) } });
+  const response = await fetch(path.startsWith("http") ? path : `https://api.github.com/repos/${REPO}${path}`, { ...options, signal: options.signal ?? AbortSignal.timeout(GH_TIMEOUT_MS), headers: { ...ghHeaders(token), ...(options.headers || {}) } });
   const remaining = parseInt(response.headers.get("X-RateLimit-Remaining"), 10);
   if (remaining === 0) {
     const resetTime = parseInt(response.headers.get("X-RateLimit-Reset"), 10);

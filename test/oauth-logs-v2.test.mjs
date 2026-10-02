@@ -14,6 +14,8 @@ const SECRET = "test-session-secret";
 const LOGIN = "only-matthew";
 const MEMBER = "廖夏";
 const CSRF = "csrf-logs-v2";
+// 会话里封的 GitHub token；mock 会断言每个 GitHub 请求都带它（审计 §3.5）。
+const TOKEN = "token";
 const OP = "4fd06885-a6ed-43b4-9ba6-ec8875638cdf";
 const DATE = "2026-09-15";
 const LEGACY_INDEX = `training/members/${LOGIN}/indexes/legacy.json`;
@@ -66,6 +68,9 @@ function githubMock() {
       fetchCount += 1;
       const url = String(input);
       const method = options.method || "GET";
+      // 鉴权头是 Worker 访问 GitHub 的唯一凭证：一旦被 options.headers 覆盖或 token
+      // 变成 undefined，线上全部读写都会 401，而测试曾经一条都没有断言过（审计 §3.5）。
+      assert.equal(options.headers?.Authorization, `Bearer ${TOKEN}`, `GitHub 请求必须带 Bearer 鉴权头：${method} ${url}`);
       if (!url.startsWith(API)) throw new Error(`unexpected fetch ${method} ${url}`);
       const path = decodeURIComponent(url.slice(`${API}/`.length).split("?")[0]);
 
@@ -150,7 +155,7 @@ function githubMock() {
 }
 
 function sessionCookie() {
-  return seal({ token: "token", login: LOGIN, member: MEMBER, csrfToken: CSRF, exp: Date.now() + 600000 }, SECRET);
+  return seal({ token: TOKEN, login: LOGIN, member: MEMBER, csrfToken: CSRF, exp: Date.now() + 600000 }, SECRET);
 }
 
 async function call(github, path, init) {
@@ -597,4 +602,128 @@ test("单题复习 PATCH 对不存在的记录返回 404 且不改动仓库", as
   assert.equal(missing.status, 404);
   assert.equal((await missing.json()).error.code, "NOT_FOUND");
   assert.equal(github.commits, commitsBefore, "找不到记录时不得产生提交");
+});
+
+// ── 会话与请求处理的纵深防御（审计 AUDIT-2026-10-02 §4.1 / §4.2）──────────────
+// 这些用例走的是同一个 Worker 入口，覆盖的却是与日志写入无关的防线，因此集中放在文件末尾。
+test("缺少 SESSION_SECRET 时明确 500，不用 SHA-256(\"undefined\") 当密钥", async () => {
+  const cookie = await sessionCookie();
+  const response = await worker.fetch(new Request("https://train.xialiao.org/api/session", {
+    headers: { Cookie: `__Host-journal_session=${cookie}` },
+  }), {});
+  assert.equal(response.status, 500);
+  const body = await response.json();
+  assert.equal(body.code, "SERVER_MISCONFIGURED");
+  // 内部错误信息不外泄。
+  assert.doesNotMatch(JSON.stringify(body), /SESSION_SECRET|undefined|SHA-256/);
+
+  // 空字符串与只含空白的密钥同样算没配。
+  for (const bad of ["", "   "]) {
+    const blank = await worker.fetch(new Request("https://train.xialiao.org/api/session"), { SESSION_SECRET: bad });
+    assert.equal(blank.status, 500);
+  }
+
+  // OAuth 入口同样 fail-fast，而不是发出一个用 undefined client_id 拼出的授权地址。
+  const login = await worker.fetch(new Request("https://algo-oauth.xialiao.org/auth/login"), { SESSION_SECRET: SECRET });
+  assert.equal(login.status, 500);
+  assert.equal((await login.json()).code, "SERVER_MISCONFIGURED");
+
+  // 公开的能力探测不需要密钥，不能被这条防线连带打断。
+  const capabilities = await worker.fetch(new Request("https://algo-oauth.xialiao.org/api/capabilities"), {});
+  assert.equal(capabilities.status, 200);
+});
+
+test("/api/logout 同时清除新旧两个会话 Cookie，并给 JSON 响应加 nosniff", async () => {
+  const response = await worker.fetch(new Request("https://train.xialiao.org/api/logout", {
+    method: "DELETE",
+    headers: { Origin: "https://train.xialiao.org" },
+  }), { SESSION_SECRET: SECRET });
+  assert.equal(response.status, 200);
+  assert.deepEqual(await response.json(), { ok: true });
+  const setCookies = response.headers.getSetCookie();
+  assert.equal(setCookies.length, 2, "旧 Cookie 与当前 Cookie 都要清");
+  assert.match(setCookies[0], /^__Host-journal_session=; Path=\/; HttpOnly; Secure; SameSite=Lax; Max-Age=0$/);
+  assert.match(setCookies[1], /^journal_session=; Path=\/; HttpOnly; Secure; SameSite=Lax; Max-Age=0$/);
+  assert.equal(response.headers.get("X-Content-Type-Options"), "nosniff");
+});
+
+test("DELETE 的请求体：只有真的为空才降级，畸形 JSON 返回 400", async (context) => {
+  const github = githubMock();
+  context.mock.method(globalThis, "fetch", github.fetch);
+  const headers = { Cookie: `__Host-journal_session=${await sessionCookie()}`, "X-CSRF-Token": CSRF, "Content-Type": "application/json" };
+  const url = "https://train.xialiao.org/api/logs/date?date=2026-09-15";
+
+  // 完全没带 body：正常的「没带版本」路径，428。
+  const empty = await worker.fetch(new Request(url, { method: "DELETE", headers }), { SESSION_SECRET: SECRET });
+  assert.equal(empty.status, 428);
+  assert.equal((await empty.json()).code, "PRECONDITION_REQUIRED");
+
+  // 带了非空但畸形的 body：不能吞掉当成「没带版本」，否则就绕过了版本校验。
+  const malformed = await worker.fetch(new Request(url, { method: "DELETE", headers, body: "{not json" }), { SESSION_SECRET: SECRET });
+  assert.equal(malformed.status, 400);
+  assert.match((await malformed.json()).error, /JSON/);
+  assert.equal(github.fetchCount, 0, "被拒绝的请求不得触碰 GitHub");
+});
+
+test("旧接口遇到损坏的 meta.json 时 502，不把它当成「没有历史记录」继续写", async (context) => {
+  // 与 §4.1 同源：把「文件不存在」与「文件损坏」合并处理，会让损坏的那天被当成空记录重写，
+  // 静默清空 statementImages / statementAttachment 引用。这条用例走旧接口（/api/logs/date）。
+  const github = githubMock();
+  seedLegacyIndex(github);
+  context.mock.method(globalThis, "fetch", github.fetch);
+  const root = `logs/${MEMBER}/2026/09/15`;
+  github.setFile(`${root}/meta.json`, "{ 这不是 JSON");
+  github.setFile(`${root}/0-desc.md`, "正文");
+
+  const response = await call(github, "/api/logs/date?date=2026-09-15", {
+    method: "PUT",
+    headers: { "X-CSRF-Token": CSRF, "Content-Type": "application/json" },
+    body: JSON.stringify({ problems: [{ id: "p1", name: "Loop", platform: "Codeforces", problemNumber: "123A", tags: [] }], expectedVersion: null }),
+  });
+  assert.equal(response.status, 502);
+  assert.equal((await response.json()).code, "STORAGE_UNAVAILABLE");
+  assert.equal(github.commits, 0, "元数据损坏时不得产生提交");
+});
+
+test("旧接口读回空 meta.json（截断写入）时显式 502，不静默当成空记录", async (context) => {
+  // 只有「目录列表里没有这个文件」或「读回 404（并发删除）」才算没有历史记录；
+  // 文件存在但内容为空说明它被截断，按损坏处理，避免静默清空图片引用。
+  const github = githubMock();
+  seedLegacyIndex(github);
+  context.mock.method(globalThis, "fetch", github.fetch);
+  const root = `logs/${MEMBER}/2026/09/15`;
+  github.setFile(`${root}/meta.json`, "");
+
+  const response = await call(github, "/api/logs/date?date=2026-09-15", {
+    method: "PUT",
+    headers: { "X-CSRF-Token": CSRF, "Content-Type": "application/json" },
+    body: JSON.stringify({ problems: [{ id: "p1", name: "Loop", platform: "Codeforces", problemNumber: "123A", tags: [] }], expectedVersion: null }),
+  });
+  assert.equal(response.status, 502);
+  assert.equal((await response.json()).code, "STORAGE_UNAVAILABLE");
+  assert.equal(github.commits, 0);
+});
+
+test("旧接口遇到「列目录说有、读回却 404」时继续，由版本校验（而不是 502）拦下", async (context) => {
+  // 并发删除的窗口：raw == null 与「解析失败」必须走不同分支——前者是「没有历史记录」，
+  // 请求会继续到版本校验；后者立刻 502（上一条用例）。
+  const github = githubMock();
+  seedLegacyIndex(github);
+  const root = `logs/${MEMBER}/2026/09/15`;
+  github.setFile(`${root}/meta.json`, JSON.stringify({ schemaVersion: 8, problems: [] }));
+  const inner = github.fetch;
+  context.mock.method(globalThis, "fetch", async (input, options) => {
+    if (String(input).includes(`/${root}/meta.json?`)) return new Response(JSON.stringify({ message: "Not Found" }), { status: 404, headers: { "Content-Type": "application/json", "X-RateLimit-Remaining": "4900" } });
+    return inner(input, options);
+  });
+
+  const response = await call(github, "/api/logs/date?date=2026-09-15", {
+    method: "PUT",
+    headers: { "X-CSRF-Token": CSRF, "Content-Type": "application/json" },
+    body: JSON.stringify({ problems: [{ id: "p1", name: "Loop", platform: "Codeforces", problemNumber: "123A", tags: [] }], expectedVersion: null }),
+  });
+  // 目录里确实有这个日期的文件，所以「无版本写入」被 409 拒绝；关键是它不是 502。
+  assert.equal(response.status, 409);
+  assert.equal((await response.json()).code, "VERSION_CONFLICT");
+  assert.equal(github.commits, 0);
 });

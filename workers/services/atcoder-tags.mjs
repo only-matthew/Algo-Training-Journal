@@ -17,6 +17,9 @@ const TAG_DICTIONARY_URL = `${LUOGU_ORIGIN}/_lfe/tags`;
 const TAG_DICTIONARY_TTL_MS = 6 * 60 * 60 * 1000;
 const LENTILLE_CONTEXT = /<script[^>]*id=["']lentille-context["'][^>]*>([\s\S]*?)<\/script>/i;
 const LIST_TIMEOUT_MS = 8000;
+// 标签字典也是上游请求：注释里承诺「取不到标签不影响导入」，那就必须带上超时，
+// 否则一次挂起的请求会拖住整条导入链路（审计 §3.3）。
+const DICTIONARY_TIMEOUT_MS = 10000;
 // 一次导入最多补几场比赛的标签、同时打几个列表页请求：都在 Worker 子请求预算之内。
 const MAX_CONTESTS = 6;
 const LIST_CONCURRENCY = 3;
@@ -27,9 +30,9 @@ let dictionaryCache = null;
 export function clearLuoguTagDictionaryCache() { dictionaryCache = null; }
 
 /** 洛谷标签字典（id → {name,type}），按 isolate 缓存 6 小时。 */
-export async function loadLuoguTagDictionary({ fetchImpl = fetch, now = Date.now(), force = false } = {}) {
+export async function loadLuoguTagDictionary({ fetchImpl = fetch, now = Date.now(), force = false, signal = null } = {}) {
   if (!force && dictionaryCache && now - dictionaryCache.fetchedAt < TAG_DICTIONARY_TTL_MS) return dictionaryCache.byId;
-  const response = await fetchImpl(TAG_DICTIONARY_URL, { headers: BROWSER_HEADERS });
+  const response = await fetchImpl(TAG_DICTIONARY_URL, { headers: BROWSER_HEADERS, signal: signal ?? AbortSignal.timeout(DICTIONARY_TIMEOUT_MS) });
   if (!response.ok) throw new Error("洛谷标签字典不可用");
   const body = await response.json();
   const byId = new Map();

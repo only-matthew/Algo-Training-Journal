@@ -1,8 +1,8 @@
 # 当前实现与验收口径
 
-更新日期：2026-10-02。这里记录当前可核对的实现；线上是否生效以部署结果为准。[PRODUCT.md](PRODUCT.md) 是产品方向，[SPECIFICATION.md](SPECIFICATION.md) 是实现契约与验收，[HANDOFF.md](HANDOFF.md) 是按日期保存的交接记录。带日期的审计数字以 [PRODUCT-AUDIT.md](PRODUCT-AUDIT.md) 为快照，不代表实时使用量。
+更新日期：2026-10-02。这里记录当前可核对的实现；线上是否生效以部署结果为准。[PRODUCT.md](PRODUCT.md) 是产品方向，[SPECIFICATION.md](SPECIFICATION.md) 是实现契约与验收，[HANDOFF.md](HANDOFF.md) 是按日期保存的交接记录。带日期的审计数字以 [Audit/PRODUCT-AUDIT.md](Audit/PRODUCT-AUDIT.md) 为快照，不代表实时使用量；最近一次全栈审计与修复记录见 [Audit/AUDIT-2026-10-02.md](Audit/AUDIT-2026-10-02.md)。
 
-当前工作区已完成两份审计中的代码修复：安全入口、构建正确性、默认复习建议、同题重做、个人清单、空心得清理、场次展示、周期报告、同题提示和旧状态来源标记。`npm run verify` 与 15 项 Chromium 回归通过。这些改动已在 2026-10-02 提交（`9b2fa2c`）并发布，线上 `buildCommit` 已核验；本次仅更新发布状态与 schema 版本号，没有重新运行 Chromium 回归。详见 [技术审计当前进展](PROBLEM-AUDIT.md)与[产品审计当前进展](PRODUCT-AUDIT.md)。
+当前工作区包含两轮修复：第一轮是两份审计中的安全入口、构建正确性、默认复习建议、同题重做、个人清单、空心得清理、场次展示、周期报告、同题提示和旧状态来源标记，已在 2026-10-02 提交（`9b2fa2c`）并发布；第二轮按当天的[全栈审计](Audit/AUDIT-2026-10-02.md)逐项修复了题面解析 DoS、保存丢审计字段、三套"今天"口径、写入层重复实现、网络无超时、门禁覆盖面等问题，逐项状态与验收证据见该报告 §8。第二轮验收：`npm run verify` 通过（**单测 612 项全绿**），`npx playwright test` **17/17 通过**，浏览器回归自本轮起在 `checks.yml` 的 `e2e` job 中执行。详见 [技术审计当前进展](Audit/PROBLEM-AUDIT.md)与[产品审计当前进展](Audit/PRODUCT-AUDIT.md)。
 
 ## 现在是什么
 
@@ -20,5 +20,5 @@
 ## 验收与观察
 
 - 完整本地门禁：`npm run verify`；浏览器回归：首次准备好 Chromium 后运行 `npm run test:e2e`，已有站点构建时可用 `npm run test:e2e:ci`。推送 `main` 后：若本次推送改动了 Worker 输入，确认 Workers Builds 成功且 `GET /api/capabilities` 返回本次提交；否则只需确认匿名 `GET /api/capabilities` 的 schema 范围仍兼容、`GET /api/session` 为 200。两种情况都核对 GitHub Pages 发布与首页页脚版本。
-- 产品使用数据以 2026-09-27 的 [PRODUCT-AUDIT.md](PRODUCT-AUDIT.md) 为基线：3 名队员、157 个记录日、194 条题目记录；题单命中 141/2857，待复习 6/194，心得空或占位 42/194。这些是日志反推指标，不是页面点击量。
+- 产品使用数据以 2026-09-27 的 [Audit/PRODUCT-AUDIT.md](Audit/PRODUCT-AUDIT.md) 为基线：3 名队员、157 个记录日、194 条题目记录；题单命中 141/2857，待复习 6/194，心得空或占位 42/194。这些是日志反推指标，不是页面点击量。
 - 不把打卡数量用作个人排名或问责；缺失状态按未知处理。下一次审计应重新从源数据计算，不复制旧数字作为现值。

@@ -14,7 +14,9 @@
   <meta name="twitter:title" content="ICPC 算法训练日志" />
   <meta name="twitter:description" content="ICPC 算法训练日志，汇总队员的刷题记录、原创题解、复盘收获和代码。" />
   <meta name="robots" content="index,follow" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://algo-oauth.xialiao.org; img-src 'self' https://avatars.githubusercontent.com data:;" />
+  <!-- CSP 只能在这里加 meta 支持的三条：object-src 'none'、base-uri 'self'、form-action 'self'。
+       frame-ancestors（点击劫持防护）在 meta 里会被浏览器忽略，必须由部署层的 HTTP 响应头下发。 -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://algo-oauth.xialiao.org; img-src 'self' https://avatars.githubusercontent.com data:; object-src 'none'; base-uri 'self'; form-action 'self';" />
   <base href="/" />
   <title>ICPC 算法训练日志</title>
   <link rel="canonical" href="https://train.xialiao.org/" />

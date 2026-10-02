@@ -231,3 +231,23 @@ test("页面源码与题号或平台不符时返回可恢复的解析失败", as
   assert.equal((await wrongPlatform.json()).reason, "parse-failed");
   assert.equal(fetchImpl.calls.length, 0);
 });
+
+// 限流器（workers/oauth.mjs 的 rateExceeded）此前从未被真正测过：现有用例都是"绕开"它
+// （换账号），没有一条断言它会在超限时拒绝。限流改坏有两个方向都会出事——永不触发等于
+// 防滥用失效，误伤则是队员正常保存被 429 挡住。这里用第三个成员账号打满上限。
+const THIRD_ACTOR = { login: "seanist-isx", member: "郭一鸣" };
+
+test("题面接口按账号限流：前 10 次放行，第 11 次返回 RATE_LIMITED", async (context) => {
+  const fetchImpl = routedFetch([[/^https:\/\/codeforces\.com\//, () => new Response(CF_HTML)]]);
+  context.mock.method(globalThis, "fetch", fetchImpl);
+  const statuses = [];
+  for (let attempt = 1; attempt <= 11; attempt += 1) {
+    const response = await call({ platform: "Codeforces", problemNumber: "4A" }, THIRD_ACTOR);
+    statuses.push(response.status);
+    if (attempt === 11) {
+      assert.equal(response.status, 429);
+      assert.equal((await response.json()).error?.code, "RATE_LIMITED");
+    }
+  }
+  assert.deepEqual(statuses.slice(0, 10), Array.from({ length: 10 }, () => 200), `前 10 次必须放行，实际 ${statuses.join(",")}`);
+});

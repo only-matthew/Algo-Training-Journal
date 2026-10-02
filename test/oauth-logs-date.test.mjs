@@ -293,3 +293,19 @@ test("an If-Match header is accepted as the version source", async (context) => 
   const viaHeader = await call(github, "PUT", { problems: PROBLEMS }, { "X-CSRF-Token": CSRF, "If-Match": `"${loaded.revision}"` });
   assert.equal(viaHeader.status, 200, await viaHeader.clone().text());
 });
+
+test("GET 读到损坏的 meta.json 时返回结构化 502，而不是通用 500 或「没有记录」", async (context) => {
+  const github = githubMock();
+  // 目录里登记了 meta.json，但内容不是 JSON：这是数据损坏。旧实现直接 JSON.parse，
+  // 会冒泡成通用 500；若吞掉异常假装「这一天没有记录」，用户会以为什么都没发生过。
+  github.seed(`${ROOT}/meta.json`, "{ 这不是 JSON");
+  context.mock.method(globalThis, "fetch", github.fetch);
+
+  const response = await worker.fetch(new Request(`https://train.xialiao.org/api/logs/date?date=${DATE}`, {
+    headers: { Cookie: `__Host-journal_session=${await cookie()}` },
+  }), { SESSION_SECRET: SECRET, GITHUB_MOCK: github });
+
+  assert.equal(response.status, 502);
+  const body = await response.json();
+  assert.equal(body.code, "STORAGE_UNAVAILABLE");
+});

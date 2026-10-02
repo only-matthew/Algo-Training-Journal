@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { LOG_LIMITS, normalizeMeta, validateLogInput } from "../lib/log-schema.mjs";
+import { normalizeMeta, validateLogInput } from "../lib/log-schema.mjs";
 
 // ============================================================
 // CASE NORMALIZATION (大小写归一化)

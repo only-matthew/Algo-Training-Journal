@@ -1,5 +1,6 @@
-import { LOG_LIMITS, LOG_SCHEMA_VERSION, metaFromProblems, validateLogInput, isDateString } from "../../lib/log-schema.mjs";
-import { toUtc8 } from "../../lib/constants.mjs";
+import { LOG_LIMITS, LOG_SCHEMA_VERSION, metaFromProblems, validateLogInput, isDateString, problemAuditFields } from "../../lib/log-schema.mjs";
+import { todayUtc8 } from "../../lib/constants.mjs";
+import { ATTACHMENT_MAX_BYTES, ATTACHMENT_MAX_NEW_BYTES, MULTIPART_MAX_BYTES } from "../../lib/limits.mjs";
 import {
   MAX_NEW_STATEMENT_IMAGE_BYTES,
   MAX_STATEMENT_IMAGE_BYTES,
@@ -9,10 +10,13 @@ import {
   sniffStatementImageMime,
   statementImageFileName,
 } from "../../lib/statement-images.mjs";
+import { assignFileIndexes, gitBlobSha, logRoots } from "./log-paths.mjs";
 
-const MAX_MULTIPART_BYTES = 12 * 1024 * 1024;
-const MAX_NEW_ATTACHMENT_BYTES = 10 * 1024 * 1024;
-const PDF_LIMIT = 5 * 1024 * 1024;
+// 字节上限来自 lib/limits.mjs 单一来源：浏览器端选文件与这里保存必须用同一个数字，
+// 否则用户会"选好了文件、保存时才被 413"。
+const PDF_LIMIT = ATTACHMENT_MAX_BYTES;
+const MAX_NEW_ATTACHMENT_BYTES = ATTACHMENT_MAX_NEW_BYTES;
+const MAX_MULTIPART_BYTES = MULTIPART_MAX_BYTES;
 const MAX_RETRIES = 3;
 
 export class LogsV2Error extends Error {
@@ -42,22 +46,8 @@ async function digest(bytes) {
   return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
-async function gitBlobSha(value) {
-  const bytes = typeof value === "string" ? encoder.encode(value) : value;
-  const header = encoder.encode(`blob ${bytes.byteLength}\0`);
-  const combined = new Uint8Array(header.byteLength + bytes.byteLength);
-  combined.set(header); combined.set(bytes, header.byteLength);
-  const hash = await crypto.subtle.digest("SHA-1", combined);
-  return [...new Uint8Array(hash)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
-}
-
 function safeAttachmentName(name) {
   return String(name || "statement.pdf").replace(/[\r\n\\/]/g, " ").trim().slice(0, 200) || "statement.pdf";
-}
-
-function roots(member, date) {
-  const [year, month, day] = date.split("-");
-  return [`logs/${member}/${year}/${month}/${day}`, `logs/${member}/${date}`];
 }
 
 /**
@@ -286,7 +276,7 @@ async function decodeLog(snapshot, root, files, date, today) {
   return { exists: true, root, files, log: parsed, interval: { startedOn: parsed.startedOn, solvedOn: parsed.solvedOn } };
 }
 
-async function snapshotDate(git, head, member, date, today = toUtc8(new Date()).slice(0, 10)) {
+async function snapshotDate(git, head, member, date, today = todayUtc8()) {
   const snapshot = { head, readFile: (path) => git.readFile(head, path), readBytes: (path) => git.readBytes(head, path) };
   // The date version is a fingerprint of { path, blob sha }, so the adapter must
   // list entries with their Git blob SHA. `listFiles` only returns paths and
@@ -297,11 +287,11 @@ async function snapshotDate(git, head, member, date, today = toUtc8(new Date()).
     const paths = await git.listFiles({ head }, prefix);
     return paths.map((entry) => (typeof entry === "string" ? { path: entry } : entry));
   };
-  for (const root of roots(member, date)) {
+  for (const root of logRoots(member, date)) {
     const files = await listEntries(`${root}/`);
     if (files.length) return { snapshot, ...(await decodeLog(snapshot, root, files, date, today)) };
   }
-  const root = roots(member, date)[0];
+  const root = logRoots(member, date)[0];
   return { snapshot, ...(await decodeLog(snapshot, root, [], date, today)) };
 }
 
@@ -331,18 +321,10 @@ export function createLogsV2Service({ git, now = () => new Date().toISOString(),
     }
       const parsed = validateLogInput(validationLog, {
         recordDate: date,
-        today: toUtc8(now()).slice(0, 10),
+        today: todayUtc8(now()),
       });
     // Assign stable per-day file slots before constructing text and PDF paths.
-    const occupied = new Set(parsed.problems.filter((problem) => Number.isInteger(problem.fileIndex)).map((problem) => problem.fileIndex));
-    let nextFileIndex = 0;
-    for (const problem of parsed.problems) {
-      if (Number.isInteger(problem.fileIndex)) continue;
-      while (occupied.has(nextFileIndex)) nextFileIndex += 1;
-      problem.fileIndex = nextFileIndex;
-      occupied.add(nextFileIndex);
-      nextFileIndex += 1;
-    }
+    assignFileIndexes(parsed.problems);
     if (typeof expectedVersion !== "string" && expectedVersion !== null) throw new LogsV2Error("MALFORMED_REQUEST", "expectedVersion must be a version or null", 400);
     const requestHash = await digest(encoder.encode(canonical({ date, expectedVersion, log: parsed, attachmentChanges: attachmentChanges || [], attachments: [...attachments.entries()].map(([name, file]) => ({ name, sha256: file.sha256 })), images: [...images.keys()] })));
     const receiptPath = operationPath(memberId, operationId);
@@ -361,6 +343,10 @@ export function createLogsV2Service({ git, now = () => new Date().toISOString(),
         const old = oldById.get(problem.id); const action = changesById.get(problem.id)?.action || "keep";
         // 旧客户端不带 statementImages：沿用服务端已有的引用，不能当成「清空」。
         if (!own(problem, "statementImages") && old?.statementImages?.length) problem.statementImages = old.statementImages;
+        // 审计字段（difficultyLegacy / problemNumberLegacy 等）客户端从来不发送：从服务端
+        // 现有记录继承。它们记录的是"改动前的原值"，无法从当前值反推，一次普通保存
+        // 丢掉就永久没了（见 docs/Audit/AUDIT-2026-10-02.md §2.2）。客户端显式带上时以客户端为准。
+        if (old) for (const [key, value] of Object.entries(problemAuditFields(old))) if (!own(problem, key)) problem[key] = value;
         if (action === "keep") {
           if (old?.statementAttachment) {
             if (own(problem, "statementAttachment") && !attachmentEqual(problem.statementAttachment, old.statementAttachment)) throw new LogsV2Error("INVALID_ATTACHMENT_REFERENCE", "keep cannot change an attachment");

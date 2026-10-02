@@ -420,6 +420,10 @@ test("超纲 records remain discoverable after moving to self-assessment", async
   await page.locator('[data-review-status="deferred"]').click();
   await expect(page.locator("#review-deferred-count")).not.toHaveText("0");
   await expect(page.locator("#review-records")).toContainText("吃奶酪");
-  await expect(page.locator("#review-records")).toContainText("超纲待做");
-  await expect(page.locator("#review-records")).toContainText("未安排复习");
+  const card = page.locator("#review-records .record", { hasText: "吃奶酪" });
+  // v8: 「超纲」是掌握自评（masteryStatus），不再隐含「未安排复习」。
+  await expect(card).toContainText("超纲待做");
+  // 复习徽标只由 reviewStatus/reviewDue 决定，文案随当天日期漂移
+  // （待安排 / 今日到期 / 已到期 / N 天后到期），所以断言"已排期"而不是某一句文案。
+  await expect(card.locator(".due-status")).toHaveText(/(待复习|待安排|今日到期|已到期|天后到期)/);
 });

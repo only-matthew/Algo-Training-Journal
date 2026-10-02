@@ -44,7 +44,9 @@ test("every form save is conditional on the revision it read", () => {
 });
 
 test("attachments only travel through the v2 multipart route", () => {
-  assert.match(formSource, /import \{ createAttachmentStore, sha256Hex, validateAttachmentFile \} from "\.\/attachment-store\.mjs"/);
+  // 只要这三个符号确实来自 attachment-store 即可：新增导出（如字节上限常量）不该让
+  // 这条守卫失效——锁死整行 import 会让每次合理的接口扩展都变成假红。
+  assert.match(formSource, /import \{[^}]*\bcreateAttachmentStore\b[^}]*\bvalidateAttachmentFile\b[^}]*\} from "\.\/attachment-store\.mjs"/);
   assert.match(formSource, /import \{[^}]*saveDateLogV2[^}]*\} from "\.\/journal-api\.js"/);
   // 有附件动作（PDF 或题面图片）时必须走 v2；旧接口无法上传字节。
   assert.match(formSource, /pendingAttachments\.size \|\| hasStatementImages\(\)\s*\n?\s*\? await saveWithAttachments\(/);

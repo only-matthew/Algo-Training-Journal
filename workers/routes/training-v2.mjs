@@ -1,5 +1,5 @@
 import { isDateString } from "../../lib/log-schema.mjs";
-import { toUtc8 } from "../../lib/constants.mjs";
+import { todayUtc8 } from "../../lib/constants.mjs";
 import { isUuidV4 } from "../../lib/training-schema.mjs";
 import { subjectKeyForProblem } from "../../lib/problem-identity.mjs";
 import { buildEvidenceV1, foldTrainingEvents } from "../../lib/training-projections.mjs";
@@ -23,7 +23,7 @@ export async function handleTrainingV2(request, user, url, { v2Error, v2Json, re
   const suffix = url.pathname.slice("/api/v2".length);
   const git = trainingGit(user.token);
   const paths = trainingPaths(user.memberId);
-  const today = toUtc8(new Date().toISOString()).slice(0, 10);
+  const today = todayUtc8();
   const service = createTrainingService({ git,
     loadEvents: ({ snapshot, memberId, subjectKey }) => git.listEvents(snapshot, memberId, subjectKey),
     validateFocus: async (snapshot, ids) => {

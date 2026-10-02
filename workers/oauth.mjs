@@ -1,5 +1,5 @@
 import { isDateString, LOG_LIMITS, LOG_SCHEMA_VERSION } from "../lib/log-schema.mjs";
-import { toUtc8 } from "../lib/constants.mjs";
+import { todayUtc8 } from "../lib/constants.mjs";
 import { handleQqBotWebhook } from "./qq-bot.mjs";
 import { isUuidV4 } from "../lib/training-schema.mjs";
 import { fetchStatement, parseAtCoderProblemNumber, statementFromAtCoderHtml, statementFromCodeforcesHtml } from "./services/problem-statement.mjs";
@@ -37,11 +37,33 @@ function rateExceeded(key, limit) {
   return false;
 }
 
+// 会话密钥缺失时必须显式失败（审计 §4.2）：若放任 undefined 流进 key()，
+// 密钥会变成 SHA-256("undefined")，等于所有会话都能用固定密钥伪造。
+function requireSessionSecret(env) {
+  const secret = env && env.SESSION_SECRET;
+  if (typeof secret !== "string" || !secret.trim()) {
+    throw Object.assign(new Error("服务端会话密钥未配置"), { code: "SERVER_MISCONFIGURED", status: 500 });
+  }
+  return secret;
+}
+// OAuth 客户端凭据同理：缺了不是「这次登录失败」，而是服务端配置错误，必须显式报错。
+function requireGithubConfig(env) {
+  const clientId = env && env.GITHUB_CLIENT_ID;
+  const clientSecret = env && env.GITHUB_CLIENT_SECRET;
+  if (typeof clientId !== "string" || !clientId.trim() || typeof clientSecret !== "string" || !clientSecret.trim()) {
+    throw Object.assign(new Error("GitHub OAuth 客户端未配置"), { code: "SERVER_MISCONFIGURED", status: 500 });
+  }
+  return { clientId, clientSecret };
+}
+
+// GitHub OAuth 令牌交换的时限（审计 §3.3）：上游抖动不能让登录请求无限挂起。
+const OAUTH_TOKEN_TIMEOUT_MS = 10000;
+
 function cors(request) {
   const origin = request.headers.get("Origin");
   return origin && ORIGINS.has(origin) ? { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Credentials": "true", "Access-Control-Allow-Headers": "Content-Type, X-CSRF-Token, Idempotency-Key, If-Match, If-None-Match", "Access-Control-Allow-Methods": "GET,PUT,PATCH,POST,DELETE,OPTIONS", "Access-Control-Expose-Headers": "ETag, Retry-After", Vary: "Origin" } : {};
 }
-function json(request, body, status = 200, headers = {}) { return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8", ...cors(request), ...headers } }); }
+function json(request, body, status = 200, headers = {}) { return new Response(JSON.stringify(body), { status, headers: { "Content-Type": "application/json; charset=utf-8", "X-Content-Type-Options": "nosniff", ...cors(request), ...headers } }); }
 function cookies(request) { return Object.fromEntries((request.headers.get("Cookie") || "").split(/;\s*/).filter(Boolean).map((part) => { const i = part.indexOf("="); return [part.slice(0, i), part.slice(i + 1)]; })); }
 function cookie(name, value, age = 28800) { return `${name}=${value}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${age}`; }
 function encode(bytes) { return btoa(String.fromCharCode(...bytes)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
@@ -100,11 +122,28 @@ async function readJsonBody(request, maxBytes = LOG_LIMITS.maxRequestBytes) {
   if (new TextEncoder().encode(text).byteLength > maxBytes) throw Object.assign(new RangeError("提交内容超过大小限制"), { status: 413 });
   try { return JSON.parse(text); } catch { throw Object.assign(new TypeError("请求内容不是有效的 JSON"), { status: 400 }); }
 }
+
+/**
+ * 请求体可以「完全为空」的接口（DELETE）：只有真的没带 body 才降级成 null。
+ * 带了非空但不是合法 JSON 的内容必须 400——原来一律吞掉会绕过 expectedVersion 校验（审计 §4.1）。
+ */
+async function readOptionalJsonBody(request, maxBytes) {
+  const declared = Number(request.headers.get("Content-Length") || 0);
+  if (declared > maxBytes) throw Object.assign(new RangeError("提交内容超过大小限制"), { status: 413 });
+  const text = await request.text();
+  if (new TextEncoder().encode(text).byteLength > maxBytes) throw Object.assign(new RangeError("提交内容超过大小限制"), { status: 413 });
+  if (!text.trim()) return null;
+  let value;
+  try { value = JSON.parse(text); } catch { throw Object.assign(new TypeError("请求内容不是有效的 JSON"), { status: 400 }); }
+  if (!value || typeof value !== "object" || Array.isArray(value)) throw Object.assign(new TypeError("请求内容必须是 JSON 对象"), { status: 400 });
+  return value;
+}
 async function session(request, env) {
+  const secret = requireSessionSecret(env);
   const requestCookies = cookies(request);
   const values = [requestCookies[COOKIE], requestCookies[LEGACY_COOKIE]].filter(Boolean);
   for (const value of values) {
-    const data = await open(value, env.SESSION_SECRET);
+    const data = await open(value, secret);
     const member = data && (memberByGithubId(data.githubUserId) || memberById(data.memberId) || memberByLogin(data.login));
     if (member && member.logDirectory === data.member) {
       return {
@@ -125,17 +164,33 @@ async function handleAuth(request, env) {
     return Response.redirect(`${url.origin}/auth/login?returnTo=${encodeURIComponent(returnTo)}`, 302);
   }
   if (url.pathname === "/auth/login") {
+    const secret = requireSessionSecret(env);
+    const { clientId } = requireGithubConfig(env);
     const nonce = crypto.randomUUID();
-    const state = await seal({ nonce, returnTo: safeReturnTo(url.searchParams.get("returnTo")), exp: Date.now() + 600000 }, env.SESSION_SECRET);
+    const state = await seal({ nonce, returnTo: safeReturnTo(url.searchParams.get("returnTo")), exp: Date.now() + 600000 }, secret);
     const callback = `${url.origin}/auth/callback`;
-    const location = `https://github.com/login/oauth/authorize?client_id=${encodeURIComponent(env.GITHUB_CLIENT_ID)}&scope=public_repo&redirect_uri=${encodeURIComponent(callback)}&state=${encodeURIComponent(state)}`;
+    const location = `https://github.com/login/oauth/authorize?client_id=${encodeURIComponent(clientId)}&scope=public_repo&redirect_uri=${encodeURIComponent(callback)}&state=${encodeURIComponent(state)}`;
     return new Response(null, { status: 302, headers: { Location: location, "Set-Cookie": cookie(OAUTH_COOKIE, nonce, 600) } });
   }
   if (url.pathname === "/auth/callback") {
-    const state = await open(url.searchParams.get("state") || "", env.SESSION_SECRET);
+    const secret = requireSessionSecret(env);
+    const { clientId, clientSecret } = requireGithubConfig(env);
+    const state = await open(url.searchParams.get("state") || "", secret);
     if (!state || state.nonce !== cookies(request)[OAUTH_COOKIE]) return new Response("Invalid OAuth state", { status: 400 });
-    const tokenResponse = await fetch("https://github.com/login/oauth/access_token", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify({ client_id: env.GITHUB_CLIENT_ID, client_secret: env.GITHUB_CLIENT_SECRET, code: url.searchParams.get("code") }) });
-    const token = (await tokenResponse.json()).access_token;
+    const tokenResponse = await fetch("https://github.com/login/oauth/access_token", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ client_id: clientId, client_secret: clientSecret, code: url.searchParams.get("code") }),
+      signal: AbortSignal.timeout(OAUTH_TOKEN_TIMEOUT_MS),
+    });
+    // 非 2xx 不能当成「没有 access_token」静默 400：那是上游故障，不是凭据无效。
+    // 细节只进日志，响应里不泄露（审计 §3.3）。
+    if (!tokenResponse.ok) {
+      console.error(`OAuth token exchange failed: ${tokenResponse.status}`);
+      return new Response("OAuth 登录暂时不可用，请稍后重试", { status: 502 });
+    }
+    const tokenPayload = await tokenResponse.json().catch(() => ({}));
+    const token = tokenPayload.access_token;
     if (!token) return new Response("OAuth failed", { status: 400 });
     const githubUser = await gh("https://api.github.com/user", token);
     const memberConfig = memberByGithubId(githubUser.id);
@@ -151,7 +206,7 @@ async function handleAuth(request, env) {
       avatar_url: githubUser.avatar_url,
       csrfToken,
       exp: Date.now() + 28800000,
-    }, env.SESSION_SECRET);
+    }, secret);
     return new Response(null, { status: 302, headers: { Location: safeReturnTo(state.returnTo), "Set-Cookie": cookie(COOKIE, value) } });
   }
   return null;
@@ -162,7 +217,7 @@ async function handleLogsDate(request, user) {
   const date = url.searchParams.get("date");
   if (!isDateString(date)) return json(request, { error: "日期格式无效" }, 400);
   // 拒绝未来日期（按 UTC+8 今天比较），防止误填未来打卡
-  const today = toUtc8(new Date().toISOString()).slice(0, 10);
+  const today = todayUtc8();
   if (date > today) return json(request, { error: "不能提交未来日期的记录" }, 400);
   if (request.method === "GET") return json(request, await readLog(user, date));
   if (request.method === "PUT") {
@@ -173,8 +228,7 @@ async function handleLogsDate(request, user) {
     return json(request, await saveLog(user, date, input, expectedVersion));
   }
   if (request.method === "DELETE") {
-    let body = null;
-    try { body = await readJsonBody(request, 4096); } catch { body = null; }
+    const body = await readOptionalJsonBody(request, 4096);
     return json(request, await deleteLog(user, date, expectedVersionFrom(request, body)));
   }
 }
@@ -200,6 +254,20 @@ async function handleSummarize(request, user, env) {
 const STATEMENT_PLATFORMS = new Set(["Codeforces", "AtCoder"]);
 // 浏览器小书签回传的页面源码上限（与解析层允许的 HTML 上限一致，另留一点 JSON 包装余量）。
 const MAX_STATEMENT_HTML_BYTES = 2 * 1024 * 1024 + 4096;
+// 整个题面请求（解析 + 上游抓取 + 图片归档）的预算：超时返回结构化 503，
+// 不让请求一直挂着（审计 §2.1 / §3.3）。解析器本身在手写扫描后是线性的，
+// 这个时限主要拦住上游网络与图片归档。
+const STATEMENT_BUDGET_MS = 8000;
+function withStatementBudget(run) {
+  let timer = null;
+  const work = Promise.resolve().then(run);
+  const expiry = new Promise((_resolve, reject) => {
+    timer = setTimeout(() => reject(Object.assign(new Error("题面处理超时"), { code: "STATEMENT_TIMEOUT", status: 503 })), STATEMENT_BUDGET_MS);
+  });
+  // work 迟到失败时已经没有接收方，挂一个空 catch 避免 unhandled rejection。
+  work.catch(() => {});
+  return Promise.race([work, expiry]).finally(() => clearTimeout(timer));
+}
 
 async function handleProblemStatement(request, user) {
   if (rateExceeded(`problem-statement:${user.login}`, RATE_LIMITS["problem-statement"])) {
@@ -215,20 +283,25 @@ async function handleProblemStatement(request, user) {
   if (body.platform === "AtCoder" && !parseAtCoderProblemNumber(body.problemNumber)) {
     return v2Error(request, "INVALID_JSON", "AtCoder 题号必须形如 abc381_a", 400);
   }
-  // 浏览器抓回的官方页源码：不再请求上游，直接用对应的官方页解析器处理。
-  if (body.html !== undefined) {
-    const parseHtml = body.platform === "Codeforces" ? statementFromCodeforcesHtml : statementFromAtCoderHtml;
-    return json(request, await parseHtml({ problemNumber: body.problemNumber, html: body.html }));
+  try {
+    // 浏览器抓回的官方页源码：不再请求上游，直接用对应的官方页解析器处理。
+    if (body.html !== undefined) {
+      const parseHtml = body.platform === "Codeforces" ? statementFromCodeforcesHtml : statementFromAtCoderHtml;
+      return json(request, await withStatementBudget(() => parseHtml({ problemNumber: body.problemNumber, html: body.html })));
+    }
+    const result = await withStatementBudget(() => fetchStatement({ platform: body.platform, problemNumber: body.problemNumber, sourceUrl: body.sourceUrl }));
+    // 洛谷镜像页顺带带回了算法标签（数字 id，只有 AT_ 镜像才有）。换成站内标签一起返回，
+    // 前端就能在填题面时顺手把标签填好；字典取不到时只是没有 tags，不影响题面。
+    if (result.status === "ok" && Array.isArray(result.tagIds)) {
+      const { tagIds, ...statement } = result;
+      const tags = await resolveAtCoderTagIds(tagIds);
+      return json(request, tags.length ? { ...statement, tags } : statement);
+    }
+    return json(request, result);
+  } catch (error) {
+    if (error && error.code === "STATEMENT_TIMEOUT") return v2Error(request, "STATEMENT_TIMEOUT", "题面处理超时，请稍后重试", 503);
+    throw error;
   }
-  const result = await fetchStatement({ platform: body.platform, problemNumber: body.problemNumber, sourceUrl: body.sourceUrl });
-  // 洛谷镜像页顺带带回了算法标签（数字 id，只有 AT_ 镜像才有）。换成站内标签一起返回，
-  // 前端就能在填题面时顺手把标签填好；字典取不到时只是没有 tags，不影响题面。
-  if (result.status === "ok" && Array.isArray(result.tagIds)) {
-    const { tagIds, ...statement } = result;
-    const tags = await resolveAtCoderTagIds(tagIds);
-    return json(request, tags.length ? { ...statement, tags } : statement);
-  }
-  return json(request, result);
 }
 
 async function handleImport(request, user) {
@@ -281,7 +354,12 @@ export default {
       }
 
       if (url.pathname === "/api/logout" && request.method === "DELETE") {
-        return json(request, { ok: true }, 200, { "Set-Cookie": cookie(COOKIE, "", 0) });
+        // 会话读取同时接受没有 __Host- 前缀的旧 Cookie（审计 §4.2），
+        // 登出只清新 Cookie 等于没登出，两个都要清。
+        const headers = new Headers({ "Content-Type": "application/json; charset=utf-8", "X-Content-Type-Options": "nosniff", ...cors(request) });
+        headers.append("Set-Cookie", cookie(COOKIE, "", 0));
+        headers.append("Set-Cookie", cookie(LEGACY_COOKIE, "", 0));
+        return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
       }
 
       const user = await session(request, env);

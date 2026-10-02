@@ -1,10 +1,10 @@
-import { validateLogInput } from "../../lib/log-schema.mjs";
-import { toUtc8 } from "../../lib/constants.mjs";
+import { validateLogInput, problemAuditFields } from "../../lib/log-schema.mjs";
+import { toUtc8, todayUtc8 } from "../../lib/constants.mjs";
 import { trainingPaths } from "./training.mjs";
 import { revisionFromEntries } from "./logs-v2.mjs";
 import { gitBlobSha, logRoots, planLegacyIndexChange, planLogChanges } from "./log-planning.mjs";
 import { assertLogVersionPlan } from "./log-version.mjs";
-import { REPO, BRANCH, ghHeaders, gh } from "../storage/github-api.mjs";
+import { REPO, BRANCH, GH_TIMEOUT_MS, ghHeaders, gh } from "../storage/github-api.mjs";
 import { mapConcurrent } from "./map-concurrent.mjs";
 
 /** Submit the date changes and derived index against one checked Git head. */
@@ -57,6 +57,7 @@ async function commit(changes, message, token, retry = 0, recheck = null) {
       method: "PATCH",
       headers: { ...ghHeaders(token), "Content-Type": "application/json" },
       body: JSON.stringify({ sha: newCommit.sha, force: false }),
+      signal: AbortSignal.timeout(GH_TIMEOUT_MS),
     }
   );
 
@@ -76,14 +77,14 @@ async function commit(changes, message, token, retry = 0, recheck = null) {
   return { commitSha: newCommit.sha };
 }
 async function content(path, token, ref = BRANCH) {
-  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token) });
+  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token), signal: AbortSignal.timeout(GH_TIMEOUT_MS) });
   if (response.status === 404) return null; if (!response.ok) { console.error(`GitHub content fetch failed: ${response.status}`); throw Object.assign(new Error("读取仓库文件失败"), { status: 502 }); }
   return new TextDecoder().decode(Uint8Array.from(atob((await response.json()).content.replace(/\s/g, "")), (c) => c.charCodeAt(0)));
 }
 // 一次请求列出目录下的所有文件（path + blob sha）；目录不存在返回 null。
 // 替代逐文件探测存在性，大幅减少 Contents API 调用次数。
 async function listDir(path, token, ref = BRANCH) {
-  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token) });
+  const response = await fetch(`https://api.github.com/repos/${REPO}/contents/${encodeURI(path)}?ref=${encodeURIComponent(ref)}`, { headers: ghHeaders(token), signal: AbortSignal.timeout(GH_TIMEOUT_MS) });
   if (response.status === 404) return null;
   if (!response.ok) { console.error(`GitHub contents list failed: ${response.status}`); throw Object.assign(new Error("读取仓库目录失败"), { status: 502 }); }
   const body = await response.json();
@@ -124,16 +125,23 @@ async function readLegacyEnrichment(root, files, token) {
   const metaPath = `${root}/meta.json`;
   if (!(files || []).some((file) => file.path === metaPath)) return new Map();
   const raw = await content(metaPath, token);
-  let meta = {};
-  try { meta = JSON.parse(raw || "{}"); } catch { meta = {}; }
-  const previous = new Map((meta.problems || []).map((problem) => [problem.id, problem]));
-  return previous;
+  // 「文件不存在」与「文件损坏」必须分开（审计 §4.1）：目录列表刚说有这个文件，
+  // 读回来是 null 说明它在这中间被删了，可以当成「没有历史记录」继续；
+  // 而解析失败是数据损坏——若按空记录继续，会把这一天的 statementImages 静默清空。
+  if (raw == null) return new Map();
+  let meta;
+  try { meta = JSON.parse(raw); }
+  catch { throw Object.assign(new Error("日志元数据损坏，已停止写入以免覆盖"), { code: "STORAGE_UNAVAILABLE", status: 502 }); }
+  if (!meta || typeof meta !== "object" || Array.isArray(meta) || (meta.problems !== undefined && !Array.isArray(meta.problems))) {
+    throw Object.assign(new Error("日志元数据结构无效，已停止写入以免覆盖"), { code: "STORAGE_UNAVAILABLE", status: 502 });
+  }
+  return new Map((meta.problems || []).map((problem) => [problem.id, problem]));
 }
 
 export async function saveLog(user, date, input, expectedVersion) {
   const { problems, startedOn, solvedOn } = validateLogInput(input, {
     recordDate: date,
-    today: toUtc8(new Date()).slice(0, 10),
+    today: todayUtc8(),
   });
   const legacyPath = trainingPaths(user.memberId || user.login).legacyIndex;
   const { root, files } = await resolveLogRoot(user, date);
@@ -141,6 +149,10 @@ export async function saveLog(user, date, input, expectedVersion) {
   for (const problem of problems) {
     const old = previous.get(problem.id);
     if (!Object.hasOwn(problem, "statementImages") && old?.statementImages?.length) problem.statementImages = old.statementImages;
+    // 审计字段（difficultyLegacy / difficultySource / difficultyRatingSource / problemNumberLegacy）
+    // 旧客户端不会发送，而它们记录的是"改动前的原值"，无法从当前值反推：从服务端现有记录继承，
+    // 否则一次旧接口保存就永久丢掉回滚依据（审计 §2.2）。客户端显式带上时以客户端为准。
+    if (old) for (const [key, value] of Object.entries(problemAuditFields(old))) if (!Object.hasOwn(problem, key)) problem[key] = value;
   }
   assertAttachmentsUnchanged(problems, previous);
   const updatedAt = toUtc8(new Date());
@@ -183,8 +195,15 @@ export async function readLog(user, date) {
   const metaPath = `${root}/meta.json`;
   if (!files || !files.some((file) => file.path === metaPath)) return { problems: [], revision: null };
   const raw = await content(metaPath, user.token);
+  // 目录列表刚说文件在，读回来是 null 只可能是它在这中间被删了（并发删除），按「没有记录」继续。
   if (!raw) return { problems: [], revision: null };
-  const meta = JSON.parse(raw);
+  // 解析失败不能冒泡成通用 500：这是数据损坏，给出结构化 502，读路径也不该装作这一天不存在。
+  let meta;
+  try { meta = JSON.parse(raw); }
+  catch { throw Object.assign(new Error("日志元数据损坏，无法读取"), { code: "STORAGE_UNAVAILABLE", status: 502 }); }
+  if (!meta || typeof meta !== "object" || Array.isArray(meta)) {
+    throw Object.assign(new Error("日志元数据结构无效，无法读取"), { code: "STORAGE_UNAVAILABLE", status: 502 });
+  }
   const paths = new Set(files.map((file) => file.path));
   return {
     revision: await revisionFromEntries(files),

@@ -27,7 +27,10 @@ if (!APP_ID || !CLIENT_SECRET || !GROUP_OPENID) {
   process.exit(1);
 }
 
-const overview = await (await fetch(`${DATA_URL}/data/overview.json`)).json();
+// 站点数据请求的时限：没有超时的话脚本会一直挂在 fetch 上（审计 §3.3）。
+const DATA_TIMEOUT_MS = 10000;
+
+const overview = await (await fetch(`${DATA_URL}/data/overview.json`, { signal: AbortSignal.timeout(DATA_TIMEOUT_MS) })).json();
 const { token } = await fetchAccessToken({ appId: APP_ID, clientSecret: CLIENT_SECRET });
 const text = `${buildReviewMessage(overview)}\n\n${buildStatsMessage(overview)}`;
 

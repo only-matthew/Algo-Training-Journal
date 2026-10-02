@@ -2,7 +2,7 @@
 
 ## 2026-09-29 修复进展（当前工作区）
 
-以下是签收后的实现状态；下文保留当时的审计、独立复核与纠偏记录。改动尚未提交和发布，历史审计的百分比不作为当前产品使用量。
+以下是签收后的实现状态；下文保留当时的审计、独立复核与纠偏记录。这些改动已在 2026-10-02 提交并发布（`9b2fa2c`，[CURRENT-STATE.md](../CURRENT-STATE.md) 记录线上 `buildCommit` 已核验）；**发布状态以 CURRENT-STATE 为准**。历史审计的百分比不作为当前产品使用量。
 
 | 编号 | 当前状态 | 实现与边界 |
 | --- | --- | --- |
@@ -17,9 +17,9 @@
 | P3-1 | 本地完成，待发布 | 旧 `mastered` 映射增加来源标记并在详情说明，保留旧值，不伪装为本人新自评。 |
 | P3-2 | 持续约束 | v2 后端继续冻结，新清单及重做沿用现行日志写入链路。彻底拆除与数据归档不是本次已交付事项。 |
 
-本地 `npm run verify` 通过，浏览器回归增加个人清单增删后通过 15 项。发布后仍需重新生成指定时间窗的报告，检查新记录的复习进入、实际重做与清单使用；这些效果没有线上证据前保持待复核。
+本地 `npm run verify` 通过，浏览器回归增加个人清单增删后通过 15 项（**2026-09-29 时点**；2026-10-02 起为 17 项并纳入 CI，见 [全栈审计](AUDIT-2026-10-02.md) §8）。发布后仍需重新生成指定时间窗的报告，检查新记录的复习进入、实际重做与清单使用；这些效果没有线上证据前保持待复核。
 
-签收日期：2026-09-28；维护更新：2026-09-29。原始审计及完整计算、证据和建议见 [2026-09-27 原稿](archive/2026-09-28-pre-rewrite/PRODUCT-AUDIT.md)。本文件只确认处理状态，不重算原稿数字。用户已选择“个人训练闭环”作为现行方向，见 [PRODUCT.md](PRODUCT.md)。
+签收日期：2026-09-28；维护更新：2026-09-29。原始审计及完整计算、证据和建议见 [2026-09-27 原稿](../archive/2026-09-28-pre-rewrite/PRODUCT-AUDIT.md)。本文件只确认处理状态，不重算原稿数字。用户已选择“个人训练闭环”作为现行方向，见 [PRODUCT.md](../PRODUCT.md)。
 
 ## 基线与判定口径
 
@@ -52,9 +52,9 @@
 | T1 发布顺序靠人工约定 | 已上线匿名 `GET /api/capabilities`；Pages 部署前校验 Worker 的提交号、schema 范围与 `/api/session` | `794cf9f` 已通过 Cloudflare Builds 与 Pages 生产核验；门禁只覆盖指定协议。 |
 | T2 静态检查不足 | `npm run verify` 纳入 ESLint 未定义与未使用变量检查，本地通过 | 主分支 CI 已通过；导出但无人调用的代码仍属已知盲区。 |
 | T3 Worker 入口职责过重 | `oauth.mjs` 缩为路由/鉴权入口，服务、路由、存储分层；QQ 共享实现移至 `lib/`；本地测试通过 | 已随 `794cf9f` 自动部署并通过匿名接口冒烟。 |
-| T4 重复构建与浏览器安装 | PR 与主分支运行快速 Node 验证和单次站点构建；Chromium 回归改为本地按需执行 | `70042ea` 的 Pages Action 已通过，本地浏览器回归 14/14 通过；该提交未触发 Worker 重建。 |
-| T5 文档多处重复且状态混用 | 现行文档集中到根目录七份，旧稿与专项稿完整归档，交接继续按日期记录 | 以后更新契约时维护现行规格和对应签收，不再把归档当指令。 |
-| T6 目录契约与代码冲突 | 新 [DESIGN.md](DESIGN.md) 写明模块职责与数据流；历史目录契约归档，README 更新入口 | 新增目录时同步现行设计与 README。 |
+| T4 重复构建与浏览器安装 | PR 与主分支运行快速 Node 验证和单次站点构建；Chromium 回归改为本地按需执行 | `70042ea` 的 Pages Action 已通过，本地浏览器回归 14/14 通过；该提交未触发 Worker 重建。**2026-10-02 起浏览器回归重新纳入 CI**（`checks.yml` 的 `e2e` job），见 [全栈审计](AUDIT-2026-10-02.md) §3.6。 |
+| T5 文档多处重复且状态混用 | 现行文档集中在 `docs/` 根（产品、设计、规格、现状、交接）与 `docs/Audit/`（审计报告与两份签收），旧稿与专项稿完整归档，交接继续按日期记录 | 以后更新契约时维护现行规格和对应签收，不再把归档当指令。 |
+| T6 目录契约与代码冲突 | 新 [DESIGN.md](../DESIGN.md) 写明模块职责与数据流；历史目录契约归档，README 更新入口 | 新增目录时同步现行设计与 README。 |
 
 ## 签收结论与下一次复核
 
@@ -176,9 +176,9 @@ Select-String -Path lib,workers,scripts -Include *.mjs,*.js -Pattern '\|\| "未�
 
 外部复核提出的文档问题 R1–R3 已处理，复核原文与当时的证据保持原样：
 
-1. **R1 关闭**：更正 [DESIGN.md](DESIGN.md)、[PROBLEM-AUDIT.md](PROBLEM-AUDIT.md) 和本文件上方 T1–T4 的现行状态；[HANDOFF.md](HANDOFF.md) 顶部续写生产核验，明确旧“待发布／401”段落是历史快照。[SPECIFICATION.md](SPECIFICATION.md) 与 [CURRENT-STATE.md](CURRENT-STATE.md) 同步改为已上线口径。证据为 `794cf9f` 的 Worker 能力接口 HTTP 200、同提交 Pages 成功及线上页脚。
-2. **R2 关闭**：`CURRENT-STATE.md` 从误置的 `pre-rewrite` 目录移到 [现行文档目录](CURRENT-STATE.md)，加入 [文档入口](README.md)；其中手动部署与 401 的旧状态一并更正。
-3. **R3 关闭**：[仓库 README](../README.md) 删除未渲染的“📎 相关训练记录”和热度徽标描述，只保留已交付的标签与知识点关联；[PROBLEM-AUDIT.md](PROBLEM-AUDIT.md) 登记 ESLint 无法识别“导出但生产代码无人调用”的盲区。
+1. **R1 关闭**：更正 [DESIGN.md](../DESIGN.md)、[PROBLEM-AUDIT.md](PROBLEM-AUDIT.md) 和本文件上方 T1–T4 的现行状态；[HANDOFF.md](../HANDOFF.md) 顶部续写生产核验，明确旧“待发布／401”段落是历史快照。[SPECIFICATION.md](../SPECIFICATION.md) 与 [CURRENT-STATE.md](../CURRENT-STATE.md) 同步改为已上线口径。证据为 `794cf9f` 的 Worker 能力接口 HTTP 200、同提交 Pages 成功及线上页脚。
+2. **R2 关闭**：`CURRENT-STATE.md` 从误置的 `pre-rewrite` 目录移到 [现行文档目录](../CURRENT-STATE.md)，加入 [文档入口](../README.md)；其中手动部署与 401 的旧状态一并更正。
+3. **R3 关闭**：[仓库 README](../../README.md) 删除未渲染的“📎 相关训练记录”和热度徽标描述，只保留已交付的标签与知识点关联；[PROBLEM-AUDIT.md](PROBLEM-AUDIT.md) 登记 ESLint 无法识别“导出但生产代码无人调用”的盲区。
 
 本次处理仅修正文档与文件位置，不把 P0–P3 的产品待办标为完成。R5 的 Worker 目录说明也已随 README 更新；R4、R6–R8 保持备查。
 
@@ -192,7 +192,7 @@ Select-String -Path lib,workers,scripts -Include *.mjs,*.js -Pattern '\|\| "未�
 
 | 项 | 复验方式 | 结论 |
 | --- | --- | --- |
-| R1 发布状态 | 逐文件搜 `返回 401｜尚未上线｜待发布`，并读改后段落 | **关闭**。[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)、[PROBLEM-AUDIT.md](PROBLEM-AUDIT.md)、本文件上方 T1–T4 表、[CURRENT-STATE.md](CURRENT-STATE.md) 均已改为已上线口径并附 `794cf9f` 证据；[HANDOFF.md](HANDOFF.md) 顶部新增"发布验收与文档纠偏"段，明确旧"待发布／401"段是历史快照。现行文档已无生效中的陈旧断言 |
+| R1 发布状态 | 逐文件搜 `返回 401｜尚未上线｜待发布`，并读改后段落 | **关闭**。[DESIGN.md](../DESIGN.md)、[SPECIFICATION.md](../SPECIFICATION.md)、[PROBLEM-AUDIT.md](PROBLEM-AUDIT.md)、本文件上方 T1–T4 表、[CURRENT-STATE.md](../CURRENT-STATE.md) 均已改为已上线口径并附 `794cf9f` 证据；[HANDOFF.md](../HANDOFF.md) 顶部新增"发布验收与文档纠偏"段，明确旧"待发布／401"段是历史快照。现行文档已无生效中的陈旧断言 |
 | R2 状态文档归位 | `git mv` 结果 + 入口清单计数 | **关闭**。`CURRENT-STATE.md` 已在 `docs/` 根（3.2 KB，低于 10 KB 上限），列入 `docs/README.md` 与 README 的 docs 树；三处均写"七份"，与实际一致 |
 | R3 未渲染功能描述 | 重新核对替代措辞是否属实 | **关闭**。README 已删除「📎 相关训练记录」「📎 相关记录 N」与"知识树行"。替代措辞**逐条复验为真**：标签页确有 42 条 `/roadmap/` 节点链接与"覆盖"文案；节点页 `roadmap-problem-done` 实际渲染「队内记录 · 廖夏」；`#member-select` + `data-members` + `lib/application.mjs:114` 构成本人/全队切换。`PROBLEM-AUDIT.md` 已登记 ESLint 的导出死代码盲区 |
 | R5 Worker 目录说明 | 读 README 结构树 | 已随本轮更新（`oauth.mjs` 改为"鉴权与 API 路由入口"，`services/` 补"AI 概括与题目导入"） |
@@ -203,7 +203,7 @@ Select-String -Path lib,workers,scripts -Include *.mjs,*.js -Pattern '\|\| "未�
 
 `CURRENT-STATE.md` 移出归档时，归档内两条**指向现行文档**的链接随之失效，恰好是最容易被点击的两条：
 
-- `docs/archive/2026-09-28-pre-rewrite/PRODUCT.md:3` → `[CURRENT-STATE.md](CURRENT-STATE.md)`
+- `docs/archive/2026-09-28-pre-rewrite/PRODUCT.md:3` → `[CURRENT-STATE.md](../CURRENT-STATE.md)`
 - `docs/archive/2026-09-28-pre-rewrite/SPECIFICATION.md:3` → 同上
 
 改为 `../../CURRENT-STATE.md` 即可。
@@ -237,7 +237,7 @@ Select-String -Path lib,workers,scripts -Include *.mjs,*.js -Pattern '\|\| "未�
 | 项 | 处置 | 验证 |
 | --- | --- | --- |
 | C1 | `archive/2026-09-28-pre-rewrite/PRODUCT.md:3`、`SPECIFICATION.md:3` 的链接改为 `../../CURRENT-STATE.md` | 断链数 **39 → 37**，两条目标均已解析 |
-| C2 | 新增 [archive/README.md](archive/README.md)：说明归档用途、快照清单与链接口径，登记 34 条失效链接的分布，并标出 `![](url)`／`[...](...)` 属正文语法示例、朴素链接检查会误报 | 归档内链接无需逐条改写，读者与后续自动检查都有据可依 |
+| C2 | 新增 [archive/README.md](../archive/README.md)：说明归档用途、快照清单与链接口径，登记 34 条失效链接的分布，并标出 `![](url)`／`[...](...)` 属正文语法示例、朴素链接检查会误报 | 归档内链接无需逐条改写，读者与后续自动检查都有据可依 |
 | C3 | `HANDOFF.md` 原第 31 段后追加"本段已被取代"括注，指明该段是部署前快照、当前状态见顶部「发布验收与文档纠偏」段与 CURRENT-STATE | 同文件内不再存在无标注的相反指令；更早的描述性段落（如"可能阻断本次部署"）由顶部横幅统一覆盖 |
 
 修复后链接全量复核：相对链接 192 条，朴素链接检查报出 44 条，其中 **34 条是归档内既有的真实失效链接，其余全部是 `` ![](url) ``／`` [...](...) `` 语法示例造成的误报**（该误报数随引用此写法的文档增加而增加，故不固定）。**归档外不存在真实失效链接**（`docs/HANDOFF.md` 的 `![](url)` 亦属示例误报）。
@@ -269,7 +269,7 @@ Select-String -Path lib,workers,scripts -Include *.mjs,*.js -Pattern '\|\| "未�
 | 未改动 Worker 输入（日志、文档、纯前端） | **执行**，不满足立即拒绝 | 跳过 | **0** |
 | 改动了 Worker 输入（`workers/`、`lib/`、`package.json`、`package-lock.json`） | 执行 | 要求等于本次提交 | 最多 15 分钟 |
 
-> **追记（2026-09-28，提交 `03f452d`）**：输入集后来补齐为**六类**，另含 `config/members.json`（Worker 直接导入的成员配置）与 `scripts/stamp-worker-commit.mjs`（部署命令执行的构建脚本）；Cloudflare 的 build watch paths 也已设为同一组路径，并实测生效（纯文档提交 `03f452d` 未触发 Worker 重建，`/api/capabilities` 的 `buildCommit` 保持在上一次 Worker 部署 `7ed3045`）。遍历 Worker 的 38 个传递依赖，六类路径全部覆盖、无遗漏。当前口径见 [SPECIFICATION.md](SPECIFICATION.md) §1.4 与 [CURRENT-STATE.md](CURRENT-STATE.md)。
+> **追记（2026-09-28，提交 `03f452d`）**：输入集后来补齐为**六类**，另含 `config/members.json`（Worker 直接导入的成员配置）与 `scripts/stamp-worker-commit.mjs`（部署命令执行的构建脚本）；Cloudflare 的 build watch paths 也已设为同一组路径，并实测生效（纯文档提交 `03f452d` 未触发 Worker 重建，`/api/capabilities` 的 `buildCommit` 保持在上一次 Worker 部署 `7ed3045`）。遍历 Worker 的 38 个传递依赖，六类路径全部覆盖、无遗漏。当前口径见 [SPECIFICATION.md](../SPECIFICATION.md) §1.4 与 [CURRENT-STATE.md](../CURRENT-STATE.md)。
 
 实现要点：
 

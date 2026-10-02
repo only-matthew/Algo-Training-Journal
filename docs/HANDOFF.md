@@ -2,13 +2,38 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-10-02，构建复核后补修解析 P1）
+
+独立构建复核发现 HTML 结束标签仍会重复扫描整个嵌套栈，词法扫描修复不足以关闭解析 DoS。共享建树入口现限制最多 128 层开放元素，超过时返回 `parse-failed`，同时保护后续递归遍历。原 40000 组攻击从 4.64 s 降到约 0.32 ms；100 层嵌套加 100000 个不匹配结束标签约 33 ms 完成并保留正文。新增四条回归，题面专项 51/51 与 Worker dry-run 打包通过。详细证据见 [审计 §9](Audit/AUDIT-2026-10-02.md#9-构建复核后的-p1-补修2026-10-02)。本次补修未部署。
+
+补修最终 `npm run verify` 通过：616 项单测无失败、无跳过，语法、Lint、索引与站点构建通过；文档链接和 diff 空白检查通过。
+
+## 最新交接（2026-10-02，全栈审计与逐项修复）
+
+审计报告：[Audit/AUDIT-2026-10-02.md](Audit/AUDIT-2026-10-02.md)（问题清单、证据与修复记录 §8）。本轮按该报告的 P0–P2 逐项修复：三个 P0（题面解析 O(n²) DoS、保存静默丢审计字段、已失效的浏览器回归用例）与六个 P1 全部完成，P2 中可确定的项目（限额与日期工具单一来源、个人索引投影去重、吞异常、安全加固、文档口径）一并收口。
+
+**部署前需知的行为变化：**
+
+1. `meta.json` 的序列化口径统一为**带尾随换行**（与 `training:reindex` 一致）。此前旧接口写出的文件不带换行，两条写路径交替使用会产生"只差一个换行"的提交；统一后每条日期在下次保存时会有一次性归一化 diff。
+2. 审计字段（`difficultyLegacy`、`difficultySource`、`difficultyRatingSource`、`problemNumberLegacy`）现在由保存路径原样保留，并在客户端未发送时从服务端既有记录继承——此前任意一次网页保存或复习状态点击都会永久删掉它们。
+3. `SESSION_SECRET` / GitHub OAuth 配置缺失时改为结构化 500，不再回退到用 `SHA-256("undefined")` 当密钥；`/api/problem-statement` 增加 8 s 预算；QQ Webhook 增加 ±300 s 时间窗口与事件去重；登出同时清旧 Cookie；JSON 响应统一 `nosniff`。
+4. 浏览器回归（17 项）自本轮起在 `checks.yml` 的 `e2e` job 中执行；`verify` job 末尾增加 `wrangler deploy --dry-run` 的 Worker 可构建校验。
+
+**本地验收（串行执行、无并行改动）：**
+
+- `npm run verify` → 语法 203 文件 / ESLint 0 problems / 训练索引逐字节一致 / **单测 520 + 92 = 612 全绿** / 站点构建成功。
+- `npx playwright test` → **17/17 通过**（修复前 16/17）。
+- 清空 `.build-cache` 后 `TZ=UTC` 与 `TZ=Asia/Shanghai` 全量重建：`overview.json`、`index.html`、`sitemap.xml`、`sw.js` 逐字节相同；固定 `SOURCE_DATE_EPOCH` 时同样相同（`sw.js` 的缓存版本内嵌构建时间，因此不同部署之间必然不同，这是刻意的）。
+
+**本轮未做**（原因见审计 §8 开头）：巨型函数拆分（`renderer` / `form` / `generate-data`）、孤儿模块处置（需产品决策）、LaTeX 真编译进 CI、OAuth `scope` 收窄与 KaTeX vendor 升级、`no-unused-vars` 的 `args` 收紧（剩 13 处，散落在 5 个文件）。
+
 ## 最新交接（2026-09-29，复习操作修复与发布流程精简）
 
 ### 1. 复习快捷操作已修复并上线
 
 提交 `66f25b4` 修复了复习操作的状态与权限判断：未安排复习的题目不显示复习按钮；待复习可结束或顺延；已结束只显示重新安排；复习页只给本人记录显示写入操作。首页队列额外核对 `reviewStatus === "todo"`。快捷写入成功后，本标签页用会话级暂存覆盖尚未重新生成的静态 JSON，避免页面刷新后立刻又显示旧状态。
 
-首页和题目页此前点击“结束复习”出现 `Failed to fetch`，根因是 Worker 的 CORS 预检允许方法遗漏 `PATCH`。`66f25b4` 已通过 Cloudflare Workers Builds 发布；线上 `OPTIONS` 现返回 `Access-Control-Allow-Methods: GET,PUT,PATCH,POST,DELETE,OPTIONS`，`GET /api/capabilities` 的 `buildCommit` 为完整提交 `66f25b42f2a2e8f9e1eb081823abb3b9c99f4470`。具体专项记录见 [PROBLEM-AUDIT.md](PROBLEM-AUDIT.md) §9。
+首页和题目页此前点击“结束复习”出现 `Failed to fetch`，根因是 Worker 的 CORS 预检允许方法遗漏 `PATCH`。`66f25b4` 已通过 Cloudflare Workers Builds 发布；线上 `OPTIONS` 现返回 `Access-Control-Allow-Methods: GET,PUT,PATCH,POST,DELETE,OPTIONS`，`GET /api/capabilities` 的 `buildCommit` 为完整提交 `66f25b42f2a2e8f9e1eb081823abb3b9c99f4470`。具体专项记录见 [PROBLEM-AUDIT.md](Audit/PROBLEM-AUDIT.md)。
 
 ### 2. 两次 Pages 失败的原因
 
@@ -94,7 +119,7 @@ Cloudflare 构建配置应指向现有 `algo-oauth` Worker、本仓库 `main`、
 
 本轮按用户选择，将现行产品方向定为**个人训练闭环**：选题、记录、复习、重做。原 `docs/` 文档和 `assets/project-history/` 图片原样移到 `docs/archive/2026-09-28-pre-rewrite/`；旧版 `HANDOFF.md` 也留有快照。`HANDOFF.md` 在原位续写。新 [文档入口](README.md) 串起产品、设计、规格与两份审计签收版。旧交接段落中的相对链接已改指归档，段落内容仍按当时语境阅读。
 
-新产品文档明确分开“目前能做”和“下一步要做”。原产品审计 P1-3 的路线选择已签收为回归个人闭环；空心得、自动复习建议、个人小清单、重做历史和周期使用报告仍是待办。技术审计第 7 项的 v2 通用路由保持冻结，第 19 项的巨型历史文档已转入归档。详细状态见 [PRODUCT-AUDIT.md](PRODUCT-AUDIT.md) 和 [PROBLEM-AUDIT.md](PROBLEM-AUDIT.md)。
+新产品文档明确分开“目前能做”和“下一步要做”。原产品审计 P1-3 的路线选择已签收为回归个人闭环；空心得、自动复习建议、个人小清单、重做历史和周期使用报告仍是待办。技术审计第 7 项的 v2 通用路由保持冻结，第 19 项的巨型历史文档已转入归档。详细状态见 [PRODUCT-AUDIT.md](Audit/PRODUCT-AUDIT.md) 和 [PROBLEM-AUDIT.md](Audit/PROBLEM-AUDIT.md)。
 
 本地上一轮完成的工程改动包括 Worker 能力接口与 Pages 兼容门禁、ESLint 检查、Worker 入口拆分、QQ 共享模块迁移、单次构建工作流。上一轮 `npm run verify`、13 个浏览器回归和 Worker dry-run 已通过；本轮主要改文档，完成后还需检查链接及文件保全。**这些新工程改动尚未发布**：2026-09-28 线上 `GET /api/capabilities` 返回 401。正式发布按 Worker → 匿名能力/会话冒烟 → Pages CI 顺序进行；不要直接触发带新门禁的 Pages 发布。
 

@@ -30,16 +30,59 @@ function decode(value) { return String(value || "").replace(/&(#x[\da-f]+|#\d+|n
 
 // A small dependency-free tree reader. It retains nested text and preformatted code,
 // unlike a tag-stripping regex, and avoids Node-only DOM packages in the Worker bundle.
+//
+// 词法扫描是手写线性推进的：原先的 `/<!--[\s\S]*?-->|<![^>]*>|<\/?[A-Za-z][^>]*>|[^<]+|</g`
+// 对「只有半个标签」的输入（例如 `"<a"` 重复）会在每个 `<` 处把剩下的串扫一遍再回溯，
+// 呈 O(n²)（审计 AUDIT-2026-10-02 §2.1：78 KB 输入 2.2 s；客户端可回传 2 MiB）。
+// 这里逐段推进、指针单调右移，并把「后面已经没有 `>` / `-->`」这一失败结果记下来，
+// 使每个字符最多被扫描常数遍。token 语义与原来逐字符一致。
+const VOID_ELEMENTS = new Set(["br", "img", "hr", "meta", "link", "input", "source", "wbr"]);
+const CLOSING_TAG_NAME = /^<\/\s*([^\s>]+)/;
+const OPENING_TAG_NAME = /^<\s*([^\s/>]+)/;
+const TAG_ATTRIBUTES = /([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+const SELF_CLOSING_TAG = /\/>\s*$/;
+// 树遍历与 Markdown 渲染使用递归，必须在建树时限制深度。计时器无法中断
+// 同步解析；拒绝异常深度也让关闭标签的栈扫描保持固定上限。
+const MAX_HTML_DEPTH = 128;
+const isAsciiLetterCode = (code) => (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+
 function parseHtml(html) {
+  const source = String(html ?? "");
   const root = { tag: "root", attrs: {}, children: [] }; const stack = [root];
-  const tokens = /<!--[\s\S]*?-->|<![^>]*>|<\/?[A-Za-z][^>]*>|[^<]+|</g; const voids = new Set(["br", "img", "hr", "meta", "link", "input", "source", "wbr"]); let match;
-  while ((match = tokens.exec(html))) { const raw = match[0];
-    if (raw[0] !== "<") { stack.at(-1).children.push({ text: decode(raw) }); continue; }
-    if (/^<\//.test(raw)) { const name = /^<\/\s*([^\s>]+)/.exec(raw)?.[1]?.toLowerCase(); for (let i = stack.length - 1; i > 0; i -= 1) if (stack[i].tag === name) { stack.length = i; break; } continue; }
-    if (/^<!/.test(raw)) continue; const name = /^<\s*([^\s/>]+)/.exec(raw)?.[1]?.toLowerCase(); if (!name) continue;
-    const attrs = {}; for (const a of raw.slice(name.length + 1, -1).matchAll(/([^\s=/>]+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g)) { if (a[1]) attrs[a[1].toLowerCase()] = decode(a[2] ?? a[3] ?? a[4] ?? ""); }
-    const node = { tag: name, attrs, children: [] }; stack.at(-1).children.push(node); if (!voids.has(name) && !/\/>\s*$/.test(raw)) stack.push(node);
-  } return root;
+  // 失败的搜索会把整段尾巴扫一遍；记住「从这里往后没有 `>`（或 `-->`）」后直接返回失败，
+  // 避免同一段尾巴被反复扫描。
+  let noTagEndFrom = -1; let noCommentEndFrom = -1;
+  const findTagEnd = (from) => { if (noTagEndFrom >= 0 && from >= noTagEndFrom) return -1; const at = source.indexOf(">", from); if (at < 0) noTagEndFrom = from; return at; };
+  const findCommentEnd = (from) => { if (noCommentEndFrom >= 0 && from >= noCommentEndFrom) return -1; const at = source.indexOf("-->", from); if (at < 0) noCommentEndFrom = from; return at; };
+  const pushText = (value) => { if (value) stack.at(-1).children.push({ text: decode(value) }); };
+  const closeTag = (raw) => { const name = CLOSING_TAG_NAME.exec(raw)?.[1]?.toLowerCase(); for (let i = stack.length - 1; i > 0; i -= 1) if (stack[i].tag === name) { stack.length = i; break; } };
+  const openTag = (raw) => {
+    const name = OPENING_TAG_NAME.exec(raw)?.[1]?.toLowerCase(); if (!name) return;
+    const attrs = {}; for (const a of raw.slice(name.length + 1, -1).matchAll(TAG_ATTRIBUTES)) { if (a[1]) attrs[a[1].toLowerCase()] = decode(a[2] ?? a[3] ?? a[4] ?? ""); }
+    const node = { tag: name, attrs, children: [] }; stack.at(-1).children.push(node);
+    if (!VOID_ELEMENTS.has(name) && !SELF_CLOSING_TAG.test(raw)) {
+      if (stack.length > MAX_HTML_DEPTH) fail("parse-failed");
+      stack.push(node);
+    }
+  };
+  let index = 0;
+  while (index < source.length) {
+    const next = source.indexOf("<", index);
+    if (next < 0) { pushText(source.slice(index)); break; }
+    pushText(source.slice(index, next));
+    index = next;
+    // 注释：<!-- … -->。没有闭合的 "-->" 时退回下面的 "<!…>" 分支，与原正则的备选顺序一致。
+    if (source.startsWith("<!--", index)) { const end = findCommentEnd(index + 4); if (end >= 0) { index = end + 3; continue; } }
+    if (source.startsWith("<!", index)) { const end = findTagEnd(index); index = end < 0 ? index + 1 : end + 1; continue; }
+    // 结束标签与开始标签都要求 "<" 之后（可有一个 "/"）是 ASCII 字母；否则这个 "<" 当普通字符丢掉。
+    const nameStart = source[index + 1] === "/" ? index + 2 : index + 1;
+    if (!isAsciiLetterCode(source.charCodeAt(nameStart))) { index += 1; continue; }
+    const end = findTagEnd(nameStart);
+    if (end < 0) { index += 1; continue; }
+    const raw = source.slice(index, end + 1); index = end + 1;
+    if (raw[1] === "/") closeTag(raw); else openTag(raw);
+  }
+  return root;
 }
 const textOf = (node) => (node.children || []).map((child) => child.text ?? textOf(child)).join("");
 // Collapse only excess blank lines; leading spaces inside fenced samples are data.
@@ -56,7 +99,77 @@ function safeUrl(value, image = false, base = CF_ORIGIN) { try { const url = new
 // 下载并替换成仓库内的文件名（见 lib/statement-images.mjs）。
 export const EXTERNAL_IMAGES_WARNING = "external-images";
 const DATA_IMAGE = /^data:image\/(?:png|jpe?g|gif|webp);base64,[A-Za-z0-9+/=\s]*$/i;
-const MARKDOWN_IMAGE = /!\[([^\]]*)\]\(\s*([^\s)]+)(?:\s+(?:"[^"]*"|'[^']*'|\([^)]*\)))?\s*\)/g;
+// Markdown 图片语法的手写扫描上限：`![` 之后超过这么多字节还没闭合，就放弃这个候选、
+// 按普通文本处理（审计 AUDIT-2026-10-02 §2.1 建议）。512 字节远大于正常图片写法。
+const MAX_IMAGE_SOURCE = 512;
+// 扫描步数预算：正常正文永远用不到，只用来给「畸形输入反复试探」兜底，保证整段正文
+// 最多被扫描常数遍（预算是按正文长度给的）。
+const IMAGE_SCAN_BUDGET_FACTOR = 2;
+const WHITESPACE = /\s/;
+const IMAGE_TITLE_CLOSERS = { '"': '"', "'": "'", "(": ")" };
+
+/**
+ * 在 `start` 处尝试匹配 `![alt](href "title")`（语义与原来的 MARKDOWN_IMAGE 正则一致）。
+ *
+ * 返回 `{ alt, href, end }` 或 null。每个字符都要花掉一格预算，预算耗尽即放弃，
+ * 因此单次解析的代价与正文长度成正比。
+ */
+function matchMarkdownImage(source, start, limit, spend) {
+  let cursor = start + 2;
+  while (cursor < limit && source[cursor] !== "]") { if (!spend()) return null; cursor += 1; }
+  if (cursor >= limit || source[cursor] !== "]") return null;
+  const alt = source.slice(start + 2, cursor); cursor += 1;
+  if (source[cursor] !== "(") return null;
+  cursor += 1;
+  while (cursor < limit && WHITESPACE.test(source[cursor])) { if (!spend()) return null; cursor += 1; }
+  const hrefStart = cursor;
+  while (cursor < limit && !WHITESPACE.test(source[cursor]) && source[cursor] !== ")") { if (!spend()) return null; cursor += 1; }
+  if (cursor === hrefStart) return null;
+  const href = source.slice(hrefStart, cursor);
+  // href 之后停在空白或 ")"：只有先有 `\s+` 才可能是可选标题 "…" / '…' / (…)。
+  const hrefEnd = cursor;
+  if (hrefEnd < limit && WHITESPACE.test(source[hrefEnd])) {
+    let title = hrefEnd;
+    while (title < limit && WHITESPACE.test(source[title])) { if (!spend()) return null; title += 1; }
+    const closer = IMAGE_TITLE_CLOSERS[source[title]];
+    if (closer) {
+      let end = title + 1;
+      while (end < limit && source[end] !== closer) { if (!spend()) return null; end += 1; }
+      if (end < limit && source[end] === closer) {
+        let tail = end + 1;
+        while (tail < limit && WHITESPACE.test(source[tail])) { if (!spend()) return null; tail += 1; }
+        if (source[tail] === ")") return { alt, href, end: tail + 1 };
+      }
+    }
+  }
+  let after = hrefEnd;
+  while (after < limit && WHITESPACE.test(source[after])) { if (!spend()) return null; after += 1; }
+  return source[after] === ")" ? { alt, href, end: after + 1 } : null;
+}
+
+/**
+ * 逐个扫描 Markdown 图片语法，把命中的候选交给 replace(alt, href, source)。
+ *
+ * 换掉回溯型正则的理由同 parseHtml：`"!["` 重复的输入会让正则退化成 O(n²)
+ * （审计 AUDIT-2026-10-02 §2.1）。
+ */
+function scanMarkdownImages(text, replace) {
+  const source = String(text);
+  // 没有 `](` 就不可能存在图片语法：一次线性预检，省掉在 `!` 的海洋里逐个候选试探。
+  if (source.indexOf("](") < 0) return source;
+  let budget = source.length * IMAGE_SCAN_BUDGET_FACTOR + 1024;
+  const spend = () => { budget -= 1; return budget > 0; };
+  let out = ""; let emitted = 0; let cursor = 0;
+  while (cursor < source.length) {
+    const start = source.indexOf("![", cursor);
+    if (start < 0) break;
+    const match = matchMarkdownImage(source, start, Math.min(source.length, start + MAX_IMAGE_SOURCE), spend);
+    if (!match) { if (budget <= 0) break; cursor = start + 2; continue; }  // 预算用完：剩下的正文原样输出
+    out += source.slice(emitted, start) + replace(match.alt, match.href, source.slice(start, match.end));
+    emitted = match.end; cursor = match.end;
+  }
+  return out + source.slice(emitted);
+}
 
 const imagePlaceholder = (index) => `{{statement-image:${index}}}`;
 // 正文里的引用写成 `./statement-<sha>.<ext>`：显式相对路径在 GitHub 与站内 Markdown
@@ -133,7 +246,7 @@ function registerImage(source, alt, context, warnings) {
 // 洛谷的题面正文里 HTML 与 Markdown 混排：图片既有 <img src> 也有裸的 ![](url) 语法，
 // 后者藏在文本节点里，必须单独识别，否则会被当成普通文字原样写进描述。
 function textWithImages(text, context, warnings) {
-  return String(text).replace(MARKDOWN_IMAGE, (all, alt, href) => registerImage(href, alt, context, warnings) || all);
+  return scanMarkdownImages(text, (alt, href, all) => registerImage(href, alt, context, warnings) || all);
 }
 
 function markdownFrom(node, warnings, context = {}) {

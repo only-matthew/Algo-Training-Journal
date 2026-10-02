@@ -3,9 +3,8 @@ import { existsSync, readFileSync, readdirSync, writeFileSync, mkdirSync } from 
 import { dirname, join, relative, resolve, sep } from "node:path";
 
 import { normalizeMeta } from "../lib/log-schema.mjs";
-import { subjectKeyForProblem } from "../lib/problem-identity.mjs";
 import { catalogProblem } from "../lib/recommendations.mjs";
-import { normalizeLearningState } from "../lib/learning-state.mjs";
+import { projectLegacyIndexRecord, serializeTrainingIndex } from "../lib/training-index-projection.mjs";
 import members from "../config/members.json" with { type: "json" };
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -21,7 +20,7 @@ function stableHash(value) {
 }
 
 function serialized(value) {
-  return `${JSON.stringify(value, null, 2)}\n`;
+  return serializeTrainingIndex(value);
 }
 
 export function buildTrainingCatalog() {
@@ -76,16 +75,7 @@ export function buildLegacyIndex(member, memberId) {
   for (const [date, path] of [...byDate].sort(([a], [b]) => a.localeCompare(b))) {
     const meta = normalizeMeta(JSON.parse(readFileSync(path, "utf8")), { legacyIdPrefix: `${member}-${date}` });
     for (const problem of meta.problems) {
-      const recordRef = { memberId, date, recordId: problem.id };
-      records.push({
-        subjectKey: subjectKeyForProblem({ ...recordRef, ...problem }),
-        date,
-        recordRef,
-        problem: catalogProblem(problem),
-        ...normalizeLearningState(problem),
-        ...(problem.reviewDue ? { reviewDue: problem.reviewDue } : {}),
-        href: `/problem/${[member, date, problem.id].map(encodeURIComponent).join("/")}/`,
-      });
+      records.push(projectLegacyIndexRecord({ member, memberId, date, problem }));
     }
   }
   return { schemaVersion: 1, memberId, member, records };
