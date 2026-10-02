@@ -664,7 +664,7 @@ function writeJournalShards(summaryLogs, generatedAt, members) {
     memberIndex[member] = { count: memberLogs.length, years };
   }
 
-  const reviewLogs = summaryLogs.filter((log) => log.reviewStatus !== "none" || log.isMistake === true);
+  const reviewLogs = summaryLogs.filter((log) => log.reviewStatus !== "none" || log.masteryStatus === "beyond_scope" || log.isMistake === true);
   const reviewUrl = path.join("data", "review.json");
   writeJson(reviewUrl, { schemaVersion: 1, generatedAt, logs: reviewLogs });
   const manifest = {

@@ -3,7 +3,7 @@ import { currentUser, initSession, login, logout } from "../lib/auth.mjs";
 import { initDetailInteractions } from "../lib/detail-interactions.mjs";
 import { loadProblemDetail } from "../lib/data.mjs";
 import { icon } from "../lib/icons.mjs";
-import { isReviewPlanned, isReviewTodo } from "../lib/learning-state.mjs";
+import { isReviewPlanned, isReviewTodo, normalizeLearningState } from "../lib/learning-state.mjs";
 import {
   exportToLatex,
   exportToMD,
@@ -72,9 +72,9 @@ function actionButton(symbol, label, handler, title) {
     link.title = "打开该日期的提交表单并定位到本题";
     edit.append(link);
   }
-  if (review && isReviewPlanned(log)) {
+  if (review && (isReviewPlanned(log) || normalizeLearningState(log).masteryStatus === "beyond_scope")) {
     review.hidden = false;
     if (isReviewTodo(log)) review.append(actionButton("check", "结束复习", (button) => quickReviewAction(log, "archive", button), "结束本题复习安排"));
-    review.append(actionButton("clock", isReviewTodo(log) ? (log.reviewDue ? "顺延 +3" : "安排 +3") : log.reviewStatus === "deferred" ? "转为待复习 +3" : "重新安排 +3", (button) => quickReviewAction(log, "snooze", button), "将复习日期设为三天后"));
+    review.append(actionButton("clock", isReviewTodo(log) ? (log.reviewDue ? "顺延 +3" : "安排 +3") : normalizeLearningState(log).masteryStatus === "beyond_scope" ? "安排 +3" : "重新安排 +3", (button) => quickReviewAction(log, "snooze", button), "将复习日期设为三天后"));
   }
 })().catch((error) => console.error("题目详情初始化失败", error));

@@ -8,11 +8,11 @@ const testDirectory = path.dirname(fileURLToPath(import.meta.url));
 const formSource = fs.readFileSync(path.join(testDirectory, "..", "lib", "form.mjs"), "utf8");
 const analysisSource = fs.readFileSync(path.join(testDirectory, "..", "lib", "form-analysis.mjs"), "utf8");
 
-test("review suggestions resolve directly to todo and unfinished can be deferred without adding an outcome button", () => {
+test("review suggestions resolve to todo independently of beyond-scope self-assessment", () => {
   assert.doesNotMatch(formSource, /<option value="auto">/);
-  assert.match(formSource, /<option value="\$\{REVIEW_STATUSES\.DEFERRED\}" disabled>超纲待做（仅限未完成）<\/option>/);
+  assert.match(formSource, /<option value="beyond_scope">超纲待做<\/option>/);
   assert.match(formSource, /reviewSelect\.value = REVIEW_STATUSES\.TODO/);
-  assert.match(formSource, /const canDefer = problemState\.outcome === "unfinished"/);
+  assert.doesNotMatch(formSource, /const canDefer|REVIEW_STATUSES\.DEFERRED/);
   assert.equal((formSource.match(/class="problem-outcome"/g) || []).length, 5);
 });
 

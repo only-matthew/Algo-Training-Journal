@@ -158,6 +158,9 @@ test("v2 attempts can be listed, corrected, and voided without rewriting the ori
     }),
   }), env);
   assert.equal(created.status, 201);
+  const originalEventPath = [...github.files.keys()].find((path) => path.includes("/events/") && path.endsWith(`/${attemptId}.json`));
+  assert.ok(originalEventPath);
+  const originalEvent = github.files.get(originalEventPath);
 
   const listed = await worker.fetch(new Request(`https://train.xialiao.org/api/v2/me/attempts?subjectKey=${encodeURIComponent(subjectKey)}`, { headers: { Cookie: headers.Cookie } }), env);
   assert.equal(listed.status, 200);
@@ -181,5 +184,5 @@ test("v2 attempts can be listed, corrected, and voided without rewriting the ori
   assert.equal(voided.status, 201);
   const afterVoid = await worker.fetch(new Request("https://train.xialiao.org/api/v2/me/attempts", { headers: { Cookie: headers.Cookie } }), env);
   assert.deepEqual((await afterVoid.json()).data, []);
-  assert.ok(github.files.has(`training/members/${LOGIN}/events/2026-09/${attemptId}.json`));
+  assert.equal(github.files.get(originalEventPath), originalEvent);
 });

@@ -343,13 +343,18 @@ test("Gym 题号在表单抓题面时归一为比赛号加题目字母", async (
   expect(requestedNumber).toBe("718163I");
 });
 
-test("unfinished work directly schedules +3 days and can switch to 超纲待做", async ({ page }) => {
+test("超纲 self-assessment preserves review dates through drafts and saving", async ({ page }) => {
+  let saved;
   await page.route(`${WORKER}/**`, async (route) => {
     const request = route.request();
     const url = new URL(request.url());
     const json = (body) => route.fulfill({ contentType: "application/json", body: JSON.stringify(body) });
     if (url.pathname === "/api/session") return json({ login: "only-matthew", member: "廖夏", csrfToken: "test-csrf", avatar_url: "" });
-    if (url.pathname === "/api/logs/date" && request.method() === "GET") return json({ revision: null, problems: [] });
+    if (url.pathname === "/api/logs/date" && request.method() === "GET") return json({ revision: saved ? "sha256:saved" : null, problems: saved?.problems || [] });
+    if (url.pathname === "/api/logs/date" && request.method() === "PUT") {
+      saved = request.postDataJSON();
+      return json({ revision: "sha256:saved" });
+    }
     return json({ error: "unexpected test request" });
   });
 
@@ -365,17 +370,32 @@ test("unfinished work directly schedules +3 days and can switch to 超纲待做"
   await row.locator('.problem-outcome[value="unfinished"]').check();
   await expect(review).toHaveValue("todo");
   await expect(due).toHaveValue(expectedDue.toISOString().slice(0, 10));
-  await expect(review.locator('option[value="deferred"]')).toBeEnabled();
+  await expect(review.locator('option[value="deferred"]')).toHaveCount(0);
 
   await row.locator(".review-settings > summary").click();
-  await review.selectOption("deferred");
-  await expect(review).toHaveValue("deferred");
-  await expect(row.locator(".review-due-group")).toBeHidden();
-  await expect(due).toHaveValue("");
-
-  await row.locator('.problem-outcome[value="independent"]').check();
-  await expect(review).toHaveValue("none");
-  await expect(review.locator('option[value="deferred"]')).toBeDisabled();
+  const mastery = row.locator(".problem-mastery-status");
+  await mastery.selectOption("beyond_scope");
+  await expect(review).toHaveValue("todo");
+  await expect(due).toBeVisible();
+  await due.fill("2026-12-20");
+  await review.selectOption("none");
+  await expect(mastery).toHaveValue("beyond_scope");
+  await review.selectOption("todo");
+  await expect(due).toHaveValue("2026-12-20");
+  await row.locator(".problem-name").fill("超纲测试题");
+  await expect.poll(() => page.evaluate((date) => JSON.parse(localStorage.getItem(`journal-drafts-v2:only-matthew:${date}`) || "null")?.problems?.[0]?.masteryStatus, TODAY)).toBe("beyond_scope");
+  await page.reload();
+  const restored = page.locator("#problem-list .problem-block").first();
+  await expect(restored.locator(".problem-mastery-status")).toHaveValue("beyond_scope");
+  await expect(restored.locator(".problem-review-status")).toHaveValue("todo");
+  await expect(restored.locator(".problem-review-due")).toHaveValue("2026-12-20");
+  await page.locator("#btn-save").click();
+  await expect.poll(() => saved?.problems?.[0]?.masteryStatus).toBe("beyond_scope");
+  expect(saved.problems[0].reviewStatus).toBe("todo");
+  expect(saved.problems[0].reviewDue).toBe("2026-12-20");
+  await page.reload();
+  await expect(page.locator(".problem-mastery-status").first()).toHaveValue("beyond_scope");
+  await expect(page.locator(".problem-review-due").first()).toHaveValue("2026-12-20");
 });
 
 test("code editor shows one heading and keeps an accessible label", async ({ page }) => {
@@ -392,4 +412,14 @@ test("code editor shows one heading and keeps an accessible label", async ({ pag
   const codeSection = page.locator(".journal-code-tools").first();
   await expect(codeSection.getByText("代码", { exact: true })).toHaveCount(1);
   await expect(codeSection.getByRole("textbox", { name: "代码", exact: true })).toBeVisible();
+});
+
+test("超纲 records remain discoverable after moving to self-assessment", async ({ page }) => {
+  await page.route(`${WORKER}/api/session`, (route) => route.fulfill({ json: null }));
+  await page.goto("/review/");
+  await page.locator('[data-review-status="deferred"]').click();
+  await expect(page.locator("#review-deferred-count")).not.toHaveText("0");
+  await expect(page.locator("#review-records")).toContainText("吃奶酪");
+  await expect(page.locator("#review-records")).toContainText("超纲待做");
+  await expect(page.locator("#review-records")).toContainText("未安排复习");
 });
