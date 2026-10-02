@@ -34,11 +34,7 @@ jobs:
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
 
-      - name: Check and generate site
-        run: npm run check
-
-      # Worker 只在自身输入变化时才需要重建。没变时线上 Worker 应保持原样，
-      # 因此不做提交号校验、不等待；兼容性检查照常执行且立即失败。
+      # 只有确认 Worker 输入变化时才访问 Worker；其他发布完全跳过 Worker 门禁。
       # WORKER_PATHS 必须与 Cloudflare Workers Builds 的 build watch paths 保持一致。
       - name: Detect Worker input changes
         id: worker
@@ -47,19 +43,19 @@ jobs:
         run: |
           before="${{ github.event.before }}"
           if [ "${{ github.event_name }}" != "push" ] || [ -z "$before" ] || [ "$before" = "0000000000000000000000000000000000000000" ]; then
-            echo "Not a normal push (${{ github.event_name }}); checking compatibility only."
+            echo "No push change range (${{ github.event_name }}); skipping Worker checks."
             echo "expected_commit=" >> "$GITHUB_OUTPUT"
             echo "wait_ms=0" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           if ! git cat-file -e "${before}^{commit}" 2>/dev/null; then
-            echo "Previous commit ${before:0:7} is not in this clone (history rewritten?); checking compatibility only."
+            echo "Previous commit ${before:0:7} is unavailable; skipping Worker checks."
             echo "expected_commit=" >> "$GITHUB_OUTPUT"
             echo "wait_ms=0" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           if git diff --quiet "$before" "${{ github.sha }}" -- $WORKER_PATHS; then
-            echo "Worker inputs unchanged in ${before:0:7}..${{ github.sha }}; checking compatibility only."
+            echo "Worker inputs unchanged in ${before:0:7}..${{ github.sha }}; skipping Worker checks."
             echo "expected_commit=" >> "$GITHUB_OUTPUT"
             echo "wait_ms=0" >> "$GITHUB_OUTPUT"
           else
@@ -68,11 +64,22 @@ jobs:
             echo "wait_ms=900000" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check live Worker compatibility
+      - name: Verify and build (Worker checks only when changed)
         env:
           WORKER_EXPECTED_COMMIT: ${{ steps.worker.outputs.expected_commit }}
           WORKER_WAIT_MS: ${{ steps.worker.outputs.wait_ms }}
-        run: node scripts/check-worker-compatibility.mjs
+        run: |
+          if [ -z "$WORKER_EXPECTED_COMMIT" ]; then
+            npm run check
+            exit 0
+          fi
+          # Worker 发布与本地验证同时进行；任一失败都不会上传站点。
+          node scripts/check-worker-compatibility.mjs &
+          worker_gate_pid=$!
+          trap 'kill "$worker_gate_pid" 2>/dev/null || true' EXIT
+          npm run check
+          wait "$worker_gate_pid"
+          trap - EXIT
 
       - name: Configure Pages
         uses: actions/configure-pages@v6

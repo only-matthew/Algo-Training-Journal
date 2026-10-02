@@ -5,8 +5,9 @@
 // Worker 输入**时才有意义——其余情况下 Worker 本来就应该原地不动，强制重建和等待
 // 都是白付的代价。
 //
-// 因此：兼容性检查始终执行、失败即拒绝；提交号同一性只在本 push 改动 Worker 输入时
-// 才要求，由 deploy.yml 显式通过 WORKER_EXPECTED_COMMIT 开启（不设置即不校验）。
+// 发布工作流只有确认 Worker 输入变化时才调用本脚本，并通过
+// WORKER_EXPECTED_COMMIT 要求同提交上线。其他发布完全跳过 Worker 检查；
+// 本函数仍可用于人工按需的兼容性检查。
 import { pathToFileURL } from "node:url";
 import { LOG_SCHEMA_VERSION } from "../lib/log-schema.mjs";
 
@@ -62,7 +63,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
       const stamp = buildCommit?.slice(0, 7) || "unstamped";
       console.log(commitChecked
         ? `Live Worker ${stamp} accepts log schema ${min}–${max} and matches this commit.`
-        : `Live Worker ${stamp} accepts log schema ${min}–${max}; site schema ${LOG_SCHEMA_VERSION} is compatible. This push did not change Worker inputs, so build identity is not required.`);
+        : `Live Worker ${stamp} accepts log schema ${min}–${max}; site schema ${LOG_SCHEMA_VERSION} is compatible. Build identity was not requested for this check.`);
       break;
     } catch (error) {
       if (Date.now() >= deadline) {
@@ -71,7 +72,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
         break;
       }
       console.log(`Waiting for Worker deployment: ${error.message}`);
-      await new Promise((resolve) => setTimeout(resolve, Math.min(15000, deadline - Date.now())));
+      await new Promise((resolve) => setTimeout(resolve, Math.min(5000, deadline - Date.now())));
     }
   }
 }

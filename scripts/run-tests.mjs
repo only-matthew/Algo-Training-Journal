@@ -1,5 +1,6 @@
 import { readdirSync } from "node:fs";
 import { spawnSync } from "node:child_process";
+import { availableParallelism } from "node:os";
 
 const files = readdirSync("test")
   .filter((file) => file.endsWith(".mjs"))
@@ -10,7 +11,9 @@ const files = readdirSync("test")
 // 不会跨文件泄漏。两轮都执行完，第一轮的失败不能挡住第二轮的用例。
 const workerFiles = files.filter((file) => /^test\/oauth-[^/]*\.test\.mjs$/.test(file));
 const regularFiles = files.filter((file) => !workerFiles.includes(file));
-const nodeArgs = ["--test", "--test-concurrency=1"];
+// 文件由 Node 独立进程隔离，最多并行两份，避免过度争抢 CPU 与计时用例抖动。
+const concurrency = Math.min(2, availableParallelism());
+const nodeArgs = ["--test", `--test-concurrency=${concurrency}`];
 
 let failed = false;
 for (const batch of [regularFiles, workerFiles]) {

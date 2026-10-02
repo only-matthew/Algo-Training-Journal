@@ -19,6 +19,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v6
@@ -32,5 +34,17 @@ jobs:
       - name: Verify source and build site
         run: npm run verify
 
-      - name: Check Worker bundling (wrangler dry run)
+      - name: Detect Worker input changes
+        id: worker
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -n "$BASE_SHA" ] && git cat-file -e "${BASE_SHA}^{commit}" 2>/dev/null && ! git diff --quiet "$BASE_SHA" HEAD -- workers lib config/members.json scripts/stamp-worker-commit.mjs package.json package-lock.json; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check Worker bundling (only when changed)
+        if: steps.worker.outputs.changed == 'true'
         run: npx wrangler deploy --dry-run --outdir .build-cache/worker-dryrun --config workers/wrangler.toml

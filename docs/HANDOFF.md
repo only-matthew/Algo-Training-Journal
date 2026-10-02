@@ -2,6 +2,15 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-10-03，Action 速度优化）
+
+最近成功发布 run 37032737891 的 verify-and-build 约 66 秒，代码校验与构建 19 秒，之后单独等待 Worker 31 秒；Pages 部署约 15 秒。发布步骤改为提前判定 Worker 输入变更，只有确认变更时才同时运行完整 npm run check 与线上 Worker 门禁，双方全部成功后才上传产物；等待期间轮询从 15 秒改为 5 秒。
+
+用户进一步明确：除非 Worker 发生变化，Action 不要管 Worker。当前发布流程在六类 Worker 输入（workers、lib、config/members.json、scripts/stamp-worker-commit.mjs、package.json、package-lock.json）均未变化时完全跳过 Worker 接口请求与等待；PR 的 Worker dry-run 也仅在这些输入变化时执行。手动触发或无法确认变更范围时跳过 Worker。Git Bash 分支验证覆盖未变更时不调用 Worker、验证失败退出，以及变更时双方成功和任一失败；Worker 专项与文档链接检查 8/8 通过。下方旧交接中的“始终检查 Worker”是历史行为，已被本规则取代。
+
+Node 单测文件与语法检查最多并行两份，保留原有检查覆盖和失败退出码。本机 209 文件语法检查从约 14.2 秒降到 7.6 秒；真实 Git Bash 执行发布步骤验证了双成功、Worker 失败与本地校验失败三种结果及并行性。UTC 环境完整 npm run verify 通过：531 + 93 = 624 项单测无失败、无跳过，站点 625 reused / 0 rebuilt；并行语法检查的畸形输入实测返回退出码 1。文档链接检查通过。线上耗时以推送后的 Actions 为准。
+
+浏览器自动化仍不进入 Action；没有增加 CI 缓存下载、第二次站点构建或跳过测试。本轮未提交、未部署。
 ## 最新交接（2026-10-03，复核修复与 CI 取舍）
 
 用户明确维持 2026-09-29 的选择：浏览器回归不进入日常发布或 PR Action，保留本地按需运行。先前审计恢复的 PR e2e job 已移除，主分支发布流程没有新增浏览器步骤或第二次站点构建。跨分钟双构建验证独立为 `node scripts/smoke-build-cache.mjs`，不进入日常门禁。不要再次根据审计建议自动恢复浏览器 CI。
