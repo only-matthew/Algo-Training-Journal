@@ -32,11 +32,12 @@ test("patchProblemReview 空数组与空 id 容错", () => {
 });
 
 test("dueDateInDays 按固定基准日期计算", () => {
-  const base = new Date("2026-08-28T12:00:00");
+  // 固定北京时间，不能让 CI 的 UTC 或开发机时区改变测试输入的实际时刻。
+  const base = new Date("2026-08-28T12:00:00+08:00");
   assert.equal(dueDateInDays(0, base), "2026-08-28");
   assert.equal(dueDateInDays(3, base), "2026-08-31");
   assert.equal(dueDateInDays(-1, base), "2026-08-27");
-  assert.equal(dueDateInDays(1, new Date("2026-07-31T23:00:00")), "2026-08-01");
+  assert.equal(dueDateInDays(1, new Date("2026-07-31T23:00:00+08:00")), "2026-08-01");
 });
 
 test("dueDateInDays 默认使用当前时间且格式为 YYYY-MM-DD（UTC+8 口径）", () => {
