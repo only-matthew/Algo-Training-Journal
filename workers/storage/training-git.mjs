@@ -1,6 +1,5 @@
 import { REPO, BRANCH, GH_TIMEOUT_MS, ghHeaders, gh } from "./github-api.mjs";
 import { mapConcurrent } from "../services/map-concurrent.mjs";
-import { gitBlobSha } from "../services/log-planning.mjs";
 
 // 返回原始字节；题面 PDF 附件不能经过文本解码。
 // 题面 PDF 附件必须走这条路径：文本解码会破坏二进制内容。
@@ -22,7 +21,7 @@ export function trainingGit(token) {
     return fileCache.get(key);
   };
   const readFile = (head, path) => readBytes(head, path).then((bytes) => (bytes === null ? null : new TextDecoder().decode(bytes)));
-  // 目录树按 head 缓存一次；blob SHA 由缓存内容本地计算，不额外请求 Contents API。
+  // 目录树按 head 缓存一次；版本指纹直接使用 tree 提供的 blob SHA。
   const tree = async (snapshot) => {
     if (!treeCache.has(snapshot.head)) treeCache.set(snapshot.head, gh(`/git/trees/${snapshot.head}?recursive=1`, token).then((result) => {
       if (result.truncated) throw Object.assign(new Error("Repository index is too large"), { code: "INDEX_STALE", status: 503 });
@@ -37,11 +36,9 @@ export function trainingGit(token) {
   // logs-v2 的日期版本需要对目录内每个文件取 Git blob SHA 才能构造内容指纹，
   // 因此比 listFiles 多返回一层 { path, sha }。
   const listFileEntries = async (snapshot, prefix) => {
-    const paths = await listFiles(snapshot, prefix);
-    return mapConcurrent(paths, 4, async (path) => {
-      const bytes = await readBytes(snapshot.head, path);
-      return { path, sha: await gitBlobSha(bytes || new Uint8Array()) };
-    });
+    const entries = await tree(snapshot);
+    return entries.filter((entry) => entry.type === "blob" && entry.path.startsWith(prefix))
+      .map(({ path, sha }) => ({ path, sha }));
   };
   return {
     async getHead() {

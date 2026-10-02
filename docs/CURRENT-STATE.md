@@ -2,14 +2,14 @@
 
 更新日期：2026-10-02。这里记录当前可核对的实现；线上是否生效以部署结果为准。[PRODUCT.md](PRODUCT.md) 是产品方向，[SPECIFICATION.md](SPECIFICATION.md) 是实现契约与验收，[HANDOFF.md](HANDOFF.md) 是按日期保存的交接记录。带日期的审计数字以 [Audit/PRODUCT-AUDIT.md](Audit/PRODUCT-AUDIT.md) 为快照，不代表实时使用量；最近一次全栈审计与修复记录见 [Audit/AUDIT-2026-10-02.md](Audit/AUDIT-2026-10-02.md)。
 
-当前工作区包含两轮修复：第一轮是两份审计中的安全入口、构建正确性、默认复习建议、同题重做、个人清单、空心得清理、场次展示、周期报告、同题提示和旧状态来源标记，已在 2026-10-02 提交（`9b2fa2c`）并发布；第二轮按当天的[全栈审计](Audit/AUDIT-2026-10-02.md)逐项修复了题面解析 DoS、保存丢审计字段、三套"今天"口径、写入层重复实现、网络无超时、门禁覆盖面等问题，逐项状态与验收证据见该报告 §8。第二轮验收：`npm run verify` 通过（**单测 612 项全绿**），`npx playwright test` **17/17 通过**，浏览器回归自本轮起在 `checks.yml` 的 `e2e` job 中执行。详见 [技术审计当前进展](Audit/PROBLEM-AUDIT.md)与[产品审计当前进展](Audit/PRODUCT-AUDIT.md)。
+当前工作区包含两轮修复：第一轮是两份审计中的安全入口、构建正确性、默认复习建议、同题重做、个人清单、空心得清理、场次展示、周期报告、同题提示和旧状态来源标记，已在 2026-10-02 提交（`9b2fa2c`）并发布；第二轮按当天的[全栈审计](Audit/AUDIT-2026-10-02.md)逐项修复了题面解析 DoS、保存丢审计字段、三套"今天"口径、写入层重复实现、网络无超时、门禁覆盖面等问题，逐项状态与验收证据见该报告 §8。第二轮验收：`npm run verify` 通过（**2026-10-02 第二轮单测 616 项全绿**），`npx playwright test` **17/17 通过**，PR 浏览器回归配置在 `checks.yml`；该时点尚未覆盖主分支直推发布，后续工作区补修见下文门禁说明。详见 [技术审计当前进展](Audit/PROBLEM-AUDIT.md)与[产品审计当前进展](Audit/PRODUCT-AUDIT.md)。
 
 ## 现在是什么
 
 - 站点是从 `logs/` 和 `curriculum/` 构建的静态 GitHub Pages 页面；`site/` 是可重建产物。Cloudflare Worker 处理 GitHub OAuth、登录后日志写入、题目导入和题面抓取。
 - 日志写入格式的当前版本由 `lib/log-schema.mjs` 的 `LOG_SCHEMA_VERSION` 定义，当前工作区为 **8**。v7 增加 `reviewStatus=deferred`（超纲待做），只允许搭配“未完成”且不能设置复习日期；v8 把“超纲待做”移到 `masteryStatus=beyond_scope`（掌握自评的一个取值），不再占用复习状态，旧记录的 `reviewStatus=deferred` 在归一化时映射为该自评值，复习安排随之退出近期队列（除非原本就带复习日期）。Worker 的匿名只读 `GET /api/capabilities` 公布可接受范围和构建提交号，`GET /api/session` 可做发布后只读冒烟。Pages 部署**始终**核对线上 Worker 能否接受本站 schema（不兼容即拒绝发布）；**只有本次推送改动了 Worker 输入**（六类：`workers/`、`lib/`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`）时才额外要求线上 Worker 的提交号等于本次提交并最多等待 15 分钟。Worker 没变就不重建、不等待。
 - 当前用户入口为首页、训练档案、复习、知识地图、标签、独立提交页 `/submit/`。`/training/` 已下线。日志按 `logs/<姓名>/YYYY/MM/DD/` 保存；题目详情与导出由构建数据生成。
-- `npm run verify` 依次运行语法检查、ESLint 的未定义引用与未使用变量检查、训练索引校验、单测和站点构建。PR 与主分支发布运行这套快速门禁；Chromium 浏览器回归保留为本地按需验收，不在日常 Action 中安装运行。主分支发布只构建一次。
+- `npm run verify` 依次运行语法检查、ESLint、训练索引校验、单测和站点构建。按用户明确选择，日常发布和 PR Action 不安装 Chromium、不执行浏览器回归；浏览器测试仅保留为本地按需验收。主分支发布只构建一次。复核报告关于恢复浏览器 CI 的建议未采纳，不能把这项取舍描述为已恢复门禁。
 
 ## 冻结与维护范围
 

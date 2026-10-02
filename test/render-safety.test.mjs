@@ -2,6 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { escapeHtml, renderMarkdown } from "../lib/render-safety.mjs";
 
+test("协议相对链接与图片被丢弃，显式 HTTPS 外链与站内路径仍可用", () => {
+  assert.equal(renderMarkdown('[x](//evil.example/path "title")'), "<p>x</p>");
+  assert.equal(renderMarkdown('![x](//evil.example/path "title")'), "<p>x</p>");
+  assert.equal(renderMarkdown('# [x](//evil.example/path)'), "<h1>x</h1>");
+  assert.match(renderMarkdown('[x](https://example.com/path)'), /href="https:\/\/example.com\/path"/);
+  assert.match(renderMarkdown('[x](/problem/1/)'), /href="\/problem\/1\/"/);
+});
+
 test("HTML 特殊字符会被转义", () => {
   assert.equal(escapeHtml(`<img src="x" onerror='alert(1)'>`), "&lt;img src=&quot;x&quot; onerror=&#39;alert(1)&#39;&gt;");
 });

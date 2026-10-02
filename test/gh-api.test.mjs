@@ -70,6 +70,18 @@ test("gh() 配额耗尽（X-RateLimit-Remaining: 0）→ 429 且带恢复时间"
   });
 });
 
+test("gh() 成功响应使用最后一次配额时仍返回结果", async (context) => {
+  context.mock.method(globalThis, "fetch", async () => ok({ sha: "committed" }, { "X-RateLimit-Remaining": "0" }));
+  assert.deepEqual(await gh("/git/commits", TOKEN), { sha: "committed" });
+});
+
+test("gh() 成功的 204 与上游 5xx 不被零配额头覆盖", async (context) => {
+  context.mock.method(globalThis, "fetch", async () => new Response(null, { status: 204, headers: { "X-RateLimit-Remaining": "0" } }));
+  assert.equal(await gh("/test", TOKEN), null);
+  context.mock.method(globalThis, "fetch", async () => new Response("error", { status: 500, headers: { "X-RateLimit-Remaining": "0" } }));
+  await assert.rejects(() => gh("/test", TOKEN), { status: 502 });
+});
+
 test("gh() 403 给可读的权限提示，不泄露上游响应体", async (context) => {
   const fetchImpl = mockFetch(() => new Response(JSON.stringify({ message: "Resource not accessible by integration", internal: "secret-detail" }), {
     status: 403,

@@ -6,6 +6,20 @@ import { LUOGU_ORIGIN, readLimitedBody, requestLuoguPage } from "./luogu-page.mj
 import { resolveLuoguTagIds } from "../../lib/luogu-tag-map.mjs";
 import { MAX_NEW_STATEMENT_IMAGE_BYTES } from "../../lib/statement-images.mjs";
 
+export const IMPORT_TIMEOUT_MS = 10000;
+async function importJson(url, fetchImpl) {
+  try {
+    const response = await fetchImpl(url, { signal: AbortSignal.timeout(IMPORT_TIMEOUT_MS) });
+    if (!response.ok) throw Object.assign(new Error("题目导入接口不可用，请稍后再试"), { status: 502 });
+    return await response.json();
+  } catch (error) {
+    if (error.name === "TimeoutError" || error.name === "AbortError") {
+      throw Object.assign(new Error("题目导入超时，请稍后再试"), { code: "IMPORT_TIMEOUT", status: 504 });
+    }
+    throw error;
+  }
+}
+
 // Codeforces 官方 API：拉取最近 days 天内的 AC 记录，按题目去重（公开接口，无需登录）。
 // 自动翻页直到覆盖时间窗口或达到 maxPages 页，避免一次性拉取全部历史记录。
 export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, days = 3, maxPages = 5, perPage = 100 } = {}) {
@@ -16,9 +30,7 @@ export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, days 
   const problems = [];
   for (let page = 0; page < maxPages; page += 1) {
     const from = page * perPage + 1;
-    const response = await fetchImpl(`https://codeforces.com/api/user.status?handle=${encodeURIComponent(h)}&from=${from}&count=${perPage}`);
-    if (!response.ok) throw Object.assign(new Error("Codeforces 接口不可用，请稍后再试"), { status: 502 });
-    const data = await response.json();
+    const data = await importJson(`https://codeforces.com/api/user.status?handle=${encodeURIComponent(h)}&from=${from}&count=${perPage}`, fetchImpl);
     if (data.status !== "OK") throw Object.assign(new Error(`Codeforces 用户 ${h} 不存在或接口错误`), { status: 400 });
     const result = data.result || [];
     if (!result.length) break;
@@ -49,9 +61,8 @@ export async function fetchCodeforcesAccepted(handle, { fetchImpl = fetch, days 
   const missing = problems.filter((problem) => !Number.isFinite(problem.rating));
   if (missing.length) {
     try {
-      const response = await fetchImpl("https://codeforces.com/api/problemset.problems");
-      if (response.ok) {
-        const data = await response.json();
+      {
+        const data = await importJson("https://codeforces.com/api/problemset.problems", fetchImpl);
         if (data.status === "OK") {
           const wanted = new Set(missing.map((problem) => problem.problemNumber.toUpperCase()));
           const metadata = new Map();
@@ -171,9 +182,7 @@ export async function fetchAtCoderAccepted(handle, { fetchImpl = fetch, days = 3
   const byProblem = new Map();
   let fromSecond = cutoff;
   for (let page = 0; page < maxPages; page += 1) {
-    const response = await fetchImpl(`${ATCODER_SUBMISSIONS_URL}?user=${encodeURIComponent(h)}&from_second=${fromSecond}`);
-    if (!response.ok) throw Object.assign(new Error("AtCoder 接口不可用，请稍后再试"), { status: 502 });
-    const result = await response.json();
+    const result = await importJson(`${ATCODER_SUBMISSIONS_URL}?user=${encodeURIComponent(h)}&from_second=${fromSecond}`, fetchImpl);
     if (!Array.isArray(result) || !result.length) break;
     for (const submission of result) {
       if (submission.result !== "AC" || !submission.problem_id) continue;
@@ -195,9 +204,8 @@ export async function fetchAtCoderAccepted(handle, { fetchImpl = fetch, days = 3
   // 补充题名与难度；题库数据拉取失败时降级为仅返回题号，不影响主流程
   let byId = null;
   try {
-    const response = await fetchImpl(ATCODER_PROBLEMS_URL);
-    if (response.ok) {
-      const list = await response.json();
+    {
+      const list = await importJson(ATCODER_PROBLEMS_URL, fetchImpl);
       byId = new Map();
       for (const item of list) if (item && item.id) byId.set(item.id, item);
     }

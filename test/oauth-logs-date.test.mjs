@@ -155,6 +155,21 @@ function seedIndex(github) {
   github.seed(LEGACY_INDEX, EMPTY_INDEX);
 }
 
+test("legacy 保存推进 ref 成功且配额归零时仍返回成功", async (context) => {
+  const github = githubMock();
+  seedIndex(github);
+  context.mock.method(globalThis, "fetch", async (url, options = {}) => {
+    const response = await github.fetch(url, options);
+    if (options.method === "PATCH") response.headers.set("X-RateLimit-Remaining", "0");
+    return response;
+  });
+  const response = await call(github, "PUT", { problems: PROBLEMS, expectedVersion: null }, { "X-CSRF-Token": CSRF });
+  assert.equal(response.status, 200);
+  assert.match((await response.json()).revision, /^sha256:/);
+  assert.equal(github.commits, 1);
+  assert.ok(await github.fileText(`${ROOT}/meta.json`));
+});
+
 test("legacy PUT without a version is refused with 428 and writes nothing", async (context) => {
   const github = githubMock();
   context.mock.method(globalThis, "fetch", github.fetch);

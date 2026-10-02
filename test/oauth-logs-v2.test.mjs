@@ -120,7 +120,9 @@ function githubMock() {
       if (/^git\/trees\/[^/]+$/.test(path) && method === "GET") {
         const treeSha = path.slice("git/trees/".length);
         const resolved = treeContents.has(treeSha) ? treeSha : commitTrees.get(treeSha) || currentTree;
-        const tree = [...contentsAt(resolved).keys()].map((entryPath) => ({ path: entryPath, type: "blob", mode: "100644" }));
+        // 真实 Git Data API 的 tree 条目自带 blob SHA，与 Contents API 的 sha 相同；
+        // 日期版本指纹直接取这个值，所以 mock 也必须给出，否则指纹会退化成 undefined 参与哈希。
+        const tree = await Promise.all([...contentsAt(resolved).entries()].map(async ([entryPath, bytes]) => ({ path: entryPath, type: "blob", mode: "100644", sha: await gitBlobSha(bytes) })));
         return response({ tree, truncated: false });
       }
       if (path.startsWith("contents/")) {

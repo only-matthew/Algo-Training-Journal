@@ -48,4 +48,4 @@ flowchart LR
 
 ## 发布与回退
 
-Worker 与 Pages 分别由 Cloudflare Workers Builds 和 GitHub Actions 监听 `main` 推送自动发布。**Worker 在没有改动的推送里不重建**：Pages 上传前始终检查线上 Worker 能否接受本站日志 schema 与匿名 `/api/session`，不兼容立即拒绝；只有本次推送动到 Worker 输入时，才额外要求 `/api/capabilities` 的 `buildCommit` 等于本次提交并最多等待 15 分钟。2026-09-28 的 `66f25b4` 已完成 Worker 与 Pages 发布，线上预检允许 `PATCH`；2026-09-29 的 `70042ea` 只改 CI 与测试，Pages 发布成功且没有触发 Worker 重建。新日志格式或写入协议仍需先保证 Worker 向后兼容，并按需运行本地浏览器回归；日常 Action 只运行快速验证与构建。门禁仅覆盖上述检查，不代替写入协议测试。更完整的操作见 [SPECIFICATION.md](SPECIFICATION.md)。
+Worker 与 Pages 分别由 Cloudflare Workers Builds 和 GitHub Actions 监听 `main` 推送自动发布。**Worker 在没有改动的推送里不重建**：Pages 上传前始终检查线上 Worker 能否接受本站日志 schema 与匿名 `/api/session`，不兼容立即拒绝；只有本次推送动到 Worker 输入时，才额外要求 `/api/capabilities` 的 `buildCommit` 等于本次提交并最多等待 15 分钟。2026-09-28 的 `66f25b4` 已完成 Worker 与 Pages 发布，线上预检允许 `PATCH`；2026-09-29 的 `70042ea` 只改 CI 与测试，Pages 发布成功且没有触发 Worker 重建。新日志格式或写入协议仍需先保证 Worker 向后兼容，并按需运行本地浏览器回归；按用户选择，日常发布与 PR 检查不运行浏览器回归，保留本地按需验收；具体门禁与发布状态以 CURRENT-STATE.md 为准。门禁仅覆盖上述检查，不代替写入协议测试。更完整的操作见 [SPECIFICATION.md](SPECIFICATION.md)。

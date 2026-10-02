@@ -323,7 +323,7 @@ https://algo-oauth.xialiao.org/auth/callback
 3. 检查线上 Worker：`GET /api/capabilities` 的日志格式范围必须包含本站 schema，且 `GET /api/session` 可用，不满足立即失败；**仅当本次推送改动了 Worker 输入**（`workers/`、`lib/`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json` 六类）时，才额外要求 `buildCommit` 是**同一 Git 提交**，并最多等待 15 分钟。失败时保留上一版网站。
 4. 上传 GitHub Pages artifact，再使用 `actions/deploy-pages` 发布网站。
 
-Chromium 浏览器回归不在日常发布或 PR Action 中重复安装运行；需要验收交互时，在本地执行 `npm run test:e2e`（自动构建并启动预览），或对已有构建执行 `npm run test:e2e:ci`。
+按用户选择，Chromium 浏览器回归不进入日常发布或 PR Action，以保持构建速度。本地按需执行 `npm run test:e2e`（自动构建并启动预览），或对已有构建执行 `npm run test:e2e:ci`。现行验收与发布状态见 [CURRENT-STATE](docs/CURRENT-STATE.md)。
 
 Worker 使用 Cloudflare Workers Builds 连接本仓库的 `main` 分支，按构建监听路径自动部署现有 `algo-oauth`。Build command 留空，Root directory 为 `/`，Deploy command 设为 `npm run deploy:worker`；不启用预览分支的生产部署。该命令把 Cloudflare 提供的 `WORKERS_CI_COMMIT_SHA` 写入 Worker 构建版本，再从 `workers/wrangler.toml` 部署。Worker 的既有运行时 secret 继续保存在 Cloudflare，不写入仓库。Cloudflare 的 build watch paths 已设为 `workers/*`、`lib/*`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`，与 Pages 门禁的 Worker 输入集一致；日志、文档和纯前端推送不触发 Worker 构建，Pages 只检查兼容性而不等待同提交 Worker。手动恢复时可在根目录运行 `npm run deploy:worker`。
 

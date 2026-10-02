@@ -596,6 +596,11 @@ function reuseGenerated(key, hash, output) {
   const entry = previousBuildState.entries?.[key];
   const exists = fs.existsSync(path.join(OUTPUT_DIR, output));
   if (entry?.hash === hash && exists) {
+    // 页面内容可复用，但版本页脚必须反映这次构建，不能把旧时间留在缓存页面里。
+    const outputPath = path.join(OUTPUT_DIR, output);
+    const previous = fs.readFileSync(outputPath, "utf8");
+    const current = previous.replace(/(<[^>]+(?:\bid="site-version"|\bclass="footer-version")[^>]*>)[^<]*(<\/[^>]+>)/, (_all, open, close) => `${open}${escapeHtml(siteVersion())}${close}`);
+    if (current !== previous) fs.writeFileSync(outputPath, current);
     nextBuildState.entries[key] = entry;
     incrementalHits += 1;
     return true;
@@ -1103,6 +1108,10 @@ async function generateRoadmapPages(html, roadmapData, nodeDataById) {
   }
 
   function roadmapPage(title, description, segments, contentHtml) {
+    const output = path.join(...segments, "index.html");
+    const stateKey = `roadmap:${segments.join("/")}`;
+    const stateHash = contentHash({ shell: buildShellHash, title, description, members: roadmapData.members, contentHtml });
+    if (reuseGenerated(stateKey, stateHash, output)) return;
     const page = replaceHeadMetadata(showOnlyPage(html, "roadmap-page"), {
       title: `${title} · ${SITE_NAME}`,
       description,
@@ -1116,6 +1125,7 @@ async function generateRoadmapPages(html, roadmapData, nodeDataById) {
     $("#roadmap-content").html(contentHtml);
     $("#roadmap-toolbar").attr("hidden", segments.length === 1 ? "" : null);
     writeRouteIndex(addSelfClosingVoids($.html()), segments);
+    rememberGenerated(stateKey, stateHash, output);
   }
 
   roadmapPage("知识地图", "按主题查阅算法参考题、关联标签与队内训练记录。", ["roadmap"], roadmapOverviewHtml(roadmapData, "all"));
@@ -1286,6 +1296,7 @@ async function main() {
   const html = writeVersionedIndex(dataVersion);
   const $shellFingerprint = cheerio.load(html);
   $shellFingerprint('meta[name="journal-data-version"]').attr("content", "dataset-version");
+  $shellFingerprint("#site-version").text("build-version");
   buildShellHash = contentHash($shellFingerprint.html());
   problemShellHash = contentHash({
     template: "standalone-problem-v2-current-header",

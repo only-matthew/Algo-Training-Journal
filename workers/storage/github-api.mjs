@@ -7,7 +7,7 @@ export function ghHeaders(token) { return { Authorization: `Bearer ${token}`, Ac
 export async function gh(path, token, options = {}) {
   const response = await fetch(path.startsWith("http") ? path : `https://api.github.com/repos/${REPO}${path}`, { ...options, signal: options.signal ?? AbortSignal.timeout(GH_TIMEOUT_MS), headers: { ...ghHeaders(token), ...(options.headers || {}) } });
   const remaining = parseInt(response.headers.get("X-RateLimit-Remaining"), 10);
-  if (remaining === 0) {
+  if (!response.ok && (response.status === 403 || response.status === 429) && remaining === 0) {
     const resetTime = parseInt(response.headers.get("X-RateLimit-Reset"), 10);
     const resetDate = resetTime ? new Date(resetTime * 1000).toLocaleTimeString("zh-CN") : "unknown";
     console.error(`GitHub API rate limit exhausted. Resets at ${resetDate}`);

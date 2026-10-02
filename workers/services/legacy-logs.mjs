@@ -63,7 +63,7 @@ async function commit(changes, message, token, retry = 0, recheck = null) {
 
   // 6. Retry on conflict
   const remaining = parseInt(response.headers.get("X-RateLimit-Remaining"), 10);
-  if (remaining === 0) {
+  if (!response.ok && (response.status === 403 || response.status === 429) && remaining === 0) {
     console.error("GitHub API rate limit exhausted while updating ref.");
     throw Object.assign(new Error("GitHub API 请求配额已用完，请稍后再试"), { status: 429 });
   }

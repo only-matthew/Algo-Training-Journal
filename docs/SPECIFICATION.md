@@ -25,7 +25,7 @@
 | `GET /api/session` | 匿名读取会话状态，已登录时下发会话与 CSRF 所需信息 | 已上线；仍需发布后冒烟 |
 | `GET /api/capabilities` | 公布 Worker 接受的日志 schema 范围与构建提交号 | 已上线；2026-09-28 的 `66f25b4` 已核验 HTTP 200 与提交号一致 |
 | `GET/PUT/DELETE /api/logs/date?date=...` | 按日期读取、写入与删除现行日志 | 已有接口 |
-| `GET/PUT /api/my-list` | 读取、条件保存当前成员的个人清单，最多 30 题 | 当前工作区已实现，待发布 |
+| `GET/PUT /api/my-list` | 读取、条件保存当前成员的个人清单，最多 30 题 | 已实现；发布证据以 [CURRENT-STATE](CURRENT-STATE.md) 为准 |
 | `PATCH /api/v2/me/logs/dates/:date/records/:id` | 只修改单题复习状态与到期日 | 已有接口，字段白名单 |
 | `PUT /api/v2/logs/dates/:date` | 新格式日期日志和附件保存 | 已有接口，条件版本与幂等要求以实现为准 |
 | `POST /api/import`、`POST /api/problem-statement`、`POST /api/summarize` | 已授权的导入、抓题面与概括 | 已有接口，非核心闭环 |
@@ -35,7 +35,7 @@ GitHub OAuth 只允许配置成员写自己的日志。写接口校验 Origin、
 ### 1.4 验证与发布
 
 - `npm run verify`：语法（含 `test/`、`e2e/` 与根配置文件）、ESLint 未定义/未使用检查、训练索引一致性、Node 测试、站点构建，以及（在 CI 中）`wrangler deploy --dry-run` 的 Worker 可构建校验。
-- `npm run test:e2e`：本地构建站点、启动预览并运行 Chromium 浏览器回归；`npm run test:e2e:ci` 用于已有构建。**浏览器回归自 2026-10-02 起在 `checks.yml` 的独立 `e2e` job 中执行**（安装 Chromium → 构建站点 → 跑整套用例）；此前它只在本机按需运行，导致一条已失效的用例长期无人发现（见 [全栈审计](Audit/AUDIT-2026-10-02.md) §2.3）。
+- `npm run test:e2e`：本地构建站点、启动预览并运行 Chromium 浏览器回归；`npm run test:e2e:ci` 用于已有构建。**按用户明确选择，日常发布和 PR Action 不安装 Chromium、不运行浏览器回归**，以保持构建速度。2026-10-02 曾按审计建议加入 PR 浏览器 job，2026-10-03 依用户约束移除；浏览器回归保留为本地按需验收。
 - Cloudflare Workers Builds 已连接本仓库 `main` 分支；build watch paths 已设为 `workers/*`、`lib/*`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`。仅这些 Worker 输入变化时运行 `npm run deploy:worker`，把 `WORKERS_CI_COMMIT_SHA` 编入 Worker，再通过仓库内 `workers/wrangler.toml` 部署现有服务。Pages 门禁使用相同输入集；两侧路径必须同步维护，否则可能漏部署或等待不会到来的构建。
 - 主分支 Pages 工作流只构建一次，并在上传页面产物前运行 `scripts/check-worker-compatibility.mjs`。门禁分两级：**始终**要求线上 Worker 能接受本站的 `LOG_SCHEMA_VERSION` 且匿名会话读接口可用，不满足立即拒绝；**仅当本次推送改动 Worker 输入**（同上六类路径）时才额外要求线上 Worker 的提交号等于本次 `github.sha`，并最多等待 15 分钟。Worker 没变就不校验提交号、不等待——否则每次日志或文档推送都要白等一轮 Worker 构建。它不能代替其他写入协议的回归测试。
 - 首页与独立题目页底部显示 `package.json` 版本、构建时间（UTC+8）和提交短号。2026-09-28 的 `66f25b4` 已完成 Worker 与 Pages 发布；线上 CORS 预检允许 `PATCH`。2026-09-29 的 `70042ea` 只精简 Action，Pages 发布成功且没有触发 Worker 重建。2026-10-02 的 `9b2fa2c` 改了 `lib/`（schema → v8），触发 Worker 重建并成功上线，线上 `buildCommit` 已核验为该提交。

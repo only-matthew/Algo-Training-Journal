@@ -13,7 +13,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 import {
@@ -22,7 +22,9 @@ import {
 } from "../lib/export-content.mjs";
 
 const ROOT = resolve(import.meta.dirname, "..");
-const WORK = join(ROOT, "build", "latex-test");
+// 每次验收使用独立目录，避免另一轮 TeX 编译占用旧目录导致 Windows EPERM。
+mkdirSync(join(ROOT, "build"), { recursive: true });
+const WORK = mkdtempSync(join(ROOT, "build", "latex-test-"));
 
 /* ------------------------------ 真实数据 ------------------------------ */
 
@@ -83,8 +85,6 @@ function findEngine(name) {
 const XELATEX = findEngine("xelatex");
 const PDFLATEX = findEngine("pdflatex");
 
-if (existsSync(WORK)) rmSync(WORK, { recursive: true, force: true });
-mkdirSync(WORK, { recursive: true });
 
 let caseCounter = 0;
 
