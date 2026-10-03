@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-03T22:49:28.435+08:00",
+  "problems": [
+    {
+      "id": "3a171cd3-4488-43ca-84bb-be255ae4b592",
+      "name": "迷宫",
+      "platform": "洛谷",
+      "problemNumber": "P1605",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [
+        "搜索",
+        "递推",
+        "枚举"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "mastered",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "blocker": "在改写为BFS的时候遇到了问题，GPT提示我可以将每条路走过的路径表示为自己的信息，让我更加理解搜索和其他算法中“状态转移”的意义。",
+      "fileIndex": 0
+    }
+  ]
+}
