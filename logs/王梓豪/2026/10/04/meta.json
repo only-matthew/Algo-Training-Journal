@@ -1,6 +1,8 @@
 {
   "schemaVersion": 8,
-  "updatedAt": "2026-10-04T00:08:57.047+08:00",
+  "updatedAt": "2026-10-04T00:09:17.774+08:00",
+  "startedOn": "2026-10-01",
+  "solvedOn": "2026-10-03",
   "problems": [
     {
       "id": "9cc756a8-725c-44b9-a230-468ccedd1a1f",
