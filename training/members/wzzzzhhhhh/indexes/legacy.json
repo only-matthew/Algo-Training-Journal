@@ -1292,6 +1292,26 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-09-28/7a068845-fc44-48b2-a5de-9ae7dacf9e0f/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1013",
+      "date": "2026-10-04",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-10-04",
+        "recordId": "9cc756a8-725c-44b9-a230-468ccedd1a1f"
+      },
+      "problem": {
+        "name": "[NOIP 1998 提高组] 进制位",
+        "platform": "洛谷",
+        "problemNumber": "P1013",
+        "difficulty": "★ 1500"
+      },
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-10-04/9cc756a8-725c-44b9-a230-468ccedd1a1f/"
     }
   ]
 }

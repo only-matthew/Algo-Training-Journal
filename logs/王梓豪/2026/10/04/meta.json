@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-04T00:08:57.047+08:00",
+  "problems": [
+    {
+      "id": "9cc756a8-725c-44b9-a230-468ccedd1a1f",
+      "name": "[NOIP 1998 提高组] 进制位",
+      "platform": "洛谷",
+      "problemNumber": "P1013",
+      "difficulty": "★ 1500",
+      "difficultyRating": 1500,
+      "tags": [
+        "搜索",
+        "枚举",
+        "进制"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
