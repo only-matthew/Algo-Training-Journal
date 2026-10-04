@@ -2,6 +2,21 @@
 [hidden] { display: none !important; }
 /* Query the usable viewport width, excluding the vertical scrollbar. */
 html { container-type: inline-size; }
+/* Standalone details place the footer outside main; the app shell nests it inside. */
+.footer { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; padding: 24px 0 32px; }
+.problem-standalone > .footer { padding-inline: max(24px, calc((100cqw - 1320px) / 2)); }
+.footer > span:first-child { text-align: left; }
+.footer > a { justify-self: end; }
+.footer-version { margin: 0; }
+@media (max-width: 767px) {
+  .problem-standalone { padding-bottom: 0; }
+  .problem-standalone .main { width: calc(100% - 32px); }
+  .footer { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 24px 0; text-align: center; }
+  .problem-standalone > .footer { padding-inline: 16px; }
+  .footer > span:first-child { text-align: center; }
+  .footer > a { justify-self: center; }
+  .footer-version { white-space: normal; overflow-wrap: anywhere; }
+}
 .page-hero { margin-inline: calc((min(1320px, 100cqw - 48px) - 100cqw) / 2); }
 .page-hero::after { content: none; }
 .hero-verse { position: absolute; z-index: 1; left: 55%; top: 42px; transform: rotate(-7deg); pointer-events: none; }

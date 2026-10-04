@@ -1,5 +1,44 @@
 import { expect, test } from '@playwright/test';
 
+for (const width of [1440, 768, 750, 375, 320]) {
+  for (const route of ['/', '/problem/%E5%BB%96%E5%A4%8F/2026-10-03/3a171cd3-4488-43ca-84bb-be255ae4b592/']) {
+    test(`footer ${width}px ${route === '/' ? 'home' : 'problem'}: page gutters and mobile navigation`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 950 });
+      await page.route('https://algo-oauth.xialiao.org/api/session', response => response.fulfill({ json: null }));
+      await page.goto(route);
+      if (route === '/') await page.locator('#vitality-chart svg').waitFor({ state: 'visible' });
+      else await page.locator('#problem-code .token.keyword').first().waitFor({ state: 'attached' });
+      await page.evaluate(() => document.fonts.ready);
+      for (const theme of ['light', 'dark']) {
+        await page.evaluate(value => document.documentElement.dataset.theme = value, theme);
+        await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
+        const footer = page.locator('footer.footer');
+        const content = page.locator('#main-content');
+        const containerBox = await content.boundingBox();
+        const footerBox = await footer.boundingBox();
+        const brandBox = await footer.locator(':scope > span').boundingBox();
+        const copyrightBox = await footer.locator(':scope > a').boundingBox();
+        const versionBox = await footer.locator('.footer-version').boundingBox();
+        expect(brandBox.x).toBeGreaterThanOrEqual(containerBox.x - 1);
+        expect(copyrightBox.x + copyrightBox.width).toBeLessThanOrEqual(containerBox.x + containerBox.width + 1);
+        expect(footerBox.height).toBeLessThan(160);
+        if (width >= 768) {
+          expect(Math.abs(brandBox.x - containerBox.x)).toBeLessThan(1);
+          expect(Math.abs(copyrightBox.x + copyrightBox.width - containerBox.x - containerBox.width)).toBeLessThan(1);
+        } else {
+          expect(versionBox.y).toBeGreaterThanOrEqual(brandBox.y + brandBox.height);
+          expect(copyrightBox.y).toBeGreaterThanOrEqual(versionBox.y + versionBox.height);
+          const navigation = page.locator('.mobile-nav');
+          const bottom = await navigation.count() ? (await navigation.boundingBox()).y : 950;
+          expect(footerBox.y + footerBox.height).toBeLessThanOrEqual(bottom + 1);
+        }
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+        if (route !== '/' && [1440, 375].includes(width)) await page.screenshot({ path: `artifacts/release/footer-${width}-${theme}.png` });
+      }
+    });
+  }
+}
+
 for (const width of [1440, 375]) {
   for (const theme of ['light', 'dark']) {
     test(`maze detail ${width}px ${theme}: samples, merged thoughts and page scrolling`, async ({ page }) => {
