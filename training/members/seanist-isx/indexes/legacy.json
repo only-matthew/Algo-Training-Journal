@@ -933,6 +933,25 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-09-22/be5259ff-8bcf-4841-9e99-ef523623031c/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2269C",
+      "date": "2026-10-03",
+      "recordRef": {
+        "memberId": "seanist-isx",
+        "date": "2026-10-03",
+        "recordId": "34ca2553-157c-4022-b347-ffe8b51f1468"
+      },
+      "problem": {
+        "name": "K Is Important",
+        "platform": "Codeforces",
+        "problemNumber": "2269C",
+        "difficulty": "★ 1200"
+      },
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-10-03/34ca2553-157c-4022-b347-ffe8b51f1468/"
     }
   ]
 }

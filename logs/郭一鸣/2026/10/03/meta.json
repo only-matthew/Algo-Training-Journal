@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-04T23:23:57.971+08:00",
+  "problems": [
+    {
+      "id": "34ca2553-157c-4022-b347-ffe8b51f1468",
+      "name": "K Is Important",
+      "platform": "Codeforces",
+      "problemNumber": "2269C",
+      "difficulty": "★ 1200",
+      "difficultyRating": 1200,
+      "tags": [
+        "构造",
+        "贪心",
+        "双指针"
+      ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/2269/C?locale=en",
+        "fetchedAt": "2026-10-04T15:23:24.415Z",
+        "parserVersion": "cf-html-v4"
+      }
+    }
+  ]
+}
