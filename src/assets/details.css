@@ -141,10 +141,6 @@ html { container-type: inline-size; }
 .problem-vitality small { color: var(--muted); font-size: 12px; line-height: 1.5; }
 .problem-layout { display: grid; grid-template-columns: minmax(0,2.1fr) minmax(280px,1fr); gap: 16px; }
 .problem-main, .problem-aside { min-width: 0; }
-.problem-main { display: contents; }
-.problem-main > .detail-panel { grid-column: 1 / -1; margin-bottom: 0; }
-.problem-main > #problem-description { grid-column: 1; grid-row: 1; }
-.problem-aside { grid-column: 2; grid-row: 1; align-self: start; }
 .problem-facts { display: grid; grid-template-columns: 95px minmax(0,1fr); gap: 12px; margin: 0; }
 .problem-facts dt { color: var(--muted); }
 .problem-facts dd { margin: 0; overflow-wrap: anywhere; }

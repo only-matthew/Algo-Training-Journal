@@ -21,9 +21,11 @@ for (const width of [1440, 375]) {
       expect((await page.locator('.problem-layout').innerText()).match(/直接dfs即可/g)).toHaveLength(1);
       const pre = page.locator('#problem-code pre');
       expect(await pre.evaluate(el => el.scrollHeight <= el.clientHeight + 1)).toBe(true);
-      const layoutBox = await page.locator('.problem-layout').boundingBox();
+      const descriptionBox = await page.locator('#problem-description').boundingBox();
       const codeBox = await page.locator('#problem-code').boundingBox();
-      expect(Math.abs(codeBox.width - layoutBox.width)).toBeLessThan(3);
+      const thoughtsBox = await page.locator('#problem-thoughts').boundingBox();
+      expect(Math.abs(codeBox.width - descriptionBox.width)).toBeLessThan(1);
+      expect(Math.abs(thoughtsBox.width - descriptionBox.width)).toBeLessThan(1);
       await pre.evaluate(el => window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 140, behavior: 'instant' }));
       const before = await page.evaluate(() => scrollY);
       await page.mouse.move(width / 2, 400);
