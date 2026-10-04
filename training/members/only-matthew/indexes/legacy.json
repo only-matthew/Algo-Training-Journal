@@ -1606,6 +1606,28 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-03/3a171cd3-4488-43ca-84bb-be255ae4b592/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1019",
+      "date": "2026-10-04",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-10-04",
+        "recordId": "958df8d4-8e4a-4679-ad2b-15cee2fbdea6"
+      },
+      "problem": {
+        "name": "[NOIP 2000 提高组] 单词接龙（疑似错题）",
+        "platform": "洛谷",
+        "problemNumber": "P1019",
+        "difficulty": "★ 1300"
+      },
+      "outcome": "editorial",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": true,
+      "reviewStatus": "todo",
+      "reviewDue": "2026-10-07",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-04/958df8d4-8e4a-4679-ad2b-15cee2fbdea6/"
     }
   ]
 }

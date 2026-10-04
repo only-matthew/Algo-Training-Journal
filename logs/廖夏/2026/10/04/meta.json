@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-04T23:08:12.439+08:00",
+  "problems": [
+    {
+      "id": "958df8d4-8e4a-4679-ad2b-15cee2fbdea6",
+      "name": "[NOIP 2000 提高组] 单词接龙（疑似错题）",
+      "platform": "洛谷",
+      "problemNumber": "P1019",
+      "difficulty": "★ 1300",
+      "difficultyRating": 1300,
+      "tags": [
+        "字符串",
+        "DP",
+        "搜索",
+        "递推",
+        "状压DP"
+      ],
+      "outcome": "editorial",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": true,
+      "reviewStatus": "todo",
+      "reviewDue": "2026-10-07",
+      "blocker": "三天后重新打一遍，看看是否会出现状态转移写错的问题，一定要考虑清楚每个变量及状态转移操作的意义",
+      "fileIndex": 0
+    }
+  ]
+}
