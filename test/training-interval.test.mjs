@@ -2,6 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { expandTrainingInterval, mergeTrainingDates, trainingDatesOf, validateTrainingInterval } from '../lib/training-interval.mjs';
 
+test('补录日期与已结束区间取并集，区间内的记录日期不重复计数', () => {
+  assert.deepEqual(trainingDatesOf({ date: '2026-10-04', startedOn: '2026-10-01', solvedOn: '2026-10-03' }), ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-04']);
+  assert.deepEqual(trainingDatesOf({ date: '2026-10-02', startedOn: '2026-10-01', solvedOn: '2026-10-03' }), ['2026-10-01', '2026-10-02', '2026-10-03']);
+  assert.deepEqual(trainingDatesOf({ date: '2026-10-07', startedOn: '2026-10-01', solvedOn: '2026-10-03' }), ['2026-10-01', '2026-10-02', '2026-10-03', '2026-10-07']);
+});
+
 test('legacy records remain one-day intervals and ranges expand inclusively', () => {
   assert.deepEqual(expandTrainingInterval({ date: '2026-09-05' }, '2026-09-05'), ['2026-09-05']);
   assert.deepEqual(expandTrainingInterval({ recordDate: '2026-09-05', startedOn: '2026-09-01', solvedOn: '2026-09-05' }), ['2026-09-01', '2026-09-02', '2026-09-03', '2026-09-04', '2026-09-05']);

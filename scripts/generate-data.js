@@ -1,6 +1,6 @@
 let trainingCardHtml;
 let mergeTrainingDates;
-let trainingDatesOf;
+let buildTrainingHeatmap;
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
@@ -66,41 +66,6 @@ function learningState(record) {
   };
 }
 
-// Note: buildHeatmapCounts and buildRecentStats each iterate the full logs array.
-// They compute different aggregates (date counts vs. time-windowed stats), so
-// combining into a single pass would require restructuring their interfaces.
-// Both are O(n) and the data volume is small, so keeping them separate is acceptable.
-// 热力图两套口径：
-//   count —— 当天做了几道题（保留原口径，供“题数”展示对照）
-//   value —— 当天的活力指数合计（做 1 道提高题 = 深色，做 3 道入门题 = 浅色）
-function buildHeatmapCounts(logs, today = todayUtc8(BUILD_CLOCK)) {
-  const all = {};
-  const byMember = {};
-  const valueAll = {};
-  const valueByMember = {};
-
-  for (const log of logs) {
-    // 越界区间不能中断构建：降级为只算记录当天，并指出是哪条数据。
-    const dates = trainingDatesOf(log, {
-      today,
-      onDegrade: (error) => {
-        console.warn(`[training-interval] ${log.member}/${log.date}/${log.problemId || log.problemIndex}: ${error.message}; using record date only`);
-      },
-    });
-    for (const day of dates) {
-      all[day] = (all[day] || 0) + 1;
-      byMember[log.member] ??= {};
-      byMember[log.member][day] = (byMember[log.member][day] || 0) + 1;
-      const vitality = Number(log.vitality) || 0;
-      valueAll[day] = Number(((valueAll[day] || 0) + vitality / dates.length).toFixed(3));
-      valueByMember[log.member] ??= {};
-      valueByMember[log.member][day] = Number(((valueByMember[log.member][day] || 0) + vitality / dates.length).toFixed(3));
-    }
-  }
-
-  return { all, byMember, valueAll, valueByMember };
-}
-
 // 统计窗口的右端：取「最新一条记录」与「构建当天」的较晚者，两者都按 UTC+8 日历日。
 // now/formatDate 保留为注入点（test/generate-seo.test.mjs 会显式传入）。
 function resolveStatsEnd(logs, now = BUILD_CLOCK, formatDate = todayUtc8) {
@@ -108,7 +73,7 @@ function resolveStatsEnd(logs, now = BUILD_CLOCK, formatDate = todayUtc8) {
   return logs.reduce((latest, log) => log.date > latest ? log.date : latest, today);
 }
 
-function buildRecentStats(logs, members) {
+function buildRecentStats(logs, members, heatmap) {
   const end = resolveStatsEnd(logs);
   // 纯字符串日期减法：不再构造本地 Date（本地 noon ± 29 天在极端时区/夏令时下有风险）。
   const start = addDaysToDate(end, -29);
@@ -122,10 +87,10 @@ function buildRecentStats(logs, members) {
     grouped.get(item.member).push(item);
   }
 
-  function summarize(items) {
+  function summarize(items, trainingCounts) {
     // 训练日 = 记录当天与确认区间的并集，重叠天数不重复计。区间可能越出统计窗口，
-    // 因此按窗口裁剪；口径与热力图（buildHeatmapCounts）保持一致。
-    const activeDays = mergeTrainingDates(items).filter((date) => date >= start && date <= end).length;
+    // 因此按窗口裁剪；直接复用全量热力图，避免按记录日先筛选后漏掉跨窗口训练。
+    const activeDays = Object.keys(trainingCounts || {}).filter((date) => date >= start && date <= end).length;
     const byPlatform = {};
     const byDifficulty = {};
     for (const item of items) {
@@ -145,9 +110,9 @@ function buildRecentStats(logs, members) {
   }
 
   // 单遍分组，避免对每个成员重复过滤整个数组（O(m×n) → O(n)）
-  const byMember = { all: summarize(withinRange) };
+  const byMember = { all: summarize(withinRange, heatmap.all) };
   for (const member of members) {
-    byMember[member] = summarize(grouped.get(member) || []);
+    byMember[member] = summarize(grouped.get(member) || [], heatmap.byMember[member]);
   }
 
   return { start, end, byMember };
@@ -1221,18 +1186,19 @@ async function main() {
   ({ cfTagToChinese } = await import("../lib/cf-tag-map.mjs"));
   ({ assessMastery } = await import("../lib/mastery.mjs"));
   ({ buildVitality } = await import("../lib/vitality-summary.mjs"));
-  ({ mergeTrainingDates, trainingDatesOf } = await import("../lib/training-interval.mjs"));
+  ({ mergeTrainingDates } = await import("../lib/training-interval.mjs"));
+  ({ buildTrainingHeatmap } = await import("../lib/training-heatmap.mjs"));
   ({ vitalityRecordKey } = await import("../lib/vitality.mjs"));
   ({ vitalityChartHtml } = await import("../lib/vitality-chart.mjs"));
   ({ memberVitalityDetailsHtml } = await import("../lib/member-vitality.mjs"));
   const { members, logs } = readLogs({ root: ROOT, logsDir: LOGS_DIR, normalizeMeta, normalizeLearningState, toUtc8 });
   // 活力指数按「题目 Rating + 当时水平」折算；结果写回每条记录，供卡片与统计使用
-  const vitality = buildVitality(logs);
+  const vitality = buildVitality(logs, { today: todayUtc8(BUILD_CLOCK) });
   for (const log of logs) Object.assign(log, vitality.byRecord.get(vitalityRecordKey(log)));
   const totalVitality = vitality.total;
   const vitalityAllDaily = vitality.allDaily;
-  const heatmap = buildHeatmapCounts(logs);
-  const recent30 = buildRecentStats(logs, members);
+  const heatmap = buildTrainingHeatmap(logs, vitality, todayUtc8(BUILD_CLOCK));
+  const recent30 = buildRecentStats(logs, members, heatmap);
   const generatedAt = logs.map((log) => log.updatedAt).filter(Boolean).sort().at(-1) || BUILD_CLOCK.toISOString();
   const summaryLogs = logs.map(logSummary);
   const allReviewQueue = buildReviewQueue(logs);

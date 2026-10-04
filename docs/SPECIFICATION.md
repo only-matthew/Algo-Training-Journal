@@ -10,6 +10,7 @@
 - 日志写入版本以 `lib/log-schema.mjs` 的 `LOG_SCHEMA_VERSION` 为准，当前工作区为 **8**；同模块负责大小、题数、字段与区间校验。每次写入最多 15 题、请求 JSON 最多 1.5 MB；题目 ID 在当日内不可重复。v7 曾用 `reviewStatus=deferred` 表示“超纲待做”；v8 把该语义移到 `masteryStatus=beyond_scope`（掌握自评取值），复习状态不再承担该语义。**v7 规格里“`deferred` 只能搭配 `outcome=unfinished` 且不接受 `reviewDue`”这条约束从未在代码中实现**：`lib/log-schema.mjs` 的 `validateV5LearningState` 只校验枚举取值，因此旧客户端的 `reviewStatus=deferred` 仍被接受，并在归一化时映射为 `masteryStatus=beyond_scope`、按是否带 `reviewDue` 落成 `todo` 或 `none`（见 `lib/learning-state.mjs`）。旧版本可读并归一，未知的更新版本被拒绝。
 - `outcome` 是做题结果，`masteryStatus` 是掌握自评，`isMistake` 是失误事实，`reviewStatus`/`reviewDue` 是复习安排。缺失结果保持未知。旧 `reviewStatus=mastered` 的兼容映射保留，并以 `masteryStatusSource` 标记其历史来源；详情页提示该状态不是可核实的本人新自评。
 - 训练区间影响热力图、训练日和活力日分摊，日期按 UTC+8 约束；统计按记录日与有效区间的日期并集计算，不重复累计重叠天数。无效历史区间在读侧降级处理以保证记录仍可访问。
+- 机器人打卡按记录日期计题数，使用 `heatmap.recordByMember`，不将补录的过去训练区间当作过去日期的打卡。热力图活力和曲线共用同一份保留三位小数、总额守恒的分摊结果；近 30 天训练日直接按热力图日期裁剪。
 - `training/` v2 数据、`/api/v2/me/*` 后端保留且**冻结**，没有生产前端消费者；其中记录通用增删改与 `plan-links` 等旧目标契约并未全部实现。不要把归档规格中的目标路由表理解为当前可用清单。
 
 ### 1.2 浏览器与构建
