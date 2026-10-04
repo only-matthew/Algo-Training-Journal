@@ -51,6 +51,14 @@ test("blocked popup skips document generation", async (context) => {
   assert.deepEqual(events, ["popup"]);
 });
 
+test("multiline display math still loads when code highlighting fails", async (context) => {
+  const { events, assets } = setup(context);
+  await printMarkdownDocument(() => '<p>$$\nx^2\n$$</p>');
+  assets.find(asset => asset.tag === 'script').onerror();
+  assert.ok(assets.some(asset => asset.src?.endsWith('/katex/katex.min.js')));
+  assert.equal(events.includes('print'), false, 'wait for math instead of printing raw delimiters');
+});
+
 test("cancelled or failed PDF generation closes its reserved popup", async (context) => {
   const { popup, events, alerts } = setup(context);
   await printMarkdownDocument(() => "");
@@ -68,4 +76,20 @@ test("closing the reserved popup during loading skips later rendering", async (c
   popup.close();
   await pending;
   assert.deepEqual(events, ["popup", "close"]);
+});
+
+test("direct-page PDF export opens its window before fetching uncached details", async (context) => {
+  const { events } = setup(context);
+  const originalDocument = Object.getOwnPropertyDescriptor(globalThis, 'document');
+  Object.defineProperty(globalThis, 'document', { configurable: true, value: { querySelector: () => null } });
+  context.after(() => originalDocument ? Object.defineProperty(globalThis, 'document', originalDocument) : delete globalThis.document);
+  const { exportToPDF } = await import('../lib/export-actions.mjs');
+  let finish;
+  const detail = new Promise(resolve => { finish = resolve; });
+  const pending = exportToPDF(() => { events.push('fetch'); return detail; });
+  assert.equal(events[0], 'popup');
+  finish({ problem: '异步题目', description: '$x^2$' });
+  await pending;
+  assert.ok(events.indexOf('fetch') > events.indexOf('popup'));
+  assert.ok(events.some(event => event.includes('异步题目')));
 });

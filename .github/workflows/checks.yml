@@ -34,6 +34,15 @@ jobs:
       - name: Verify source and build site
         run: npm run verify
 
+      - name: Preserve test diagnostics
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@v7
+        with:
+          name: unit-test-diagnostics
+          path: artifacts/unit-tests.log
+          if-no-files-found: ignore
+          retention-days: 7
+
       - name: Detect Worker input changes
         id: worker
         env:

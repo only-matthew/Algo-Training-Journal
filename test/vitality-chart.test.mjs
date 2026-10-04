@@ -14,7 +14,7 @@ test('daily and cumulative charts each use the selected metric scale', () => {
 
 test('calendar gaps have proportional spacing, with no overlapping terminal labels', () => {
   const html = vitalityChartHtml(['01', '02', '11'].map(day => ({ date: `2026-09-${day}`, value: 1, cumulative: 2 })));
-  const xs = [...html.matchAll(/class="vitality-point" cx="([^"]+)/g)].map(match => Number(match[1]));
+  const xs = [...html.matchAll(/class="vitality-point"[^>]* cx="([^"]+)/g)].map(match => Number(match[1]));
   assert.ok(Math.abs((xs[1] - xs[0]) / (xs[2] - xs[0]) - 0.1) < 1e-6);
   assert.equal((html.match(/class="trend-date-label"/g) || []).length, 2);
 });
@@ -26,4 +26,18 @@ test('empty, singleton and nonfinite values never emit invalid SVG coordinates',
     assert.doesNotMatch(html, /NaN|Infinity/);
     assert.match(html, /cx="511"/);
   }
+});
+
+test('narrow charts retain the full date range and reject impossible calendar dates', () => {
+  const html = vitalityChartHtml([
+    { date: '2026-02-28', value: 1, cumulative: 1 },
+    { date: '2026-02-30', value: 999, cumulative: 999 },
+    { date: '2026-10-03', value: 2, cumulative: 3 },
+  ], { width: 254 });
+  assert.match(html, /viewBox="0 0 254 240"/);
+  assert.match(html, />02-28<\/text>/);
+  assert.match(html, />10-03<\/text>/);
+  assert.doesNotMatch(html, /2026-02-30/);
+  assert.equal((html.match(/class="vitality-point"/g) || []).length, 2);
+  assert.match(html, /data-daily="2.00" data-cumulative="3.0"/);
 });

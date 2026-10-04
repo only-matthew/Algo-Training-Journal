@@ -1,33 +1,32 @@
-import { readdirSync } from "node:fs";
+import { mkdirSync, readdirSync, writeFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
 import { spawnSync } from "node:child_process";
 import { availableParallelism } from "node:os";
 
-const files = readdirSync("test")
+// Explicit paths support focused local runs; without arguments every suite runs.
+const files = process.argv.length > 2 ? process.argv.slice(2) : readdirSync("test")
   .filter((file) => file.endsWith(".mjs"))
   .sort()
   .map((file) => `test/${file}`);
-// 两轮只是为了把 Worker/oauth 套件在 CI 日志里分到一组，并不是隔离所必需：
-// `node --test` 每个测试文件都跑在自己的子进程里，进程级 global fetch mock
-// 不会跨文件泄漏。两轮都执行完，第一轮的失败不能挡住第二轮的用例。
-const workerFiles = files.filter((file) => /^test\/oauth-[^/]*\.test\.mjs$/.test(file));
-const regularFiles = files.filter((file) => !workerFiles.includes(file));
-// 文件由 Node 独立进程隔离，最多并行两份，避免过度争抢 CPU 与计时用例抖动。
+// Each file has its own process, including OAuth mocks. One scheduler avoids an
+// artificial barrier between regular and Worker suites, without increasing CPU contention.
 const concurrency = Math.min(2, availableParallelism());
-const nodeArgs = ["--test", `--test-concurrency=${concurrency}`];
-
-let failed = false;
-for (const batch of [regularFiles, workerFiles]) {
-  if (!batch.length) continue;
-  const result = spawnSync(process.execPath, [...nodeArgs, ...batch], { stdio: "inherit" });
-  if (result.error) {
-    failed = true;
-    process.stderr.write(`Unable to run ${batch.length} test file(s): ${result.error.code || "SPAWN_ERROR"} ${result.error.message}\n`);
-    continue;
-  }
-  if (result.status !== 0) {
-    failed = true;
-    process.stderr.write(`Test pass failed with exit ${result.status ?? "unknown"} — ${batch.length} test file(s) in this pass, see the summary above.\n`);
-  }
+const environment = { ...process.env };
+// A focused invocation from a regression test must still start an independent runner.
+delete environment.NODE_TEST_CONTEXT;
+const result = spawnSync(process.execPath, ["--test", "--test-reporter=tap", `--test-concurrency=${concurrency}`, ...files], {
+  encoding: "utf8", maxBuffer: 64 * 1024 * 1024, env: environment,
+});
+const output = `${result.stdout || ""}${result.stderr || ""}`;
+const logFile = resolve(process.env.TEST_LOG_FILE || "artifacts/unit-tests.log");
+mkdirSync(dirname(logFile), { recursive: true });
+writeFileSync(logFile, output);
+if (result.error || result.status !== 0) {
+  // Failed tests retain their full diagnostics in the console as well as the artifact.
+  process.stdout.write(output);
+  console.error(`Test run failed: ${result.error?.message || result.signal || `exit ${result.status}`}`);
+  process.exitCode = 1;
+} else {
+  console.log(output.split(/\r?\n/).filter(line => /^# (tests|suites|pass|fail|cancelled|skipped|todo|duration_ms) /.test(line)).join("\n"));
+  console.log(`All ${files.length} test files passed. Full diagnostics (including simulated failures): ${logFile}`);
 }
-
-if (failed) process.exitCode = 1;

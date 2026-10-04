@@ -1,12 +1,13 @@
 {
   "name": "algo-training-journal",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "private": true,
   "description": "队伍训练日志 - 热力图",
   "engines": {
     "node": ">=24"
   },
   "scripts": {
+    "sync:katex": "node scripts/sync-katex.mjs",
     "generate": "node scripts/generate-data.js",
     "report:period": "node scripts/period-report.mjs",
     "build": "npm run generate",
@@ -33,7 +34,8 @@
     "esbuild": "0.28.1",
     "eslint": "^10.11.0",
     "globals": "^16.5.0",
-    "wrangler": "^4.114.0"
+    "katex": "0.18.2",
+    "wrangler": "^4.147.0"
   },
   "dependencies": {
     "@noble/ed25519": "^3.1.0",

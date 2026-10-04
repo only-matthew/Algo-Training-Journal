@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { readFileSync } from "node:fs";
+
+const { version } = JSON.parse(readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 
 const WORKER = "https://algo-oauth.xialiao.org";
 const TODAY = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
@@ -8,7 +11,7 @@ test("public journal renders while the session service is still pending", async 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await expect(page.locator("#records .record").first()).toBeVisible({ timeout: 2500 });
   await expect(page.locator("#metric-total")).not.toHaveText("—");
-  await expect(page.locator("#site-version")).toHaveText(/^v2\.0\.1 · \d{4}-\d{2}-\d{2} \d{2}:\d{2} UTC\+8 · [a-f0-9]{7}$/);
+  await expect(page.locator("#site-version")).toHaveText(new RegExp(`^v${version.replaceAll('.', '\\.')} · \\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2} UTC\\+8 · [a-f0-9]{7}$`));
 });
 
 test("personal list adds and removes a goal with published progress", async ({ page }) => {

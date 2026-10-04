@@ -10,6 +10,10 @@ html { container-type: inline-size; }
 .hero-verse span + span { padding-left: 32px; }
 .hero-verse::after { content: ""; display: block; width: 38px; margin-top: 12px; border-bottom: 1px solid currentColor; }
 /* Keep the landscape above the cards, with its foreground dissolving into the page. */
+.hero-art {
+  mask-image: linear-gradient(to right, transparent, #000 24%, #000 82%, transparent), linear-gradient(to bottom, #000 55%, transparent);
+  mask-composite: intersect;
+}
 .home-hero .hero-art { right: max(0px, calc((100cqw - 1440px) / 2)); }
 .home-hero .hero-verse { left: 55%; top: 44px; }
 .home-stats .stat-card { border-radius: 8px; }
@@ -32,7 +36,7 @@ html { container-type: inline-size; }
 @media (max-width: 767px) {
   .home-hero { min-height: 280px; padding-bottom: 28px; }
   .home-hero h1 span { display: inline-block; }
-  .home-hero .hero-art { left: 22%; opacity: .22; }
+  .home-hero .hero-art { left: 0; opacity: .22; }
   .home-middle > .panel { min-height: 220px; }
   .home-middle .review-empty { min-height: 140px; }
 }
@@ -137,16 +141,23 @@ html { container-type: inline-size; }
 .problem-vitality small { color: var(--muted); font-size: 12px; line-height: 1.5; }
 .problem-layout { display: grid; grid-template-columns: minmax(0,2.1fr) minmax(280px,1fr); gap: 16px; }
 .problem-main, .problem-aside { min-width: 0; }
+.problem-main { display: contents; }
+.problem-main > .detail-panel { grid-column: 1 / -1; margin-bottom: 0; }
+.problem-main > #problem-description { grid-column: 1; grid-row: 1; }
+.problem-aside { grid-column: 2; grid-row: 1; align-self: start; }
 .problem-facts { display: grid; grid-template-columns: 95px minmax(0,1fr); gap: 12px; margin: 0; }
 .problem-facts dt { color: var(--muted); }
 .problem-facts dd { margin: 0; overflow-wrap: anywhere; }
 .detail-prose { line-height: 1.9; color: var(--ink); overflow-wrap: anywhere; }
-.detail-prose p { max-width: 75ch; }
+.detail-prose p { max-width: none; }
+.detail-prose pre { max-width: 100%; overflow-x: auto; margin: 16px 0; padding: 14px 16px; border: 1px solid var(--line); border-radius: 6px; background: var(--soft); color: var(--ink); font-size: 14px; line-height: 1.6; white-space: pre; overflow-wrap: normal; }
+.detail-prose pre code { display: block; padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit; white-space: inherit; }
+.detail-prose .katex-display { max-width: 100%; overflow-x: auto; overflow-y: hidden; }
 .detail-prose img, .detail-prose svg { max-width: 100%; }
 .detail-prose table { display: block; max-width: 100%; overflow-x: auto; }
 .thought-author { color: var(--muted); font-size: 13px; }
 .problem-code-expanded { min-width: 0; max-width: 100%; }
-.problem-code-expanded pre { max-width: 100%; max-height: 620px; overflow: auto; margin: 0; border-radius: 5px; font-size: 13px; }
+.problem-code-expanded pre { max-width: 100%; max-height: none; overflow-x: auto; margin: 0; border-radius: 5px; font-size: 13px; }
 .copy-feedback, .share-feedback { display: block; font-size: 12px; color: var(--green); }
 #problem-page > .detail-toolbar { display: flex; flex-direction: row; align-items: center; flex-wrap: wrap; gap: 8px 20px; }
 .problem-export-menu { position: relative; z-index: 5; margin-left: auto; }
@@ -163,7 +174,7 @@ html { container-type: inline-size; }
 .problem-review-actions { display: flex; flex-wrap: nowrap; gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
 .problem-review-actions .review-detail-action { min-width: 0; }
 .problem-detail .review-detail-action .ui-icon { width: 16px; height: 16px; }
-.detail-panel[id], .detail-section[id] { scroll-margin-top: 88px; }
+.detail-panel[id], .detail-section[id], #problem-related { scroll-margin-top: 88px; }
 .problem-main .related-list { margin: 0; }
 .problem-main .related-list li:last-child { border-bottom: 0; }
 .problem-detail .related-list .related-attempt { display: grid; gap: 8px; align-items: stretch; padding: 14px 0; }
@@ -172,7 +183,10 @@ html { container-type: inline-size; }
 .related-attempt-facts { display: grid; gap: 4px 14px; color: var(--muted); font-size: 13px; }
 .related-attempt-facts p { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; }
 .related-attempt-facts strong { color: var(--ink); }
-.related-attempt.is-current { padding-inline: 12px; border-radius: 8px; background: var(--soft); }
+.related-takeaway { margin: 0; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.attempt-thoughts > :first-child { margin-top: 4px; }
+.attempt-thoughts > :last-child { margin-bottom: 0; }
+.attempt-thoughts li { padding: 0; border: 0; }
 @media (max-width: 1100px) {
   .detail-intro { grid-template-columns: 80px minmax(0,500px); gap: 18px; }
   .detail-symbol { width: 80px; height: 80px; }

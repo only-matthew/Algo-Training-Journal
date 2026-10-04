@@ -2680,8 +2680,13 @@ a.tag-chip, span.tag-chip,
 .vitality-toolbar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px; color:var(--muted); font-size:12px; }
 .vitality-toolbar label { display:flex; align-items:center; gap:8px; white-space:nowrap; }
 .vitality-toolbar select { min-height:36px; padding:6px 28px 6px 10px; border:1px solid var(--line); border-radius:6px; background:var(--surface); color:var(--ink); font:inherit; }
-.vitality-plot { overflow-x:auto; }
-.vitality-chart-svg { display:block; width:100%; min-width:620px; max-height:300px; }
+.vitality-plot { position:relative; min-width:0; }
+.vitality-plot:focus-visible { outline:2px solid var(--green); outline-offset:4px; border-radius:4px; }
+.vitality-chart-svg { display:block; width:100%; height:auto; }
+.vitality-tooltip { position:absolute; z-index:2; max-width:100%; padding:8px 12px; border:1px solid var(--line); border-radius:6px; background:var(--surface); color:var(--ink); box-shadow:var(--shadow); font-size:12px; line-height:1.7; white-space:pre-line; pointer-events:none; font-variant-numeric:tabular-nums; }
+.vitality-guide { stroke:var(--muted); stroke-width:1; stroke-dasharray:3 4; pointer-events:none; }
+.vitality-help { margin:8px 0 0; color:var(--muted); font-size:12px; }
+.vitality-point.is-active { r:4.5px; stroke-width:2; }
 .vitality-area { fill:color-mix(in srgb,var(--green) 7%,transparent); stroke:none; }
 .vitality-line { fill:none; stroke:var(--green); stroke-width:1.8; stroke-linejoin:round; stroke-linecap:round; vector-effect:non-scaling-stroke; }
 .vitality-point { fill:var(--green); stroke:var(--surface); stroke-width:1; }
@@ -2703,8 +2708,7 @@ a.tag-chip, span.tag-chip,
 .vitality-details thead { color:var(--ink); }
 @media(max-width:767px) {
   .vitality-toolbar select { min-height:44px; }
-  .vitality-chart-svg { min-width:850px; }
-  .vitality-chart-svg .trend-axis-label,.vitality-chart-svg .trend-date-label { font-size:14px; }
+  .vitality-chart-svg .trend-axis-label,.vitality-chart-svg .trend-date-label { font-size:11px; }
   .vitality-summary { gap:14px 24px; }
   .vitality-summary strong { font-size:20px; }
 }

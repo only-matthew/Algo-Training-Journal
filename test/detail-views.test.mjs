@@ -42,6 +42,20 @@ test("problem detail labels a deferred unfinished attempt as 超纲待做", () =
   assert.match($(".problem-facts").text(), /超纲待做/);
 });
 
+test("merged thoughts retain full Markdown exactly once and preserve both anchors", () => {
+  const takeaway = `**唯一心得**\n\n${"完整记录".repeat(120)}\n\n- 第一项\n- 第二项`;
+  const current = { member: "甲", date: "2026-10-03", problemId: "maze", problem: "迷宫", takeaway };
+  const $ = load(problemDetailHtml({ ...current, related: [{ ...current }] }));
+  assert.equal($("#problem-thoughts").length, 1);
+  assert.equal($("#problem-related").length, 1);
+  assert.equal($(".related-list > .related-attempt").length, 1);
+  assert.equal($(".attempt-thoughts strong").text(), "唯一心得");
+  assert.equal($(".attempt-thoughts li").length, 2);
+  assert.equal(($.text().match(/唯一心得/g) || []).length, 1);
+  assert.ok($(".attempt-thoughts").text().includes("完整记录".repeat(120)));
+  assert.equal($(".detail-tabs a[href='#problem-related']").length, 0);
+});
+
 test("problem detail shows the same per-record vitality and explains zero scores", () => {
   const base = { member: "甲", date: "2026-09-08", problem: "题目", platform: "洛谷" };
   const scored = load(problemDetailHtml({ ...base, vitality: 0.68, vitalityStatus: "counted" }));

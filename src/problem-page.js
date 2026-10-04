@@ -55,7 +55,7 @@ function actionButton(symbol, label, handler, title) {
 
   let detailPromise;
   const detail = () => detailPromise ??= loadProblemDetail(route.member, route.date, route.problemId);
-  document.getElementById("btn-export-pdf")?.addEventListener("click", async () => exportToPDF(await detail()));
+  document.getElementById("btn-export-pdf")?.addEventListener("click", () => exportToPDF(detail));
   document.getElementById("btn-export-md")?.addEventListener("click", async () => exportToMD(await detail()));
   document.getElementById("btn-export-latex")?.addEventListener("click", async () => exportToLatex(await detail()));
 
