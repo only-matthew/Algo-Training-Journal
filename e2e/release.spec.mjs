@@ -26,6 +26,16 @@ for (const width of [1440, 375]) {
       const thoughtsBox = await page.locator('#problem-thoughts').boundingBox();
       expect(Math.abs(codeBox.width - descriptionBox.width)).toBeLessThan(1);
       expect(Math.abs(thoughtsBox.width - descriptionBox.width)).toBeLessThan(1);
+      if (width < 768) {
+        const sidebar = page.locator('.problem-aside');
+        const sidebarBox = await sidebar.boundingBox();
+        expect(Math.abs(sidebarBox.width - descriptionBox.width)).toBeLessThan(1);
+        for (const panel of await sidebar.locator('.detail-panel').all()) {
+          expect(Math.abs((await panel.boundingBox()).width - descriptionBox.width)).toBeLessThan(1);
+        }
+        await sidebar.scrollIntoViewIfNeeded();
+        await page.screenshot({ path: `artifacts/release/maze-info-${width}-${theme}.png` });
+      }
       await pre.evaluate(el => window.scrollTo({ top: el.getBoundingClientRect().top + scrollY - 140, behavior: 'instant' }));
       const before = await page.evaluate(() => scrollY);
       await page.mouse.move(width / 2, 400);
