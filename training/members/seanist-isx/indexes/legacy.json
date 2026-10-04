@@ -952,6 +952,25 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-10-03/34ca2553-157c-4022-b347-ffe8b51f1468/"
+    },
+    {
+      "subjectKey": "problem:Codeforces|2269B",
+      "date": "2026-10-04",
+      "recordRef": {
+        "memberId": "seanist-isx",
+        "date": "2026-10-04",
+        "recordId": "cf7df7aa-9393-4952-bc1f-959fe7b9c58f"
+      },
+      "problem": {
+        "name": "KiaKio and Squared Numbers",
+        "platform": "Codeforces",
+        "problemNumber": "2269B",
+        "difficulty": "★ 1000"
+      },
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E9%83%AD%E4%B8%80%E9%B8%A3/2026-10-04/cf7df7aa-9393-4952-bc1f-959fe7b9c58f/"
     }
   ]
 }

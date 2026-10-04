@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-04T23:55:42.524+08:00",
+  "problems": [
+    {
+      "id": "cf7df7aa-9393-4952-bc1f-959fe7b9c58f",
+      "name": "KiaKio and Squared Numbers",
+      "platform": "Codeforces",
+      "problemNumber": "2269B",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [
+        "暴力",
+        "模拟"
+      ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0,
+      "statementSource": {
+        "kind": "codeforces-html",
+        "url": "https://codeforces.com/problemset/problem/2269/B?locale=en",
+        "fetchedAt": "2026-10-04T15:51:41.242Z",
+        "parserVersion": "cf-html-v4"
+      }
+    }
+  ]
+}
