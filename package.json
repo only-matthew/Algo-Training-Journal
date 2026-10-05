@@ -27,7 +27,8 @@
     "smoke:scale": "node scripts/smoke-scale.mjs",
     "probe:workerd": "node scripts/probe-workerd-multipart.mjs",
     "verify": "npm run check:syntax && npm run check:lint && npm run training:reindex -- --check && npm test && npm run build",
-    "check": "npm run verify"
+    "check": "npm run verify",
+    "verify:parallel": "node scripts/verify-parallel.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.63.0",

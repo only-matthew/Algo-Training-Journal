@@ -32,7 +32,9 @@ jobs:
         run: npm ci --no-audit --no-fund
 
       - name: Verify source and build site
-        run: npm run verify
+        env:
+          TEST_CONCURRENCY: "4"
+        run: npm run verify:parallel
 
       - name: Preserve test diagnostics
         if: always() && !cancelled()

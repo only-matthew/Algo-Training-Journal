@@ -68,16 +68,17 @@ jobs:
         env:
           WORKER_EXPECTED_COMMIT: ${{ steps.worker.outputs.expected_commit }}
           WORKER_WAIT_MS: ${{ steps.worker.outputs.wait_ms }}
+          TEST_CONCURRENCY: "4"
         run: |
           if [ -z "$WORKER_EXPECTED_COMMIT" ]; then
-            npm run check
+            npm run verify:parallel
             exit 0
           fi
           # Worker 发布与本地验证同时进行；任一失败都不会上传站点。
           node scripts/check-worker-compatibility.mjs &
           worker_gate_pid=$!
           trap 'kill "$worker_gate_pid" 2>/dev/null || true' EXIT
-          npm run check
+          npm run verify:parallel
           wait "$worker_gate_pid"
           trap - EXIT
 
