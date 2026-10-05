@@ -1628,6 +1628,27 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-10-07",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-04/958df8d4-8e4a-4679-ad2b-15cee2fbdea6/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1101",
+      "date": "2026-10-05",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-10-05",
+        "recordId": "f76a3a04-9b89-4783-985f-5115f6ff3f78"
+      },
+      "problem": {
+        "name": "单词方阵",
+        "platform": "洛谷",
+        "problemNumber": "P1101",
+        "difficulty": "★ 1000"
+      },
+      "outcome": "independent",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-05/f76a3a04-9b89-4783-985f-5115f6ff3f78/"
     }
   ]
 }

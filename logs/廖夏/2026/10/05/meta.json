@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-05T22:03:14.737+08:00",
+  "problems": [
+    {
+      "id": "f76a3a04-9b89-4783-985f-5115f6ff3f78",
+      "name": "单词方阵",
+      "platform": "洛谷",
+      "problemNumber": "P1101",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [
+        "模拟",
+        "字符串",
+        "搜索",
+        "枚举"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
