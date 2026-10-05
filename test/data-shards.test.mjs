@@ -1,6 +1,31 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+test("member requests start statistics and manifest together and share in-flight downloads", async (context) => {
+  const originalDocument = globalThis.document;
+  globalThis.document = { querySelector: () => null };
+  context.after(() => { globalThis.document = originalDocument; });
+  const requests = [];
+  let finishManifest;
+  const pendingManifest = new Promise((resolve) => { finishManifest = resolve; });
+  context.mock.method(globalThis, "fetch", async (input) => {
+    const path = String(input).split("?")[0];
+    requests.push(path);
+    if (path === "data/manifest.json") return pendingManifest;
+    if (path === "data/overview.json") return Response.json({ members: ["甲"], logs: [] });
+    return Response.json({ logs: [{ member: "甲", date: "2026-09-20", problemId: "one" }] });
+  });
+  const data = await import(`../lib/data.mjs?parallel=${Date.now()}`);
+  const first = data.ensureMemberJournal("甲");
+  const second = data.ensureMemberJournal("甲");
+  assert.deepEqual(requests.sort(), ["data/manifest.json", "data/overview.json"]);
+  finishManifest(Response.json({ members: { "甲": { years: [{ url: "data/member.json" }] } } }));
+  const journals = await Promise.all([first, second]);
+  assert.equal(requests.filter((path) => path === "data/member.json").length, 1);
+  assert.deepEqual(journals[0], journals[1]);
+  assert.equal(journals[0].logs[0].problemId, "one");
+});
+
 test("journal data store loads only route-relevant shards and reuses cached requests", async (context) => {
   const originalDocument = globalThis.document;
   globalThis.document = { querySelector: () => null };

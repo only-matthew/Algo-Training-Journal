@@ -2,6 +2,34 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-10-05，前端 CDN 切换与速度对比，待发布）
+
+用户要求将资源切到 CDN 并对比速度。发布工作流设置 CDN_ORIGIN=https://cdn.mirstar.net，本地构建默认同源；生成器改写 JS／modulepreload／CSS／背景图，独立题目页继承相同资源域名和 CSP。lib/static-assets.mjs 从页面 meta 读取资源域名，供 Prism、KaTeX 和 PDF 使用。数据与 API 继续走原站。SW 对指定 CDN 静态路径接管 CORS／opaque 缓存，其他远程请求排除；CDN 与本地模式使用不同缓存版本。回源文件仍随构建完整输出。
+
+完整 verify 通过（650 单测），47 浏览器回归通过。CDN 环境生成器验收 4 项通过；scripts/smoke-cdn.mjs 覆盖首页、按需标签模块、独立题目数学公式、字体和 PDF。新脚本从本地镜像提供，PDF 厂商依赖使用真实 CDN，未将测试加入 CI。Chromium 打印窗口需解除全部请求拦截，因此预先加载新的导出模块后再解除，避免把拦截行为误判成打印问题。
+
+scripts/compare-cdn.mjs 用同一份已发布 HTML 交替测试两种静态资源域名，各 5 次全新浏览器，文档／未登录会话固定，资源和数据走真实网络。原站／CDN 中位数：FCP 360／392 ms、LCP 376／396 ms、路由就绪 654／679 ms；没有请求或页面错误。未测出稳定加速，不代表多节点结果，也不等于新版发布后整页导航测速。原始结果 artifacts/cdn-comparison.json，方法和回退见 CDN.md。当前 CDN 构建保留在 site/；源码未提交／推送，线上页面未切换，已询问是否将工作区现有优化一起提交发布。本节取代下方“资源尚未接入”的历史工作区状态。
+
+## 最新交接（2026-10-05，CDN 配置已完成）
+
+用户创建临时 DNS 令牌后已改用 CLI 完成 CNAME 和证书 DNS 验证。cdn.mirstar.net 为阿里云 domestic/web，状态 online，DNS only 指向 cdn.mirstar.net.w.kunlunaq.com；HTTPS 回源 train.xialiao.org，Host 与 SNI 同源站。公开功能配置扩为 13 项，开启 HTTPS 跳转／HTTP2，国内 HTTPS 资源返回 200 且二次请求命中阿里云缓存；临时 Cloudflare 边缘探测实测海外 302 到原 Cloudflare 站点并保留路径和 v 参数，探测服务已删除。
+
+Let's Encrypt 证书有效期至 2027-01-03 16:26:11（UTC+8），未启用自动续期；DNS 令牌 2026-10-07 07:59:59 到期。凭证和维护工具仅保存在本机受限目录，仓库不含密钥；详细配置、验收和续期边界见 [CDN.md](CDN.md)。现有页面资源引用尚未切换到 CDN，没有提交或发布站点代码。这一节取代下面“CDN 接入进行中”的历史状态。
+
+## 最新交接（2026-10-05，CDN 接入进行中）
+
+用户确认 mirstar.net 已备案，指定 cdn.mirstar.net 仅国内阿里云加速、海外跳 Cloudflare。已通过登录的 Cloudflare 页面添加验证 TXT，并用阿里云 CLI 验证所有权、创建 domestic/web 域名（源站 train.xialiao.org:443），CNAME 为 cdn.mirstar.net.w.kunlunaq.com。11 项公开功能配置保存在 config/cdn-functions.json 并已写入，回源和海外 EdgeScript 配置状态 success；域名最后查询仍 configuring，HTTP 冒烟尚未成功。没有切换现有站点资源。
+
+用户要求后续 DNS 改用 CLI。Wrangler OAuth 没有 DNS 权限，已准备仅 mirstar.net DNS 编辑、2026-10-07 到期的临时令牌摘要；浏览器新增凭证规则要求创建前确认，尚未创建。余下 CNAME、HTTPS 证书和实际地域／缓存验收见 [CDN.md](CDN.md)。这批云端配置不等于站点已发布 CDN 版本。
+
+## 最新交接（2026-10-05，性能优化续修，本地完成）
+
+接手时工作区已有页面骨架／JSON 缓存、首页预渲染与预加载、目录及导出按需加载、请求并行和 Service Worker 资源迁移改动，保留并验证这些改动。发现地图与标签渲染器还保留独立的数据快照：原刷新仅更新数据层，第二次刷新继续展示旧内容；题单节点缓存也未清理，标签详情请求未强制刷新。本轮增加渲染器 refresh 入口，替换索引快照并强制刷新详情分片；节点详情刷新不下载整份地图索引。
+
+新增四项真实浏览器回归，覆盖地图总览、题单详情、标签索引和标签详情，每项连续点击两次刷新并核对变化后的响应内容。四项专项全部通过。完整 npm run verify 通过：648 项单测无失败、无跳过，语法 219 文件、Lint、训练索引一致性和站点构建通过（203 条日志，635 reused / 0 rebuilt）。构建完成后串行运行完整浏览器回归，47/47 通过（32.7 秒），覆盖按需加载、首页预渲染、SPA 路由、表单、桌面／手机布局和 PDF；最终语法、Lint 和 diff 空白检查通过。
+
+本轮未提交、未部署；线上版本仍以发布记录为准。训练源数据、schema 和 Worker 写入协议均未改动，浏览器回归继续只在本地按需执行。
+
 ## 最新交接（2026-10-04，v2.1.0 已发布）
 
 发布提交 `c2a9c99` 的 Pages 与 Worker 均成功；Action 创建到部署完成约 42 秒，语法检查约 0.13 秒，完整检查与构建 14 秒，Worker 等待与本地验证重叠。用户随后要求“思考与重做”和“代码”继续与题目描述同宽，已恢复原双栏宽度并通过四项桌面／手机专项回归。这次宽度后续提交不改 Worker 输入。

@@ -6,6 +6,69 @@ const { version } = JSON.parse(readFileSync(new URL('../package.json', import.me
 const WORKER = "https://algo-oauth.xialiao.org";
 const TODAY = new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10);
 
+for (const scenario of [
+  { route: "/roadmap/", data: "roadmap.json", root: "#roadmap-content", update: (data, round) => { data.phases[0].title = `刷新验证${round}`; } },
+  { route: "/roadmap/phase-0/algo-simulation-bigint/", data: "roadmap/nodes/algo-simulation-bigint.json", root: "#roadmap-content", update: (data, round) => { data.node.title = `刷新验证${round}`; } },
+  { route: "/tags/", data: "tag-index.json", root: "#tag-content", update: (data, round) => { data.tags[0].tag = `刷新验证${round}`; } },
+  { route: "/tags/模拟/", data: "tags/模拟.json", root: "#tag-page-subtitle", update: (data, round) => { data.recordCount = 800 + round; } },
+]) {
+  test(`manual refresh replaces cached catalog content at ${scenario.route}`, async ({ page }) => {
+    let round = 0;
+    await page.route(`${WORKER}/api/session`, (route) => route.fulfill({ json: null }));
+    await page.route("**/data/**", async (route) => {
+      const pathname = decodeURIComponent(new URL(route.request().url()).pathname);
+      if (pathname !== `/data/${scenario.data}`) return route.continue();
+      const data = JSON.parse(readFileSync(new URL(`../site/data/${scenario.data}`, import.meta.url), "utf8"));
+      scenario.update(data, ++round);
+      return route.fulfill({ json: data });
+    });
+    await page.goto(scenario.route);
+    await page.waitForFunction(() => typeof window.journalRouteRenderer === "function");
+    await page.locator(".account-menu > summary").click();
+    for (const expected of [1, 2]) {
+      await page.locator("#btn-refresh").click();
+      await expect(page.locator(scenario.root)).toContainText(scenario.data.startsWith("tags/") ? `${800 + expected} 条训练记录` : `刷新验证${expected}`);
+      await expect(page.locator("#btn-refresh")).toBeEnabled();
+      expect(round).toBe(expected);
+    }
+  });
+}
+
+test("homepage starts its data from HTML and reuses the preload without downloading lazy features", async ({ page }) => {
+  const requests = [];
+  page.on("request", (request) => requests.push(request.url()));
+  await page.route(`${WORKER}/api/session`, (route) => route.fulfill({ json: null }));
+  await page.goto("/");
+  await page.waitForFunction(() => typeof window.journalRouteRenderer === "function");
+  const timing = await page.evaluate(() => {
+    const entries = performance.getEntriesByType("resource");
+    return {
+      data: entries.find((entry) => entry.name.includes("/data/overview.json"))?.startTime,
+      app: entries.find((entry) => /\/app-[A-Z0-9]+\.js$/.test(entry.name))?.responseEnd,
+    };
+  });
+  expect(timing.data).toBeLessThan(timing.app);
+  expect(requests.filter((url) => url.includes("/data/overview.json"))).toHaveLength(1);
+  expect(requests.some((url) => /\/(catalog-renderer|export-actions|form)-/.test(url))).toBe(false);
+  await page.locator('.desktop-nav [data-route="/roadmap/"]').click();
+  await expect(page.locator("#roadmap-content .roadmap-overview")).toBeVisible();
+  expect(requests.some((url) => /\/catalog-renderer-/.test(url))).toBe(true);
+});
+
+test("homepage statistics and records are visible before JavaScript is available", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false });
+  try {
+    const page = await context.newPage();
+    await page.goto("http://127.0.0.1:4173/");
+    await expect(page.locator("#metric-total")).toHaveText(/^\d+$/);
+    await expect(page.locator("#metric-days")).toHaveText(/^\d+$/);
+    await expect(page.locator("#metric-weekly")).toHaveText(/题\/周$/);
+    await expect(page.locator("#records .record").first()).toBeVisible();
+  } finally {
+    await context.close();
+  }
+});
+
 test("public journal renders while the session service is still pending", async ({ page }) => {
   await page.route(`${WORKER}/api/session`, () => new Promise(() => {}));
   await page.goto("/", { waitUntil: "domcontentloaded" });

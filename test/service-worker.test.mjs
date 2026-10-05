@@ -6,7 +6,9 @@ import test from 'node:test';
 // Execute the actual emitted template, without rebuilding or sharing site/ across test processes.
 const generator = fs.readFileSync(new URL('../scripts/generate-data.js', import.meta.url), 'utf8');
 const template = generator.match(/const sw = `([\s\S]*?)`;\s*fs.writeFileSync/)[1];
-const source = template.replace('${JSON.stringify(version)}', '"test-build"');
+const source = template.replace('${JSON.stringify(version)}', '"test-build"')
+  .replace('${JSON.stringify(CDN_ORIGIN)}', '"https://cdn.mirstar.net"')
+  .replace('${JSON.stringify(reusableAssets)}', '["/assets/js/app-CURRENT.js", "/style.css?v=current"]');
 
 function harness(overrides = {}) {
   const handlers = {};
@@ -34,8 +36,41 @@ function harness(overrides = {}) {
   return { dispatch, writes, deleted };
 }
 
+test('CDN static assets are cached and available offline, other remote requests are excluded', async () => {
+  const url = 'https://cdn.mirstar.net/assets/js/app-CURRENT.js';
+  const app = harness();
+  const event = app.dispatch('fetch', { url, method: 'GET', mode: 'cors' });
+  assert.equal(await (await event.response).text(), 'online');
+  await Promise.all(event.pending);
+  assert.equal(app.writes.length, 1);
+  const offline = harness({ fetch: async () => { throw new Error('offline'); }, caches: { match: async () => new Response('cached script') } });
+  assert.equal(await (await offline.dispatch('fetch', { url, method: 'GET', mode: 'cors' }).response).text(), 'cached script');
+  for (const remote of ['https://cdn.mirstar.net/data.json', 'https://example.com/assets/js/app.js']) {
+    assert.equal(app.dispatch('fetch', { url: remote, method: 'GET', mode: 'cors' }).response, undefined);
+  }
+});
+
 test('service worker activation only deletes its own obsolete caches', async () => {
   const app = harness();
+  await Promise.all(app.dispatch('activate').pending);
+  assert.deepEqual(app.deleted, ['atj-old']);
+});
+
+test('activation preserves current hashed assets before deleting old caches, without keeping old pages or data', async () => {
+  const lookedUp = [];
+  const app = harness({ caches: { match: async (url) => {
+    lookedUp.push(url);
+    return new Response('unchanged asset');
+  } } });
+  await Promise.all(app.dispatch('activate').pending);
+  assert.deepEqual(lookedUp, ['https://journal.test/assets/js/app-CURRENT.js', 'https://journal.test/style.css?v=current']);
+  assert.equal(app.writes.length, 2);
+  assert.deepEqual(app.deleted, ['atj-old']);
+  assert.equal(await app.writes[0][1].text(), 'unchanged asset');
+});
+
+test('activation still clears obsolete caches when asset migration storage is unavailable', async () => {
+  const app = harness({ caches: { open: async () => { throw new Error('QuotaExceededError'); } } });
   await Promise.all(app.dispatch('activate').pending);
   assert.deepEqual(app.deleted, ['atj-old']);
 });

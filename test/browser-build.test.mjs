@@ -19,6 +19,10 @@ test("homepage static graph excludes Markdown and problem bodies without removin
   assert.equal(initialInputs.some((name) => name.includes("vendor/marked/") || name === "lib/problem-detail.mjs"), false);
   assert.ok(Object.keys(result.metafile.inputs).some((name) => name.includes("vendor/marked/")), "Markdown must remain available to lazy consumers");
   assert.ok(Object.keys(result.metafile.inputs).includes("lib/problem-detail.mjs"));
+  for (const name of ["lib/catalog-renderer.mjs", "lib/roadmap.mjs", "lib/export-actions.mjs", "lib/export-content.mjs"]) {
+    assert.equal(initialInputs.includes(name), false, `${name} must stay out of the homepage static graph`);
+    assert.ok(Object.keys(result.metafile.inputs).includes(name), `${name} must remain available on demand`);
+  }
 });
 
 function fixture(context) {

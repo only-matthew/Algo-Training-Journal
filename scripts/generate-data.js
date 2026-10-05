@@ -20,6 +20,14 @@ const ROOT = path.join(__dirname, "..");
 const FRONTEND_DIR = path.join(ROOT, "src");
 const LOGS_DIR = path.join(ROOT, "logs");
 const OUTPUT_DIR = path.join(ROOT, "site");
+const CDN_ORIGIN = process.env.CDN_ORIGIN || "";
+if (CDN_ORIGIN && CDN_ORIGIN !== "https://cdn.mirstar.net") throw new Error("Unsupported CDN_ORIGIN");
+const staticAsset = (name) => `${CDN_ORIGIN}/${name.replace(/^\/+/, "")}`;
+function assetCsp(policy) {
+  if (!CDN_ORIGIN) return policy;
+  return policy.replace(/(script-src|style-src|connect-src|img-src) 'self'/g, `$1 'self' ${CDN_ORIGIN}`)
+    + ` font-src 'self' ${CDN_ORIGIN};`;
+}
 const BUILD_STATE_PATH = path.join(ROOT, ".build-cache", "site-state.json");
 // 单一构建时钟：产物里所有「现在 / 今天 / 基准日」都从这里取，任何地方都不再自己
 // new Date()。SOURCE_DATE_EPOCH（秒，reproducible-builds 约定）可把时钟钉死，
@@ -127,7 +135,7 @@ function writeStylesheet() {
   const source = ["style.css", "assets/final.css", "assets/details.css"]
     .map((name) => fs.readFileSync(path.join(FRONTEND_DIR, name), "utf8"))
     .join("\n")
-    .replaceAll("/assets/ink-mountains.webp", `/assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`);
+    .replaceAll("/assets/ink-mountains.webp", `${staticAsset("assets/ink-mountains.webp")}?v=${assetVersion("src/assets/ink-mountains.webp")}`);
   const { code } = transformSync(source, { loader: "css", minify: true, legalComments: "eof" });
   fs.writeFileSync(path.join(OUTPUT_DIR, "style.css"), code, "utf8");
 }
@@ -196,13 +204,17 @@ function writeVersionedIndex(dataVersion) {
   const $ = cheerio.load(raw);
   $('meta[name="journal-data-version"]').attr("content", dataVersion);
   $("#site-version").text(siteVersion());
+  $("<meta>").attr({ name: "journal-asset-origin", content: CDN_ORIGIN }).appendTo("head");
+  const csp = $('meta[http-equiv="Content-Security-Policy"]');
+  csp.attr("content", assetCsp(csp.attr("content")));
+  if (CDN_ORIGIN) $("<link>").attr({ rel: "preconnect", href: CDN_ORIGIN, crossorigin: "anonymous" }).appendTo("head");
   const styleVersion = crypto.createHash("sha256")
     .update(fs.readFileSync(path.join(OUTPUT_DIR, "style.css"))).digest("hex").slice(0, 12);
-  $('link[rel="stylesheet"][href^="style.css"]').attr("href", `style.css?v=${styleVersion}`);
-  $('link[rel="preload"][as="image"]').attr("href", `assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`);
-  $('script[src^="app.js"]').attr("src", `assets/js/${browserAssets.entry}`);
-  for (const dependency of browserAssets.preloads) {
-    $("<link>").attr({ rel: "modulepreload", href: `assets/js/${dependency}` }).appendTo("head");
+  $('link[rel="stylesheet"][href^="style.css"]').attr({ href: staticAsset(`style.css?v=${styleVersion}`), crossorigin: "anonymous" });
+  $('link[rel="preload"][as="image"]').attr("href", staticAsset(`assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`));
+  $('script[src^="app.js"]').attr("src", staticAsset(`assets/js/${browserAssets.entry}`));
+  for (const dependency of [browserAssets.entry, ...browserAssets.preloads]) {
+    $("<link>").attr({ rel: "modulepreload", href: staticAsset(`assets/js/${dependency}`), crossorigin: "anonymous" }).appendTo("head");
   }
   const html = addSelfClosingVoids($.html());
   fs.writeFileSync(path.join(OUTPUT_DIR, "index.html"), html, "utf8");
@@ -212,10 +224,18 @@ function writeVersionedIndex(dataVersion) {
 // 生成 Service Worker：缓存版本由代码哈希 + 数据哈希 + 构建时间共同决定，
 // 任何部署都会产生新版本 → 旧缓存自动清理，避免发布后命中陈旧资源。
 function writeServiceWorker(dataVersion) {
-  const version = `${appVersion()}-${dataVersion}-${BUILD_CLOCK.getTime().toString(36)}`;
+  const version = `${appVersion()}-${dataVersion}-${CDN_ORIGIN ? "cdn-" : ""}${BUILD_CLOCK.getTime().toString(36)}`;
+  // Only content-addressed assets can survive a deployment. HTML and data must refresh.
+  const reusableAssets = [
+    ...Object.keys(browserAssets.metafile.outputs).map((name) => `/${path.relative(OUTPUT_DIR, path.resolve(ROOT, name)).split(path.sep).join("/")}`),
+    `/style.css?v=${assetVersion("site/style.css")}`,
+    `/assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`,
+  ].map(staticAsset);
   const sw = `// Algo Training Journal Service Worker（构建时生成，勿手改）
 const VERSION = ${JSON.stringify(version)};
 const CACHE = "atj-" + VERSION;
+const REUSABLE_ASSETS = ${JSON.stringify(reusableAssets)};
+const CDN_ORIGIN = ${JSON.stringify(CDN_ORIGIN)};
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -226,7 +246,19 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith("atj-") && k !== CACHE).map((k) => caches.delete(k))))
+      .then(async (keys) => {
+        const cache = await caches.open(CACHE).catch(() => null);
+        // Seed unchanged hashed assets before removing old data and page caches.
+        await Promise.all(REUSABLE_ASSETS.map(async (path) => {
+          const url = new URL(path, self.location.origin).href;
+          try {
+            if (!cache) return;
+            const hit = await caches.match(url);
+            if (hit) await cache.put(url, hit);
+          } catch { /* A cache quota error must not prevent activation. */ }
+        }));
+        return Promise.all(keys.filter((k) => k.startsWith("atj-") && k !== CACHE).map((k) => caches.delete(k)));
+      })
       .then(() => self.clients.claim())
   );
 });
@@ -235,7 +267,8 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   if (request.method !== "GET") return;
   const url = new URL(request.url);
-  if (url.origin !== self.location.origin) return;
+  if (url.origin !== self.location.origin && !(url.origin === CDN_ORIGIN &&
+      (url.pathname === "/style.css" || url.pathname.startsWith("/assets/") || url.pathname.startsWith("/vendor/")))) return;
 
   // 页面导航：每个地址单独缓存，失败时优先回退该页，再回退首页。
   if (request.mode === "navigate") {
@@ -257,7 +290,7 @@ self.addEventListener("fetch", (event) => {
   // 静态资源与数据 JSON（均带版本查询或随构建整体失效）：缓存优先，未命中再请求并回填
   event.respondWith(
     caches.match(request).then((hit) => hit || fetch(request).then((response) => {
-      if (response.ok) {
+      if (response.ok || (url.origin === CDN_ORIGIN && response.type === "opaque")) {
         const copy = response.clone();
         event.waitUntil(caches.open(CACHE).then((cache) => cache.put(request, copy)).catch(() => {}));
       }
@@ -305,8 +338,7 @@ function truncate(value, maxLength = 155) {
   return text.length > maxLength ? `${text.slice(0, maxLength - 1)}…` : text;
 }
 
-function replaceHeadMetadata(html, { title, description, canonical, robots = "index,follow", jsonLd }) {
-  const $ = cheerio.load(html);
+function updateHeadMetadata($, { title, description, canonical, robots = "index,follow", jsonLd }) {
   $("title").text(title);
   $('meta[name="description"]').attr("content", description);
   $('meta[name="robots"]').attr("content", robots);
@@ -322,23 +354,35 @@ function replaceHeadMetadata(html, { title, description, canonical, robots = "in
     script.text(serialized);
     $("head").append(script);
   }
-  return addSelfClosingVoids($.html());
+  return $;
 }
 
-function showOnlyPage(html, pageId) {
-  const $ = cheerio.load(html);
-  const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page", "roadmap-page", "tag-page"];
-  for (const id of pageIds) {
-    const section = $(`#${id}`);
-    section.removeClass("active");
-    section.removeAttr("hidden");
-    if (id === pageId) {
-      section.addClass("active");
-    } else {
-      section.attr("hidden", "");
+function replaceHeadMetadata(html, metadata) {
+  return addSelfClosingVoids(updateHeadMetadata(cheerio.load(html), metadata).html());
+}
+
+const pageTemplates = new Map();
+function preparePage(html, pageId, metadata) {
+  let template = pageTemplates.get(pageId);
+  if (template?.html !== html) {
+    const $ = cheerio.load(html);
+    const pageIds = ["overview-page", "review-page", "analysis-page", "member-page", "problem-page", "roadmap-page", "tag-page"];
+    for (const id of pageIds) {
+      const section = $(`#${id}`);
+      section.removeClass("active");
+      section.removeAttr("hidden");
+      if (id === pageId) {
+        section.addClass("active");
+      } else {
+        section.attr("hidden", "");
+      }
     }
+    template = { html, $ };
+    pageTemplates.set(pageId, template);
   }
-  return addSelfClosingVoids($.html());
+  // Clone the parsed shell so page content and metadata cannot leak between routes.
+  const $ = cheerio.load(template.$.root().contents().clone().get());
+  return updateHeadMetadata($, metadata);
 }
 
 function problemKey(log) {
@@ -374,20 +418,33 @@ function recordSummary(log) {
 
 function recordCardHtml(log) { return `<article class="record">${trainingCardHtml(log)}</article>`; }
 
-function writeHomePage(html, logs, totalVitality = 0) {
+function writeHomePage(html, logs, totalVitality = 0, overview = null) {
   const recentLogs = logs.filter((log) => log.date >= daysAgo(29));
   // 首页运行时与 renderLogs 保持同一分页大小，避免把全部近 30 天记录
   // 先塞进首屏 HTML，再由脚本立即替换成 4 张卡片。
   const initialLogs = recentLogs.slice(0, 4);
   const cards = recentLogs.length ? initialLogs.map(recordCardHtml).join("\n") : "<p>近 30 天暂无训练记录。</p>";
   const description = "ICPC 算法训练日志，汇总队员的刷题记录、原创题解、复盘收获和代码。";
-  const withMeta = replaceHeadMetadata(html, {
+  const $ = updateHeadMetadata(cheerio.load(html), {
     title: SITE_NAME,
     description,
     canonical: absoluteUrl(),
     jsonLd: { "@context": "https://schema.org", "@type": "WebSite", name: SITE_NAME, url: absoluteUrl(), description },
   });
-  const $ = cheerio.load(withMeta);
+  // Let the HTML parser start the data request before downloading and executing the app.
+  $("<link>").attr({
+    rel: "preload", as: "fetch", crossorigin: "anonymous",
+    href: `data/overview.json?v=${$('meta[name="journal-data-version"]').attr("content")}`,
+  }).appendTo("head");
+  if (overview) {
+    const stats = overview.recent30.byMember.all;
+    $("#metric-total").text(String(stats.totalLogs));
+    $("#metric-days").text(String(stats.activeDays));
+    $("#metric-weekly").text(`${stats.avgPerWeek} 题/周`);
+    const { countEstimatedSessions } = require("../lib/session-stats.mjs");
+    $("#metric-sessions").text(String(countEstimatedSessions(logs.filter((log) =>
+      log.date >= overview.recent30.start && log.date <= overview.recent30.end))));
+  }
   $("#records").html(cards);
   $("#record-count").text(recentLogs.length ? `近 30 天共 ${recentLogs.length} 条记录` : "");
   $("#site-total-badge").text(String(logs.length)).removeClass("loading-value");
@@ -404,7 +461,7 @@ function writeMemberPages(html, members, logs, vitality) {
     const memberLogs = logs.filter((log) => log.member === member);
     const outputPath = path.join("member", member, "index.html");
     const stateKey = `member:${member}`;
-    const stateHash = contentHash({ shell: buildShellHash, logs: memberLogs.map(logSummary), vitality: vitality.byMember[member] });
+    const stateHash = contentHash({ shell: buildShellHash, today: todayUtc8(BUILD_CLOCK), logs: memberLogs.map(logSummary), vitality: vitality.byMember[member] });
     if (reuseGenerated(stateKey, stateHash, outputPath)) continue;
     const activeDays = mergeTrainingDates(memberLogs).length;
     const recentCount = memberLogs.filter((log) => log.date >= daysAgo(29)).length;
@@ -412,14 +469,12 @@ function writeMemberPages(html, members, logs, vitality) {
     const lastDate = memberLogs[0]?.date;
     const subtitle = memberLogs.length ? `从 ${firstDate} 到 ${lastDate} 的训练记录` : "该队员暂无训练记录";
     const description = `${member} 的 ICPC 算法训练主页，共记录 ${memberLogs.length} 道题和 ${activeDays} 个训练日。`;
-    let output = showOnlyPage(html, "member-page");
-    output = replaceHeadMetadata(output, {
+    const $ = preparePage(html, "member-page", {
       title: `${member} 的训练主页 · ${SITE_NAME}`,
       description,
       canonical: absoluteUrl(memberSegments(member)),
       jsonLd: { "@context": "https://schema.org", "@type": "CollectionPage", name: `${member} 的训练主页`, url: absoluteUrl(memberSegments(member)), description },
     });
-    const $ = cheerio.load(output);
     $("#member-page-title").text(member);
     $("#member-page-subtitle").text(subtitle);
     $("#member-total").removeClass("loading-value").text(memberLogs.length);
@@ -450,7 +505,8 @@ function problemPageHtml(html, log, related) {
   const article = problemDetailHtml({ ...log, related }, { memberHref: routePath(memberSegments(log.member)) });
   const $source = cheerio.load(html);
   const dataVersion = $source('meta[name="journal-data-version"]').attr("content") || "";
-  const stylesheet = $source('link[rel="stylesheet"][href^="style.css"]').attr("href") || "/style.css";
+  const stylesheet = $source('link[rel="stylesheet"]').attr("href") || "/style.css";
+  const csp = $source('meta[http-equiv="Content-Security-Policy"]').attr("content");
   const title = `${log.problem} · ${log.member} · ${SITE_NAME}`;
   const jsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -473,9 +529,10 @@ function problemPageHtml(html, log, related) {
   <meta name="robots" content="index,follow"><meta property="og:type" content="article"><meta property="og:site_name" content="${escapeHtml(SITE_NAME)}">
   <meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}">
   <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(title)}"><meta name="twitter:description" content="${escapeHtml(description)}">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' https://algo-oauth.xialiao.org; img-src 'self' https://avatars.githubusercontent.com data:; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta name="journal-asset-origin" content="${escapeHtml(CDN_ORIGIN)}">
+  <meta http-equiv="Content-Security-Policy" content="${escapeHtml(csp)}">
   <base href="/"><title>${escapeHtml(title)}</title><link rel="canonical" href="${escapeHtml(canonical)}"><link rel="sitemap" type="application/xml" href="${SITE_ORIGIN}/sitemap.xml">
-  <link rel="stylesheet" href="/${escapeHtml(stylesheet.replace(/^\/+/, ""))}"><script type="application/ld+json">${jsonLd}</script>
+  <link rel="stylesheet" href="${escapeHtml(stylesheet)}" crossorigin="anonymous"><script type="application/ld+json">${jsonLd}</script>
 </head><body class="problem-standalone"><a class="skip-link" href="#main-content">跳到内容</a>
 <header class="app-header"><div class="header-inner"><a class="brand" href="/"><svg class="mountain-logo" viewBox="0 0 64 40" aria-hidden="true"><path fill="currentColor" d="m2 35 13-19 9 13-9-5-5 11zm14 0L34 3l28 32H49L34 17l8 18H30l-7-10 4 10z"/></svg><span>ACM 训练日志<small>记录 · 思考 · 成长</small></span></a>
 <nav class="desktop-nav" aria-label="主导航"><a class="page-nav-btn" href="/">首页</a><a class="page-nav-btn" href="/analysis/">训练档案</a><a class="page-nav-btn" href="/review/">复习</a><a class="page-nav-btn" href="/roadmap/">知识地图</a><a class="page-nav-btn" href="/tags/">标签</a></nav>
@@ -484,7 +541,7 @@ function problemPageHtml(html, log, related) {
 <details class="account-menu"><summary aria-label="账户与设置"><span id="auth-status" class="account-avatar"><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="4"/><path d="M4 21v-3a8 8 0 0 1 16 0v3"/></svg></span><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></summary><div class="account-popover"><span id="account-label">公开浏览</span><button type="button" id="btn-login" class="btn btn-outline">使用 GitHub 登录</button><button type="button" id="btn-logout" class="btn btn-outline">退出登录</button><button type="button" id="btn-theme" class="btn btn-outline" aria-label="切换主题">切换主题</button></div></details></div></header>
 <main id="main-content" class="main"><section id="problem-page" class="page-view active"><div class="detail-toolbar"><a id="problem-back-member" href="${escapeHtml(memberHref)}">${escapeHtml(log.member)} / 题目列表</a><a href="/analysis/">训练档案</a><details id="export-bar" class="problem-export-menu"><summary class="btn btn-outline">导出</summary><div class="problem-export-options"><button type="button" id="btn-export-pdf" class="btn btn-outline">${iconSvg}导出 PDF</button><button type="button" id="btn-export-md" class="btn btn-outline">${iconSvg}导出 Markdown</button><button type="button" id="btn-export-latex" class="btn btn-outline">${iconSvg}导出 LaTeX</button></div></details></div><article id="problem-detail" class="problem-detail" data-prerendered-path="${escapeHtml(routePath(problemSegments(log)))}">${article}</article></section></main>
 <footer class="footer"><span>ACM 训练日志 · 记录 · 思考 · 成长</span><small class="footer-version">${escapeHtml(siteVersion())}</small><a href="https://xialiao.org/" target="_blank" rel="noopener noreferrer">© 2026 Xia Liao</a></footer>
-<script type="module" src="/assets/js/${escapeHtml(browserAssets.problemEntry)}"></script></body></html>`);
+<script type="module" src="${escapeHtml(staticAsset(`assets/js/${browserAssets.problemEntry}`))}"></script></body></html>`);
 }
 
 function writeProblemPages(html, logs, problemIndex) {
@@ -522,13 +579,13 @@ function writeRouteIndex(html, segments) {
 function writeRouteIndexes(html, members, logs) {
   const routeTitles = { analysis: "训练档案", review: "错题本", submit: "提交训练日志" };
   for (const route of Object.keys(routeTitles)) {
-    const routeHtml = replaceHeadMetadata(showOnlyPage(html, `${route}-page`), {
+    const $ = preparePage(html, `${route}-page`, {
       title: `${routeTitles[route]} · ${SITE_NAME}`,
       description: `${SITE_NAME}${routeTitles[route]}页面。`,
       canonical: absoluteUrl([route]),
       robots: "noindex,follow",
     });
-    writeRouteIndex(routeHtml, [route]);
+    writeRouteIndex(addSelfClosingVoids($.html()), [route]);
   }
   const notFoundHtml = replaceHeadMetadata(html, {
     title: `页面未找到 · ${SITE_NAME}`,
@@ -567,12 +624,14 @@ function rememberGenerated(key, hash, output) {
 function reuseGenerated(key, hash, output) {
   const entry = previousBuildState.entries?.[key];
   const exists = fs.existsSync(path.join(OUTPUT_DIR, output));
-  if (entry?.hash === hash && exists) {
-    // 页面内容可复用，但版本页脚必须反映这次构建，不能把旧时间留在缓存页面里。
-    const outputPath = path.join(OUTPUT_DIR, output);
-    const previous = fs.readFileSync(outputPath, "utf8");
-    const current = previous.replace(/(<[^>]+(?:\bid="site-version"|\bclass="footer-version")[^>]*>)[^<]*(<\/[^>]+>)/, (_all, open, close) => `${open}${escapeHtml(siteVersion())}${close}`);
-    if (current !== previous) fs.writeFileSync(outputPath, current);
+  if (previousBuildState.rendererHash === nextBuildState.rendererHash && entry?.hash === hash && exists) {
+    // JSON 没有版本页脚，命中时直接复用；HTML 页脚仍反映本次构建。
+    if (output.endsWith(".html")) {
+      const outputPath = path.join(OUTPUT_DIR, output);
+      const previous = fs.readFileSync(outputPath, "utf8");
+      const current = previous.replace(/(<[^>]+(?:\bid="site-version"|\bclass="footer-version")[^>]*>)[^<]*(<\/[^>]+>)/, (_all, open, close) => `${open}${escapeHtml(siteVersion())}${close}`);
+      if (current !== previous) fs.writeFileSync(outputPath, current);
+    }
     nextBuildState.entries[key] = entry;
     incrementalHits += 1;
     return true;
@@ -1084,12 +1143,11 @@ async function generateRoadmapPages(html, roadmapData, nodeDataById) {
     const stateKey = `roadmap:${segments.join("/")}`;
     const stateHash = contentHash({ shell: buildShellHash, title, description, members: roadmapData.members, contentHtml });
     if (reuseGenerated(stateKey, stateHash, output)) return;
-    const page = replaceHeadMetadata(showOnlyPage(html, "roadmap-page"), {
+    const $ = preparePage(html, "roadmap-page", {
       title: `${title} · ${SITE_NAME}`,
       description,
       canonical: absoluteUrl(segments),
     });
-    const $ = cheerio.load(page);
     // 预渲染标记：data-route 标识该页内容对应的路由，data-members 内嵌成员列表。
     // 前端首屏命中 data-route 时直接使用预渲染 HTML，不再拉取 roadmap.json / 节点 JSON。
     $("#roadmap-content").attr("data-route", segments.join("/"));
@@ -1125,8 +1183,7 @@ async function generateTagPages(html, tagIndex, roadmapData) {
 
   // /tags/ 索引页
   const indexDescription = "ICPC 算法训练日志的题目标签索引，每个标签聚合训练记录与知识树覆盖。";
-  let indexPage = showOnlyPage(html, "tag-page");
-  indexPage = replaceHeadMetadata(indexPage, {
+  const $index = preparePage(html, "tag-page", {
     title: `标签索引 · ${SITE_NAME}`,
     description: indexDescription,
     canonical: absoluteUrl(["tags"]),
@@ -1138,7 +1195,6 @@ async function generateTagPages(html, tagIndex, roadmapData) {
       description: indexDescription,
     },
   });
-  const $index = cheerio.load(indexPage);
   $index("#tag-content").attr("data-route", "tags");
   $index("#tag-content").html(tagIndexHtml(tagIndex));
   $index("#tag-toolbar").attr("hidden", "");
@@ -1157,8 +1213,7 @@ async function generateTagPages(html, tagIndex, roadmapData) {
     const recordCount = entry.recordCount;
     const nodeCount = entry.nodes.length;
     const description = `${tag} 的训练记录与知识树覆盖：${recordCount} 条记录、${nodeCount} 个知识树节点。`;
-    let page = showOnlyPage(html, "tag-page");
-    page = replaceHeadMetadata(page, {
+    const $ = preparePage(html, "tag-page", {
       title: `${tag} · 标签 · ${SITE_NAME}`,
       description,
       canonical: absoluteUrl(["tags", tagStorageKey(tag)]),
@@ -1170,7 +1225,6 @@ async function generateTagPages(html, tagIndex, roadmapData) {
         description,
       },
     });
-    const $ = cheerio.load(page);
     // data-tag 用原始中文，前端 decodeURIComponent 后比对
     $("#tag-content").attr("data-tag", tag);
     $("#tag-content").html(tagPageHtml(entry));
@@ -1258,7 +1312,11 @@ async function main() {
   }
 
   previousBuildState = loadBuildState();
-  nextBuildState = { schemaVersion: 1, entries: {} };
+  // Rendering source changes must invalidate cached pages and JSON as well as data changes.
+  const rendererSources = ["scripts/generate-data.js", ...fs.readdirSync(path.join(ROOT, "lib"), { recursive: true })
+    .filter((name) => name.endsWith(".mjs")).sort().map((name) => path.join("lib", name))];
+  const rendererHash = contentHash(rendererSources.map((name) => [name, assetVersion(name)]));
+  nextBuildState = { schemaVersion: 2, rendererHash, entries: {} };
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   copyDirRecursive("vendor", path.join(OUTPUT_DIR, "vendor"));
   ({ trainingCardHtml } = await import("../lib/ui.mjs"));
@@ -1279,7 +1337,7 @@ async function main() {
     script: browserAssets.problemEntry,
   });
   writeServiceWorker(dataVersion);
-  const homeHtml = writeHomePage(html, logs, totalVitality);
+  const homeHtml = writeHomePage(html, logs, totalVitality, overviewData);
   writeRouteIndexes(homeHtml, members, logs);
   writeMemberPages(html, members, logs, vitality);
   writeProblemPages(html, logs, problemIndex);
@@ -1316,4 +1374,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { replaceProblemArticle, resolveStatsEnd, buildProblemIndex, buildReviewQueue, publishStatementImages, writeJournalShards, problemDependencyHash, tagDependencyHash, discoverDateDirs: (logsDir = LOGS_DIR) => discoverLogDateDirs(logsDir) };
+module.exports = { preparePage, replaceProblemArticle, resolveStatsEnd, buildProblemIndex, buildReviewQueue, publishStatementImages, writeJournalShards, problemDependencyHash, tagDependencyHash, discoverDateDirs: (logsDir = LOGS_DIR) => discoverLogDateDirs(logsDir) };

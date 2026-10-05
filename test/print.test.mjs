@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { printMarkdownDocument } from "../lib/print.mjs";
+import { exportToPDF as lazyExportToPDF } from "../lib/lazy-export-actions.mjs";
 
 function setup(context, blocked = false) {
   const events = [], assets = [], alerts = [];
@@ -43,6 +44,22 @@ test("PDF reserves the popup before async work and preserves safe Markdown", asy
   script.onerror();
   assert.equal(events.at(-1), "print", "code highlighting failure must not block printing");
   assert.deepEqual(alerts, []);
+});
+
+test("lazy PDF export reserves one popup before importing converters or fetching details", async (context) => {
+  const { events } = setup(context);
+  const originalDocument = Object.getOwnPropertyDescriptor(globalThis, "document");
+  Object.defineProperty(globalThis, "document", { configurable: true, value: { querySelector: () => null } });
+  context.after(() => originalDocument ? Object.defineProperty(globalThis, "document", originalDocument) : delete globalThis.document);
+  const pending = lazyExportToPDF(() => {
+    events.push("fetch");
+    return { problem: "Test", description: "Safe Markdown" };
+  });
+  assert.deepEqual(events, ["popup"]);
+  await pending;
+  assert.equal(events.filter((event) => event === "popup").length, 1);
+  assert.ok(events.indexOf("fetch") > events.indexOf("popup"));
+  assert.ok(events.includes("document-open"));
 });
 
 test("blocked popup skips document generation", async (context) => {

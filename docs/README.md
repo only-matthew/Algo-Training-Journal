@@ -8,6 +8,7 @@
 | [DESIGN.md](DESIGN.md) | 使用流程、页面与系统边界 |
 | [SPECIFICATION.md](SPECIFICATION.md) | 已实现契约、拟议变更和验收 |
 | [CURRENT-STATE.md](CURRENT-STATE.md) | 当前已上线实现、冻结范围与核验入口 |
+| [CDN.md](CDN.md) | 阿里云 CDN 与 Cloudflare DNS 接入状态 |
 | [RELEASE-v2.1.md](RELEASE-v2.1.md) | v2.1.0 发布前修复、验收证据、回退与三个月维护交接 |
 | [Audit/AUDIT-2026-10-02.md](Audit/AUDIT-2026-10-02.md) | 全栈审计报告（安全 / 质量 / 测试 / 文档一致性）与修复记录 |
 | [Audit/PRODUCT-AUDIT.md](Audit/PRODUCT-AUDIT.md) | 产品审计逐项签收与待办 |

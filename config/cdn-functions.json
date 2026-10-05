@@ -1,0 +1,15 @@
+[
+  {"functionName":"set_req_host_header","functionArgs":[{"argName":"domain_name","argValue":"train.xialiao.org"}]},
+  {"functionName":"forward_scheme","functionArgs":[{"argName":"enable","argValue":"on"},{"argName":"scheme_origin","argValue":"https"}]},
+  {"functionName":"https_origin_sni","functionArgs":[{"argName":"enabled","argValue":"on"},{"argName":"https_origin_sni","argValue":"train.xialiao.org"}]},
+  {"functionName":"gzip","functionArgs":[{"argName":"enable","argValue":"on"}]},
+  {"functionName":"brotli","functionArgs":[{"argName":"enable","argValue":"on"}]},
+  {"functionName":"https_force","functionArgs":[{"argName":"enable","argValue":"on"}]},
+  {"functionName":"https_option","functionArgs":[{"argName":"http2","argValue":"on"}]},
+  {"functionName":"set_resp_header","functionArgs":[{"argName":"key","argValue":"Access-Control-Allow-Origin"},{"argName":"value","argValue":"*"},{"argName":"header_operation_type","argValue":"modify"}]},
+  {"functionName":"set_resp_header","functionArgs":[{"argName":"key","argValue":"Timing-Allow-Origin"},{"argName":"value","argValue":"https://train.xialiao.org"},{"argName":"header_operation_type","argValue":"modify"}]},
+  {"functionName":"path_based_ttl_set","functionArgs":[{"argName":"path","argValue":"/"},{"argName":"ttl","argValue":"60"},{"argName":"weight","argValue":"1"}]},
+  {"functionName":"path_based_ttl_set","functionArgs":[{"argName":"path","argValue":"/assets/js/"},{"argName":"ttl","argValue":"31536000"},{"argName":"weight","argValue":"90"}]},
+  {"functionName":"filetype_based_ttl_set","functionArgs":[{"argName":"file_type","argValue":"css,png,jpg,jpeg,webp,svg,woff,woff2,ttf"},{"argName":"ttl","argValue":"604800"},{"argName":"weight","argValue":"50"}]},
+  {"functionName":"edge_function","functionArgs":[{"argName":"name","argValue":"overseas_to_cloudflare"},{"argName":"pri","argValue":"0"},{"argName":"enable","argValue":"on"},{"argName":"pos","argValue":"head"},{"argName":"rule","argValue":"if ne(client_country(), 'CN') { add_rsp_header('Cache-Control', 'no-store'); add_rsp_header('Access-Control-Allow-Origin', '*'); rewrite(concat('https://train.xialiao.org', req_uri()), 'redirect', 302) }"}]}
+]

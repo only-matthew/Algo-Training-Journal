@@ -150,10 +150,10 @@ function withForm() {
       await initJournalPage();
     } else if (route === "roadmap" || route.startsWith("roadmap/")) {
       // 知识地图首屏直接使用预渲染 HTML（零 JSON），需要时再加载 roadmap.json。
-      initRoadmapRenderer();
+      await initRoadmapRenderer();
     } else if (route === "tags" || route.startsWith("tags/")) {
       // 标签页首屏直接使用预渲染 HTML（零 JSON），tag-index.json 在 SPA 跳转/刷新时按需拉取
-      initTagRenderer();
+      await initTagRenderer();
     } else if (route.startsWith("problem/")) {
       initShellRenderer();
     } else if (route === "submit") {
