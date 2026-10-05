@@ -13,8 +13,10 @@ try {
   const sizes = [];
   for (const size of [16, 32, 48, 180]) {
     await page.setViewportSize({ width: size, height: size });
-    await page.setContent(`<style>html,body{margin:0;width:100%;height:100%}svg{display:block;width:100%;height:100%}</style>${svg}`);
-    const png = await page.screenshot({ path: path.join(out, size === 180 ? 'apple-touch-icon.png' : `favicon-${size}.png`) });
+    // Favicons need real alpha outside the rounded SVG, not Chromium's white canvas.
+    // Apple applies its own mask, so its source image uses a solid brand-color canvas.
+    await page.setContent(`<style>html,body{margin:0;width:100%;height:100%;background:${size === 180 ? '#0d5d47' : 'transparent'}}svg{display:block;width:100%;height:100%}</style>${svg}`);
+    const png = await page.screenshot({ omitBackground: true, path: path.join(out, size === 180 ? 'apple-touch-icon.png' : `favicon-${size}.png`) });
     if (size < 180) sizes.push({ size, png });
   }
   const header = Buffer.alloc(6 + sizes.length * 16);

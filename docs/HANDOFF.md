@@ -2,6 +2,10 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-10-05，favicon 白角修复）
+
+用户指出标签页图标圆角外的白色四角，明确不是要求改造型。根因是 Chromium PNG 截图默认合成白色背景，ICO 又嵌入该 PNG，丢失 SVG 外部透明区域。生成工具设置 transparent canvas 和 omitBackground:true；16／32／48 PNG 及 ICO 保留 alpha，Apple 图标使用完整绿色画布，由系统裁切圆角。SVG 与 OG 图保持原设计。实际解码 PNG 并验证四角 alpha（含小尺寸矢量边缘抗锯齿），核对 ICO 各嵌入 PNG 与源文件一致；生成器 4 项验收、lint 通过。继续沿用现有发布授权发布，favicon 内容哈希改变会更新页面引用。
+
 ## 最新交接（2026-10-05，网站图标与分享图）
 
 用户指出 favicon 和 OG 缺失；原站已有分享标题／描述，但没有 og:image。沿用绿色山形标志生成 SVG、16／32／48 PNG 的多尺寸 favicon.ico、180 px Apple touch icon；复用现有水墨背景制作 1200×630 PNG 分享卡。src/assets/branding 保存产物，src/favicon.ico 提供根路径兼容，scripts/generate-brand-assets.mjs 可用本地 Chromium 重生成，不依赖外部字体／图片。
