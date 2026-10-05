@@ -10,6 +10,7 @@ const trials = Number(process.env.CDN_TRIALS || 5);
 const original = await (await fetch(origin)).text();
 function pageHtml(host) {
   const $ = load(original);
+  $('meta[name="journal-asset-origin"]').attr('content', host === origin ? '' : host);
   $('meta[http-equiv="Content-Security-Policy"]').each((_, el) => {
     const item = $(el);
     item.attr('content', item.attr('content').replace(/(script-src|style-src|connect-src|img-src) 'self'/g, `$1 'self' ${cdn}`) + ` font-src 'self' ${cdn};`);

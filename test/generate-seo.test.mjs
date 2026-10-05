@@ -86,7 +86,8 @@ test("generator emits crawlable member and problem pages", () => {
   const heroUrl = heroPreload.match(/href="([^"]+)"/)[1];
   assert.match(heroUrl, /\/assets\/ink-mountains\.webp\?v=[a-f0-9]{12}$/);
   const generatedStyle = fs.readFileSync(path.join(siteDir, "style.css"), "utf8");
-  assert.ok(generatedStyle.includes(heroUrl), "CSS must reuse the preloaded image URL");
+  const hero = new URL(heroUrl, "https://train.xialiao.org");
+  assert.ok(generatedStyle.includes(hero.pathname + hero.search), "CSS must reuse the preloaded image path on the stylesheet host");
   assert.equal(generatedStyle.includes("ink-mountains.png"), false);
   assert.ok(fs.statSync(path.join(siteDir, "assets", "ink-mountains.webp")).size < 100000);
 

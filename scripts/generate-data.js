@@ -135,7 +135,7 @@ function writeStylesheet() {
   const source = ["style.css", "assets/final.css", "assets/details.css"]
     .map((name) => fs.readFileSync(path.join(FRONTEND_DIR, name), "utf8"))
     .join("\n")
-    .replaceAll("/assets/ink-mountains.webp", `${staticAsset("assets/ink-mountains.webp")}?v=${assetVersion("src/assets/ink-mountains.webp")}`);
+    .replaceAll("/assets/ink-mountains.webp", `/assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`);
   const { code } = transformSync(source, { loader: "css", minify: true, legalComments: "eof" });
   fs.writeFileSync(path.join(OUTPUT_DIR, "style.css"), code, "utf8");
 }
@@ -1330,6 +1330,7 @@ async function main() {
   $shellFingerprint("#site-version").text("build-version");
   buildShellHash = contentHash($shellFingerprint.html());
   problemShellHash = contentHash({
+    assetOrigin: CDN_ORIGIN,
     template: "standalone-problem-v2-current-header",
     header: $shellFingerprint("header.app-header").html(),
     footer: $shellFingerprint("footer.footer").html(),

@@ -2,6 +2,12 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-10-05，CDN 已发布）
+
+用户明确批准提交并发布全部已验证优化。提交 3bd7486 已推送 main；[Pages 发布](https://github.com/only-matthew/Algo-Training-Journal/actions/runs/37292205676) 成功，CI 门禁确认 Worker 同提交并兼容日志 schema 1–8。线上 Chromium 验证首页、标签、独立题目公式、字体和 PDF，68 次 CDN 请求无错误，证据 artifacts/live-cdn-check.json。下面“待发布”节是发布前快照，已由本节取代。
+
+发布后补充 CSS 背景路径按样式表域名解析，以确保同一 CSS 可通过两种域名加载；独立题目缓存指纹显式加入 CDN_ORIGIN。两种模式的生成器验收和 CDN 浏览器冒烟再次通过。继续对发布后的同版本资源复测。
+
 ## 最新交接（2026-10-05，前端 CDN 切换与速度对比，待发布）
 
 用户要求将资源切到 CDN 并对比速度。发布工作流设置 CDN_ORIGIN=https://cdn.mirstar.net，本地构建默认同源；生成器改写 JS／modulepreload／CSS／背景图，独立题目页继承相同资源域名和 CSP。lib/static-assets.mjs 从页面 meta 读取资源域名，供 Prism、KaTeX 和 PDF 使用。数据与 API 继续走原站。SW 对指定 CDN 静态路径接管 CORS／opaque 缓存，其他远程请求排除；CDN 与本地模式使用不同缓存版本。回源文件仍随构建完整输出。

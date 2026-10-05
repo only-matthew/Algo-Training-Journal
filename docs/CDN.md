@@ -1,8 +1,10 @@
 # 阿里云 CDN 接入
 
-更新：2026-10-05。`cdn.mirstar.net` 已完成阿里云 CDN、Cloudflare DNS 和 HTTPS 配置并验收。用户确认 `mirstar.net` 已备案，指定仅中国大陆使用阿里云加速，海外 IP 跳转 Cloudflare。发布构建已配置 CDN 资源引用，源码尚未提交／推送，因此线上页面尚未切换。
+更新：2026-10-05。`cdn.mirstar.net` 已完成阿里云 CDN、Cloudflare DNS 和 HTTPS 配置并验收。用户确认 `mirstar.net` 已备案，指定仅中国大陆使用阿里云加速，海外 IP 跳转 Cloudflare。资源切换与现有优化经用户批准提交发布，`3bd7486` 的 Pages 与同提交 Worker 均成功，线上浏览器验证首页、标签、公式及 PDF，68 次 CDN 请求无错误。
 
 ## 前端接入与测速
+
+CSS 内背景图使用根相对路径，按样式表域名解析，保持同一文件可通过两种域名加载；CDN 模式的图片预加载仍使用 CDN 绝对地址。独立题目缓存指纹显式包含 CDN_ORIGIN，切换模式不可复用旧地址。此调整再次通过本地／CDN 两种构建和 CDN 浏览器冒烟。
 
 发布工作流设置 `CDN_ORIGIN=https://cdn.mirstar.net`。本地 `npm run build` 默认同源；PowerShell 显式 CDN 构建：`$env:CDN_ORIGIN='https://cdn.mirstar.net'; npm run build; Remove-Item Env:CDN_ORIGIN`。取消工作流的环境变量可回退同源模式。
 
