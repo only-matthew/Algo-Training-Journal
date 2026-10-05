@@ -4,6 +4,8 @@
 
 ## 1. 当前实现契约
 
+所有可分享页面输出静态 OG title／description／url／image 元数据，独立题目使用 article 类型，其余页面沿用对应标题及 canonical；共享 1200×630 PNG 分享卡和 Twitter summary_large_image。图标支持 SVG、多尺寸根目录 favicon.ico、Apple 180 px PNG。branding 资源走原站并带内容哈希查询，独立题目构建缓存需纳入对应 head 信息。
+
 静态资源发布构建通过 `CDN_ORIGIN=https://cdn.mirstar.net` 接入国内阿里云 CDN；未设置时同源。仅公开 JS／CSS／背景／Prism／KaTeX／字体与打印依赖切换，数据与登录写入接口保持原站。CSP 与 SW 必须同步允许指定静态资源域名，离线缓存不能扩展到第三方或 CDN 数据接口。接入状态、A/B 条件和回退见 [CDN.md](CDN.md)。
 
 ### 1.1 数据、身份与时间

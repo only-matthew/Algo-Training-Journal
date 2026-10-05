@@ -204,6 +204,13 @@ function writeVersionedIndex(dataVersion) {
   const $ = cheerio.load(raw);
   $('meta[name="journal-data-version"]').attr("content", dataVersion);
   $("#site-version").text(siteVersion());
+  const socialImage = `https://train.xialiao.org/assets/branding/og-image.png?v=${assetVersion("src/assets/branding/og-image.png")}`;
+  $('meta[property="og:image"], meta[name="twitter:image"]').attr("content", socialImage);
+  $('link[rel="icon"], link[rel="apple-touch-icon"]').each((_, element) => {
+    const link = $(element);
+    const href = link.attr("href");
+    link.attr("href", `${href}?v=${assetVersion(`src${href}`)}`);
+  });
   $("<meta>").attr({ name: "journal-asset-origin", content: CDN_ORIGIN }).appendTo("head");
   const csp = $('meta[http-equiv="Content-Security-Policy"]');
   csp.attr("content", assetCsp(csp.attr("content")));
@@ -509,6 +516,7 @@ function problemPageHtml(html, log, related) {
   const dataVersion = $source('meta[name="journal-data-version"]').attr("content") || "";
   const stylesheet = $source('link[rel="stylesheet"]').attr("href") || "/style.css";
   const csp = $source('meta[http-equiv="Content-Security-Policy"]').attr("content");
+  const brandingHead = $source('meta[property^="og:image"], meta[property="og:locale"], meta[name^="twitter:image"], meta[name="theme-color"], link[rel="icon"], link[rel="apple-touch-icon"]').toString();
   const title = `${log.problem} · ${log.member} · ${SITE_NAME}`;
   const jsonLd = JSON.stringify({
     "@context": "https://schema.org",
@@ -530,7 +538,8 @@ function problemPageHtml(html, log, related) {
   <meta name="journal-data-version" content="${escapeHtml(dataVersion)}"><meta name="description" content="${escapeHtml(description)}">
   <meta name="robots" content="index,follow"><meta property="og:type" content="article"><meta property="og:site_name" content="${escapeHtml(SITE_NAME)}">
   <meta property="og:title" content="${escapeHtml(title)}"><meta property="og:description" content="${escapeHtml(description)}"><meta property="og:url" content="${escapeHtml(canonical)}">
-  <meta name="twitter:card" content="summary"><meta name="twitter:title" content="${escapeHtml(title)}"><meta name="twitter:description" content="${escapeHtml(description)}">
+  <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${escapeHtml(title)}"><meta name="twitter:description" content="${escapeHtml(description)}">
+  ${brandingHead}
   <meta name="journal-asset-origin" content="${escapeHtml(CDN_ORIGIN)}">
   <meta http-equiv="Content-Security-Policy" content="${escapeHtml(csp)}">
   <base href="/"><title>${escapeHtml(title)}</title><link rel="canonical" href="${escapeHtml(canonical)}"><link rel="sitemap" type="application/xml" href="${SITE_ORIGIN}/sitemap.xml">
@@ -1324,6 +1333,7 @@ async function main() {
   ({ trainingCardHtml } = await import("../lib/ui.mjs"));
   writeStylesheet();
   copyDirRecursive("src/assets", path.join(OUTPUT_DIR, "assets"));
+  fs.copyFileSync(path.join(FRONTEND_DIR, "favicon.ico"), path.join(OUTPUT_DIR, "favicon.ico"));
   browserAssets = buildBrowser(ROOT, path.join(OUTPUT_DIR, "assets", "js"));
   cleanupBrowserAssets();
   const html = writeVersionedIndex(dataVersion);
@@ -1333,6 +1343,7 @@ async function main() {
   buildShellHash = contentHash($shellFingerprint.html());
   problemShellHash = contentHash({
     assetOrigin: CDN_ORIGIN,
+    branding: $shellFingerprint('meta[property^="og:image"], meta[name^="twitter:image"], link[rel="icon"], link[rel="apple-touch-icon"]').toString(),
     template: "standalone-problem-v2-current-header",
     header: $shellFingerprint("header.app-header").html(),
     footer: $shellFingerprint("footer.footer").html(),

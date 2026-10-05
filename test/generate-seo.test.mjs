@@ -81,6 +81,17 @@ test("generator emits crawlable member and problem pages", () => {
   assert.ok(fs.existsSync(path.join(siteDir, assetPath(appSrc))));
   const stylesheets = [...homePage.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/g)];
   assert.equal(stylesheets.length, 1, "build should preserve the cascade in one stylesheet");
+  for (const page of [homePage, memberPage, problemPage]) {
+    assert.equal((page.match(/property="og:image"/g) || []).length, 1);
+    assert.match(page, /property="og:image" content="https:\/\/train\.xialiao\.org\/assets\/branding\/og-image\.png\?v=[a-f0-9]{12}"/);
+    assert.match(page, /name="twitter:card" content="summary_large_image"/);
+    assert.match(page, /rel="icon" href="\/favicon\.ico\?v=[a-f0-9]{12}"/);
+    assert.match(page, /rel="apple-touch-icon"/);
+  }
+  const socialPng = fs.readFileSync(path.join(siteDir, 'assets/branding/og-image.png'));
+  assert.equal(socialPng.readUInt32BE(16), 1200);
+  assert.equal(socialPng.readUInt32BE(20), 630);
+  assert.equal(fs.readFileSync(path.join(siteDir, 'favicon.ico')).readUInt16LE(4), 3);
   assert.match(stylesheets[0][0], /href="\/style\.css\?v=[a-f0-9]{12}"/, "critical stylesheet stays on the reliable source host even in CDN mode");
   const heroPreload = homePage.match(/<link\b[^>]*rel="preload"[^>]*as="image"[^>]*>/)?.[0];
   assert.ok(heroPreload?.includes('fetchpriority="high"'));

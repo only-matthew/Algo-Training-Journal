@@ -2,6 +2,12 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-10-05，网站图标与分享图）
+
+用户指出 favicon 和 OG 缺失；原站已有分享标题／描述，但没有 og:image。沿用绿色山形标志生成 SVG、16／32／48 PNG 的多尺寸 favicon.ico、180 px Apple touch icon；复用现有水墨背景制作 1200×630 PNG 分享卡。src/assets/branding 保存产物，src/favicon.ico 提供根路径兼容，scripts/generate-brand-assets.mjs 可用本地 Chromium 重生成，不依赖外部字体／图片。
+
+首页及衍生路由继承图标、OG 图片及尺寸／MIME／alt／locale、Twitter 大图；独立题目页继承同一份 branding head，保留题目自身标题描述和 canonical。所有图标／分享图走原站，内容哈希查询参数用于更新，独立题目缓存指纹包含 branding 元数据。生成器验收校验首页／成员／题目 head 唯一性、文件存在和 PNG／ICO 尺寸，4 项通过；syntax 与 lint 通过。沿用用户此前发布授权提交发布，平台实际分享卡刷新由各平台缓存决定。
+
 ## 最新交接（2026-10-05，无样式页面修复）
 
 用户在 Edge InPrivate 提供巨大蓝色 logo、默认链接的截图。确认主样式未应用，但正常 Chromium／msedge 复测暂未重现；CDN 请求曾等待较长。本机 DNS 有代理 fake-IP，之前“大陆本机”测速不能证明出口位置。修复将关键 CSS 与背景图／预加载恢复同源，JS 分块和数学／高亮／字体仍使用 CDN；SW 对这两项使用同源缓存地址。避免布局受 CDN 不可达影响，未声称已定位用户具体链路错误。
