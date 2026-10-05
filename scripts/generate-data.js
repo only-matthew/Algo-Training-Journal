@@ -175,14 +175,20 @@ function appVersion() {
 // 构建时间戳同样来自单一构建时钟（固定为 UTC+8 展示，与用户所在时区无关）。
 const SITE_BUILD_TIME = `${new Date(BUILD_CLOCK.getTime() + 8 * 60 * 60 * 1000).toISOString().slice(0, 16).replace("T", " ")} UTC+8`;
 
+// git SHA 在单次构建内不变，缓存起来避免每个复用页都 spawn 一次 git 进程。
+// 曾导致本地增量构建（633 个复用页 × ~50ms/次）白耗约 31s。
+let siteVersionSha;
 function siteVersion() {
-  const version = require("../package.json").version;
-  let sha = process.env.GITHUB_SHA || "";
-  if (!/^[a-f0-9]{40}$/i.test(sha)) {
-    try { sha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: ROOT, encoding: "utf8" }).trim(); }
-    catch { sha = ""; }
+  if (siteVersionSha === undefined) {
+    let sha = process.env.GITHUB_SHA || "";
+    if (!/^[a-f0-9]{40}$/i.test(sha)) {
+      try { sha = execFileSync("git", ["rev-parse", "HEAD"], { cwd: ROOT, encoding: "utf8" }).trim(); }
+      catch { sha = ""; }
+    }
+    siteVersionSha = sha;
   }
-  return `v${version} · ${SITE_BUILD_TIME}${sha ? ` · ${sha.slice(0, 7)}` : ""}`;
+  const version = require("../package.json").version;
+  return `v${version} · ${SITE_BUILD_TIME}${siteVersionSha ? ` · ${siteVersionSha.slice(0, 7)}` : ""}`;
 }
 
 function writeVersionedIndex(dataVersion) {
