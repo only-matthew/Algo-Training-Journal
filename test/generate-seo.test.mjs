@@ -81,6 +81,7 @@ test("generator emits crawlable member and problem pages", () => {
   assert.ok(fs.existsSync(path.join(siteDir, assetPath(appSrc))));
   const stylesheets = [...homePage.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*>/g)];
   assert.equal(stylesheets.length, 1, "build should preserve the cascade in one stylesheet");
+  assert.match(stylesheets[0][0], /href="\/style\.css\?v=[a-f0-9]{12}"/, "critical stylesheet stays on the reliable source host even in CDN mode");
   const heroPreload = homePage.match(/<link\b[^>]*rel="preload"[^>]*as="image"[^>]*>/)?.[0];
   assert.ok(heroPreload?.includes('fetchpriority="high"'));
   const heroUrl = heroPreload.match(/href="([^"]+)"/)[1];

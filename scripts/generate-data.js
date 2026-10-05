@@ -210,8 +210,10 @@ function writeVersionedIndex(dataVersion) {
   if (CDN_ORIGIN) $("<link>").attr({ rel: "preconnect", href: CDN_ORIGIN, crossorigin: "anonymous" }).appendTo("head");
   const styleVersion = crypto.createHash("sha256")
     .update(fs.readFileSync(path.join(OUTPUT_DIR, "style.css"))).digest("hex").slice(0, 12);
-  $('link[rel="stylesheet"][href^="style.css"]').attr({ href: staticAsset(`style.css?v=${styleVersion}`), crossorigin: "anonymous" });
-  $('link[rel="preload"][as="image"]').attr("href", staticAsset(`assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`));
+  // The render-blocking stylesheet must not depend on the CDN's availability.
+  // Its background URL resolves against the source host too.
+  $('link[rel="stylesheet"][href^="style.css"]').attr("href", `/style.css?v=${styleVersion}`);
+  $('link[rel="preload"][as="image"]').attr("href", `/assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`);
   $('script[src^="app.js"]').attr("src", staticAsset(`assets/js/${browserAssets.entry}`));
   for (const dependency of [browserAssets.entry, ...browserAssets.preloads]) {
     $("<link>").attr({ rel: "modulepreload", href: staticAsset(`assets/js/${dependency}`), crossorigin: "anonymous" }).appendTo("head");
@@ -228,9 +230,9 @@ function writeServiceWorker(dataVersion) {
   // Only content-addressed assets can survive a deployment. HTML and data must refresh.
   const reusableAssets = [
     ...Object.keys(browserAssets.metafile.outputs).map((name) => `/${path.relative(OUTPUT_DIR, path.resolve(ROOT, name)).split(path.sep).join("/")}`),
-    `/style.css?v=${assetVersion("site/style.css")}`,
-    `/assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`,
   ].map(staticAsset);
+  reusableAssets.push(`/style.css?v=${assetVersion("site/style.css")}`);
+  reusableAssets.push(`/assets/ink-mountains.webp?v=${assetVersion("src/assets/ink-mountains.webp")}`);
   const sw = `// Algo Training Journal Service Worker（构建时生成，勿手改）
 const VERSION = ${JSON.stringify(version)};
 const CACHE = "atj-" + VERSION;

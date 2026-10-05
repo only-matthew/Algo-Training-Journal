@@ -18,6 +18,7 @@ try {
   const types = { '.js': 'text/javascript', '.css': 'text/css', '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.ttf': 'font/ttf' };
   await context.route('https://cdn.mirstar.net/**', async route => {
     const url = new URL(route.request().url());
+    if (url.pathname === '/style.css') return route.abort();
     const file = path.resolve(root, '.' + decodeURIComponent(url.pathname));
     assert.ok(file.startsWith(root + path.sep));
     assets.push(url.href);
@@ -27,6 +28,8 @@ try {
   const page = await context.newPage();
   await page.goto('http://127.0.0.1:4173/');
   await page.waitForFunction(() => typeof globalThis.journalRouteRenderer === 'function');
+  assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('.mountain-logo')).width), '58px');
+  assert.ok(await page.locator('link[rel="stylesheet"]').first().getAttribute('href').then(href => href.startsWith('/style.css')));
   await page.goto('http://127.0.0.1:4173/tags/');
   await expect(page.locator('#tag-content')).not.toBeEmpty();
   await page.goto('http://127.0.0.1:4173/problem/%E5%BB%96%E5%A4%8F/2026-09-24/6267d57d-3af1-42e2-8ea3-db860b9d491b/');

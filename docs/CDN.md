@@ -4,6 +4,10 @@
 
 ## 前端接入与测速
 
+**2026-10-05 无样式页面修复**：用户 Edge InPrivate 截图出现蓝色巨大山形和默认链接，说明主样式没有生效。本机正常与 Edge 浏览器复测未稳定复现，CDN 曾有长时间等待；无法仅凭截图确定是链路、代理、跨域还是节点问题。本机 DNS 返回 198.18.x.x 代理虚拟地址，之前测速的“本机大陆网络”应理解为本机当前网络条件，不能证明所有请求的出口地理位置。为移除布局对 CDN 链路的依赖，主 CSS 与其背景图／图片预加载恢复同源；JS 分块、Prism、KaTeX 和字体继续走 CDN。SW 的主 CSS／背景缓存与模式保持一致。上面的全 CDN 背景／主 CSS 描述及下面测速数字是此修复前快照，不能当作本次调整后的速度数据。
+
+生成器回归明确断言 CDN 模式主样式仍是 `/style.css?v=hash`；CDN 冒烟主动拒绝 CDN 的 style.css，仍验证山形 logo 为 58 px、首页布局及数学与 PDF 正常。确切用户侧请求错误尚未获得，但该修复消除主样式的 CDN 依赖。
+
 CSS 内背景图使用根相对路径，按样式表域名解析，保持同一文件可通过两种域名加载；CDN 模式的图片预加载仍使用 CDN 绝对地址。独立题目缓存指纹显式包含 CDN_ORIGIN，切换模式不可复用旧地址。此调整再次通过本地／CDN 两种构建和 CDN 浏览器冒烟。
 
 发布工作流设置 `CDN_ORIGIN=https://cdn.mirstar.net`。本地 `npm run build` 默认同源；PowerShell 显式 CDN 构建：`$env:CDN_ORIGIN='https://cdn.mirstar.net'; npm run build; Remove-Item Env:CDN_ORIGIN`。取消工作流的环境变量可回退同源模式。

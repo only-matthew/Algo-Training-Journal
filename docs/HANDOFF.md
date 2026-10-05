@@ -2,6 +2,12 @@
 
 > 本文件按时间续写，旧段落是历史快照。当前产品方向、架构和实现契约分别见 [PRODUCT.md](PRODUCT.md)、[DESIGN.md](DESIGN.md)、[SPECIFICATION.md](SPECIFICATION.md)；旧稿在 [2026-09-28 归档](archive/2026-09-28-pre-rewrite/) 中保留原文。易变的测试数量与部署版本只代表各段落注明日期的状态。
 
+## 最新交接（2026-10-05，无样式页面修复）
+
+用户在 Edge InPrivate 提供巨大蓝色 logo、默认链接的截图。确认主样式未应用，但正常 Chromium／msedge 复测暂未重现；CDN 请求曾等待较长。本机 DNS 有代理 fake-IP，之前“大陆本机”测速不能证明出口位置。修复将关键 CSS 与背景图／预加载恢复同源，JS 分块和数学／高亮／字体仍使用 CDN；SW 对这两项使用同源缓存地址。避免布局受 CDN 不可达影响，未声称已定位用户具体链路错误。
+
+本地／CDN 生成器与 SW 验收通过，lint 通过。CDN 浏览器冒烟阻断 CDN style.css，首页 logo 宽度仍为 58 px，标签、独立数学与 PDF 正常。发布沿用用户此前授权，不再询问。下方旧性能数据属于修复前全 CDN 样式版本。
+
 ## 最新交接（2026-10-05，CDN 已发布）
 
 后续修正提交 559906a 的 [Pages 发布](https://github.com/only-matthew/Algo-Training-Journal/actions/runs/37292611656) 成功，Worker 输入未变，继续使用已兼容的 3bd7486。线上再次验证 68 次 CDN 请求无错误，真实 SW 缓存 17 项并通过断网重载。新版同版本资源 A/B，各 5 次：原站／CDN FCP 184／188 ms、LCP 200／212 ms、路由就绪 464／343 ms。应用就绪快约 26.1%，绘制相近略慢；不能承诺全国／海外提速。完整条件与发布前后两批数据见 CDN.md。用户已授权全部优化提交发布，当前无待批准发布工作。
