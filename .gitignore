@@ -19,3 +19,5 @@ oi-wiki/
 artifacts/
 playwright-report/
 test-results/
+
+agent/
