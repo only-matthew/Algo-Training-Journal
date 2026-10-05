@@ -10,8 +10,7 @@ const files = process.argv.length > 2 ? process.argv.slice(2) : readdirSync("tes
   .map((file) => `test/${file}`);
 // Each file has its own process, including OAuth mocks. One scheduler avoids an
 // artificial barrier between regular and Worker suites, without increasing CPU contention.
-// TEST_CONCURRENCY 覆盖并发上限，供 CI 调优实验（默认仍按 2 核上限）。
-const concurrency = Number(process.env.TEST_CONCURRENCY) || Math.min(2, availableParallelism());
+const concurrency = Math.min(2, availableParallelism());
 const environment = { ...process.env };
 // A focused invocation from a regression test must still start an independent runner.
 delete environment.NODE_TEST_CONTEXT;

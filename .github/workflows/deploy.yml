@@ -68,7 +68,6 @@ jobs:
         env:
           WORKER_EXPECTED_COMMIT: ${{ steps.worker.outputs.expected_commit }}
           WORKER_WAIT_MS: ${{ steps.worker.outputs.wait_ms }}
-          TEST_CONCURRENCY: "4"
         run: |
           if [ -z "$WORKER_EXPECTED_COMMIT" ]; then
             npm run verify:parallel
