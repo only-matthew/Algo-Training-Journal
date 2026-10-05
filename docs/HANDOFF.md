@@ -4,6 +4,8 @@
 
 ## 最新交接（2026-10-05，CDN 已发布）
 
+后续修正提交 559906a 的 [Pages 发布](https://github.com/only-matthew/Algo-Training-Journal/actions/runs/37292611656) 成功，Worker 输入未变，继续使用已兼容的 3bd7486。线上再次验证 68 次 CDN 请求无错误，真实 SW 缓存 17 项并通过断网重载。新版同版本资源 A/B，各 5 次：原站／CDN FCP 184／188 ms、LCP 200／212 ms、路由就绪 464／343 ms。应用就绪快约 26.1%，绘制相近略慢；不能承诺全国／海外提速。完整条件与发布前后两批数据见 CDN.md。用户已授权全部优化提交发布，当前无待批准发布工作。
+
 用户明确批准提交并发布全部已验证优化。提交 3bd7486 已推送 main；[Pages 发布](https://github.com/only-matthew/Algo-Training-Journal/actions/runs/37292205676) 成功，CI 门禁确认 Worker 同提交并兼容日志 schema 1–8。线上 Chromium 验证首页、标签、独立题目公式、字体和 PDF，68 次 CDN 请求无错误，证据 artifacts/live-cdn-check.json。下面“待发布”节是发布前快照，已由本节取代。
 
 发布后补充 CSS 背景路径按样式表域名解析，以确保同一 CSS 可通过两种域名加载；独立题目缓存指纹显式加入 CDN_ORIGIN。两种模式的生成器验收和 CDN 浏览器冒烟再次通过。继续对发布后的同版本资源复测。
