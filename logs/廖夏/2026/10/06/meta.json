@@ -1,6 +1,6 @@
 {
   "schemaVersion": 8,
-  "updatedAt": "2026-10-06T11:50:18.871+08:00",
+  "updatedAt": "2026-10-06T20:18:36.227+08:00",
   "problems": [
     {
       "id": "f5e12a5c-6808-4471-9ecc-4347dd9023b9",
@@ -20,6 +20,27 @@
       "reviewDue": "2026-11-09",
       "blocker": "不知道为什么卡住了，总是差点意思，构建的算法跑不通，代码输出不对劲，最后查看自己的上古代码，发现当时的思路真是流氓",
       "fileIndex": 0
+    },
+    {
+      "id": "7c5853a6-f587-4b3a-8422-20f43f57315e",
+      "name": "[USACO10OCT] Lake Counting S",
+      "platform": "洛谷",
+      "problemNumber": "P1596",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [
+        "搜索",
+        "图论",
+        "BFS",
+        "DFS",
+        "连通块"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "mastered",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 1
     }
   ]
 }

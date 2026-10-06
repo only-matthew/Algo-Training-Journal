@@ -1671,6 +1671,27 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-11-09",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-06/f5e12a5c-6808-4471-9ecc-4347dd9023b9/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1596",
+      "date": "2026-10-06",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-10-06",
+        "recordId": "7c5853a6-f587-4b3a-8422-20f43f57315e"
+      },
+      "problem": {
+        "name": "[USACO10OCT] Lake Counting S",
+        "platform": "洛谷",
+        "problemNumber": "P1596",
+        "difficulty": "★ 1000"
+      },
+      "outcome": "independent",
+      "masteryStatus": "mastered",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-06/7c5853a6-f587-4b3a-8422-20f43f57315e/"
     }
   ]
 }
