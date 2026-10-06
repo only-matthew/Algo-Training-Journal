@@ -1312,6 +1312,25 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-10-04/9cc756a8-725c-44b9-a230-468ccedd1a1f/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1021",
+      "date": "2026-10-06",
+      "recordRef": {
+        "memberId": "wzzzzhhhhh",
+        "date": "2026-10-06",
+        "recordId": "7d570112-fece-4e1a-aa74-18f75cb7afed"
+      },
+      "problem": {
+        "name": "[NOIP 1999 提高组] 邮票面值设计（疑似错题）",
+        "platform": "洛谷",
+        "problemNumber": "P1021",
+        "difficulty": "★ 1500"
+      },
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-10-06/7d570112-fece-4e1a-aa74-18f75cb7afed/"
     }
   ]
 }

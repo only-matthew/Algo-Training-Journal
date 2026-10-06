@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-07T00:29:35.677+08:00",
+  "problems": [
+    {
+      "id": "7d570112-fece-4e1a-aa74-18f75cb7afed",
+      "name": "[NOIP 1999 提高组] 邮票面值设计（疑似错题）",
+      "platform": "洛谷",
+      "problemNumber": "P1021",
+      "difficulty": "★ 1500",
+      "difficultyRating": 1500,
+      "tags": [
+        "DP",
+        "搜索",
+        "背包"
+      ],
+      "masteryStatus": "unknown",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
