@@ -1327,9 +1327,11 @@
         "problemNumber": "P1021",
         "difficulty": "★ 1500"
       },
+      "outcome": "editorial",
       "masteryStatus": "unknown",
       "isMistake": false,
-      "reviewStatus": "none",
+      "reviewStatus": "todo",
+      "reviewDue": "2026-10-09",
       "href": "/problem/%E7%8E%8B%E6%A2%93%E8%B1%AA/2026-10-06/7d570112-fece-4e1a-aa74-18f75cb7afed/"
     }
   ]
