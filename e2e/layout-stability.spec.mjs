@@ -71,3 +71,29 @@ test('standalone problem enhances content before a slow session completes', asyn
     finishSession();
   }
 });
+
+test('slow optional assets never block readable problem content', async ({ page }) => {
+  let releaseAssets;
+  const assetGate = new Promise(resolve => { releaseAssets = resolve; });
+  await page.route('https://algo-oauth.xialiao.org/api/session', route => route.fulfill({ json: null }));
+  await page.route('**/vendor/**', async route => {
+    await assetGate;
+    await route.continue();
+  });
+  await page.goto('/');
+  await expect(page.locator('#vitality-chart svg')).toBeVisible();
+  try {
+    await page.evaluate(path => {
+      history.pushState(null, '', path);
+      dispatchEvent(new PopStateEvent('popstate'));
+    }, problemPath);
+    await expect(page.locator('#problem-description')).toBeVisible({ timeout: 1500 });
+    await expect(page.locator('#problem-code code')).toContainText('#include');
+    await expect(page.locator('#problem-detail')).not.toHaveAttribute('aria-busy', 'true');
+    await expect(page.locator('#btn-export-pdf')).toBeEnabled();
+  } finally {
+    releaseAssets();
+  }
+  await expect(page.locator('#problem-description .katex').first()).toBeAttached();
+  await expect(page.locator('#problem-code .token.keyword').first()).toBeAttached();
+});
