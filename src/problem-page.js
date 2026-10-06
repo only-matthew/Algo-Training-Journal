@@ -38,7 +38,8 @@ function actionButton(symbol, label, handler, title) {
   document.getElementById("btn-theme")?.addEventListener("click", toggleTheme);
   document.getElementById("btn-login")?.addEventListener("click", login);
   document.getElementById("btn-logout")?.addEventListener("click", logout);
-  await initSession();
+  // Public content must not wait for the authentication service.
+  const sessionPromise = initSession();
 
   const route = routeParts();
   const root = document.getElementById("problem-detail");
@@ -59,6 +60,7 @@ function actionButton(symbol, label, handler, title) {
   document.getElementById("btn-export-md")?.addEventListener("click", async () => exportToMD(await detail()));
   document.getElementById("btn-export-latex")?.addEventListener("click", async () => exportToLatex(await detail()));
 
+  await sessionPromise;
   if (currentUser?.member !== route.member) return;
   const log = await detail();
   const edit = root.querySelector("[data-problem-edit]");

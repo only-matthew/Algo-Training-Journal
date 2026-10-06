@@ -1,7 +1,8 @@
 /* Shared detail surfaces. The overview retains its established design. */
 [hidden] { display: none !important; }
 /* Query the usable viewport width, excluding the vertical scrollbar. */
-html { container-type: inline-size; }
+html { container-type: inline-size; scrollbar-gutter: stable; }
+.problem-detail-loading { min-height: 100vh; }
 /* Standalone details place the footer outside main; the app shell nests it inside. */
 .footer { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 16px; padding: 24px 0 32px; }
 .problem-standalone > .footer { padding-inline: max(24px, calc((100cqw - 1320px) / 2)); }
