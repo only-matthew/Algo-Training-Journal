@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-07T17:58:58.450+08:00",
+  "problems": [
+    {
+      "id": "12eca771-6769-48f0-841e-871de77c8a7b",
+      "name": "填涂颜色",
+      "platform": "洛谷",
+      "problemNumber": "P1162",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "连通块",
+        "队列"
+      ],
+      "outcome": "hinted",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "todo",
+      "reviewDue": "2026-10-10",
+      "blocker": "忽略了一些DFS的经典错误：\n1. vis在被更新后会阻止下次访问，无论这个访问是发生于本轮dfs还是下一轮\n2. 在本题的每个点都找路的情况下，vis的存在会导致无非走回头路，使得路上的点原本走父节点的路被阻挡，产生错误的结果",
+      "fileIndex": 0
+    }
+  ]
+}

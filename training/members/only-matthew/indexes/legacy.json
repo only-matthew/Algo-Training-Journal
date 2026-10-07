@@ -1713,6 +1713,28 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-06/7c5853a6-f587-4b3a-8422-20f43f57315e/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1162",
+      "date": "2026-10-07",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-10-07",
+        "recordId": "12eca771-6769-48f0-841e-871de77c8a7b"
+      },
+      "problem": {
+        "name": "填涂颜色",
+        "platform": "洛谷",
+        "problemNumber": "P1162",
+        "difficulty": "★ 1000"
+      },
+      "outcome": "hinted",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "todo",
+      "reviewDue": "2026-10-10",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-07/12eca771-6769-48f0-841e-871de77c8a7b/"
     }
   ]
 }
