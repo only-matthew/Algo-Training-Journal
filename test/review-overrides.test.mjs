@@ -2,6 +2,51 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import { applyReviewChanges, rememberReviewChange } from "../lib/review-overrides.mjs";
+import { todayUtc8 } from "../lib/constants.mjs";
+
+function mockStorage(context) {
+  const entries = new Map();
+  const original = Object.getOwnPropertyDescriptor(globalThis, "sessionStorage");
+  Object.defineProperty(globalThis, "sessionStorage", { configurable: true, value: {
+    get length() { return entries.size; },
+    key: (index) => [...entries.keys()][index],
+    getItem: (key) => entries.get(key) || null,
+    setItem: (key, value) => entries.set(key, value),
+    removeItem: (key) => entries.delete(key),
+  } });
+  context.after(() => {
+    if (original) Object.defineProperty(globalThis, "sessionStorage", original);
+    else delete globalThis.sessionStorage;
+  });
+}
+
+test("replanning an old record adds it to an otherwise empty overview queue", (context) => {
+  mockStorage(context);
+  const record = { member: "甲", date: "2020-01-01", problemId: "old", reviewStatus: "archived", problem: "旧题" };
+  rememberReviewChange(record, { reviewStatus: "todo", reviewDue: todayUtc8() });
+  const result = applyReviewChanges({ logs: [], reviewQueue: [], reviewQueueTotalDue: 0 });
+  assert.equal(result.reviewQueue.length, 1);
+  assert.equal(result.reviewQueue[0].problemId, "old");
+  assert.equal(result.reviewQueueTotalDue, 1);
+});
+
+test("ending a future review does not reduce the count of today's due reviews", (context) => {
+  mockStorage(context);
+  const due = { member: "甲", date: "2020-01-01", problemId: "due", reviewStatus: "todo", reviewDue: todayUtc8() };
+  const future = { ...due, problemId: "future", reviewDue: "9999-12-31" };
+  rememberReviewChange(future, { reviewStatus: "archived" });
+  const result = applyReviewChanges({ logs: [due, future], reviewQueue: [due, future], reviewQueueTotalDue: 1 });
+  assert.deepEqual(result.reviewQueue.map((record) => record.problemId), ["due"]);
+  assert.equal(result.reviewQueueTotalDue, 1);
+});
+
+test("caught-up logs cannot resurrect a stale queue entry while clearing the override", (context) => {
+  mockStorage(context);
+  const record = { member: "甲", date: "2020-01-01", problemId: "due", reviewStatus: "todo", reviewDue: todayUtc8() };
+  rememberReviewChange(record, { reviewStatus: "archived" });
+  const result = applyReviewChanges({ logs: [{ ...record, reviewStatus: "archived", reviewDue: undefined }], reviewQueue: [record] });
+  assert.deepEqual(result.reviewQueue, []);
+});
 
 test("a successful review change survives stale generated data until it catches up", () => {
   const entries = new Map();

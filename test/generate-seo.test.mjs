@@ -60,7 +60,10 @@ test("generator emits crawlable member and problem pages", () => {
   assert.ok(manifest.months.every((entry) => entry.count > 0 && entry.url.startsWith("data/logs/")));
   assert.ok(Object.values(manifest.members).every((entry) => entry.years.every((year) => year.url.startsWith("data/members/"))));
   assert.ok(Array.isArray(overview.reviewQueue), "overview.json must expose the review queue");
+  const { buildReviewQueue } = require("../scripts/generate-data.js");
+  assert.deepEqual(overview.reviewQueue, buildReviewQueue(journal.logs), "overview must retain future reviews and the complete queue across calendar days");
   for (const item of overview.reviewQueue) {
+    assert.equal(item.reviewStatus, "todo", "review queue entries must survive client review-state filtering");
     assert.ok(item.problemId && item.member && item.reviewDue, "review queue entries must carry id/member/due");
   }
 

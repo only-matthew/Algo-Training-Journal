@@ -44,6 +44,7 @@ test("buildReviewQueue 只收集待复习且带日期的题，并按日期升序
   assert.equal(queue.length, 3); // a、c、e（b 已掌握、d 非错题）
   assert.deepEqual(queue.map((q) => q.reviewDue), ["2026-08-02", "2026-08-03", "2026-08-10"]);
   assert.ok(queue.every((q) => q.problemId && q.member && q.problem));
+  assert.ok(queue.every((q) => q.reviewStatus === "todo"));
   // 未设置复习日期的待复习题不会进入队列
   const noDue = buildReviewQueue([{ ...LOGS[0], reviewDue: undefined }]);
   assert.equal(noDue.length, 0);

@@ -1,5 +1,31 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { rememberReviewChange } from "../lib/review-overrides.mjs";
+
+test("successful review writes invalidate cached overview, full journal and member shards", async (context) => {
+  const originalDocument = globalThis.document;
+  globalThis.document = { querySelector: () => null };
+  context.after(() => { globalThis.document = originalDocument; });
+  let reviewStatus = "todo";
+  const requests = [];
+  context.mock.method(globalThis, "fetch", async (input) => {
+    const path = String(input).split("?")[0];
+    requests.push(path);
+    if (path === "data/manifest.json") return Response.json({ months: [{ url: "data/month.json" }], members: { "甲": { years: [{ url: "data/member.json" }] } } });
+    return Response.json({ logs: [{ member: "甲", date: "2026-09-20", problemId: "one", reviewStatus }] });
+  });
+  const data = await import(`../lib/data.mjs?review-cache=${Date.now()}`);
+  await data.ensureOverviewJournal();
+  await data.ensureFullJournal();
+  await data.ensureMemberJournal("甲");
+  reviewStatus = "archived";
+  rememberReviewChange({ member: "甲", date: "2026-09-20", problemId: "one" }, { reviewStatus });
+  assert.equal((await data.ensureOverviewJournal()).logs[0].reviewStatus, "archived");
+  assert.equal((await data.ensureFullJournal()).logs[0].reviewStatus, "archived");
+  assert.equal((await data.ensureMemberJournal("甲")).logs[0].reviewStatus, "archived");
+  assert.equal(requests.filter((path) => path === "data/month.json").length, 2);
+  assert.equal(requests.filter((path) => path === "data/member.json").length, 2);
+});
 
 test("member requests start statistics and manifest together and share in-flight downloads", async (context) => {
   const originalDocument = globalThis.document;

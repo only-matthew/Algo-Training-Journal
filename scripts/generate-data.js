@@ -848,6 +848,7 @@ function buildReviewQueue(logs) {
       platform: log.platform || "",
       difficulty: log.difficulty || "",
       difficultyRating: Number(log.difficultyRating) || 0,
+      reviewStatus: "todo",
       reviewDue: log.reviewDue,
     }))
     .sort((a, b) => a.reviewDue.localeCompare(b.reviewDue) || a.member.localeCompare(b.member, "zh-CN"));
@@ -1283,7 +1284,8 @@ async function main() {
     members,
     totalLogs: logs.length, // 全队自建站以来的总刷题数（首页标题徽标）
     logs: summaryLogs.filter((log) => log.date >= daysAgo(29)),
-    reviewQueue: dueReviewQueue.slice(0, 100),
+    // 保留未来到期的安排；访问时按 UTC+8 当天筛选，避免跨日后必须重新构建。
+    reviewQueue: allReviewQueue,
     reviewQueueTotalDue: dueReviewQueue.length,
     heatmap: heatmapData,
     recent30,
