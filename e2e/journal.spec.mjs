@@ -52,6 +52,7 @@ test("homepage starts its data from HTML and reuses the preload without download
   expect(requests.some((url) => /\/(catalog-renderer|export-actions|form)-/.test(url))).toBe(false);
   await page.locator('.desktop-nav [data-route="/roadmap/"]').click();
   await expect(page.locator("#roadmap-content .roadmap-overview")).toBeVisible();
+  await page.waitForFunction(() => typeof window.journalRouteRenderer === "function");
   expect(requests.some((url) => /\/catalog-renderer-/.test(url))).toBe(true);
 });
 
