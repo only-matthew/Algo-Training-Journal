@@ -2,6 +2,7 @@ import { initTheme, toggleTheme } from "../lib/theme.mjs";
 import { currentUser, initSession, login, logout } from "../lib/auth.mjs";
 import { initDetailInteractions } from "../lib/detail-interactions.mjs";
 import { loadProblemDetail } from "../lib/data.mjs";
+import { hasPendingReviewChanges } from "../lib/review-overrides.mjs";
 import { icon } from "../lib/icons.mjs";
 import { isReviewPlanned, isReviewTodo, normalizeLearningState } from "../lib/learning-state.mjs";
 import {
@@ -52,10 +53,13 @@ function actionButton(symbol, label, handler, title) {
     window.history.replaceState(null, "", `${window.location.pathname}${link.hash}`);
     target?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, true);
-  await renderEnhancements(root);
-
   let detailPromise;
   const detail = () => detailPromise ??= loadProblemDetail(route.member, route.date, route.problemId);
+  if (hasPendingReviewChanges()) {
+    const [log, { problemDetailHtml }] = await Promise.all([detail(), import("../lib/problem-detail.mjs")]);
+    root.innerHTML = problemDetailHtml(log);
+  }
+  await renderEnhancements(root);
   document.getElementById("btn-export-pdf")?.addEventListener("click", () => exportToPDF(detail));
   document.getElementById("btn-export-md")?.addEventListener("click", async () => exportToMD(await detail()));
   document.getElementById("btn-export-latex")?.addEventListener("click", async () => exportToLatex(await detail()));
