@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-07T15:57:05.399+08:00",
+  "problems": [
+    {
+      "id": "ad859422-2db3-4755-8dac-70a90796c51c",
+      "name": "【模板】排序",
+      "platform": "洛谷",
+      "problemNumber": "P1177",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [
+        "排序"
+      ],
+      "outcome": "hinted",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}

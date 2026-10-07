@@ -1283,6 +1283,27 @@
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-18/12b92cbf-0c70-4381-bee9-9446c071e305/"
     },
     {
+      "subjectKey": "problem:洛谷|P1177",
+      "date": "2026-09-19",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-09-19",
+        "recordId": "ad859422-2db3-4755-8dac-70a90796c51c"
+      },
+      "problem": {
+        "name": "【模板】排序",
+        "platform": "洛谷",
+        "problemNumber": "P1177",
+        "difficulty": "★ 1000"
+      },
+      "outcome": "hinted",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-09-19/ad859422-2db3-4755-8dac-70a90796c51c/"
+    },
+    {
       "subjectKey": "problem:AtCoder|ABC475_A",
       "date": "2026-09-20",
       "recordRef": {
