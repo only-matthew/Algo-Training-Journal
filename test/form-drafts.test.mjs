@@ -114,7 +114,8 @@ test("a saved attachment updates both the picker state and the legacy round-trip
   // 只更新其中一处，会让下一次纯文字保存带着过期哈希被 422 拒绝。
   assert.match(formSource, /block\.dataset\.serverAttachment = JSON\.stringify\(attachment\)/);
   assert.match(formSource, /enrichment\.statementAttachment = attachment/);
-  assert.match(formSource, /await attachmentStore\.clearDate\(memberId, date\)/);
+  // Snapshot cleanup is covered by attachment-store tests and browser reload
+  // tests; clearing the whole date would discard newer pending selections.
 });
 
 test("pending PDFs are restored from IndexedDB only for the date still being edited", () => {

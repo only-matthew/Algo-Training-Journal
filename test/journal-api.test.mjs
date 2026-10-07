@@ -64,6 +64,29 @@ test("session lookup has a bounded timeout", async (context) => {
   await assert.rejects(() => loadSession({ timeoutMs: 10 }), (error) => error?.name === "TimeoutError");
 });
 
+test("API reads and writes have deadlines, preserve caller cancellation, and never retry unknown writes", async (context) => {
+  let calls = 0;
+  const controller = new AbortController();
+  context.mock.method(globalThis, "fetch", async (_url, options) => {
+    calls++;
+    assert.ok(options.signal instanceof AbortSignal);
+    return new Promise((_resolve, reject) => {
+      if (options.signal.aborted) reject(options.signal.reason);
+      else options.signal.addEventListener("abort", () => reject(options.signal.reason), { once: true });
+    });
+  });
+  // Keep Node alive while testing AbortSignal.timeout's unreferenced timer.
+  const keepAlive = setInterval(() => {}, 100);
+  try {
+    await assert.rejects(apiRequest("/api/logs/date", { timeoutMs: 10 }), /请求超时/);
+    await assert.rejects(apiRequest("/api/my-list", { method: "PUT", body: "{}", timeoutMs: 10 }), /可能已完成写入/);
+    const aborted = apiRequest("/api/logs/date", { signal: controller.signal });
+    controller.abort(new Error("caller cancelled"));
+    await assert.rejects(aborted, /caller cancelled/);
+    assert.equal(calls, 3);
+  } finally { clearInterval(keepAlive); }
+});
+
 test("logRoots prefers the current date layout and retains the legacy fallback", () => {
   assert.deepEqual(logRoots("廖夏", "2026-07-31"), [
     "logs/廖夏/2026/07/31",

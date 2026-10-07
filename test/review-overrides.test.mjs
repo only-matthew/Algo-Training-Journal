@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { applyReviewChanges, rememberReviewChange } from "../lib/review-overrides.mjs";
+import { applyReviewChanges, rememberReviewChange, captureDateReviewChanges, synchronizeDateReviewChanges } from "../lib/review-overrides.mjs";
 import { todayUtc8 } from "../lib/constants.mjs";
 
 function mockStorage(context) {
@@ -19,6 +19,31 @@ function mockStorage(context) {
     else delete globalThis.sessionStorage;
   });
 }
+
+test("whole-date saves replace old overrides and do not overwrite newer quick actions", (context) => {
+  mockStorage(context);
+  const record = { member: "甲", date: "2026-10-06", problemId: "p1", reviewStatus: "archived" };
+  rememberReviewChange(record, { reviewStatus: "archived" });
+  const snapshot = captureDateReviewChanges(record.member, record.date);
+  const saved = { ...record, reviewStatus: "todo", reviewDue: todayUtc8() };
+  synchronizeDateReviewChanges([saved], [], snapshot);
+  assert.equal(applyReviewChanges(record).reviewStatus, "todo");
+  const nextSnapshot = captureDateReviewChanges(record.member, record.date);
+  rememberReviewChange(record, { reviewStatus: "archived" });
+  synchronizeDateReviewChanges([saved], [], nextSnapshot);
+  assert.equal(applyReviewChanges(saved).reviewStatus, "archived");
+});
+
+test("date deletion removes cached summaries from stale queues and records", (context) => {
+  mockStorage(context);
+  const record = { member: "甲", date: "2026-10-06", problemId: "p1", reviewStatus: "todo", reviewDue: todayUtc8() };
+  rememberReviewChange(record, record);
+  synchronizeDateReviewChanges([], [record], captureDateReviewChanges(record.member, record.date));
+  const stale = applyReviewChanges({ logs: [record], reviewQueue: [record], reviewQueueTotalDue: 1 });
+  assert.deepEqual(stale.logs, []);
+  assert.deepEqual(stale.reviewQueue, []);
+  assert.equal(stale.reviewQueueTotalDue, 0);
+});
 
 test("replanning an old record adds it to an otherwise empty overview queue", (context) => {
   mockStorage(context);

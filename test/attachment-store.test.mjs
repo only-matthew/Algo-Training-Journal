@@ -53,6 +53,24 @@ function request(result) {
 
 const pdf = () => new Blob([new Uint8Array([0x25, 0x50, 0x44, 0x46, 0x2d, 0x31, 0x2e, 0x37])], { type: ATTACHMENT_MIME });
 
+test("saved attachment cleanup preserves a replacement with identical bytes and newer images", async () => {
+  const store = createAttachmentStore({ indexedDB: memoryIndexedDB() });
+  const scope = { memberId: "only-matthew", date: "2026-10-06", problemId: "p1" };
+  const first = { blob: pdf(), fileName: "a.pdf", sha256: "a".repeat(64), version: "first" };
+  const second = { ...first, version: "second" };
+  const oldImages = [{ blob: new Blob(["old"]), fileName: "old.png", sha256: "b".repeat(64), mimeType: "image/png", version: "old" }];
+  const newImages = [{ ...oldImages[0], fileName: "new.png", version: "new" }];
+  await store.save({ ...scope, ...first });
+  await store.saveImages({ ...scope, images: oldImages });
+  await store.save({ ...scope, ...second });
+  await store.saveImages({ ...scope, images: newImages });
+  await store.clearSaved(scope.memberId, scope.date, { pdfs: new Map([["p1", { action: "replace", ...first }]]), images: new Map([["p1", oldImages]]) });
+  assert.equal((await store.loadDate(scope.memberId, scope.date)).items.p1.version, "second");
+  assert.equal((await store.loadImages(scope.memberId, scope.date)).items.p1[0].fileName, "new.png");
+  await store.clearSaved(scope.memberId, scope.date, { pdfs: new Map([["p1", { action: "replace", ...second }]]), images: new Map([["p1", newImages]]) });
+  assert.equal((await store.loadDate(scope.memberId, scope.date)).status, "missing");
+});
+
 test("attachmentRecordKey scopes records by member and date", () => {
   assert.notEqual(attachmentRecordKey("only-matthew", "2026-09-15"), attachmentRecordKey("wzzzzhhhhh", "2026-09-15"));
   assert.notEqual(attachmentRecordKey("only-matthew", "2026-09-15"), attachmentRecordKey("only-matthew", "2026-09-16"));

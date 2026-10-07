@@ -27,6 +27,9 @@
   --lv4: #216e39;
 }
 
+/* Account actions stay hidden even when button styles set display. */
+.account-popover [hidden] { display: none !important; }
+
 /* ── 独立训练日志提交页 ───────────────────────────────────── */
 .submission-route { background:#f6f8f4; }
 .submission-route .container { width:100%; max-width:none; padding:0 28px 48px; }

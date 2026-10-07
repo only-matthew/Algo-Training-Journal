@@ -89,9 +89,16 @@ function withForm() {
       summarizeBtn.disabled = true;
       summarizeBtn.textContent = "概括中...";
       setStatus("正在生成简短题意，请稍候。", "loading");
+      const requestedDescription = desc.value;
+      const requestedDate = document.getElementById("submit-date").value;
       try {
-        const res = await apiRequest("/api/summarize", { method: "POST", body: JSON.stringify({ description: desc.value.trim() }) });
+        const res = await apiRequest("/api/summarize", { method: "POST", body: JSON.stringify({ description: requestedDescription.trim() }) });
         if (!res.summary) throw new Error("模型没有返回有效内容，请重试");
+        if (!block.isConnected || document.getElementById("submit-date").value !== requestedDate) return;
+        if (desc.value !== requestedDescription) {
+          setStatus(`正文已修改，概括未自动覆盖。可复制以下概括：${res.summary}`, "preview");
+          return;
+        }
         desc.value = res.summary;
         setStatus("已生成概括，可继续修改。", "success");
         (await withForm()).markFormEdited();
@@ -189,5 +196,6 @@ function withForm() {
   // 3. 手动刷新（自动定时刷新与切回标签页补刷已移除，只保留按钮触发）
   document.getElementById("btn-refresh").addEventListener("click", async () => {
     await doRefresh();
+    if (currentRoute() === "analysis") await renderMyList();
   });
 })();

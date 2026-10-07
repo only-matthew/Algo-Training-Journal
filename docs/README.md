@@ -1,6 +1,6 @@
 # 文档入口
 
-更新：2026-10-07。现行文档以本目录下列出的文件为准（审计报告与两份审计签收统一放在 `Audit/` 子目录）；历史稿按轮次保存在 [archive](archive/)，其中包含 [2026-09-28 改写前归档](archive/2026-09-28-pre-rewrite/)。
+更新：2026-10-08。现行文档以本目录下列出的文件为准（保留的审计报告与审计签收放在 `Audit/` 子目录）；已完成轮次与历史稿保存在 [archive](archive/)，其中包含 [2026-09-28 改写前归档](archive/2026-09-28-pre-rewrite/)。
 
 | 文件 | 作用 |
 | --- | --- |
@@ -13,7 +13,7 @@
 | [RELEASE-v2.1.md](RELEASE-v2.1.md) | v2.1.0 发布前修复、验收证据、回退与三个月维护交接 |
 | [Audit/AUDIT-2026-10-02.md](Audit/AUDIT-2026-10-02.md) | 全栈审计报告（安全 / 质量 / 测试 / 文档一致性）与修复记录 |
 | [Audit/DATA-DISPLAY-AUDIT-2026-10-07.md](Audit/DATA-DISPLAY-AUDIT-2026-10-07.md) | 数据显示一致性审计与修复：缓存、异步路由、复习摘要、筛选和日期口径；6 项已发布 |
-| [Audit/SAVE-LIFECYCLE-AUDIT-2026-10-07.md](Audit/SAVE-LIFECYCLE-AUDIT-2026-10-07.md) | 保存流程和统计请求审计：日期绑定、附件快照、范围竞争及复习缓存；4 项已复现、待修复 |
+| [2026-10-08 审计修复归档](archive/2026-10-08-audit-signoff/README.md) | 保存流程和功能／代码／规格审计两份报告，10 项全部本地修复；保留原始证据和修复签收，未发布 |
 | [Audit/PRODUCT-AUDIT.md](Audit/PRODUCT-AUDIT.md) | 产品审计逐项签收与待办 |
 | [Audit/PROBLEM-AUDIT.md](Audit/PROBLEM-AUDIT.md) | 技术问题逐项签收与发布状态 |
 | [HANDOFF.md](HANDOFF.md) | 按日期延续的交接记录；旧段落是历史快照 |

@@ -1,5 +1,9 @@
 # 当前实现与验收口径
 
+**2026-10-08 审计修复（本地完成，未发布）**：功能、代码与规格审计的 10 项全部处理。保存/删除结果绑定表单会话，附件成功清理按选择版本及提交快照条件执行，保存期间新输入继续保留；训练档案异步响应按序号与路由保护。整日保存与删除同步复习覆盖缓存，较新快捷操作不被旧写入回执覆盖。重做参数消费一次，清单冲突可用站内刷新恢复，AI 概括不覆盖较新正文；浏览器 API 增加默认截止时间和写入回执未知提示。规格对齐 v8 超纲自评与复习安排独立语义，冻结声明排除现行复习 PATCH。234 文件语法、lint、索引、662 单测、构建与 76 项浏览器回归通过。修复映射见 [审计签收](archive/2026-10-08-audit-signoff/FUNCTION-CODE-SPEC-AUDIT-2026-10-07.md)。
+
+**2026-10-08 账号菜单互斥修复（本地完成，未发布）**：普通页面和独立题目页的静态模板原先同时显示登录与退出入口，依赖异步会话检查完成后才隐藏一个；脚本或会话加载迟滞时可出现双按钮。两处模板默认隐藏退出按钮，auth.mjs 用 hidden 统一切换，账号菜单的隐藏样式避免被按钮布局覆盖。新增 6 项浏览器回归覆盖两类页面的无脚本、迟到会话、登录后退出与会话失败；全部通过。构建、语法、lint 与 20 项相关单测通过。
+
 **2026-10-05 favicon 白角修复**：PNG／ICO 生成时保留圆角外透明通道，避免浏览器标签页出现白色四角；Apple 图标改为完整绿色画布，由系统裁切。SVG 造型与分享图未改。
 
 **2026-10-05 图标与分享图补齐**：增加山形 SVG／多尺寸 ICO／180 px Apple 图标，以及 1200×630 水墨分享图。首页、成员／目录和独立题目页具有 OG 图片与 Twitter 大图信息；按页面保留原有标题／描述／canonical。资源使用原站公开地址和内容哈希，不依赖 CDN。生成器校验元数据唯一性和图片尺寸，重生成工具见 scripts/generate-brand-assets.mjs。
@@ -19,13 +23,13 @@
 ## 现在是什么
 
 - 站点是从 `logs/` 和 `curriculum/` 构建的静态 GitHub Pages 页面；`site/` 是可重建产物。Cloudflare Worker 处理 GitHub OAuth、登录后日志写入、题目导入和题面抓取。
-- 日志写入格式的当前版本由 `lib/log-schema.mjs` 的 `LOG_SCHEMA_VERSION` 定义，当前工作区为 **8**。v7 增加 `reviewStatus=deferred`（超纲待做），只允许搭配“未完成”且不能设置复习日期；v8 把“超纲待做”移到 `masteryStatus=beyond_scope`（掌握自评的一个取值），不再占用复习状态，旧记录的 `reviewStatus=deferred` 在归一化时映射为该自评值，复习安排随之退出近期队列（除非原本就带复习日期）。Worker 的匿名只读 `GET /api/capabilities` 公布可接受范围和构建提交号，`GET /api/session` 可做发布后只读冒烟。Pages 部署**只有本次推送改动了 Worker 输入**（六类：`workers/`、`lib/`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`）时才核对 schema、匿名会话与同提交版本，最多等待 15 分钟；其他推送完全跳过 Worker 接口检查与等待。
+- 日志写入格式的当前版本由 `lib/log-schema.mjs` 的 `LOG_SCHEMA_VERSION` 定义，当前工作区为 **8**。v7 增加 `reviewStatus=deferred`（超纲待做），当时文档的“仅未完成且不能有复习日期”约束从未在代码实施；v8 把“超纲待做”移到 `masteryStatus=beyond_scope`（掌握自评的一个取值），不再占用复习状态，旧记录的 `reviewStatus=deferred` 在归一化时映射为该自评值，复习安排随之退出近期队列（除非原本就带复习日期）。Worker 的匿名只读 `GET /api/capabilities` 公布可接受范围和构建提交号，`GET /api/session` 可做发布后只读冒烟。Pages 部署**只有本次推送改动了 Worker 输入**（六类：`workers/`、`lib/`、`config/members.json`、`scripts/stamp-worker-commit.mjs`、`package.json`、`package-lock.json`）时才核对 schema、匿名会话与同提交版本，最多等待 15 分钟；其他推送完全跳过 Worker 接口检查与等待。
 - 当前用户入口为首页、训练档案、复习、知识地图、标签、独立提交页 `/submit/`。`/training/` 已下线。日志按 `logs/<姓名>/YYYY/MM/DD/` 保存；题目详情与导出由构建数据生成。
 - `npm run verify` 依次运行语法检查、ESLint、训练索引校验、单测和站点构建。按用户明确选择，日常发布和 PR Action 不安装 Chromium、不执行浏览器回归；浏览器测试仅保留为本地按需验收。主分支发布只构建一次。复核报告关于恢复浏览器 CI 的建议未采纳，不能把这项取舍描述为已恢复门禁。
 
 ## 冻结与维护范围
 
-- `training/` v2 数据、`lib/training-*.mjs` 与 `/api/v2/me/*` 后端没有生产前端消费者；不应把它们描述成已上线训练工作台。
+- `training/` v2 数据、`lib/training-*.mjs` 和未接入的旧训练工作台接口没有生产前端消费者；不应把它们描述成已上线训练工作台。现行日志复习 `PATCH /api/v2/me/logs/dates/:date/records/:id` 有生产前端调用，继续维护，不在冻结范围。
 - 题面抓取支持现有平台，新增来源前先检查真实使用和维护成本。`workers/services/` 存放日志读写、版本校验、平台导入和 AI 概括；`workers/routes/` 承接 v2 HTTP 请求；`workers/storage/` 封装 GitHub 访问。`workers/oauth.mjs` 是路由、鉴权与协议适配入口。
 - Cloudflare Workers Builds 已连接本仓库 `main` 分支并自动部署现有 `algo-oauth`；GitHub Pages 的发布门禁区分两种情况：**Worker 输入未变**（大多数推送）完全跳过 Worker 检查与等待；**Worker 输入已变**则等待同一提交的 Worker 上线。2026-09-28 的 `66f25b4` 改动 Worker 并成功上线；其后的训练日志提交和 2026-09-29 的 CI 精简提交 `70042ea` 均未重建 Worker，Pages 发布成功。2026-10-02 的 `9b2fa2c` 改动了 `lib/`（schema 升到 v8），按上述规则等待并成功上线，线上 `buildCommit` 已核验为 `9b2fa2c`（`/api/capabilities` 公布 `logSchema.max = 8`）；之后的日志或文档推送不改 Worker 输入，线上 `buildCommit` 会保持该值。今后改动日志格式时应先确保 Worker 向后兼容；不兼容会被门禁挡住。门禁仅验证日志 schema 范围、会话读接口，以及（仅在 Worker 变更时）提交号，其他写入协议变化仍需单独验证。
 

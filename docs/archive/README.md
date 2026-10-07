@@ -9,8 +9,9 @@
 | [2026-09-28-pre-rewrite/](2026-09-28-pre-rewrite/) | 改写前的全部文档与 `assets/project-history/` 图片；现行文档已重写，本快照保留原文以便对照 |
 | [2026-09-28-signoff/](2026-09-28-signoff/) | 被 2026-09-28 新一轮技术审计取代的 `PROBLEM-AUDIT.md`（改写后的 22 项签收状态表）原文 |
 | [2026-09-29-pre-refresh/](2026-09-29-pre-refresh/) | 被 2026-09-29 复核版取代的技术审计原文，含安全、数据正确性、测试诚实性与复习快捷操作追加记录 |
+| [2026-10-08-audit-signoff/](2026-10-08-audit-signoff/README.md) | 保存生命周期、功能／代码／规格审计的原始证据与 10 项修复签收；修复已提交，未推送或部署 |
 
-三处归档里都有名为 `PROBLEM-AUDIT.md` 的文件，含义不同：`2026-09-28-pre-rewrite/` 是改写前那 487 行的完整问题清单，`2026-09-28-signoff/` 是随后产生的 22 项签收状态表，`2026-09-29-pre-refresh/` 是本轮复核前的技术审计。当前审计见 [../PROBLEM-AUDIT.md](../PROBLEM-AUDIT.md)。
+三处归档里都有名为 `PROBLEM-AUDIT.md` 的文件，含义不同：`2026-09-28-pre-rewrite/` 是改写前那 487 行的完整问题清单，`2026-09-28-signoff/` 是随后产生的 22 项签收状态表，`2026-09-29-pre-refresh/` 是本轮复核前的技术审计。保留的技术签收见 [PROBLEM-AUDIT.md](../Audit/PROBLEM-AUDIT.md)。
 
 ## 链接口径
 
