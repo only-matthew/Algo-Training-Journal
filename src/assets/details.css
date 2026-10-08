@@ -203,8 +203,11 @@ html { container-type: inline-size; scrollbar-gutter: stable; }
 .related-current .related-attempt { border-bottom: 0; padding-top: 4px; }
 .related-attempt-heading .related-meta { display: inline; font-size: 13px; }
 .related-attempt-heading .updated-at { margin-left: auto; }
-.related-record-link { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; font-size: 12px; text-decoration: none; }
-.related-record-link .ui-icon { width: 13px; height: 13px; }
+.related-attempt.is-linked { position: relative; }
+.related-attempt.is-linked:hover { background: var(--hover); }
+.related-record-link { color: var(--green); text-decoration: none; }
+.related-record-link::after { content: ""; position: absolute; inset: 0; }
+.related-attempt.is-linked .related-reflection { position: relative; z-index: 1; }
 .related-outcome { color: var(--ink); }
 .related-state { display: inline-block; margin-left: 10px; color: var(--green); font-size: 12px; }
 .related-blocker { line-height: 1.8; }
