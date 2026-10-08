@@ -1,6 +1,6 @@
 {
   "schemaVersion": 8,
-  "updatedAt": "2026-10-04T23:08:12.439+08:00",
+  "updatedAt": "2026-10-08T22:27:23.324+08:00",
   "problems": [
     {
       "id": "958df8d4-8e4a-4679-ad2b-15cee2fbdea6",
@@ -20,8 +20,7 @@
       "masteryStatus": "learning",
       "masteryStatusSource": "explicit_self_assessment",
       "isMistake": true,
-      "reviewStatus": "todo",
-      "reviewDue": "2026-10-07",
+      "reviewStatus": "archived",
       "blocker": "三天后重新打一遍，看看是否会出现状态转移写错的问题，一定要考虑清楚每个变量及状态转移操作的意义",
       "fileIndex": 0
     }
