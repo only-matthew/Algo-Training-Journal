@@ -199,6 +199,34 @@ html { container-type: inline-size; scrollbar-gutter: stable; }
 .attempt-thoughts > :first-child { margin-top: 4px; }
 .attempt-thoughts > :last-child { margin-bottom: 0; }
 .attempt-thoughts li { padding: 0; border: 0; }
+.related-section .related-hint { margin: -6px 0 14px; color: var(--muted); font-size: 13px; }
+.related-current .related-attempt { border-bottom: 0; padding-top: 4px; }
+.related-attempt-heading .related-meta { display: inline; font-size: 13px; }
+.related-attempt-heading .updated-at { margin-left: auto; }
+.related-record-link { display: inline-flex; align-items: center; gap: 5px; margin-left: auto; font-size: 12px; text-decoration: none; }
+.related-record-link .ui-icon { width: 13px; height: 13px; }
+.related-outcome { color: var(--ink); }
+.related-state { display: inline-block; margin-left: 10px; color: var(--green); font-size: 12px; }
+.related-blocker { line-height: 1.8; }
+.related-history, .related-team { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+.related-history h3, .related-team h3 { margin: 0 0 6px; font-size: 15px; }
+.related-team-count { margin-left: 12px; color: var(--muted); font-size: 12px; font-weight: 400; }
+.related-reflection summary { display: flex; align-items: center; gap: 6px; width: fit-content; padding: 4px 0; color: var(--green); font-size: 13px; cursor: pointer; list-style: none; }
+.related-reflection summary::-webkit-details-marker { display: none; }
+.related-reflection summary .ui-icon { width: 14px; height: 14px; }
+.related-reflection[open] summary .ui-icon { transform: rotate(180deg); }
+.related-reflection .related-takeaway { margin-top: 8px; line-height: 1.8; }
+.problem-redo-link { margin-top: 18px; }
+.problem-redo-hint { margin: 8px 0 0; }
+#problem-team { scroll-margin-top: 88px; }
+.record-outcome { margin: 0; color: var(--muted); font-size: 13px; }
+.record-outcome.is-independent { color: var(--green); }
+.record-head { flex-wrap: wrap; gap: 8px 16px; }
+.record-head .vitality-badge { margin-left: auto; font-size: 12px; background: transparent; color: var(--muted); padding: 0; }
+@media (max-width: 767px) {
+  .related-attempt-heading .updated-at { width: 100%; margin-left: 0; }
+  .record-head .vitality-badge { margin-left: 0; }
+}
 @media (max-width: 1100px) {
   .detail-intro { grid-template-columns: 80px minmax(0,500px); gap: 18px; }
   .detail-symbol { width: 80px; height: 80px; }

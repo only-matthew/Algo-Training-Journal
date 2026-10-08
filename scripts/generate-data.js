@@ -168,7 +168,7 @@ function assetVersion(name) {
 
 // 附件与图片的本地路径是构建期的中间量，不能出现在站点数据里（Map 还会序列化成 {}）。
 function logSummary({ description, takeaway, code, statementPath, statementImagePaths, ...summary }) {
-  return { ...summary, summary: truncate(description || takeaway || "", 96) };
+  return { ...summary, summary: truncate(takeaway || description || "", 96) };
 }
 
 // 近 N 天的起点（含今天）：以构建时钟的 UTC+8 日历日为基准，纯字符串减法。
@@ -1301,6 +1301,14 @@ async function main() {
     if (count) {
       logs[i].teamSameProblemCount = count;
       summaryLogs[i].teamSameProblemCount = count;
+      const memberCount = new Set((problemIndex.get(key) || []).filter((item) => item.member !== logs[i].member).map((item) => item.member)).size;
+      logs[i].teamSameProblemMemberCount = memberCount;
+      summaryLogs[i].teamSameProblemMemberCount = memberCount;
+    }
+    const hasEarlierAttempt = key ? (problemIndex.get(key) || []).some((item) => item.member === logs[i].member && item.date < logs[i].date) : false;
+    if (hasEarlierAttempt) {
+      logs[i].hasEarlierAttempt = true;
+      summaryLogs[i].hasEarlierAttempt = true;
     }
   }
   const roadmapResult = await generateRoadmapData(logs);

@@ -18,7 +18,7 @@ test("problem detail preserves thoughts and code safely, including missing field
   assert.match(empty("#problem-thoughts").text(),/尚未填写个人思考/);
 });
 
-test("problem detail offers a new redo attempt and orders matching attempts by date", () => {
+test("problem detail keeps the current record first and other personal attempts newest first", () => {
   const html = problemDetailHtml({ member: "甲", date: "2026-09-08", problem: "题目", platform: "Codeforces", problemNumber: "123A", difficulty: "★ 800", tags: ["DP"], outcome: "hinted", blocker: "边界条件处理错误", takeaway: "补上空数组判断", related: [
     { member: "甲", date: "2026-09-10", problemId: "p3", problem: "题目", outcome: "unfinished", blocker: "状态转移仍不清楚", takeaway: "未填写" },
     { member: "甲", date: "2026-09-09", problemId: "p2", problem: "题目", outcome: "independent", blocker: "<script>bad</script>", takeaway: "找到不变量" },
@@ -26,13 +26,33 @@ test("problem detail offers a new redo attempt and orders matching attempts by d
   const $ = load(html);
   const query = new URLSearchParams(new URL($(".problem-redo-link").attr("href"), "https://train.xialiao.org").search);
   assert.deepEqual(JSON.parse(query.get("redo")), { name: "题目", platform: "Codeforces", problemNumber: "123A", difficulty: "★ 800", difficultyRating: 0, tags: ["DP"] });
-  assert.deepEqual($("#problem-related .related-list li").map((_, node) => $(node).find(".related-meta").text().split(" · ")[1]).get(), ["2026-09-08", "2026-09-09", "2026-09-10"]);
+  assert.deepEqual($("#problem-related .related-list > li").map((_, node) => $(node).find(".related-meta").text().split(" · ")[1]).get(), ["2026-09-08", "2026-09-10", "2026-09-09"]);
+  assert.match($(".related-history h3").text(), /其他同题记录/);
   assert.match($("#problem-related").text(), /本次记录/);
   assert.match($("#problem-related").text(), /提示后完成/);
   assert.match($("#problem-related").text(), /边界条件处理错误/);
   assert.match($("#problem-related").text(), /补上空数组判断/);
   assert.doesNotMatch($("#problem-related").html(), /<script>/);
   assert.doesNotMatch($("#problem-related").text(), /未填写/);
+});
+
+test("personal redo history excludes teammates and teammate count counts people", () => {
+  const current = { member: "甲", date: "2026-10-08", problemId: "current", problem: "单词接龙", outcome: "independent", takeaway: "本次复盘" };
+  const $ = load(problemDetailHtml({ ...current, related: [
+    { ...current },
+    { ...current, date: "2026-10-04", problemId: "old", outcome: "editorial", takeaway: "历史复盘" },
+    { member: "乙", date: "2026-08-01", problemId: "team1", takeaway: "队友第一次" },
+    { member: "乙", date: "2026-08-02", problemId: "team2", takeaway: "队友第二次" },
+  ] }));
+  assert.equal($(".related-current > li").length, 1);
+  assert.match($(".related-hint").text(), /甲的同题记录 · 2 条/);
+  assert.equal($(".related-history .related-attempt").length, 1);
+  assert.doesNotMatch($(".related-history").text(), /队友/);
+  assert.match($(".related-history h3").text(), /此前的尝试/);
+  assert.match($(".related-team h3").text(), /队友同题 · 1 人/);
+  assert.equal($(".related-team .related-attempt").length, 2);
+  assert.equal($(".related-reflection summary").length, 1);
+  assert.equal($(".related-attempt").text().includes("单词接龙"), false);
 });
 
 test("problem detail labels a deferred unfinished attempt as 超纲待做", () => {
