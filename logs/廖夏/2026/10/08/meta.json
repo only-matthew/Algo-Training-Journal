@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-08T22:25:09.864+08:00",
+  "problems": [
+    {
+      "id": "bb1cc803-4643-44a1-889f-73f0bb6635c3",
+      "name": "[NOIP 2000 提高组] 单词接龙（疑似错题）",
+      "platform": "洛谷",
+      "problemNumber": "P1019",
+      "difficulty": "★ 1300",
+      "difficultyRating": 1300,
+      "tags": [
+        "字符串",
+        "DP",
+        "搜索",
+        "递推",
+        "状压DP"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "mastered",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
