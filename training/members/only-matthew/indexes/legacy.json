@@ -1754,6 +1754,28 @@
       "isMistake": false,
       "reviewStatus": "none",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-08/bb1cc803-4643-44a1-889f-73f0bb6635c3/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1032",
+      "date": "2026-10-09",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-10-09",
+        "recordId": "8dc13f98-4e38-4cf6-be88-673cb9c07d64"
+      },
+      "problem": {
+        "name": "[NOIP 2002 提高组] 字串变换（疑似错题）",
+        "platform": "洛谷",
+        "problemNumber": "P1032",
+        "difficulty": "★ 1500"
+      },
+      "outcome": "unfinished",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "todo",
+      "reviewDue": "2026-10-12",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-09/8dc13f98-4e38-4cf6-be88-673cb9c07d64/"
     }
   ]
 }
