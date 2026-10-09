@@ -1772,7 +1772,7 @@
       "outcome": "unfinished",
       "masteryStatus": "learning",
       "masteryStatusSource": "explicit_self_assessment",
-      "isMistake": false,
+      "isMistake": true,
       "reviewStatus": "todo",
       "reviewDue": "2026-10-12",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-09/8dc13f98-4e38-4cf6-be88-673cb9c07d64/"

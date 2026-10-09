@@ -1,6 +1,6 @@
 {
   "schemaVersion": 8,
-  "updatedAt": "2026-10-09T17:14:25.603+08:00",
+  "updatedAt": "2026-10-09T17:20:17.174+08:00",
   "problems": [
     {
       "id": "8dc13f98-4e38-4cf6-be88-673cb9c07d64",
@@ -19,10 +19,10 @@
       "outcome": "unfinished",
       "masteryStatus": "learning",
       "masteryStatusSource": "explicit_self_assessment",
-      "isMistake": false,
+      "isMistake": true,
       "reviewStatus": "todo",
       "reviewDue": "2026-10-12",
-      "blocker": "拼尽全力写了个DFS，一开始TLE了，尝试了cnt剪枝和best剪枝，都爆炸了，遇到了一个极其阴间的样例\na aaaaa\na a112233445566778899\n778899 a\n112233 a\n445 a\n566 a\n55 a\n\nexpected: 5",
+      "blocker": "拼尽全力写了个DFS，一开始TLE了，尝试了cnt剪枝和best剪枝，都爆炸了，遇到了一个极其阴间的样例\n```\na aaaaa\na a112233445566778899\n778899 a\n112233 a\n445 a\n566 a\n55 a\n\nexpected: 5\n```\n失误有： CanReplace 未考虑到 有可能会出现 now: a  wdsa: ad 的情况，ans 未初始化， 下标±1未考虑清楚",
       "fileIndex": 0
     }
   ]
