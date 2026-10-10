@@ -17,8 +17,6 @@ concurrency:
 jobs:
   verify-and-build:
     runs-on: ubuntu-latest
-    env:
-      CDN_ORIGIN: https://cdn.mirstar.net
     timeout-minutes: 35
     steps:
       - name: Checkout

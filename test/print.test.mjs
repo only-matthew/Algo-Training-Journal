@@ -76,6 +76,15 @@ test("multiline display math still loads when code highlighting fails", async (c
   assert.equal(events.includes('print'), false, 'wait for math instead of printing raw delimiters');
 });
 
+for (const formula of [String.raw`\(x^2\)`, String.raw`\[x^2\]`]) {
+  test(`PDF loads math for ${formula} without dollar delimiters`, async (context) => {
+    const { assets } = setup(context);
+    await printMarkdownDocument(render => render(formula));
+    assets.find(asset => asset.tag === 'script').onerror();
+    assert.ok(assets.some(asset => asset.src?.endsWith('/katex/katex.min.js')));
+  });
+}
+
 test("cancelled or failed PDF generation closes its reserved popup", async (context) => {
   const { popup, events, alerts } = setup(context);
   await printMarkdownDocument(() => "");

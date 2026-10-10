@@ -2,6 +2,26 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { escapeHtml, renderMarkdown } from "../lib/render-safety.mjs";
 
+test("backslash delimiters preserve formulas before Markdown handles escapes", () => {
+  assert.equal(renderMarkdown(String.raw`行内 \(a_b < c\) 公式`), String.raw`<p>行内 \(a_b &lt; c\) 公式</p>`);
+  assert.equal(renderMarkdown(String.raw`\[
+\begin{aligned}
+a_b &= c \\
+d &= e
+\end{aligned}
+\]`), String.raw`\[\begin{aligned}
+a_b &amp;= c \\
+d &amp;= e
+\end{aligned}\]`);
+  assert.equal(renderMarkdown(String.raw`前面 \[a_b\] 后面`), String.raw`<p>前面 \[a_b\] 后面</p>`);
+  assert.doesNotMatch(renderMarkdown(String.raw`\(<img src=x onerror=alert(1)>\)`), /<img/);
+});
+
+test("math delimiters inside code remain literal", () => {
+  assert.equal(renderMarkdown('`' + String.raw`\(a_b\)` + '`'), String.raw`<p><code>\(a_b\)</code></p>`);
+  assert.match(renderMarkdown('```text\n' + String.raw`\[a_b\]` + '\n```'), /<code[^>]*>\\\[a_b\\\]/);
+});
+
 test("协议相对链接与图片被丢弃，显式 HTTPS 外链与站内路径仍可用", () => {
   assert.equal(renderMarkdown('[x](//evil.example/path "title")'), "<p>x</p>");
   assert.equal(renderMarkdown('![x](//evil.example/path "title")'), "<p>x</p>");

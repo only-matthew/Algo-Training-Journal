@@ -52,6 +52,6 @@ try {
   await expect(popup.locator('code .token.keyword').first()).toBeVisible();
   await popup.evaluate(() => document.fonts.ready);
   assert.deepEqual(errors, []);
-  assert.ok(assets.some(url => url.includes('/vendor/katex/fonts/')));
+  assert.ok(await page.evaluate(() => performance.getEntriesByType('resource').some(entry => entry.name.includes('/vendor/katex/fonts/') && new URL(entry.name).origin === location.origin)));
   console.log(`CDN build passed: homepage, lazy catalog, standalone math, PDF and fonts; ${assets.length} CDN requests.`);
 } finally { await browser.close(); }
