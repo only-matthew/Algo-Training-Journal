@@ -142,7 +142,7 @@ test("generator emits crawlable member and problem pages", () => {
   assert.match(memberPage, /id="member-vitality-chart"/);
   assert.match(memberPage, /各平台活力贡献/);
   assert.match(memberPage, /活力曲线指标/);
-  assert.equal(journal.vitalityVersion, 'v2');
+  assert.equal(journal.vitalityVersion, 'v2.1');
   assert.deepEqual(journal.vitality, overview.vitality, '直达成员页与首页跳转必须使用同一活力快照');
   assert.equal(journal.totalVitality, overview.totalVitality);
   assert.equal(journal.vitalityAllDaily.at(-1).cumulative, journal.totalVitality);

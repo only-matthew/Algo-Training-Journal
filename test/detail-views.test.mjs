@@ -84,6 +84,10 @@ test("problem detail shows the same per-record vitality and explains zero scores
   const duplicate = load(problemDetailHtml({ ...base, vitality: 0, vitalityStatus: "duplicate" }));
   assert.match(duplicate(".problem-vitality").text(), /0\.00/);
   assert.match(duplicate(".problem-vitality").text(), /同题已计/);
+  assert.match(duplicate(".problem-vitality").text(), /不代表没有学习/);
+  const reflection = load(problemDetailHtml({ ...base, vitality: 0.08, vitalityStatus: "reflection_gain" }));
+  assert.match(reflection(".problem-vitality").text(), /0\.08/);
+  assert.match(reflection(".problem-vitality").text(), /额外复盘活力/);
   const unrated = load(problemDetailHtml({ ...base, vitality: 0, vitalityStatus: "missing_rating" }));
   assert.match(unrated(".problem-vitality").text(), /补充难度后才能估算/);
 });

@@ -55,7 +55,7 @@ test('unfinished work does not raise ability; completion adds only the remaining
   assert.equal(computeVitalityTimeline([first, fresh])[1].theta, computeVitalityTimeline([fresh])[0].theta);
 });
 
-test('missing rating does not swallow a later rated record, and reviews cannot mint credit', () => {
+test('missing rating does not swallow a later rated record, and reviews without new reflections add no credit', () => {
   const timeline = computeVitalityTimeline([
     record({ difficultyRating: 0 }),
     record({ date: '2026-09-02', problemId: 'b' }),
@@ -64,6 +64,59 @@ test('missing rating does not swallow a later rated record, and reviews cannot m
   assert.equal(timeline[0].vitalityStatus, 'missing_rating');
   assert.ok(timeline[1].vitality > 0);
   assert.equal(timeline[2].vitality, 0);
+});
+
+test('same-outcome redo with a different reflection contributes vitality and next-day ability', () => {
+  const first = record({ outcome: 'hinted', takeaway: '理解了 DFS 的访问标记。' });
+  const redo = record({ date: '2026-09-02', problemId: 'b', outcome: 'hinted', takeaway: '证明了可达性的传递性，区分连通搜索与路径枚举。' });
+  const probe = record({ date: '2026-09-03', problemId: 'c', problemNumber: 'P1001' });
+  const timeline = computeVitalityTimeline([first, redo, probe]);
+  assert.equal(timeline[1].vitalityStatus, 'reflection_gain');
+  assert.ok(Math.abs(timeline[1].vitality - timeline[0].vitality * 0.25) < 1e-9);
+  const withoutInsight = computeVitalityTimeline([first, { ...redo, takeaway: first.takeaway }, probe]);
+  assert.ok(timeline[2].theta > withoutInsight[2].theta);
+  const scope = buildVitality([first, redo]).byMember.甲;
+  assert.equal(scope.problems, 1);
+  assert.equal(scope.byPlatform[0].counted, 2);
+  assert.equal(scope.daily.at(-1).cumulative, scope.total);
+  assert.equal(scope.byPlatform[0].value, scope.total);
+});
+
+test('repeated or placeholder reflections add no bonus, and distinct reflections have bounded credit', () => {
+  const first = record({ outcome: 'independent', takeaway: 'DFS 访问标记' });
+  const repeated = record({ date: '2026-09-02', problemId: 'b', outcome: 'independent', takeaway: 'ＤＦＳ\n访问标记' });
+  const placeholder = record({ date: '2026-09-03', problemId: 'c', outcome: 'independent', takeaway: '未填写' });
+  const redos = Array.from({ length: 20 }, (_, index) => record({ date: '2026-09-04', problemId: `redo-${String(index).padStart(2, '0')}`, outcome: 'independent', takeaway: `新的心得 ${index}` }));
+  const timeline = computeVitalityTimeline([first, repeated, placeholder, ...redos]);
+  assert.equal(timeline[1].vitality, 0);
+  assert.equal(timeline[2].vitality, 0);
+  assert.ok(Math.abs(timeline[3].vitality - timeline[0].vitality * 0.25) < 1e-9);
+  assert.ok(Math.abs(timeline[4].vitality - timeline[3].vitality * 0.5) < 1e-9);
+  assert.ok(timeline.slice(3).reduce((sum, entry) => sum + entry.vitality, 0) < timeline[0].vitality * 0.5);
+  assert.deepEqual(computeVitalityTimeline([first, repeated, placeholder, ...redos].reverse()), timeline);
+});
+
+test('explicit review and practice can contribute reflection evidence without claiming completion', () => {
+  for (const kind of [{ entryKind: 'review' }, { entryKind: 'practice' }, { mode: 'review' }]) {
+    const first = record({ outcome: 'hinted', takeaway: '最初的思路' });
+    const redo = record({ ...kind, date: '2026-09-02', problemId: 'b', outcome: 'unfinished', takeaway: '还没写完，但推导出了正确的不变量' });
+    const timeline = computeVitalityTimeline([first, redo]);
+    assert.equal(timeline[1].vitalityStatus, 'reflection_gain');
+    assert.equal(timeline[1].outcome, 'unfinished');
+    assert.ok(timeline[1].vitality > 0);
+    assert.equal(computeVitalityTimeline([{ ...redo, takeaway: '' }])[0].vitality, 0);
+  }
+});
+
+test('completion delta and new reflection coexist; missing difficulty does not consume insight credit', () => {
+  const first = record({ outcome: 'hinted', takeaway: '旧思路' });
+  const redo = record({ date: '2026-09-02', problemId: 'b', outcome: 'independent', takeaway: '新证明' });
+  const withInsight = computeVitalityTimeline([first, redo])[1];
+  const deltaOnly = computeVitalityTimeline([first, { ...redo, takeaway: '' }])[1];
+  assert.ok(withInsight.vitality > deltaOnly.vitality);
+  const missing = { ...redo, difficultyRating: 0 };
+  const later = { ...redo, date: '2026-09-03', problemId: 'c' };
+  assert.equal(computeVitalityTimeline([first, missing, later])[2].vitality, withInsight.vitality);
 });
 
 test('input order, duplicate tags and future additions do not rewrite historical scoring', () => {

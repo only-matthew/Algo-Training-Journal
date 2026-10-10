@@ -225,7 +225,7 @@ node scripts/backfill-rating.mjs --write    # 应用
 
 原难度存入 `difficultyLegacy`、来源存入 `difficultyRatingSource`，便于复核与回滚。
 
-### 活力指数（v2）
+### 活力指数（v2.1）
 
 累计题数保留原口径，活力作为独立估算指标。Codeforces、洛谷、AtCoder、校内及其他平台只要有统一的正数 Rating，就进入同一计分路径；已有平台映射属于站内估计，不代表不同平台官方 Rating 天然等价。
 
@@ -233,11 +233,11 @@ node scripts/backfill-rating.mjs --write    # 应用
 - 随知识点证据增多，逐步采用难度匹配；多标签取平均能力，日内按日初证据统一计算。
 - 完成质量系数：独立 1、提示 0.7、题解 0.5、未知 0.6、未完成 0.15。新日志可保存真实结果，旧记录缺失时保持 unknown，不从“已掌握”推断独立完成。
 - 同一成员同题冻结首次计分基准，完成质量提高时只补差额。无可靠题号按记录 ID 计，不按题名合并。
-- 未完成不增加能力证据；重复/复习不重复计分。累计曲线按事件记录时点增加，不把旧部分分再加一遍。
+- 未完成本身不增加能力证据；重做或复习中与此前不同的非空心得另计递减的复盘活力与能力证据。文本差异仅作保守估算，未计入不代表没有学习。累计曲线不重复叠加基础额度。
 
 首页、个人统计、个人活力折线图、热力图和平台计入明细使用同一构建结果。个人页可切换每日/累计，并核对各平台的有难度记录、计分记录与活力贡献。公式是可调整的工程指标，不能当作实测能力分或排名依据。
 
-实现：[算法](lib/vitality.mjs)、[统一聚合](lib/vitality-summary.mjs)、[个人展示](lib/member-vitality.mjs)。参数与历史数据核对见[归档的 v2 说明](docs/archive/2026-09-28-pre-rewrite/VITALITY-V2.md)；当前优先级见 [产品文档](docs/PRODUCT.md)。
+实现：[算法](lib/vitality.mjs)、[统一聚合](lib/vitality-summary.mjs)、[个人展示](lib/member-vitality.mjs)。重做计分规则见 [v2.1 说明](docs/VITALITY-V2.1.md)，基础参数见[归档的 v2 说明](docs/archive/2026-09-28-pre-rewrite/VITALITY-V2.md)；当前优先级见 [产品文档](docs/PRODUCT.md)。
 
 ### 题号完整性与同题判定
 
