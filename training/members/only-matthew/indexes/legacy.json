@@ -1776,6 +1776,27 @@
       "reviewStatus": "todo",
       "reviewDue": "2026-10-12",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-09/8dc13f98-4e38-4cf6-be88-673cb9c07d64/"
+    },
+    {
+      "subjectKey": "problem:洛谷|P1162",
+      "date": "2026-10-10",
+      "recordRef": {
+        "memberId": "only-matthew",
+        "date": "2026-10-10",
+        "recordId": "3e90c3fd-a113-41c6-864d-2c43660158f9"
+      },
+      "problem": {
+        "name": "填涂颜色",
+        "platform": "洛谷",
+        "problemNumber": "P1162",
+        "difficulty": "★ 1000"
+      },
+      "outcome": "independent",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-10/3e90c3fd-a113-41c6-864d-2c43660158f9/"
     }
   ]
 }

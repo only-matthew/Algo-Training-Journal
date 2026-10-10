@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 8,
+  "updatedAt": "2026-10-10T20:42:03.238+08:00",
+  "problems": [
+    {
+      "id": "3e90c3fd-a113-41c6-864d-2c43660158f9",
+      "name": "填涂颜色",
+      "platform": "洛谷",
+      "problemNumber": "P1162",
+      "difficulty": "★ 1000",
+      "difficultyRating": 1000,
+      "tags": [
+        "搜索",
+        "BFS",
+        "DFS",
+        "连通块",
+        "队列"
+      ],
+      "outcome": "independent",
+      "masteryStatus": "learning",
+      "masteryStatusSource": "explicit_self_assessment",
+      "isMistake": false,
+      "reviewStatus": "none",
+      "fileIndex": 0
+    }
+  ]
+}
