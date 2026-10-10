@@ -1791,7 +1791,7 @@
         "problemNumber": "P1162",
         "difficulty": "★ 1000"
       },
-      "outcome": "independent",
+      "outcome": "hinted",
       "masteryStatus": "learning",
       "masteryStatusSource": "explicit_self_assessment",
       "isMistake": false,

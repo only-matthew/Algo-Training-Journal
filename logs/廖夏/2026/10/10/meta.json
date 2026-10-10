@@ -1,6 +1,6 @@
 {
   "schemaVersion": 8,
-  "updatedAt": "2026-10-10T20:42:03.238+08:00",
+  "updatedAt": "2026-10-10T20:52:05.721+08:00",
   "problems": [
     {
       "id": "3e90c3fd-a113-41c6-864d-2c43660158f9",
@@ -16,7 +16,7 @@
         "连通块",
         "队列"
       ],
-      "outcome": "independent",
+      "outcome": "hinted",
       "masteryStatus": "learning",
       "masteryStatusSource": "explicit_self_assessment",
       "isMistake": false,
