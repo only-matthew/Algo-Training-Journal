@@ -1730,8 +1730,7 @@
       "masteryStatus": "learning",
       "masteryStatusSource": "explicit_self_assessment",
       "isMistake": false,
-      "reviewStatus": "todo",
-      "reviewDue": "2026-10-10",
+      "reviewStatus": "archived",
       "href": "/problem/%E5%BB%96%E5%A4%8F/2026-10-07/12eca771-6769-48f0-841e-871de77c8a7b/"
     },
     {
